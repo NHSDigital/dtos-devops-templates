@@ -3,6 +3,12 @@ variable "address_prefixes" {
   description = "The address prefixes for the subnet."
 }
 
+variable "create_nsg" {
+  type        = bool
+  default     = true
+  description = "Indicates whether a network security group should be created. (Some subnets such as those for VNEt Gateways cannot have NSGs)"
+}
+
 variable "delegation_name" {
   type        = string
   default     = ""
