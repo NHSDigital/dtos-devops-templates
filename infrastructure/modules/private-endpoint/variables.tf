@@ -10,7 +10,6 @@ variable "name" {
 
 variable "private_dns_zone_group" {
   description = "A list of private DNS zone configurations."
-  default     = []
   type = list(object({
     name                 = string
     private_dns_zone_ids = list(string)
@@ -19,7 +18,6 @@ variable "private_dns_zone_group" {
 
 variable "private_service_connection" {
   description = "A list of private service connection configurations."
-  default     = []
   type = list(object({
     name                           = string
     private_connection_resource_id = string
