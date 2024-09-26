@@ -23,6 +23,8 @@ resource "azurerm_subnet" "subnet" {
 
 
 module "nsg" {
+  count = var.create_nsg ? 1 : 0
+
   source = "../../modules/network-security-group"
 
   name                = var.network_security_group_name
@@ -34,6 +36,9 @@ module "nsg" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "subnet_nsg_association" {
+  count                     = var.create_nsg ? 1 : 0
+
   subnet_id                 = azurerm_subnet.subnet.id
-  network_security_group_id = module.nsg.id
+  # Count in module "nsg" results in a list of 0 or 1 elements, so we need to use a list index in the below
+  network_security_group_id = module.nsg[0].id
 }

@@ -14,7 +14,7 @@ variable "location" {
 }
 
 variable "vnet_address_space" {
-  type = list(string)
+  type = string
 }
 
 variable "tags" {
