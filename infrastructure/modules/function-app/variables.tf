@@ -28,7 +28,7 @@ variable "acr_mi_client_id" {
 
 variable "app_settings" {
   description = "Map of values for the app settings"
-  default = {}
+  default     = {}
 }
 
 variable "asp_id" {
