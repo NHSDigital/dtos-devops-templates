@@ -22,15 +22,19 @@ variable "tags" {
 variable "nsg_rules" {
   description = "Additional NSG rules for securing subnets (Optional)."
   type = list(object({
-    name                       = string
-    priority                   = number
-    direction                  = string
-    access                     = string
-    protocol                   = string
-    source_port_range          = string
-    destination_port_range     = string
-    source_address_prefix      = string
-    destination_address_prefix = string
+    name                         = string
+    priority                     = number
+    direction                    = string
+    access                       = string
+    protocol                     = string
+    source_port_range            = optional(string)
+    source_port_ranges           = optional(list(string))
+    destination_port_range       = optional(string)
+    destination_port_ranges      = optional(list(string))
+    source_address_prefix        = optional(string)
+    source_address_prefixes      = optional(list(string))
+    destination_address_prefix   = optional(string)
+    destination_address_prefixes = optional(list(string))
   }))
 
   validation {
@@ -41,12 +45,25 @@ variable "nsg_rules" {
         contains(["Inbound", "Outbound"], rule.direction) &&
         contains(["Allow", "Deny"], rule.access) &&
         contains(["Tcp", "Udp", "Icmp", "*"], rule.protocol) &&
-        rule.source_port_range != "" &&
-        rule.destination_port_range != "" &&
-        rule.source_address_prefix != "" &&
-        rule.destination_address_prefix != ""
+        # Exclusive or (XOR) logic
+        (
+          (rule.source_port_range != null && rule.source_port_ranges == null) ||
+          (rule.source_port_range == null && rule.source_port_ranges != null)
+        ) &&
+        (
+          (rule.destination_port_range != null && rule.destination_port_ranges == null) ||
+          (rule.destination_port_range == null && rule.destination_port_ranges != null)
+        ) &&
+        (
+          (rule.source_address_prefix != null && rule.source_address_prefixes == null) ||
+          (rule.source_address_prefix == null && rule.source_address_prefixes != null)
+        ) &&
+        (
+          (rule.destination_address_prefix != null && rule.destination_address_prefixes == null) ||
+          (rule.destination_address_prefix == null && rule.destination_address_prefixes != null)
+        )
       )
     ])
-    error_message = "Each network security group rule must have a valid name, priority, direction (Inbound or Outbound), access (Allow or Deny), protocol (Tcp, Udp, Icmp, or *), source port range, destination port range, source address prefix, and destination address prefix."
+    error_message = "Each network security group rule must have a valid name, priority, direction (Inbound or Outbound), access (Allow or Deny), protocol (Tcp, Udp, Icmp, or *), source port range or ranges, destination port range or ranges, source address prefix or prefixes, and destination address prefix or prefixes."
   }
 }

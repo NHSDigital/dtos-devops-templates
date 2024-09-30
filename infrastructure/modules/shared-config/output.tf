@@ -8,6 +8,8 @@ locals {
     azure-container-registry    = lower("ACR${var.location_map[var.location]}${var.application}${var.env}")
     connection                  = upper("CON-${var.env}-${var.location_map[var.location]}-${var.application}")
     custom-image                = upper("IMAGE-${var.env}-${var.location_map[var.location]}")
+    dev-center                  = lower("DEVC-${var.env}-${var.location_map[var.location]}")
+    dev-center-project          = lower("prj-${var.env}-${var.location_map[var.location]}")
     dns-zone                    = "${lower(var.application)}.${lower(var.env)}.net"
     docker-dtr                  = upper("DTR-${var.env}-${var.location_map[var.location]}-${var.application}")
     docker-manager              = upper("UCP-${var.env}-${var.location_map[var.location]}-${var.application}")
@@ -24,6 +26,7 @@ locals {
     local-network-gateway       = upper("LNG-${var.env}-${var.location_map[var.location]}-${var.application}")
     log-analytics-workspace     = upper("${var.env}-${var.location_map[var.location]}")
     logic-app                   = lower("LA-${var.env}-${var.location_map[var.location]}-${var.application}")
+    managed-devops-pool         = lower("private-pool-${var.env}-${var.location_map[var.location]}")
     network-interface           = upper("${var.env}-${var.location_map[var.location]}-${var.application}")
     network-security-group      = upper("NSG-${var.env}-${var.location_map[var.location]}-${var.application}")
     private-ssh-key             = lower("ssh-pri-${var.env}${var.location_map[var.location]}${var.application}")
@@ -51,61 +54,9 @@ locals {
     virtual-network             = upper("VNET-${var.env}-${var.location_map[var.location]}-${var.application}")
     vnet-gateway                = upper("GWY-${var.env}-${var.location_map[var.location]}-${var.application}")
   }
-
 }
 
 output "names" {
   description = "Return list of calculated standard names for the deployment."
-  value = {
-    api-management              = local.names.api-management
-    app-insights                = local.names.app-insights
-    app-service-plan            = local.names.app-service-plan
-    app-service                 = local.names.app-service
-    availability-set            = local.names.availability-set
-    azure-container-registry    = local.names.azure-container-registry
-    connection                  = local.names.connection
-    custom-image                = local.names.custom-image
-    dns-zone                    = local.names.dns-zone
-    docker-dtr                  = local.names.docker-dtr
-    docker-manager              = local.names.docker-manager
-    docker-worker               = local.names.docker-worker
-    docker-worker-windows       = local.names.docker-worker-windows
-    docker-worker-windows-nb    = local.names.docker-worker-windows-nb
-    external-load-balancer      = local.names.external-load-balancer
-    event-grid-topic            = local.names.event-grid-topic
-    function-app                = local.names.function-app
-    internal-load-balancer      = local.names.internal-load-balancer
-    key-vault                   = local.names.key-vault
-    kubernetes-service          = local.names.kubernetes-service
-    load-balancer               = local.names.load-balancer
-    local-network-gateway       = local.names.local-network-gateway
-    log-analytics-workspace     = local.names.log-analytics-workspace
-    logic-app                   = local.names.logic-app
-    network-interface           = local.names.network-interface
-    network-security-group      = local.names.network-security-group
-    private-ssh-key             = local.names.private-ssh-key
-    public-ip-address           = local.names.public-ip-address
-    public-ip-dns               = local.names.public-ip-dns
-    public-ssh-key              = local.names.public-ssh-key
-    redis-cache                 = local.names.redis-cache
-    resource-group              = local.names.resource-group
-    resource-application        = local.names.resource-application
-    route-table                 = local.names.route-table
-    service-bus                 = local.names.service-bus
-    service-principal           = local.names.service-principal
-    sql-server                  = local.names.sql-server
-    sql-server-db               = local.names.sql-server-db
-    sql-server-managed-instance = local.names.sql-server-managed-instance
-    stack-dns-suffix            = local.names.stack-dns-suffix
-    storage-account             = local.names.storage-account
-    storage-alerts              = local.names.storage-alerts
-    storage-boot-diags          = local.names.storage-boot-diags
-    storage-flow-logs           = local.names.storage-flow-logs
-    storage-shared-state        = local.names.storage-shared-state
-    subnet                      = local.names.subnet
-    virtual-machine             = local.names.virtual-machine
-    win-virtual-machine         = local.names.win-virtual-machine
-    virtual-network             = local.names.virtual-network
-    vnet-gateway                = local.names.vnet-gateway
-  }
+  value = local.names
 }

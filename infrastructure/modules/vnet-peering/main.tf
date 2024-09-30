@@ -8,5 +8,4 @@ resource "azurerm_virtual_network_peering" "peering" {
 
   # `allow_gateway_transit` must be set to false for vnet Global Peering
   allow_gateway_transit = var.allow_gateway_transit
-
 }
