@@ -9,8 +9,8 @@ resource "azurerm_linux_function_app" "function_app" {
 
   ftp_publish_basic_authentication_enabled = var.ftp_publish_basic_authentication_enabled
   https_only                               = var.https_only
-  public_network_access_enabled            = var.private_endpoint_properties.public_network_access_enabled
-  virtual_network_subnet_id                = var.private_endpoint_properties.vnet_integration_subnet_id
+  public_network_access_enabled            = var.public_network_access_enabled
+  virtual_network_subnet_id                = var.vnet_integration_subnet_id
 
   # Commented out as does not seem compatible with the current version of the azurerm provider
   # cors {
@@ -62,7 +62,7 @@ module "private_endpoint" {
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
   private_dns_zone_group = {
-    name                 = "privatelink.azurewebsites.net"
+    name                 = "${var.function_app_name}-private-endpoint-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids
   }
 

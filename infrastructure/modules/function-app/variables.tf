@@ -99,14 +99,18 @@ variable "private_endpoint_properties" {
     private_endpoint_subnet_id           = optional(string, "")
     private_endpoint_resource_group_name = optional(string, "")
     private_service_connection_is_manual = optional(bool, false)
-    public_network_access_enabled        = optional(bool, false)
-    vnet_integration_subnet_id           = optional(string, null)
   })
 
   validation {
     condition     = var.private_endpoint_properties.private_endpoint_enabled == false || (length(var.private_endpoint_properties.private_dns_zone_ids) > 0 && length(var.private_endpoint_properties.private_endpoint_subnet_id) > 0)
     error_message = "Both private_dns_zone_ids and private_endpoint_subnet_id must be provided if private_endpoint_enabled is true."
   }
+}
+
+variable "public_network_access_enabled" {
+  type        = bool
+  description = "Should the Function App be accessible from the public network. Defaults to false."
+  default     = false
 }
 
 variable "sa_name" {
@@ -117,6 +121,12 @@ variable "sa_name" {
 variable "sa_prm_key" {
   type        = string
   description = "The Storage Account Primary Access Key."
+}
+
+variable "vnet_integration_subnet_id" {
+  type        = string
+  description = "The ID of the subnet to integrate the Function App with."
+  default     = null
 }
 
 variable "tags" {
