@@ -3,15 +3,15 @@ resource "azurerm_mssql_server" "sqlserver" {
   resource_group_name = var.resource_group_name
   location            = var.location
   version             = var.sqlversion
-  
+
   minimum_tls_version = var.tlsver
 
   tags = var.tags
 
   azuread_administrator {
-    azuread_authentication_only = var.ad_auth_only                                # set to: true
+    azuread_authentication_only = var.ad_auth_only         # set to: true
     login_username              = var.sql_admin_group_name # azurerm_user_assigned_identity.uai-sql.name
-    object_id                   = var.sql_admin_object_id    # azurerm_user_assigned_identity.uai-sql.principal_id
+    object_id                   = var.sql_admin_object_id  # azurerm_user_assigned_identity.uai-sql.principal_id
   }
 
   lifecycle {
@@ -44,7 +44,7 @@ module "private_endpoint_sql_server" {
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
   private_dns_zone_group = {
-    name                 = "${var.name}-sql-private-endpoint-zone-group" 
+    name                 = "${var.name}-sql-private-endpoint-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids_sql
   }
 

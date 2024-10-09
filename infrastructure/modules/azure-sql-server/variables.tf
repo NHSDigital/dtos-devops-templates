@@ -63,7 +63,7 @@ variable "kv_id" {
 variable "private_endpoint_properties" {
   description = "Consolidated properties for the Function App Private Endpoint."
   type = object({
-    private_dns_zone_ids_sql            = optional(list(string), [])
+    private_dns_zone_ids_sql             = optional(list(string), [])
     private_endpoint_enabled             = optional(bool, false)
     private_endpoint_subnet_id           = optional(string, "")
     private_endpoint_resource_group_name = optional(string, "")
