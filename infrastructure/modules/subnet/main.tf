@@ -25,7 +25,7 @@ resource "azurerm_subnet" "subnet" {
 module "nsg" {
   count = var.create_nsg ? 1 : 0
 
-  source = "../../modules/network-security-group"
+  source = "git::https://github.com/NHSDigital/dtos-devops-templates.git//infrastructure/modules/network-security-group?ref=e125d928afd9546e06d8af9bdb6391cbf6336773"
 
   name                = var.network_security_group_name
   resource_group_name = var.resource_group_name
@@ -36,9 +36,9 @@ module "nsg" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "subnet_nsg_association" {
-  count                     = var.create_nsg ? 1 : 0
+  count = var.create_nsg ? 1 : 0
 
-  subnet_id                 = azurerm_subnet.subnet.id
+  subnet_id = azurerm_subnet.subnet.id
   # Count in module "nsg" results in a list of 0 or 1 elements, so we need to use a list index in the below
   network_security_group_id = module.nsg[0].id
 }
