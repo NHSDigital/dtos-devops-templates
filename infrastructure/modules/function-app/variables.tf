@@ -50,6 +50,12 @@ variable "cors_allowed_origins" {
   default = [""]
 }
 
+variable "ftp_publish_basic_authentication_enabled" {
+  type        = bool
+  description = "Enable basic authentication for FTP. Defaults to false."
+  default     = false
+}
+
 variable "ftps_state" {
   type        = string
   description = "Enable FTPS enforcement for enhanced security. Allowed values = AllAllowed (i.e. FTP & FTPS), FtpsOnly and Disabled (i.e. no FTP/FTPS access). Defaults to AllAllowed."
@@ -85,6 +91,28 @@ variable "minimum_tls_version" {
   }
 }
 
+variable "private_endpoint_properties" {
+  description = "Consolidated properties for the Function App Private Endpoint."
+  type = object({
+    private_dns_zone_ids                 = optional(list(string), [])
+    private_endpoint_enabled             = optional(bool, false)
+    private_endpoint_subnet_id           = optional(string, "")
+    private_endpoint_resource_group_name = optional(string, "")
+    private_service_connection_is_manual = optional(bool, false)
+  })
+
+  validation {
+    condition     = var.private_endpoint_properties.private_endpoint_enabled == false || (length(var.private_endpoint_properties.private_dns_zone_ids) > 0 && length(var.private_endpoint_properties.private_endpoint_subnet_id) > 0)
+    error_message = "Both private_dns_zone_ids and private_endpoint_subnet_id must be provided if private_endpoint_enabled is true."
+  }
+}
+
+variable "public_network_access_enabled" {
+  type        = bool
+  description = "Should the Function App be accessible from the public network. Defaults to false."
+  default     = false
+}
+
 variable "sa_name" {
   type        = string
   description = "The name of the Storage Account."
@@ -93,6 +121,12 @@ variable "sa_name" {
 variable "sa_prm_key" {
   type        = string
   description = "The Storage Account Primary Access Key."
+}
+
+variable "vnet_integration_subnet_id" {
+  type        = string
+  description = "The ID of the subnet to integrate the Function App with."
+  default     = null
 }
 
 variable "tags" {
