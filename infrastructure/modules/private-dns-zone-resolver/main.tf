@@ -24,7 +24,7 @@ resource "azurerm_private_dns_resolver_inbound_endpoint" "private_dns_resolver_i
 
 # azurerm_private_dns_resolver_outbound_endpoint
 resource "azurerm_private_dns_resolver_outbound_endpoint" "private_dns_resolver_outbound_endpoint" {
-  count = var.inbound_endpoint_config != {} ? 1 : 0
+  count = var.outbound_endpoint_config != {} ? 1 : 0
 
   name                    = var.outbound_endpoint_config.name
   location                = var.location
