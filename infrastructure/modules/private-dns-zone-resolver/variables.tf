@@ -20,14 +20,16 @@ variable "inbound_endpoint_config" {
     private_ip_allocation_method = optional(string)
     subnet_id                    = optional(string)
   })
+  default = {}
 }
 
 variable "outbound_endpoint_config" {
   description = "The configuration for the outbound endpoint."
   type = object({
-    name                         = optional(string)
-    subnet_id                    = optional(string)
+    name      = optional(string)
+    subnet_id = optional(string)
   })
+  default = {}
 }
 
 variable "vnet_id" {
