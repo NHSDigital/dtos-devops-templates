@@ -3,5 +3,5 @@ output "name" {
 }
 
 output "private_dns_resolver_ip" {
-  value = azurerm_private_dns_resolver_inbound_endpoint.private_dns_resolver_inbound_endpoint[0].ip_configurations.0.private_ip_address
+  value = length(azurerm_private_dns_resolver_inbound_endpoint.private_dns_resolver_inbound_endpoint) > 0 ? azurerm_private_dns_resolver_inbound_endpoint.private_dns_resolver_inbound_endpoint[0].ip_configurations[0].private_ip_address : null
 }
