@@ -10,30 +10,24 @@ resource "azurerm_private_dns_resolver" "private_dns_resolver" {
 
 # azurerm_private_dns_resolver_inbound_endpoint
 resource "azurerm_private_dns_resolver_inbound_endpoint" "private_dns_resolver_inbound_endpoint" {
-  for_each = {
-    for key, value in var.inbound_endpoint_config : key => value
-    if var.inbound_endpoint_config != {}
-  }
+  count = length(var.inbound_endpoint_config.name) > 0 ? 1 : 0
 
-  name                    = each.value.inbound_endpoint_config.name
-  location                = each.value.location
+  name                    = var.inbound_endpoint_config.name
+  location                = var.location
   private_dns_resolver_id = azurerm_private_dns_resolver.private_dns_resolver.id
 
   ip_configurations {
-    private_ip_allocation_method = each.value.inbound_endpoint_config.private_ip_allocation_method
-    subnet_id                    = each.value.inbound_endpoint_config.subnet_id
+    private_ip_allocation_method = var.inbound_endpoint_config.private_ip_allocation_method
+    subnet_id                    = var.inbound_endpoint_config.subnet_id
   }
 }
 
 # azurerm_private_dns_resolver_outbound_endpoint
 resource "azurerm_private_dns_resolver_outbound_endpoint" "private_dns_resolver_outbound_endpoint" {
-  for_each = {
-    for key, value in var.outbound_endpoint_config : key => value
-    if var.outbound_endpoint_config != {}
-  }
+  count = length(var.outbound_endpoint_config.name) > 0 ? 1 : 0
 
-  name                    = each.value.outbound_endpoint_config.name
-  location                = each.value.location
+  name                    = var.outbound_endpoint_config.name
+  location                = var.location
   private_dns_resolver_id = azurerm_private_dns_resolver.private_dns_resolver.id
-  subnet_id               = each.value.outbound_endpoint_config.subnet_id
+  subnet_id               = var.outbound_endpoint_config.subnet_id
 }
