@@ -21,7 +21,7 @@ variable "inbound_endpoint_config" {
     subnet_id                    = string
   })
   default = {
-    name                        = ""
+    name                         = ""
     private_ip_allocation_method = ""
     subnet_id                    = ""
   }
