@@ -1,4 +1,5 @@
-resource "azurerm_mssql_server" "sqlserver" {
+resource "azurerm_mssql_server" "azure_sql_server" {
+
   name                = var.name
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -24,7 +25,7 @@ resource "azurerm_mssql_firewall_rule" "azurepassthrough" {
   count = var.azurepassthrough ? 1 : 0
 
   name             = var.fw_rule_name
-  server_id        = azurerm_mssql_server.sqlserver.id
+  server_id        = azurerm_mssql_server.azure_sql_server.id
   start_ip_address = var.start_ip
   end_ip_address   = var.end_ip
 }
@@ -50,7 +51,7 @@ module "private_endpoint_sql_server" {
 
   private_service_connection = {
     name                           = "${var.name}-sql-private-endpoint-connection"
-    private_connection_resource_id = azurerm_sql_server.sql_server.id
+    private_connection_resource_id = azurerm_mssql_server.azure_sql_server.id
     subresource_names              = ["sqlServer"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
   }
