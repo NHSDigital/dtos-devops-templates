@@ -54,7 +54,7 @@ variable "sql_uai_name" {
   description = "Name of the User Assigned Identity for SQL Server"
 }
 
-# sqlServer 
+# sqlServer
 variable "kv_id" {
   type        = string
   description = "Name of the Key Vault in which the admin credentials are put"
