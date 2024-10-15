@@ -58,5 +58,5 @@ locals {
 
 output "names" {
   description = "Return list of calculated standard names for the deployment."
-  value = local.names
+  value       = local.names
 }

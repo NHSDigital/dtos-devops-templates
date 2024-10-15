@@ -9,21 +9,21 @@ variable "name" {
 }
 
 variable "private_dns_zone_group" {
-  description = "A list of private DNS zone configurations."
-  type = list(object({
+  description = "Private DNS zone configuration"
+  type = object({
     name                 = string
     private_dns_zone_ids = list(string)
-  }))
+  })
 }
 
 variable "private_service_connection" {
-  description = "A list of private service connection configurations."
-  type = list(object({
+  description = "Private service connection configuration."
+  type = object({
     name                           = string
     private_connection_resource_id = string
-    group_ids                      = list(string)
-    request_message                = string
-  }))
+    subresource_names              = list(string)
+    is_manual_connection           = bool
+  })
 }
 
 variable "resource_group_name" {
