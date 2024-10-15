@@ -10,7 +10,13 @@ variable "resource_group_name" {
 
 variable "location" {
   type        = string
-  description = ""
+  description = "The region where the VNET should be created."
+}
+
+variable "dns_servers" {
+  type        = list(string)
+  description = "The DNS servers to be used by the VNET."
+  default     = []
 }
 
 variable "vnet_address_space" {
