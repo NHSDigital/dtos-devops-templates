@@ -19,7 +19,7 @@ resource "azurerm_container_registry" "acr" {
 module "private_endpoint_container_registry" {
   count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
 
-  source = "git::https://github.com/NHSDigital/dtos-devops-templates.git//infrastructure/modules/private-endpoint?ref=feat/DTOSS-3386-Private-Endpoint-Updates"
+  source = "git::https://github.com/NHSDigital/dtos-devops-templates.git//infrastructure/modules/private-endpoint?ref=08100f7db2da6c0f64f327d15477a217a7ed4cd9"
 
   name                = "${var.name}-private-endpoint"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
