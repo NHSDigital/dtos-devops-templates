@@ -123,7 +123,7 @@ variable "storage_account_access_key" {
   description = "The Storage Account Primary Access Key."
 
   validation {
-    condition     = var.storage_uses_managed_identity == true || var.storage_account_access_key != ""
+    condition     = var.storage_uses_managed_identity || var.storage_account_access_key != ""
     error_message = "Storage Account Access Key must be provided if Storage Uses Managed Identity is false."
   }
 }
@@ -134,7 +134,7 @@ variable "storage_uses_managed_identity" {
   default     = false
 
   validation {
-    condition     = var.storage_uses_managed_identity == false || var.storage_account_access_key == ""
+    condition     = var.storage_uses_managed_identity || var.storage_account_access_key == ""
     error_message = "Storage Account Access Key must be empty if Storage Uses Managed Identity is true."
   }
 }
