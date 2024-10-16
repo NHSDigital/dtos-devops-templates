@@ -121,22 +121,12 @@ variable "storage_account_name" {
 variable "storage_account_access_key" {
   type        = string
   description = "The Storage Account Primary Access Key."
-
-  validation {
-    condition     = var.storage_uses_managed_identity || var.storage_account_access_key != ""
-    error_message = "Storage Account Access Key must be provided if Storage Uses Managed Identity is false."
-  }
 }
 
 variable "storage_uses_managed_identity" {
   type        = bool
   description = "Should the Storage Account use a Managed Identity. Defaults to false."
   default     = false
-
-  validation {
-    condition     = var.storage_uses_managed_identity || var.storage_account_access_key == ""
-    error_message = "Storage Account Access Key must be empty if Storage Uses Managed Identity is true."
-  }
 }
 
 variable "vnet_integration_subnet_id" {
