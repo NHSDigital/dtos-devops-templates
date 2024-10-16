@@ -115,10 +115,10 @@ variable "public_network_access_enabled" {
 
 variable "rbac_role_assignments" {
   description = "Map of RBAC role assignments by region"
-  type = map(list(object({
+  type = list(object({
     role_definition_name = string
     scope                = string
-  })))
+  }))
 }
 
 variable "storage_account_name" {
