@@ -5,7 +5,8 @@ resource "azurerm_mssql_server" "azure_sql_server" {
   location            = var.location
   version             = var.sqlversion
 
-  minimum_tls_version = var.tlsver
+  minimum_tls_version           = var.tlsver
+  public_network_access_enabled = var.public_network_access_enabled
 
   tags = var.tags
 

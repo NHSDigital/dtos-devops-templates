@@ -71,6 +71,12 @@ variable "private_endpoint_properties" {
   })
 }
 
+variable "public_network_access_enabled" {
+  type        = bool
+  description = "Specifies whether or not public network access is allowed for this server."
+  default     = false
+}
+
 variable "sql_admin_object_id" {
   type        = string
   description = "The object ID from EntraID for SQL Server Admin."
