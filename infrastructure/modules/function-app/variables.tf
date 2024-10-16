@@ -113,6 +113,16 @@ variable "public_network_access_enabled" {
   default     = false
 }
 
+variable "rbac_role_assignments" {
+  description = "The list of RBAC roles and their scopes to assign to the Function App."
+  type = map(object(
+    {
+      role_definition_name = string
+      scope                = string
+    }
+  ))
+}
+
 variable "storage_account_name" {
   type        = string
   description = "The name of the Storage Account."
