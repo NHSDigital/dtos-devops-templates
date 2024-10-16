@@ -1,5 +1,6 @@
 module "rbac_assignmnents" {
-  for_each = var.rbac_role_assignments
+  for_each = { for idx, assignment in var.rbac_role_assignments : idx => assignment }
+
 
   source = "git::https://github.com/NHSDigital/dtos-devops-templates.git//infrastructure/modules/rbac-assignment?ref=08100f7db2da6c0f64f327d15477a217a7ed4cd9"
 
