@@ -41,8 +41,9 @@ resource "azurerm_linux_function_app" "function_app" {
     use_32_bit_worker = var.worker_32bit
   }
 
-  storage_account_name       = var.sa_name
-  storage_account_access_key = var.sa_prm_key
+  storage_account_name          = var.storage_account_name
+  storage_account_access_key    = var.storage_account_access_key
+  storage_uses_managed_identity = var.storage_uses_managed_identity
 
   tags = var.tags
 }
