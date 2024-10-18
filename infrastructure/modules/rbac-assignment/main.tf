@@ -8,4 +8,7 @@ resource "azurerm_role_assignment" "role_assignment" {
 # Look up the role definition by name as a convenience for the user
 data "azurerm_role_definition" "role_definition" {
   name = var.role_definition_name
+
+  # The scope is required to ensure the full role id path matches that saved in the state file
+  scope  = data.azurerm_subscription.primary.id
 }
