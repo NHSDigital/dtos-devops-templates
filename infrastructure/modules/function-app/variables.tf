@@ -113,14 +113,28 @@ variable "public_network_access_enabled" {
   default     = false
 }
 
-variable "sa_name" {
+variable "rbac_role_assignments" {
+  description = "Map of RBAC role assignments by region"
+  type = list(object({
+    role_definition_name = string
+    scope                = string
+  }))
+}
+
+variable "storage_account_name" {
   type        = string
   description = "The name of the Storage Account."
 }
 
-variable "sa_prm_key" {
+variable "storage_account_access_key" {
   type        = string
   description = "The Storage Account Primary Access Key."
+}
+
+variable "storage_uses_managed_identity" {
+  type        = bool
+  description = "Should the Storage Account use a Managed Identity. Defaults to false."
+  default     = false
 }
 
 variable "vnet_integration_subnet_id" {
