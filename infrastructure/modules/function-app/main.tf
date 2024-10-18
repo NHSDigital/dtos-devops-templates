@@ -62,6 +62,9 @@ module "private_endpoint" {
   location            = var.location
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
+  http_version                                   = var.http_version
+  webdeploy_publish_basic_authentication_enabled = var.webdeploy_publish_basic_authentication_enabled
+
   private_dns_zone_group = {
     name                 = "${var.function_app_name}-private-endpoint-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids

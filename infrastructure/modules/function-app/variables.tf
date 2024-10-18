@@ -67,9 +67,20 @@ variable "ftps_state" {
   }
 }
 
+variable "http_version" {
+  type        = string
+  description = "The HTTP version to use for the function app. Override standard default."
+  default     = "2.0"
+
+  validation {
+    condition     = contains(["1.1", "2.0"], var.http_version)
+    error_message = "https_version must be one of 1.1 or 2.0."
+  }
+}
+
 variable "https_only" {
   type        = bool
-  description = "Can the Function App only be accessed via HTTPS? Defaults to false."
+  description = "Can the Function App only be accessed via HTTPS? Override standard default."
   default     = true
 }
 
@@ -109,7 +120,7 @@ variable "private_endpoint_properties" {
 
 variable "public_network_access_enabled" {
   type        = bool
-  description = "Should the Function App be accessible from the public network. Defaults to false."
+  description = "Should the Function App be accessible from the public network. Override standard default."
   default     = false
 }
 
@@ -147,6 +158,12 @@ variable "tags" {
   type        = map(string)
   description = "Resource tags to be applied throughout the deployment."
   default     = {}
+}
+
+variable "webdeploy_publish_basic_authentication_enabled" {
+  type        = bool
+  description = "Enable basic authentication for WebDeploy. Override standard default."
+  default     = false
 }
 
 variable "worker_32bit" {
