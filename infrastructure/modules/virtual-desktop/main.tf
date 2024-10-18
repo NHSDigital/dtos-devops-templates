@@ -8,6 +8,19 @@ resource "azurerm_virtual_desktop_workspace" "this" {
   tags = var.tags
 }
 
+resource "azurerm_virtual_desktop_host_pool" "flipper" {
+  resource_group_name      = var.resource_group_name
+  location                 = var.location
+  name                     = "flipper"
+  friendly_name            = var.host_pool_friendly_name
+  description              = var.host_pool_description
+  validate_environment     = var.validate_environment
+  custom_rdp_properties    = var.custom_rdp_properties
+  type                     = var.host_pool_type
+  maximum_sessions_allowed = var.maximum_sessions_allowed
+  load_balancer_type       = var.load_balancer_type
+}
+
 resource "azurerm_virtual_desktop_host_pool" "this" {
   resource_group_name      = var.resource_group_name
   location                 = var.location
@@ -37,14 +50,14 @@ resource "azurerm_virtual_desktop_host_pool_registration_info" "registrationinfo
 }
 
 resource "azurerm_virtual_desktop_application_group" "this" {
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  host_pool_id        = azurerm_virtual_desktop_host_pool.this.id
-  type                = var.dag_type
-  name                = var.dag_name
-  friendly_name       = var.dag_friendly_name
-  description         = var.dag_description
-  depends_on          = [azurerm_virtual_desktop_workspace.this]
+  resource_group_name          = var.resource_group_name
+  location                     = var.location
+  host_pool_id                 = azurerm_virtual_desktop_host_pool.this.id
+  type                         = var.dag_type
+  name                         = var.dag_name
+  friendly_name                = var.dag_friendly_name
+  default_desktop_display_name = var.dag_default_desktop_display_name
+  description                  = var.dag_description
 
   tags = var.tags
 }

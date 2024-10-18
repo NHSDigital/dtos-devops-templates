@@ -3,6 +3,11 @@ variable "custom_rdp_properties" {
   default = null
 }
 
+variable "dag_default_desktop_display_name" {
+  type    = string
+  default = null
+}
+
 variable "dag_description" {
   type    = string
   default = null
@@ -45,17 +50,16 @@ variable "host_pool_type" {
 
 variable "load_balancer_type" {
   type    = string
-  default = "DepthFirst" #"BreadthFirst"
+  default = "BreadthFirst" #"DepthFirst"
 }
 
 variable "location" {
-  description = "The location/region where the private endpoint will be created."
-  type        = string
+  type = string
 }
 
 variable "login_principal_id" {
   type        = string
-  description = "The ids of the groups to grant the 'Virtual Machine User Login' role to, specified via TF_VAR env var."
+  description = "The ids of the groups to grant AVD acccess to, specified via TF_VAR env var."
 }
 
 variable "maximum_sessions_allowed" {
