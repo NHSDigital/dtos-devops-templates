@@ -8,5 +8,4 @@ output "id" {
 
 output "zones" {
   value = azurerm_public_ip.pip.zones
-
 }
