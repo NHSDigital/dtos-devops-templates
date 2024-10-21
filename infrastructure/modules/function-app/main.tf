@@ -7,10 +7,12 @@ resource "azurerm_linux_function_app" "function_app" {
 
   app_settings = var.app_settings
 
-  ftp_publish_basic_authentication_enabled = var.ftp_publish_basic_authentication_enabled
-  https_only                               = var.https_only
-  public_network_access_enabled            = var.public_network_access_enabled
-  virtual_network_subnet_id                = var.vnet_integration_subnet_id
+  ftp_publish_basic_authentication_enabled       = var.ftp_publish_basic_authentication_enabled
+  webdeploy_publish_basic_authentication_enabled = var.webdeploy_publish_basic_authentication_enabled
+
+  https_only                    = var.https_only
+  public_network_access_enabled = var.public_network_access_enabled
+  virtual_network_subnet_id     = var.vnet_integration_subnet_id
 
   # Commented out as does not seem compatible with the current version of the azurerm provider
   # cors {
@@ -28,7 +30,8 @@ resource "azurerm_linux_function_app" "function_app" {
     container_registry_use_managed_identity       = var.cont_registry_use_mi
     container_registry_managed_identity_client_id = var.acr_mi_client_id
     ftps_state                                    = var.ftps_state
-    minimum_tls_version                           = var.minimum_tls_version
+
+    minimum_tls_version = var.minimum_tls_version
 
     application_stack {
       docker {
