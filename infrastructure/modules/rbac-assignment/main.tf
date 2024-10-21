@@ -6,7 +6,7 @@ resource "azurerm_role_assignment" "role_assignment" {
 }
 
 # Declare the azurerm_subscription data source as this is required to get the full path for the role definition
-data "azurerm_subscription" "primary" {
+data "azurerm_subscription" "target" {
 }
 
 # Look up the role definition by name as a convenience for the user
@@ -14,5 +14,5 @@ data "azurerm_role_definition" "role_definition" {
   name = var.role_definition_name
 
   # The scope is required to ensure the full role id path matches that saved in the state file
-  scope  = data.azurerm_subscription.primary.id
+  scope  = data.azurerm_subscription.target.id
 }
