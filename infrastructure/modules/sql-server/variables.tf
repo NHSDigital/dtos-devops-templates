@@ -18,12 +18,12 @@ variable "location" {
 
 # fw rules
 variable "firewall_rules" {
-  type = optional(map(object({
+  type = map(object({
     start_ip_address = string
     end_ip_address   = string
-  })))
+  }))
   description = "If the FW rule enabling Azure Services Passthrough should be deployed."
-  default     = true
+  default     = {}
 }
 
 # identity
