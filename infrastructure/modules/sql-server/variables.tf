@@ -16,26 +16,14 @@ variable "location" {
   SQL Server Variables
 -------------------------------------------------------------------------------------------------- */
 
-# fw rule
-variable "azurepassthrough" {
-  type        = bool
+# fw rules
+variable "firewall_rules" {
+  type = optional(map(object({
+    start_ip_address = string
+    end_ip_address   = string
+  })))
   description = "If the FW rule enabling Azure Services Passthrough should be deployed."
   default     = true
-}
-
-variable "end_ip" {
-  type        = string
-  description = "The ending IP address to allow through the firewall for this rule."
-}
-
-variable "fw_rule_name" {
-  type        = string
-  description = "The name of the firewall rule. Changing this forces a new resource to be created."
-}
-
-variable "start_ip" {
-  type        = string
-  description = "The starting IP address to allow through the firewall for this rule."
 }
 
 # identity

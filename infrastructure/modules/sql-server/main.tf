@@ -21,14 +21,13 @@ resource "azurerm_mssql_server" "azure_sql_server" {
   }
 }
 
-resource "azurerm_mssql_firewall_rule" "azurepassthrough" {
+resource "azurerm_mssql_firewall_rule" "firewall_rule" {
+  for_each = var.firewall_rules
 
-  count = var.azurepassthrough ? 1 : 0
-
-  name             = var.fw_rule_name
+  name             = each.value.fw_rule_name
   server_id        = azurerm_mssql_server.azure_sql_server.id
-  start_ip_address = var.start_ip
-  end_ip_address   = var.end_ip
+  start_ip_address = each.value.start_ip
+  end_ip_address   = each.value.end_ip
 }
 
 /* --------------------------------------------------------------------------------------------------
