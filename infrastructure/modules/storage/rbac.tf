@@ -6,7 +6,7 @@ module "rbac_assignmnents" {
 
   principal_id         = data.azurerm_client_config.current
   role_definition_name = each.value.role_definition_name
-  scope                = module.storage.storage_account_id
+  scope                = azurerm_storage_account.storage_account.id
 }
 
 data "azurerm_client_config" "current" {}
