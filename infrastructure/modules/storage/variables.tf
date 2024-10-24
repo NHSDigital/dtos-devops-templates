@@ -62,12 +62,10 @@ variable "public_network_access_enabled" {
   default     = false
 }
 
-variable "rbac_role_assignments" {
-  description = "Map of RBAC role assignments by region"
-  type = list(object({
-    role_definition_name = string
-    scope                = string
-  }))
+variable "rbac_roles" {
+  description = "Map of RBAC roles to assign to the Storage Account."
+  type = map(string)
+  default = {}
 }
 
 variable "tags" {
