@@ -9,6 +9,7 @@ module "firewall" {
   zones                 = module.public_ip.zones
   additional_public_ips = []
   public_ip_address_id  = module.public_ip.id
+  firewall_subnet_id    = module.subnet.subnet_id
 
   tags = {
     environment = "Terraform"
@@ -25,4 +26,38 @@ module "firewall" {
     , module.subnet
     , module.resource_group
   ]
+}
+
+module "firewall_policy_rule_collection_group" {
+  source = "./modules/firewall-rule-collection-group"
+
+  name               = "firewall-policy-rule-collection-group"
+  firewall_policy_id = module.firewall.firewall_policy_id
+  priority           = 400
+
+  application_rule_collection = []
+  network_rule_collection = [
+    {
+      name                  = "spoke01-spoke02"
+      priority              = 900
+      action                = "Allow"
+      rule_name             = "spoke01-spoke02"
+      protocols             = ["*P"]
+      source_addresses      = ["10.1.0.0/16"]
+      destination_addresses = ["10.3.0.0/16"]
+      destination_ports     = ["*"]
+    },
+    {
+      name                  = "spoke02-spoke01"
+      priority              = 900
+      action                = "Allow"
+      rule_name             = "spoke02-spoke01"
+      protocols             = ["*P"]
+      source_addresses      = ["10.3.0.0/16"]
+      destination_addresses = ["10.1.0.0/16"]
+      destination_ports     = ["*"]
+    }
+  ]
+  nat_rule_collection = []
+
 }
