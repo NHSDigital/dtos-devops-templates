@@ -62,6 +62,14 @@ variable "public_network_access_enabled" {
   default     = false
 }
 
+variable "rbac_role_assignments" {
+  description = "Map of RBAC role assignments by region"
+  type = list(object({
+    role_definition_name = string
+    scope                = string
+  }))
+}
+
 variable "tags" {
   type        = map(string)
   description = "Resource tags to be applied throughout the deployment."
