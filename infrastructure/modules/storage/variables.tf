@@ -62,6 +62,12 @@ variable "public_network_access_enabled" {
   default     = false
 }
 
+variable "rbac_roles" {
+  description = "Map of RBAC roles to assign to the Storage Account."
+  type = map(string)
+  default = {}
+}
+
 variable "tags" {
   type        = map(string)
   description = "Resource tags to be applied throughout the deployment."
