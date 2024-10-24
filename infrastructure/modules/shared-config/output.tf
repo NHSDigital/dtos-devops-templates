@@ -22,6 +22,7 @@ locals {
     docker-worker-windows-nb    = upper("WWK${var.env}${var.location_map[var.location]}${var.application}")
     external-load-balancer      = upper("ELB-${var.env}-${var.location_map[var.location]}-${var.application}")
     event-grid-topic            = lower("EVGT-${var.env}-${var.location_map[var.location]}")
+    firewall                    = lower("FW-${var.env}-${var.location_map[var.location]}-${var.application}")
     function-app                = lower("${var.env}-${var.location_map[var.location]}")
     internal-load-balancer      = upper("ILB-${var.env}-${var.location_map[var.location]}-${var.application}")
     key-vault                   = upper("KV-${var.application}-${var.env}-${var.location_map[var.location]}")
