@@ -8,6 +8,10 @@ variable "application_gateway_autoscale_min" {
   default = 10
 }
 
+variable "gateway_subnet" {
+  type = map(any)
+}
+
 variable "location" {
   type        = string
   description = "location"
@@ -32,6 +36,8 @@ variable "resource_group_name" {
   description = "The name of the resource group in which to create the Application Gateway. Changing this forces a new resource to be created."
 }
 
-variable "gateway_subnet" {
-  type = map(any)
+variable "tags" {
+  type        = map(string)
+  description = "Resource tags to be applied throughout the deployment."
+  default     = {}
 }

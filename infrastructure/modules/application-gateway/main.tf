@@ -103,4 +103,6 @@ resource "azurerm_application_gateway" "application_gateway" {
   lifecycle {
     ignore_changes = all # application settings will be inserted by each spoke Terraform state, using PowerShell
   }
+
+  tags = var.tags
 }
