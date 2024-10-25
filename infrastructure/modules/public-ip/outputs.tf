@@ -6,6 +6,10 @@ output "id" {
   value = azurerm_public_ip.pip.id
 }
 
+output "name" {
+  value = azurerm_public_ip.pip.name
+}
+
 output "zones" {
   value = azurerm_public_ip.pip.zones
 }

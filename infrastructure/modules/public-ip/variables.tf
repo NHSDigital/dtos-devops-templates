@@ -1,10 +1,10 @@
 variable "name" {
   description = "The name of the public IP address."
   type        = string
-  # validation {
-  #   condition     = can(regex("^[a-z0-9]{1,80}$", var.name))  # This regex is over-restrictive, it excludes '-' for instance.
-  #   error_message = "The public IP address name must be a valid name."
-  # }
+  validation {
+    condition     = can(regex("^[a-z0-9-]{1,80}$", var.name))
+    error_message = "The public IP address name must be a valid name."
+  }
 }
 
 variable "resource_group_name" {
