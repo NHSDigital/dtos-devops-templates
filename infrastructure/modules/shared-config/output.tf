@@ -1,6 +1,30 @@
 locals {
   names = {
     api-management              = lower("APIM-${var.env}-${var.application}-${var.location_map[var.location]}")
+    application-gateway         = {
+      name                          = lower("AGW-${var.env}-${var.location_map[var.location]}-${var.application}")
+      gateway_ip_configuration_name = lower("gw-ip-${var.env}-${var.location_map[var.location]}-${var.application}")
+      unused = { # these items are needed to build a minimal Application Gateway resource
+        probe_name                 = lower("unused-backend-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        frontend_port_name         = lower("unused-feport-${var.env}-${var.location_map[var.location]}-${var.application}")
+        backend_address_pool_name  = lower("unused-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        backend_http_settings_name = lower("unused-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        http_listener_name         = lower("unused-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        rule_name                  = lower("unused-rule-${var.env}-${var.location_map[var.location]}-${var.application}")
+      }
+      common_public = {
+        frontend_port_name              = lower("feport-${var.env}-${var.location_map[var.location]}-${var.application}")
+        frontend_ip_configuration_name  = lower("feip-${var.env}-${var.location_map[var.location]}-${var.application}")
+        backend_address_pool_name       = lower("beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        backend_http_settings_name      = lower("htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        ssl_certificate_name            = "dtos-lets-encrypt"
+      }
+      common_private = {
+        frontend_port_name             = lower("feport-private-${var.env}-${var.location_map[var.location]}-${var.application}")
+        frontend_ip_configuration_name = lower("feip-private-${var.env}-${var.location_map[var.location]}-${var.application}")
+        ssl_certificate_name           = "dtos-lets-encrypt-private"
+      }
+    }
     app-insights                = upper("${var.env}-${var.location_map[var.location]}")
     app-service-plan            = lower("ASP-${var.application}-${var.env}-${var.location_map[var.location]}")
     app-service                 = lower("AS-${var.env}-${var.location_map[var.location]}-${var.application}")
