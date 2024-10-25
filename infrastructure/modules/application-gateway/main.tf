@@ -2,7 +2,7 @@ resource "azurerm_application_gateway" "application_gateway" {
   name                = var.name
   resource_group_name = var.resource_group_name
   location            = var.location
-  zones               = each.value.is_primary_region ? ["1", "2", "3"] : null
+  zones               = var.zones
 
   sku {
     name = "Standard_v2"

@@ -1,9 +1,9 @@
-variable "application_gateway_autoscale_max" {
+variable "autoscale_max" {
   type    = number
   default = 100
 }
 
-variable "application_gateway_autoscale_min" {
+variable "autoscale_min" {
   type    = number
   default = 10
 }
@@ -44,4 +44,9 @@ variable "tags" {
   type        = map(string)
   description = "Resource tags to be applied throughout the deployment."
   default     = {}
+}
+
+variable "zones" {
+  description = "The availability zones which the Application Gateway will span."
+  type = list(string)
 }
