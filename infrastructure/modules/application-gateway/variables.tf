@@ -8,6 +8,10 @@ variable "application_gateway_autoscale_min" {
   default = 10
 }
 
+variable "common_names" {
+  type = map(any)
+}
+
 variable "gateway_subnet" {
   type = map(any)
 }
