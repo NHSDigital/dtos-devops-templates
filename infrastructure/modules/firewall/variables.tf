@@ -41,10 +41,11 @@ variable "ip_configuration" {
   }))
   default = []
 
-  validation {
-    condition     = can(regex("^/subscriptions/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/resourceGroups/[A-Za-z0-9_-]{1,90}/providers/Microsoft.Network/publicIPAddresses/[A-Za-z0-9_-]{1,80}$", var.public_ips.public_ip_address_id))
-    error_message = "The public IP address ID must be a valid public IP address ID."
-  }
+  # Removed for now - need to loop through the public IPs and validate them individually.
+  # validation {
+  #   condition     = can(regex("^/subscriptions/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/resourceGroups/[A-Za-z0-9_-]{1,90}/providers/Microsoft.Network/publicIPAddresses/[A-Za-z0-9_-]{1,80}$", var.ip_configuration.public_ip_address_id))
+  #   error_message = "The public IP address ID must be a valid public IP address ID."
+  # }
 }
 
 variable "sku_name" {
@@ -64,6 +65,16 @@ variable "sku_tier" {
   validation {
     condition     = contains(["Basic", "Standard", "Premium"], var.sku_tier)
     error_message = "The SKU name must be either Basic, Standard or Premium."
+  }
+}
+
+variable "zones" {
+  description = "Specifies a list of Availability Zones in which this Azure Firewall should be located. Changing this forces a new Azure Firewall to be created."
+  type        = list(string)
+  default     = null
+  validation {
+    condition     = length(var.zones) <= 3
+    error_message = "The number of zones must be less than or equal to 3."
   }
 }
 
@@ -105,15 +116,5 @@ variable "threat_intelligence_mode" {
   validation {
     condition     = contains(["Alert", "Deny"], var.threat_intelligence_mode)
     error_message = "The threat intelligence mode must be either Alert or Deny."
-  }
-}
-
-variable "zones" {
-  description = "Specifies a list of Availability Zones in which this Azure Firewall should be located. Changing this forces a new Azure Firewall to be created."
-  type        = list(number)
-  default     = null
-  validation {
-    condition     = length(var.zones) <= 3
-    error_message = "The number of zones must be less than or equal to 3."
   }
 }

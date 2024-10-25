@@ -15,7 +15,7 @@ resource "azurerm_firewall" "firewall" {
     content {
       name                 = ip_configuration.value.name
       public_ip_address_id = ip_configuration.value.public_ip_address_id
-      subnet_id            = ip_configuration.firewall_subnet_id
+      subnet_id            = ip_configuration.value.firewall_subnet_id
     }
   }
 
@@ -23,7 +23,7 @@ resource "azurerm_firewall" "firewall" {
 }
 
 module "firewall-policy" {
-  source = "../firewall-policy"
+  source = "git::https://github.com/NHSDigital/dtos-devops-templates.git//infrastructure/modules/firewall-policy?ref=e4cf26bd62cdc01c7066e46180950ff05fbe36bb"
 
   policy_name              = var.policy_name
   resource_group_name      = var.resource_group_name
