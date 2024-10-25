@@ -2,7 +2,7 @@ variable "name" {
   description = "The name of the public IP address."
   type        = string
   validation {
-    condition     = can(regex("^[a-z0-9]{1,80}$", var.name))
+    condition     = can(regex("^[a-z0-9-]{1,80}$", var.name))
     error_message = "The public IP address name must be a valid name."
   }
 }
