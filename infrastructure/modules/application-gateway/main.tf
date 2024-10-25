@@ -41,7 +41,7 @@ resource "azurerm_application_gateway" "application_gateway" {
 
   frontend_ip_configuration {
     name                          = var.common_names.common_private.frontend_ip_configuration_name
-    subnet_id                     = azurerm_subnet.application_gateway_subnet[each.key].id
+    subnet_id                     = var.gateway_subnet.id
     private_ip_address            = cidrhost(var.gateway_subnet.address_prefixes[0], 225)
     private_ip_address_allocation = "Static"
   }
