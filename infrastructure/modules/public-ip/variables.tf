@@ -32,14 +32,20 @@ variable "allocation_method" {
   }
 }
 
-variable "zones" {
-  description = "A list of availability zones which the public IP address should be allocated in."
-  type        = list(string)
-  default     = []
+variable "ddos_protection_mode" {
+  description = "The DDoS protection plan mode."
+  type        = string
+  default     = "VirtualNetworkInherited"
   validation {
-    condition     = length(var.zones) <= 3
-    error_message = "The public IP address can only be allocated in up to 3 availability zones."
+    condition     = contains(["Disabled", "Enabled", "VirtualNetworkInherited"], var.ddos_protection_mode)
+    error_message = "The DDoS protection plan mode must be either Disabled, Enabled or VirtualNetworkInherited."
   }
+}
+
+variable "domain_name_label" {
+  description = "The domain name label for the public IP address."
+  type        = string
+  default     = null
 }
 
 variable "sku" {
@@ -52,13 +58,13 @@ variable "sku" {
   }
 }
 
-variable "ddos_protection_mode" {
-  description = "The DDoS protection plan mode."
-  type        = string
-  default     = "VirtualNetworkInherited"
+variable "zones" {
+  description = "A list of availability zones which the public IP address should be allocated in."
+  type        = list(string)
+  default     = []
   validation {
-    condition     = contains(["Disabled", "Enabled", "VirtualNetworkInherited"], var.ddos_protection_mode)
-    error_message = "The DDoS protection plan mode must be either Disabled, Enabled or VirtualNetworkInherited."
+    condition     = length(var.zones) <= 3
+    error_message = "The public IP address can only be allocated in up to 3 availability zones."
   }
 }
 
