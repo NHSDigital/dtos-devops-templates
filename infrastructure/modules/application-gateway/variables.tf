@@ -9,11 +9,11 @@ variable "autoscale_min" {
 }
 
 variable "common_names" {
-  type = map(any)
+  type = object(any)
 }
 
 variable "gateway_subnet" {
-  type = map(any)
+  type = object(any)
 }
 
 variable "location" {
