@@ -22,63 +22,28 @@ variable "location" {
   }
 }
 
-variable "additional_public_ips" {
-  description = "List of additional public ips' ids to attach to the firewall."
+variable "tags" {
+  description = "A mapping of tags to assign to the resource."
+  type        = map(string)
+  default     = {}
+}
+
+/* --------------------------------------------------------------------------------------------------
+  Firewall Variables
+-------------------------------------------------------------------------------------------------- */
+
+variable "ip_configuration" {
+  description = "List of public ips' ids to attach to the firewall."
   type = list(object({
     name                 = string
     public_ip_address_id = string
+    firewall_subnet_id   = string
   }))
   default = []
-}
 
-variable "dns_proxy_enabled" {
-  description = "Is DNS proxy enabled for the firewall policy"
-  type        = bool
-  default     = false
-}
-
-variable "dns_servers" {
-  description = "The DNS servers for the firewall policy"
-  type        = list(string)
-  default     = []
-}
-
-variable "firewall_subnet_id" {
-  description = "The ID of the subnet to associate with the firewall."
-  type        = string
   validation {
-    condition     = can(regex("^/subscriptions/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/resourceGroups/[A-Za-z0-9_-]{1,90}/providers/Microsoft.Network/virtualNetworks/[A-Za-z0-9_-]{1,80}/subnets/[A-Za-z0-9_-]{1,80}$", var.firewall_subnet_id))
-    error_message = "The subnet ID must be a valid subnet ID."
-  }
-}
-
-variable "ip_configuration_name" {
-  description = "The name of the IP configuration."
-  type        = string
-  default     = "configuration"
-}
-
-variable "policy_name" {
-  description = "The name of the firewall policy"
-  type        = string
-}
-
-variable "public_ip_address_id" {
-  description = "The ID of the public IP address to associate with the firewall."
-  type        = string
-  validation {
-    condition     = can(regex("^/subscriptions/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/resourceGroups/[A-Za-z0-9_-]{1,90}/providers/Microsoft.Network/publicIPAddresses/[A-Za-z0-9_-]{1,80}$", var.public_ip_address_id))
+    condition     = can(regex("^/subscriptions/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/resourceGroups/[A-Za-z0-9_-]{1,90}/providers/Microsoft.Network/publicIPAddresses/[A-Za-z0-9_-]{1,80}$", var.public_ips.public_ip_address_id))
     error_message = "The public IP address ID must be a valid public IP address ID."
-  }
-}
-
-variable "sku" {
-  description = "The SKU of the firewall policy"
-  type        = string
-  default     = "Standard"
-  validation {
-    condition     = contains(["Standard", "Premium"], var.sku)
-    error_message = "The SKU must be either Standard or Premium."
   }
 }
 
@@ -102,10 +67,35 @@ variable "sku_tier" {
   }
 }
 
-variable "tags" {
-  description = "A mapping of tags to assign to the resource."
-  type        = map(string)
-  default     = {}
+/* --------------------------------------------------------------------------------------------------
+  Firewall Policy Variables
+-------------------------------------------------------------------------------------------------- */
+
+variable "dns_proxy_enabled" {
+  description = "Is DNS proxy enabled for the firewall policy"
+  type        = bool
+  default     = false
+}
+
+variable "dns_servers" {
+  description = "The DNS servers for the firewall policy"
+  type        = list(string)
+  default     = []
+}
+
+variable "policy_name" {
+  description = "The name of the firewall policy"
+  type        = string
+}
+
+variable "sku" {
+  description = "The SKU of the firewall policy"
+  type        = string
+  default     = "Standard"
+  validation {
+    condition     = contains(["Standard", "Premium"], var.sku)
+    error_message = "The SKU must be either Standard or Premium."
+  }
 }
 
 variable "threat_intelligence_mode" {
