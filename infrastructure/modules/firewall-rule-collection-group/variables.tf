@@ -21,50 +21,51 @@ variable "priority" {
   }
 }
 
-
 variable "application_rule_collection" {
   description = "List of application rule collections"
   type = list(object({
-    name      = string
-    priority  = number
-    action    = string
-    rule_name = string
+    name      = optional(string)
+    priority  = optional(number)
+    action    = optional(string)
+    rule_name = optional(string)
     protocols = list(object({
-      type = string
-      port = number
+      type = optional(string)
+      port = optional(string)
     }))
-    source_addresses  = list(string)
-    destination_fqdns = list(string)
+    source_addresses  = optional(list(string))
+    destination_fqdns = optional(list(string))
   }))
-
+  default = []
 }
 
 variable "network_rule_collection" {
   description = "List of network rule collections"
   type = list(object({
-    name                  = string
-    priority              = number
-    action                = string
-    rule_name             = string
-    source_addresses      = list(string)
-    destination_addresses = list(string)
-    protocols             = list(string)
-    destination_ports     = list(string)
+    name                  = optional(string)
+    priority              = optional(number)
+    action                = optional(string)
+    rule_name             = optional(string)
+    source_addresses      = optional(list(string))
+    destination_addresses = optional(list(string))
+    protocols             = optional(list(string))
+    destination_ports     = optional(list(string))
   }))
+  default = []
 }
 
 variable "nat_rule_collection" {
   description = "List of nat rule collections"
   type = list(object({
-    name                = string
-    priority            = number
-    action              = string
-    rule_name           = string
-    translated_address  = string
-    source_addresses    = list(string)
-    destination_address = string
-    protocols           = list(string)
-    destination_ports   = list(string)
-    translated_port     = string
+    name                = optional(string)
+    priority            = optional(number)
+    action              = optional(string)
+    rule_name           = optional(string)
+    translated_address  = optional(string)
+    source_addresses    = optional(list(string))
+    destination_address = optional(string)
+    protocols           = optional(list(string))
+    destination_ports   = optional(list(string))
+    translated_port     = optional(string)
   }))
+  default = []
 }

@@ -1,13 +1,3 @@
-variable "bgp_route_propagation_enabled" {
-  description = "Should BGP route propagation be enabled on this route table?"
-  type        = bool
-}
-
-variable "location" {
-  description = "The location/region where the route table is created."
-  type        = string
-}
-
 variable "name" {
   description = "The name of the route table."
   type        = string
@@ -16,6 +6,16 @@ variable "name" {
 variable "resource_group_name" {
   description = "The name of the resource group in which to create the route table."
   type        = string
+}
+
+variable "location" {
+  description = "The location/region where the route table is created."
+  type        = string
+}
+
+variable "bgp_route_propagation_enabled" {
+  description = "Should BGP route propagation be enabled on this route table?"
+  type        = bool
 }
 
 variable "routes" {
