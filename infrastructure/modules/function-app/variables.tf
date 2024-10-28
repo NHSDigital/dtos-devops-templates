@@ -102,6 +102,11 @@ variable "minimum_tls_version" {
   }
 }
 
+variable "remote_debugging_enabled" {
+  type    = string
+  default = "false"
+}
+
 variable "private_endpoint_properties" {
   description = "Consolidated properties for the Function App Private Endpoint."
   type = object({

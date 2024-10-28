@@ -6,12 +6,13 @@ resource "azurerm_linux_function_app" "function_app" {
   service_plan_id     = var.asp_id
 
   app_settings = var.app_settings
-
+ 
   ftp_publish_basic_authentication_enabled       = var.ftp_publish_basic_authentication_enabled
   webdeploy_publish_basic_authentication_enabled = var.webdeploy_publish_basic_authentication_enabled
 
   https_only                    = var.https_only
   public_network_access_enabled = var.public_network_access_enabled
+  remote_debugging_enabled = var.remote_debugging_enabled
   virtual_network_subnet_id     = var.vnet_integration_subnet_id
 
   # Commented out as does not seem compatible with the current version of the azurerm provider
