@@ -27,6 +27,7 @@ resource "azurerm_linux_function_app" "function_app" {
 
   site_config {
     application_insights_connection_string        = var.ai_connstring
+    always_on                                     = var.always_on
     container_registry_use_managed_identity       = var.cont_registry_use_mi
     container_registry_managed_identity_client_id = var.acr_mi_client_id
     ftps_state                                    = var.ftps_state
