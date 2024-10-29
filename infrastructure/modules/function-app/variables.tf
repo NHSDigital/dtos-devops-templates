@@ -31,6 +31,12 @@ variable "app_settings" {
   default     = {}
 }
 
+variable "always_on" {
+  type        = bool
+  description = "Should the Function App be always on. Override standard default."
+  default     = true
+}
+
 variable "asp_id" {
   type        = string
   description = "The ID of the AppServicePlan."
