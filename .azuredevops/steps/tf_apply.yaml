@@ -1,0 +1,25 @@
+---
+
+steps:
+  - checkout: self
+
+  - template: tf_init.yaml
+
+  - task: DownloadBuildArtifacts@1
+    displayName: Download plan
+    inputs:
+      buildType: current
+      downloadType: single
+      artifactName: $(TF_PLAN_ARTIFACT)
+      downloadPath: $(TF_DIRECTORY)
+
+  - task: TerraformTaskV4@4
+    continueOnError: false
+    displayName: Terraform Apply - $(ENVIRONMENT)
+    inputs:
+      provider: azurerm
+      command: apply
+      workingDirectory: $(TF_DIRECTORY)
+      commandOptions: $(TF_PLAN_ARTIFACT)/$(ENVIRONMENT).tfplan
+      environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
+      environmentServiceName: $(TARGET_SUBSCRIPTION)
