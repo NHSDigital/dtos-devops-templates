@@ -1,0 +1,31 @@
+---
+
+steps:
+  - template: tf_init.yaml
+
+  - task: TerraformTaskV4@4
+    continueOnError: false
+    displayName: Terraform Validate
+    inputs:
+      provider: azurerm
+      command: validate
+      workingDirectory: $(TF_DIRECTORY)
+
+  - task: TerraformTaskV4@4
+    name: TerraformPlan
+    displayName: Terraform Plan - $(ENVIRONMENT) Environment
+    continueOnError: false
+    inputs:
+      provider: azurerm
+      command: plan
+      workingDirectory: $(TF_DIRECTORY)
+      commandOptions: -input=false -var-file=environments/$(ENVIRONMENT).tfvars.config -out=$(Build.ArtifactStagingDirectory)/$(ENVIRONMENT).tfplan
+      environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
+      environmentServiceName: $(TARGET_SUBSCRIPTION)
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Artifact
+    inputs:
+      PathtoPublish: $(Build.ArtifactStagingDirectory)
+      ArtifactName: $(TF_PLAN_ARTIFACT)
+      publishLocation: Container
