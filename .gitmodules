@@ -1,0 +1,5 @@
+[submodule "src/Shared/dotnet-mesh-client"]
+	# path = src/Shared/dotnet-mesh-client
+	path = src/Shared/dotnet-mesh-client
+	url = https://github.com/NHSDigital/dotnet-mesh-client
+	branch = main
