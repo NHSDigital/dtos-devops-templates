@@ -28,8 +28,8 @@ locals {
         ssl_certificate_name           = "dtos-lets-encrypt-private"
       }
     }
-    app-insights                = lower("${var.env}-${var.location_map[var.location]}")
-    app-service-plan            = lower("ASP-${var.application}-${var.env}-${var.location_map[var.location]}")
+    app-insights                = lower("APPI-${var.env}-${var.location_map[var.location]}-${var.application}")
+    app-service-plan            = lower("ASP-${var.env}-${var.location_map[var.location]}-${var.application}")
     app-service                 = lower("AS-${var.env}-${var.location_map[var.location]}-${var.application}")
     availability-set            = lower("AVS-${var.env}-${var.location_map[var.location]}-${var.application}")
     avd-dag                     = lower("AVDDAG-${var.env}-${var.location_map[var.location]}")
@@ -56,7 +56,7 @@ locals {
     kubernetes-service          = lower("AKS-${var.env}-${var.location_map[var.location]}-${var.application}")
     load-balancer               = lower("LB-${var.env}-${var.location_map[var.location]}-${var.application}")
     local-network-gateway       = lower("LNG-${var.env}-${var.location_map[var.location]}-${var.application}")
-    log-analytics-workspace     = lower("${var.env}-${var.location_map[var.location]}")
+    log-analytics-workspace     = lower("LAW-${var.env}-${var.location_map[var.location]}-${var.application}")
     logic-app                   = lower("LA-${var.env}-${var.location_map[var.location]}-${var.application}")
     managed-devops-pool         = lower("private-pool-${var.env}-${var.location_map[var.location]}")
     network-interface           = upper("${var.env}-${var.location_map[var.location]}-${var.application}")
