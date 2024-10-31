@@ -2,6 +2,11 @@
 
 .scannerwork
 .DS_Store
+.terraform
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+
 *cloc*report*.json
 *sbom*report*.json
 *vulnerabilities*report*.json
