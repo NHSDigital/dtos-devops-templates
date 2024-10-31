@@ -1,5 +1,8 @@
 locals {
   names = {
+    # Return the three letter location code for the given location
+    location_code = lower(var.location_map[var.location])
+
     api-management              = lower("APIM-${var.env}-${var.application}-${var.location_map[var.location]}")
     application-gateway         = {
       name                          = lower("AGW-${var.env}-${var.location_map[var.location]}-${var.application}")
