@@ -1,16 +1,16 @@
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "keyvault" {
-  name                        = var.name
-  location                    = var.location
-  resource_group_name         = var.resource_group_name
-  enabled_for_disk_encryption = var.disk_encryption
-  tenant_id                   = data.azurerm_client_config.current.tenant_id
-  soft_delete_retention_days  = var.soft_delete_retention
-  purge_protection_enabled    = var.purge_protection_enabled
-  sku_name                    = var.sku_name
+  name                = var.name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  tenant_id           = data.azurerm_client_config.current.tenant_id
 
-  public_network_access_enabled = true
+  enabled_for_disk_encryption   = var.disk_encryption
+  public_network_access_enabled = var.public_network_access_enabled
+  purge_protection_enabled      = var.purge_protection_enabled
+  soft_delete_retention_days    = var.soft_delete_retention
+  sku_name                      = var.sku_name
 
   access_policy {
 
