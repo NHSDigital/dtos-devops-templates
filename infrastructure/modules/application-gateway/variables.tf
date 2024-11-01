@@ -45,5 +45,5 @@ variable "tags" {
 
 variable "zones" {
   description = "The availability zones which the Application Gateway will span."
-  type = list(string)
+  type        = list(string)
 }

@@ -13,15 +13,15 @@ steps:
 
   - task: TerraformTaskV4@4
     name: TerraformPlan
-    displayName: Terraform Plan - $(ENVIRONMENT) Environment
+    displayName: Terraform Plan - $(ENVIRONMENT) environment
     continueOnError: false
     inputs:
       provider: azurerm
       command: plan
       workingDirectory: $(TF_DIRECTORY)
-      commandOptions: -input=false -var-file=environments/$(ENVIRONMENT).tfvars.config -out=$(Build.ArtifactStagingDirectory)/$(ENVIRONMENT).tfplan
+      commandOptions: -input=false -var-file=$(tfvars) -out=$(Build.ArtifactStagingDirectory)/$(ENVIRONMENT).tfplan
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      environmentServiceName: $(TARGET_SUBSCRIPTION)
+      environmentServiceName: $(TF_VAR_TARGET_SUBSCRIPTION_ID)
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Artifact

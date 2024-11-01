@@ -64,8 +64,8 @@ variable "public_network_access_enabled" {
 
 variable "rbac_roles" {
   description = "Map of RBAC roles to assign to the Storage Account."
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
 
 variable "tags" {

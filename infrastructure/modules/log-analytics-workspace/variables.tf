@@ -1,4 +1,3 @@
-
 variable "location" {
   type        = string
   description = "The location/region where the LAW is created."
