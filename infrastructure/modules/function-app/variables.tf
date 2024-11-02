@@ -1,22 +1,3 @@
-variable "function_app_name" {
-  description = "Name of the Function App"
-}
-
-variable "location" {
-  type        = string
-  description = "The location/region where the Function App is created."
-}
-
-variable "resource_group_name" {
-  type        = string
-  description = "The name of the resource group in which to create the Function App. Changing this forces a new resource to be created."
-}
-
-variable "ai_connstring" {
-  type        = string
-  description = "The App Insights connection string."
-}
-
 variable "acr_login_server" {
   type        = string
   description = "The login server for the Azure Container Registry."
@@ -26,15 +7,20 @@ variable "acr_mi_client_id" {
   description = "The Managed Identity Id for the Azure Container Registry."
 }
 
-variable "app_settings" {
-  description = "Map of values for the app settings"
-  default     = {}
+variable "ai_connstring" {
+  type        = string
+  description = "The App Insights connection string."
 }
 
 variable "always_on" {
   type        = bool
   description = "Should the Function App be always on. Override standard default."
   default     = true
+}
+
+variable "app_settings" {
+  description = "Map of values for the app settings"
+  default     = {}
 }
 
 variable "asp_id" {
@@ -73,6 +59,18 @@ variable "ftps_state" {
   }
 }
 
+variable "function_app_name" {
+  description = "Name of the Function App"
+}
+
+variable "function_app_slots" {
+  description = "function app slots"
+  type = list(object({
+    function_app_slots_name    = optional(string, "staging")
+    function_app_slot_enabled  = optional(bool, false)
+  }))
+}
+
 variable "http_version" {
   type        = string
   description = "The HTTP version to use for the function app. Override standard default."
@@ -96,6 +94,11 @@ variable "image_name" {
 
 variable "image_tag" {
   description = "Tag of the docker image"
+}
+
+variable "location" {
+  type        = string
+  description = "The location/region where the Function App is created."
 }
 
 variable "minimum_tls_version" {
@@ -138,14 +141,19 @@ variable "rbac_role_assignments" {
   }))
 }
 
-variable "storage_account_name" {
+variable "resource_group_name" {
   type        = string
-  description = "The name of the Storage Account."
+  description = "The name of the resource group in which to create the Function App. Changing this forces a new resource to be created."
 }
 
 variable "storage_account_access_key" {
   type        = string
   description = "The Storage Account Primary Access Key."
+}
+
+variable "storage_account_name" {
+  type        = string
+  description = "The name of the Storage Account."
 }
 
 variable "storage_uses_managed_identity" {
@@ -154,16 +162,16 @@ variable "storage_uses_managed_identity" {
   default     = false
 }
 
-variable "vnet_integration_subnet_id" {
-  type        = string
-  description = "The ID of the subnet to integrate the Function App with."
-  default     = null
-}
-
 variable "tags" {
   type        = map(string)
   description = "Resource tags to be applied throughout the deployment."
   default     = {}
+}
+
+variable "vnet_integration_subnet_id" {
+  type        = string
+  description = "The ID of the subnet to integrate the Function App with."
+  default     = null
 }
 
 variable "webdeploy_publish_basic_authentication_enabled" {

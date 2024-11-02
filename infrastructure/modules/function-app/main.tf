@@ -80,3 +80,19 @@ module "private_endpoint" {
 
   tags = var.tags
 }
+
+/* --------------------------------------------------------------------------------------------------
+  Function App Slots
+-------------------------------------------------------------------------------------------------- */
+module "function_app_slots" {
+  for_each = { for slot in var.function_app_slots : slot.function_app_slots_name => slot }
+
+  source = "git::https://github.com/NHSDigital/dtos-devops-templates.git//infrastructure/modules/function-app-slots?ref=67e6f6389465eaaa1b0a60a4100c6fdcb91624a5"
+
+  name                      = each.value.function_app_slots_name
+  function_app_id           = azurerm_linux_function_app.function_app.id
+  storage_account_name      = var.storage_account_name
+  function_app_slot_enabled = each.value.function_app_slot_enabled
+
+  tags = var.tags
+}
