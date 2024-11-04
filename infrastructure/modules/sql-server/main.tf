@@ -37,7 +37,7 @@ resource "azurerm_mssql_firewall_rule" "firewall_rule" {
 module "private_endpoint_sql_server" {
   count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
 
-  source = "git::https://github.com/NHSDigital/dtos-devops-templates.git//infrastructure/modules/private-endpoint?ref=08100f7db2da6c0f64f327d15477a217a7ed4cd9"
+  source = "../private-endpoint"
 
   name                = "${var.name}-sql-private-endpoint"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name

@@ -59,7 +59,7 @@ resource "azurerm_linux_function_app" "function_app" {
 module "private_endpoint" {
   count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
 
-  source = "git::https://github.com/NHSDigital/dtos-devops-templates.git//infrastructure/modules/private-endpoint?ref=08100f7db2da6c0f64f327d15477a217a7ed4cd9"
+  source = "../private-endpoint"
 
   name                = "${var.function_app_name}-private-endpoint"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
@@ -84,10 +84,11 @@ module "private_endpoint" {
 /* --------------------------------------------------------------------------------------------------
   Function App Slots
 -------------------------------------------------------------------------------------------------- */
+
 module "function_app_slots" {
   for_each = { for slot in var.function_app_slots : slot.function_app_slots_name => slot }
 
-  source = "git::https://github.com/NHSDigital/dtos-devops-templates.git//infrastructure/modules/function-app-slots?ref=67e6f6389465eaaa1b0a60a4100c6fdcb91624a5"
+  source = "../function-app-slots"
 
   name                      = each.value.function_app_slots_name
   function_app_id           = azurerm_linux_function_app.function_app.id

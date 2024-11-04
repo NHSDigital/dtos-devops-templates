@@ -23,7 +23,7 @@ resource "azurerm_firewall" "firewall" {
 }
 
 module "firewall-policy" {
-  source = "git::https://github.com/NHSDigital/dtos-devops-templates.git//infrastructure/modules/firewall-policy?ref=e4cf26bd62cdc01c7066e46180950ff05fbe36bb"
+  source = "../firewall-policy"
 
   policy_name         = var.policy_name
   resource_group_name = var.resource_group_name
