@@ -1,8 +1,6 @@
 ---
 
 steps:
-  - checkout: self
-
   - template: tf_init.yaml
 
   - task: DownloadBuildArtifacts@1
