@@ -66,9 +66,10 @@ variable "function_app_name" {
 variable "function_app_slots" {
   description = "function app slots"
   type = list(object({
-    function_app_slots_name    = optional(string, "staging")
-    function_app_slot_enabled  = optional(bool, false)
+    function_app_slots_name   = optional(string, "staging")
+    function_app_slot_enabled = optional(bool, false)
   }))
+  default = []
 }
 
 variable "http_version" {
