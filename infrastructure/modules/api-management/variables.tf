@@ -23,7 +23,7 @@ variable "location" {
 
 variable "additional_locations" {
   description = "A list of additional locations where the API Management service should be created."
-  type        = list(object({
+  type = list(object({
     location             = string
     capacity             = number
     zones                = list(number)
@@ -37,9 +37,9 @@ variable "additional_locations" {
 
 variable "certificate_details" {
   description = "A list of certificates to upload to the API Management service."
-  type        = list(object({
-    encoded_certificate = string
-    store_name          = string
+  type = list(object({
+    encoded_certificate  = string
+    store_name           = string
     certificate_password = string
   }))
   default = []

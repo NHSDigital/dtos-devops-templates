@@ -25,7 +25,7 @@ resource "azurerm_subnet" "subnet" {
 module "nsg" {
   count = var.create_nsg ? 1 : 0
 
-  source = "git::https://github.com/NHSDigital/dtos-devops-templates.git//infrastructure/modules/network-security-group?ref=e125d928afd9546e06d8af9bdb6391cbf6336773"
+  source = "../network-security-group"
 
   name                = var.network_security_group_name
   resource_group_name = var.resource_group_name

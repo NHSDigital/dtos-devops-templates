@@ -3,8 +3,8 @@ locals {
     # Return the three letter location code for the given location
     location_code = lower(var.location_map[var.location])
 
-    api-management              = lower("APIM-${var.env}-${var.application}-${var.location_map[var.location]}")
-    application-gateway         = {
+    api-management = lower("APIM-${var.env}-${var.application}-${var.location_map[var.location]}")
+    application-gateway = {
       name                          = lower("AGW-${var.env}-${var.location_map[var.location]}-${var.application}")
       gateway_ip_configuration_name = lower("gw-ip-${var.env}-${var.location_map[var.location]}-${var.application}")
       unused = { # these items are needed to build a minimal Application Gateway resource
@@ -16,11 +16,11 @@ locals {
         rule_name                  = lower("unused-rule-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
       common_public = {
-        frontend_port_name              = lower("feport-${var.env}-${var.location_map[var.location]}-${var.application}")
-        frontend_ip_configuration_name  = lower("feip-${var.env}-${var.location_map[var.location]}-${var.application}")
-        backend_address_pool_name       = lower("beap-${var.env}-${var.location_map[var.location]}-${var.application}")
-        backend_http_settings_name      = lower("htst-${var.env}-${var.location_map[var.location]}-${var.application}")
-        ssl_certificate_name            = "dtos-lets-encrypt"
+        frontend_port_name             = lower("feport-${var.env}-${var.location_map[var.location]}-${var.application}")
+        frontend_ip_configuration_name = lower("feip-${var.env}-${var.location_map[var.location]}-${var.application}")
+        backend_address_pool_name      = lower("beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        backend_http_settings_name     = lower("htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        ssl_certificate_name           = "dtos-lets-encrypt"
       }
       common_private = {
         frontend_port_name             = lower("feport-private-${var.env}-${var.location_map[var.location]}-${var.application}")
