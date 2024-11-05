@@ -25,5 +25,5 @@ steps:
       inlineScript: |
         if (-not (Get-Module -ListAvailable -Name Az)) { Install-Module -Name Az -AllowClobber -Scope CurrentUser -Force -SkipPublisherCheck }
         $token = az account get-access-token --resource https://management.azure.com/ --query accessToken --output tsv
-        Connect-AzAccount -AccessToken $token -AccountId $env:servicePrincipalId -TenantId $env:tenantId -ErrorAction Stop 1> $null
+        Connect-AzAccount -AccessToken $token -AccountId $env:servicePrincipalId -Tenant $env:tenantId -Subscription $(TF_VAR_TARGET_SUBSCRIPTION_ID) -ErrorAction Stop
         terraform apply -auto-approve $(TF_PLAN_ARTIFACT)/$(ENVIRONMENT).tfplan
