@@ -97,3 +97,20 @@ module "function_app_slots" {
 
   tags = var.tags
 }
+
+/* --------------------------------------------------------------------------------------------------
+  Diagnostic Settings
+-------------------------------------------------------------------------------------------------- */
+
+module "diagnostic-settings" {
+  source = "../diagnostic-settings"
+
+  name                       = "${var.function_app_name}-diagnostic-setting"
+  target_resource_id         = azurerm_linux_function_app.function_app.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  enabled_log                = ["FunctionAppLogs", "AppServiceAuthenticationLogs"]
+  metric                     = ["AllMetrics"]
+
+
+}
+

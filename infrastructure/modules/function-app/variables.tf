@@ -102,6 +102,11 @@ variable "location" {
   description = "The location/region where the Function App is created."
 }
 
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "value of the log analytics workspace id"
+}
+
 variable "minimum_tls_version" {
   type    = string
   default = "1.2" # Possible versions: TLS1.0", "TLS1.1", "TLS1.2
