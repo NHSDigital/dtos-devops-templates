@@ -32,7 +32,7 @@ resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
 /* --------------------------------------------------------------------------------------------------
   SQL Server Diagnostic Settings
 -------------------------------------------------------------------------------------------------- */
-module "azurerm_monitor_diagnostic_setting" {
+module "azurerm_monitor_diagnostic_setting_sql_server" {
   source                     = "../diagnostic-settings"
   name                       = "${var.name}-sql-server-diagnotic-setting"
   target_resource_id         = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
@@ -128,8 +128,8 @@ resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_po
 /* --------------------------------------------------------------------------------------------------
   SQL Database Diagnostic Settings
 -------------------------------------------------------------------------------------------------- */
-module "azurerm_monitor_diagnostic_setting" {
-  source                     = "../diagnostic-settings"
+module "azurerm_monitor_diagnostic_setting_db" {
+  # source                     = "../diagnostic-settings"
   name                       = "${var.name}-database-diagnostic-settings"
   target_resource_id         = azurerm_mssql_server.defaultdb.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
