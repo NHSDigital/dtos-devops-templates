@@ -28,6 +28,14 @@ variable "dag_type" {
   default = "Desktop"
 }
 
+variable "entra_admins_group_id" {
+  type = string
+}
+
+variable "entra_users_group_id" {
+  type = string
+}
+
 variable "host_pool_description" {
   type    = string
   default = null
@@ -55,11 +63,6 @@ variable "load_balancer_type" {
 
 variable "location" {
   type = string
-}
-
-variable "login_principal_id" {
-  type        = string
-  description = "The ids of the groups to grant AVD acccess to, specified via TF_VAR env var."
 }
 
 variable "maximum_sessions_allowed" {

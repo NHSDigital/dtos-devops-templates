@@ -19,9 +19,8 @@ steps:
       provider: azurerm
       command: plan
       workingDirectory: $(TF_DIRECTORY)
-      commandOptions: -input=false -var-file=$(tfvars) -out=$(Build.ArtifactStagingDirectory)/$(ENVIRONMENT).tfplan
+      commandOptions: -input=false -var-file=$(tfVarsFile) -out=$(Build.ArtifactStagingDirectory)/$(ENVIRONMENT).tfplan
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      environmentServiceName: $(TF_VAR_TARGET_SUBSCRIPTION_ID)
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Artifact
