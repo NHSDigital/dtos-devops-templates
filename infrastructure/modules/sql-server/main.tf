@@ -4,7 +4,7 @@ resource "azurerm_mssql_server" "azure_sql_server" {
   resource_group_name = var.resource_group_name
   location            = var.location
   version             = var.sqlversion
-  retention_in_days   = var.retention_in_days
+  # retention_in_days   = var.retention_in_days
 
   minimum_tls_version           = var.tlsver
   public_network_access_enabled = var.public_network_access_enabled
