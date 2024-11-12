@@ -32,7 +32,7 @@ resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
 /* --------------------------------------------------------------------------------------------------
   SQL Server Diagnostic Settings
 -------------------------------------------------------------------------------------------------- */
-module "azurerm_monitor_diagnostic_setting" "sql_server_diagnostic" {
+module "azurerm_monitor_diagnostic_setting" {
   source                     = "./module/diagnostic-settings"
   name                       = "${var.name}-sql-server-diagnotic-setting"
   target_resource_id         = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
@@ -88,12 +88,6 @@ resource "azurerm_storage_container" "vulnerability_assessment_container" {
   container_access_type = "private"
 }
 
-{
-      vulnerability-assessment = {
-        container_name        = "vulnerability-assessment"
-        container_access_type = "private"
-      }
-}
 /* --------------------------------------------------------------------------------------------------
   Security Alert Policy for SQL Server
 -------------------------------------------------------------------------------------------------- */
