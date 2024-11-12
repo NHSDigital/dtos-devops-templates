@@ -126,3 +126,32 @@ variable "tags" {
   description = "Resource tags to be applied throughout the deployment."
   default     = {}
 }
+
+
+/* --------------------------------------------------------------------------------------------------
+  Log Analytics Workspace
+-------------------------------------------------------------------------------------------------- */
+variable "law_sku" {
+  type        = string
+  description = "The SKU for LAW."
+}
+
+variable "retention_days" {
+  type        = number
+  description = "Retention days for LAW."
+}
+
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "value of the log analytics workspace id"
+}
+
+/* --------------------------------------------------------------------------------------------------
+  Sstorage Account for Vulnerability Assessment
+-------------------------------------------------------------------------------------------------- */
+
+variable "storage_account_service" {
+  type        = set(string)
+  default     = ["blobServices", "queueServices", "tableServices", "fileServices"]
+  description = "Storage account services for which diagnostics are enabled."
+}

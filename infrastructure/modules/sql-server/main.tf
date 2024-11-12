@@ -21,6 +21,29 @@ resource "azurerm_mssql_server" "azure_sql_server" {
   }
 }
 
+/* --------------------------------------------------------------------------------------------------
+  SQL Server Extended Auditing Policy
+-------------------------------------------------------------------------------------------------- */
+resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
+  server_id              = azurerm_mssql_server.azure_sql_server.id
+  log_monitoring_enabled = true
+}
+
+/* --------------------------------------------------------------------------------------------------
+  SQL Server Diagnostic Settings
+-------------------------------------------------------------------------------------------------- */
+module "azurerm_monitor_diagnostic_setting" "sql_server_diagnostic" {
+  source                     = "./module/diagnostic-settings"
+  name                       = "${var.name}-sql-server-diagnotic-setting"
+  target_resource_id         = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  enabled_log                = ["SQLSecurityAuditEvents"]
+  metric                     = ["AllMetrics"]
+}
+
+/* --------------------------------------------------------------------------------------------------
+  SQL Server Firewall
+-------------------------------------------------------------------------------------------------- */
 resource "azurerm_mssql_firewall_rule" "firewall_rule" {
   for_each = var.firewall_rules
 
@@ -57,4 +80,65 @@ module "private_endpoint_sql_server" {
   }
 
   tags = var.tags
+}
+
+resource "azurerm_storage_container" "vulnerability_assessment_container" {
+  name                  = "${var.name}-vulnerability-assessment"
+  storage_account_name  = azurerm_storage_account.vulnerability_assessment_storage.name
+  container_access_type = "private"
+}
+
+{
+      vulnerability-assessment = {
+        container_name        = "vulnerability-assessment"
+        container_access_type = "private"
+      }
+}
+/* --------------------------------------------------------------------------------------------------
+  Security Alert Policy for SQL Server
+-------------------------------------------------------------------------------------------------- */
+
+resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" {
+  server_name         = azurerm_mssql_server.azure_sql_server.name
+  resource_group_name = var.resource_group_name
+  state               = "Enabled"
+}
+
+/* --------------------------------------------------------------------------------------------------
+  Vulnerability Assessment for SQL Server
+-------------------------------------------------------------------------------------------------- */
+
+resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerability_assessment" {
+  server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sql_server_alert_policy.id
+  storage_container_path          = "${azurerm_storage_account.vulnerability_assessment_storage.primary_blob_endpoint}${azurerm_storage_container.vulnerability_assessment_container.name}/"
+  # storage_account_access_key      = azurerm_storage_account.vulnerability_assessment_storage.primary_access_key
+
+  recurring_scans {
+    enabled                   = true
+    email_subscription_admins = true
+    # emails                    = ["?", "?"]
+  }
+}
+
+/* --------------------------------------------------------------------------------------------------
+  SQL Database Configuration and Auditing Policy
+-------------------------------------------------------------------------------------------------- */
+resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_policy" {
+  database_id                             = azurerm_mssql_database.defaultdb.id
+  storage_endpoint                        = azurerm_storage_account.vulnerability_assessment_storage.primary_blob_endpoint
+  # storage_account_access_key              = azurerm_storage_account.vulnerability_assessment_storage.primary_access_key
+  # storage_account_access_key_is_secondary = false
+  retention_in_days                       = 6
+}
+
+/* --------------------------------------------------------------------------------------------------
+  SQL Database Diagnostic Settings
+-------------------------------------------------------------------------------------------------- */
+module "azurerm_monitor_diagnostic_setting" "database_diagnostic" {
+  source                     = "./module/diagnostic-settings"
+  name                       = "${var.name}-database-diagnostic-settings"
+  target_resource_id         = azurerm_mssql_server.defaultdb.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  enabled_log                = ["SQLSecurityAuditEvents"]
+  metric                     = ["AllMetrics"]
 }
