@@ -122,7 +122,7 @@ resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_po
   storage_endpoint                        = azurerm_storage_account.vulnerability_assessment_storage.primary_blob_endpoint
   # storage_account_access_key              = azurerm_storage_account.vulnerability_assessment_storage.primary_access_key
   # storage_account_access_key_is_secondary = false
-  retention_in_days                       = 6
+  retention_in_days                       = var.retention_in_days
 }
 
 /* --------------------------------------------------------------------------------------------------
