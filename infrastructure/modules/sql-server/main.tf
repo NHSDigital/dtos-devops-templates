@@ -83,12 +83,6 @@ module "private_endpoint_sql_server" {
   tags = var.tags
 }
 
-resource "azurerm_storage_container" "vulnerability_assessment_container" {
-  name                  = "${var.name}-vulnerability-assessment"
-  storage_account_name  = azurerm_storage_account.vulnerability_assessment_storage.name
-  container_access_type = "private"
-}
-
 /* --------------------------------------------------------------------------------------------------
   Security Alert Policy for SQL Server
 -------------------------------------------------------------------------------------------------- */
@@ -105,8 +99,8 @@ resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" 
 
 resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerability_assessment" {
   server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sql_server_alert_policy.id
-  storage_container_path          = "${azurerm_storage_account.vulnerability_assessment_storage.primary_blob_endpoint}${azurerm_storage_container.vulnerability_assessment_container.name}/"
-  # storage_account_access_key      = azurerm_storage_account.vulnerability_assessment_storage.primary_access_key
+  storage_container_path          = "${azurerm_storage_account.storage_account_name.primary_blob_endpoint}${azurerm_storage_container.vulnerability_assessment_container.name}/"
+  # storage_account_access_key      = azurerm_storage_account.storage_account_name.primary_access_key
 
   recurring_scans {
     enabled                   = true
@@ -120,8 +114,8 @@ resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerabili
 -------------------------------------------------------------------------------------------------- */
 resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_policy" {
   database_id      = azurerm_mssql_database.defaultdb.id
-  storage_endpoint = azurerm_storage_account.vulnerability_assessment_storage.primary_blob_endpoint
-  # storage_account_access_key              = azurerm_storage_account.vulnerability_assessment_storage.primary_access_key
+  storage_endpoint = azurerm_storage_account.storage_account_name.primary_blob_endpoint
+  # storage_account_access_key              = azurerm_storage_account.storage_account_name.primary_access_key
   # storage_account_access_key_is_secondary = false
   retention_in_days = var.retention_in_days
 }

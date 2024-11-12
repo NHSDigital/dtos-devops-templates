@@ -138,3 +138,8 @@ variable "log_analytics_workspace_id" {
   type        = string
   description = "value of the log analytics workspace id"
 }
+
+variable "storage_account_name" {
+  type        = string
+  description = "value of the storage account name"
+}
