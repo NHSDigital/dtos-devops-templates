@@ -115,6 +115,13 @@ variable "read_scale" {
   default     = false
 }
 
+
+variable "retention_in_days" {
+  type        = number
+  description = "Number of days for the retention policy."
+  default     = 6
+}
+
 variable "sku" {
   type        = string #checkType
   description = "Specifies the name of the SKU used by the database. For example, GP_S_Gen5_2,HS_Gen4_1,BC_Gen5_2, ElasticPool, Basic,S0, P2 ,DW100c, DS100. Changing this from the HyperScale service tier to another service tier will create a new resource."
@@ -127,31 +134,7 @@ variable "tags" {
   default     = {}
 }
 
-
-/* --------------------------------------------------------------------------------------------------
-  Log Analytics Workspace
--------------------------------------------------------------------------------------------------- */
-variable "law_sku" {
-  type        = string
-  description = "The SKU for LAW."
-}
-
-variable "retention_days" {
-  type        = number
-  description = "Retention days for LAW."
-}
-
 variable "log_analytics_workspace_id" {
   type        = string
   description = "value of the log analytics workspace id"
-}
-
-/* --------------------------------------------------------------------------------------------------
-  Sstorage Account for Vulnerability Assessment
--------------------------------------------------------------------------------------------------- */
-
-variable "storage_account_service" {
-  type        = set(string)
-  default     = ["blobServices", "queueServices", "tableServices", "fileServices"]
-  description = "Storage account services for which diagnostics are enabled."
 }

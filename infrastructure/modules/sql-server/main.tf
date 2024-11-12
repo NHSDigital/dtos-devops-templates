@@ -4,6 +4,7 @@ resource "azurerm_mssql_server" "azure_sql_server" {
   resource_group_name = var.resource_group_name
   location            = var.location
   version             = var.sqlversion
+  retention_in_days   = var.retention_in_days
 
   minimum_tls_version           = var.tlsver
   public_network_access_enabled = var.public_network_access_enabled
@@ -118,11 +119,11 @@ resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerabili
   SQL Database Configuration and Auditing Policy
 -------------------------------------------------------------------------------------------------- */
 resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_policy" {
-  database_id                             = azurerm_mssql_database.defaultdb.id
-  storage_endpoint                        = azurerm_storage_account.vulnerability_assessment_storage.primary_blob_endpoint
+  database_id      = azurerm_mssql_database.defaultdb.id
+  storage_endpoint = azurerm_storage_account.vulnerability_assessment_storage.primary_blob_endpoint
   # storage_account_access_key              = azurerm_storage_account.vulnerability_assessment_storage.primary_access_key
   # storage_account_access_key_is_secondary = false
-  retention_in_days                       = var.retention_in_days
+  retention_in_days = var.retention_in_days
 }
 
 /* --------------------------------------------------------------------------------------------------
