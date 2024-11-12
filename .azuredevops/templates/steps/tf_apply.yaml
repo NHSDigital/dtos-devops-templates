@@ -1,5 +1,13 @@
 ---
 
+parameters:
+  - name: tfApplyShell
+    type: string
+    default: bash
+  - name: tfApplyScript
+    type: string
+    default: ''
+
 steps:
   - template: tf_init.yaml
 
@@ -11,19 +19,15 @@ steps:
       artifactName: $(TF_PLAN_ARTIFACT)
       downloadPath: $(TF_DIRECTORY)
 
-  # The Application Gateway Config null resource needs an authenticated PowerShell context, hence our shell is pscore
-  # AzureCLI is used because Terraform is unable to use an AzurePowerShell authentication context directly
   - task: AzureCLI@2
     displayName: Terraform Apply
     inputs:
       azureSubscription: $(SERVICE_CONNECTION)
       addSpnToEnvironment: true
       failOnStandardError: true
-      scriptType: pscore
+      scriptType: ${{ parameters.tfApplyShell }}
       scriptLocation: inlineScript
       workingDirectory: $(TF_DIRECTORY)
       inlineScript: |
-        if (-not (Get-Module -ListAvailable -Name Az)) { Install-Module -Name Az -AllowClobber -Scope CurrentUser -Force -SkipPublisherCheck }
-        $token = az account get-access-token --resource https://management.azure.com/ --query accessToken --output tsv
-        Connect-AzAccount -AccessToken $token -AccountId $env:servicePrincipalId -Tenant $env:tenantId -Subscription $(TF_VAR_TARGET_SUBSCRIPTION_ID) -ErrorAction Stop
+        ${{ parameters.tfApplyScript }}
         terraform apply -auto-approve $(TF_PLAN_ARTIFACT)/$(ENVIRONMENT).tfplan

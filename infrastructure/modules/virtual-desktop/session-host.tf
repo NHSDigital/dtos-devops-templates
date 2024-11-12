@@ -67,6 +67,10 @@ resource "azurerm_windows_virtual_machine" "this" {
   }
 
   tags = var.tags
+
+  lifecycle {
+    ignore_changes = [vm_agent_platform_updates_enabled]
+  }
 }
 
 resource "azurerm_virtual_machine_extension" "aadjoin" {
