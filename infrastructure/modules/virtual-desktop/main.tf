@@ -54,14 +54,26 @@ resource "azurerm_virtual_desktop_workspace_application_group_association" "this
   workspace_id         = azurerm_virtual_desktop_workspace.this.id
 }
 
-resource "azurerm_role_assignment" "rg" {
+resource "azurerm_role_assignment" "rg_users" {
   scope                = var.resource_group_id
   role_definition_name = "Virtual Machine User Login"
-  principal_id         = var.login_principal_id
+  principal_id         = var.entra_users_group_id
 }
 
-resource "azurerm_role_assignment" "dag" {
+resource "azurerm_role_assignment" "rg_admins" {
+  scope                = var.resource_group_id
+  role_definition_name = "Virtual Machine Administrator Login"
+  principal_id         = var.entra_admins_group_id
+}
+
+resource "azurerm_role_assignment" "dag_users" {
   scope                = azurerm_virtual_desktop_application_group.this.id
   role_definition_name = "Desktop Virtualization User"
-  principal_id         = var.login_principal_id
+  principal_id         = var.entra_users_group_id
+}
+
+resource "azurerm_role_assignment" "dag_admins" {
+  scope                = azurerm_virtual_desktop_application_group.this.id
+  role_definition_name = "Desktop Virtualization User"
+  principal_id         = var.entra_admins_group_id
 }
