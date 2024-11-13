@@ -1,3 +1,8 @@
+variable "enable_rbac_authorization" {
+  type    = bool
+  default = false
+}
+
 variable "name" {
   type = string
 }
