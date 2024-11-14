@@ -122,7 +122,7 @@ resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" 
 
 resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerability_assessment" {
   server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sql_server_alert_policy.id
-  storage_container_path          = "${storage_account_name.primary_blob_endpoint}${azurerm_storage_container.vulnerability_assessment_container.name}/"
+  storage_container_path          = var.storage_container_id
   # storage_account_access_key      = azurerm_storage_account.storage_account_name.primary_access_key
 
   recurring_scans {
