@@ -12,15 +12,19 @@ resource "azurerm_key_vault" "keyvault" {
   soft_delete_retention_days    = var.soft_delete_retention
   sku_name                      = var.sku_name
 
-  access_policy {
+  enable_rbac_authorization = var.enable_rbac_authorization
 
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
+  dynamic "access_policy" {
+    for_each = var.enable_rbac_authorization ? [] : [1]  # Empty list disables the block
+    content {
+      tenant_id = data.azurerm_client_config.current.tenant_id
+      object_id = data.azurerm_client_config.current.object_id
 
-    certificate_permissions = ["Get", "List"]
-    key_permissions         = ["Get", "List"]
-    secret_permissions      = ["Get", "Set", "List"]
-    storage_permissions     = ["Get", "List"]
+      certificate_permissions = ["Get", "List"]
+      key_permissions         = ["Get", "List"]
+      secret_permissions      = ["Get", "Set", "List"]
+      storage_permissions     = ["Get", "List"]
+    }
   }
 
   tags = var.tags
