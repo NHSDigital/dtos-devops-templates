@@ -146,9 +146,9 @@ variable "log_monitoring_enabled" {
 }
 
 # SQL Server Diagnostic Settings
-variable "storage_container" {
+variable "storage_container_id" {
   type        = string
-  description = "Storage container name to save audit data to"
+  description = "Storage container id to save audit data to"
 }
 
 variable "monitor_diagnostic_setting_database_enabled_logs" {
@@ -175,7 +175,6 @@ variable "storage_account_name" {
   type        = string
   description = "value of the storage account name"
 }
-
 
 variable "sql_server_alert_policy_state" {
   type        = string

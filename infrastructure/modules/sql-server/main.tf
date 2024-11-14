@@ -85,28 +85,6 @@ module "private_endpoint_sql_server" {
 }
 
 /* --------------------------------------------------------------------------------------------------
-  SQL Server Extended Auditing Policy
--------------------------------------------------------------------------------------------------- */
-resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
-  server_id              = azurerm_mssql_server.azure_sql_server.id
-  log_monitoring_enabled = var.log_monitoring_enabled
-}
-
-/* --------------------------------------------------------------------------------------------------
-  SQL Server Diagnostic Settings
--------------------------------------------------------------------------------------------------- */
-module "azurerm_monitor_diagnostic_setting_sql_server" {
-
-  source = "../diagnostic-settings"
-
-  name                       = "${var.name}-sql-server-diagnotic-setting"
-  target_resource_id         = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
-  log_analytics_workspace_id = var.log_analytics_workspace_id
-  enabled_log                = var.monitor_diagnostic_setting_sql_server_enabled_logs
-  metric                     = var.monitor_diagnostic_setting_sql_server_metrics
-}
-
-/* --------------------------------------------------------------------------------------------------
   Security Alert Policy for SQL Server
 -------------------------------------------------------------------------------------------------- */
 

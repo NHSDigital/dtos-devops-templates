@@ -18,7 +18,7 @@ output "storage_account_primary_access_key" {
   value     = azurerm_storage_account.storage_account.primary_access_key
 }
 
-output "storage_container" {
+output "storage_containers" {
   sensitive = true
   value     = azurerm_storage_container.container
 }
