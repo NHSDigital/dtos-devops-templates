@@ -17,3 +17,13 @@ output "storage_account_primary_access_key" {
   sensitive = true
   value     = azurerm_storage_account.storage_account.primary_access_key
 }
+
+output "storage_container" {
+  sensitive = true
+  value     = azurerm_storage_container.container
+}
+
+output "primary_blob_endpoint_name" {
+  value       = azurerm_storage_account.primary_blob_endpoint
+  description = "Name of blob storage endpoint "
+}

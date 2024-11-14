@@ -4,7 +4,6 @@ resource "azurerm_mssql_server" "azure_sql_server" {
   resource_group_name = var.resource_group_name
   location            = var.location
   version             = var.sqlversion
-  # retention_in_days   = var.retention_in_days
 
   minimum_tls_version           = var.tlsver
   public_network_access_enabled = var.public_network_access_enabled
@@ -27,19 +26,21 @@ resource "azurerm_mssql_server" "azure_sql_server" {
 -------------------------------------------------------------------------------------------------- */
 resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
   server_id              = azurerm_mssql_server.azure_sql_server.id
-  log_monitoring_enabled = true
+  log_monitoring_enabled = var.log_monitoring_enabled
 }
 
 /* --------------------------------------------------------------------------------------------------
   SQL Server Diagnostic Settings
 -------------------------------------------------------------------------------------------------- */
 module "azurerm_monitor_diagnostic_setting_sql_server" {
-  source                     = "../diagnostic-settings"
+
+  source = "../diagnostic-settings"
+
   name                       = "${var.name}-sql-server-diagnotic-setting"
   target_resource_id         = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
   log_analytics_workspace_id = var.log_analytics_workspace_id
-  enabled_log                = ["SQLSecurityAuditEvents"]
-  metric                     = ["AllMetrics"]
+  enabled_log                = var.monitor_diagnostic_setting_sql_server_enabled_logs
+  metric                     = var.monitor_diagnostic_setting_sql_server_metrics
 }
 
 /* --------------------------------------------------------------------------------------------------
@@ -84,13 +85,35 @@ module "private_endpoint_sql_server" {
 }
 
 /* --------------------------------------------------------------------------------------------------
+  SQL Server Extended Auditing Policy
+-------------------------------------------------------------------------------------------------- */
+resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
+  server_id              = azurerm_mssql_server.azure_sql_server.id
+  log_monitoring_enabled = var.log_monitoring_enabled
+}
+
+/* --------------------------------------------------------------------------------------------------
+  SQL Server Diagnostic Settings
+-------------------------------------------------------------------------------------------------- */
+module "azurerm_monitor_diagnostic_setting_sql_server" {
+
+  source = "../diagnostic-settings"
+
+  name                       = "${var.name}-sql-server-diagnotic-setting"
+  target_resource_id         = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  enabled_log                = var.monitor_diagnostic_setting_sql_server_enabled_logs
+  metric                     = var.monitor_diagnostic_setting_sql_server_metrics
+}
+
+/* --------------------------------------------------------------------------------------------------
   Security Alert Policy for SQL Server
 -------------------------------------------------------------------------------------------------- */
 
 resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" {
   server_name         = azurerm_mssql_server.azure_sql_server.name
   resource_group_name = var.resource_group_name
-  state               = "Enabled"
+  state               = var.sql_server_alert_policy_state
 }
 
 /* --------------------------------------------------------------------------------------------------
@@ -99,7 +122,7 @@ resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" 
 
 resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerability_assessment" {
   server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sql_server_alert_policy.id
-  storage_container_path          = "${azurerm_storage_account.storage_account_name.primary_blob_endpoint}${azurerm_storage_container.vulnerability_assessment_container.name}/"
+  storage_container_path          = "${storage_account_name.primary_blob_endpoint}${azurerm_storage_container.vulnerability_assessment_container.name}/"
   # storage_account_access_key      = azurerm_storage_account.storage_account_name.primary_access_key
 
   recurring_scans {
@@ -114,10 +137,10 @@ resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerabili
 -------------------------------------------------------------------------------------------------- */
 resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_policy" {
   database_id      = azurerm_mssql_database.defaultdb.id
-  storage_endpoint = azurerm_storage_account.storage_account_name.primary_blob_endpoint
+  storage_endpoint = var.primary_blob_endpoint_name
   # storage_account_access_key              = azurerm_storage_account.storage_account_name.primary_access_key
   # storage_account_access_key_is_secondary = false
-  retention_in_days = var.retention_in_days
+  # retention_in_days = var.retention_in_days
 }
 
 /* --------------------------------------------------------------------------------------------------
@@ -128,6 +151,6 @@ module "azurerm_monitor_diagnostic_setting_db" {
   name                       = "${var.name}-database-diagnostic-settings"
   target_resource_id         = azurerm_mssql_server.defaultdb.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
-  enabled_log                = ["SQLSecurityAuditEvents"]
-  metric                     = ["AllMetrics"]
+  enabled_log                = var.monitor_diagnostic_setting_database_enabled_logs
+  metric                     = var.monitor_diagnostic_setting_database_metrics
 }

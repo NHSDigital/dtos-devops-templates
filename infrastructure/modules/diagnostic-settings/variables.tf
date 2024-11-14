@@ -16,13 +16,14 @@ variable "eventhub_authorization_rule_id" {
 
 variable "eventhub_name" {
   type        = string
-  description = "value of the eventhub name"
+  description = "value of the eventhub name if logging to eventhub is being used."
   default     = null
 }
 
 variable "log_analytics_workspace_id" {
   type        = string
-  description = "value of the log analytics workspace id"
+  description = "value of the log analytics workspace id if logging to log analytic workspace is being used."
+  default     = null
 }
 
 variable "metric" {
@@ -32,7 +33,7 @@ variable "metric" {
 
 variable "storage_account_id" {
   type        = string
-  description = "value of the storage account id"
+  description = "value of the storage account id if logging to storage account is being used."
   default     = null
 }
 
