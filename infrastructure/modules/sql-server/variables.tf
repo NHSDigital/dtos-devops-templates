@@ -185,7 +185,7 @@ variable "security_alert_policy_retention_days" {
   default     = 6
 }
 
-variable "auditing_policy_retention_days" {
+variable "auditing_policy_retention_in_days" {
   type        = number
   description = "number of days for audit log policies"
   default     = 6
