@@ -7,6 +7,7 @@ resource "azurerm_mssql_server" "azure_sql_server" {
 
   minimum_tls_version           = var.tlsver
   public_network_access_enabled = var.public_network_access_enabled
+  retention_in_days = var.retention_in_days
 
   tags = var.tags
 
@@ -92,7 +93,6 @@ resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" 
   server_name         = azurerm_mssql_server.azure_sql_server.name
   resource_group_name = var.resource_group_name
   state               = var.sql_server_alert_policy_state
-  retention_in_days = var.retention_in_days
 }
 
 /* --------------------------------------------------------------------------------------------------
