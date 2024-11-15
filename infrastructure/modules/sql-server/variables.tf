@@ -185,3 +185,8 @@ variable "primary_blob_endpoint_name" {
   type        = string
   description = "name of storage account primary endpoint"
 }
+
+variable "retention_in_days     " {
+  type        = number
+  description = "number of days for audit log policies"
+}
