@@ -191,3 +191,10 @@ variable "retention_in_days" {
   description = "number of days for audit log policies"
   default     = 6
 }
+
+
+variable "vulnerability_assessment_enabled" {
+  type        = bool
+  description = "to enable extended auditing policy for server or database"
+  default     = false
+}

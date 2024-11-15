@@ -16,6 +16,10 @@ resource "azurerm_mssql_server" "azure_sql_server" {
     object_id                   = var.sql_admin_object_id  # azurerm_user_assigned_identity.uai-sql.principal_id
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   lifecycle {
     ignore_changes = [tags]
   }
@@ -25,6 +29,7 @@ resource "azurerm_mssql_server" "azure_sql_server" {
   SQL Server Extended Auditing Policy
 -------------------------------------------------------------------------------------------------- */
 resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
+
   server_id              = azurerm_mssql_server.azure_sql_server.id
   log_monitoring_enabled = var.log_monitoring_enabled
   retention_in_days      = var.retention_in_days
@@ -90,6 +95,7 @@ module "private_endpoint_sql_server" {
 -------------------------------------------------------------------------------------------------- */
 
 resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" {
+
   server_name         = azurerm_mssql_server.azure_sql_server.name
   resource_group_name = var.resource_group_name
   state               = var.sql_server_alert_policy_state
@@ -101,14 +107,14 @@ resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" 
 -------------------------------------------------------------------------------------------------- */
 
 resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerability_assessment" {
+  count = var.vulnerability_assessment_enabled ? 1 : 0
+
   server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sql_server_alert_policy.id
   storage_container_path          = var.storage_container_id
-  # storage_account_access_key      = azurerm_storage_account.storage_account_name.primary_access_key
 
   recurring_scans {
     enabled                   = true
     email_subscription_admins = true
-    # emails                    = ["?", "?"]
   }
 }
 
@@ -116,6 +122,8 @@ resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerabili
   SQL Database Configuration and Auditing Policy
 -------------------------------------------------------------------------------------------------- */
 resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_policy" {
+  count = var.extended_auditing_policy_enabled ? 1 : 0
+
   database_id       = azurerm_mssql_database.defaultdb.id
   storage_endpoint  = var.primary_blob_endpoint_name
   retention_in_days = var.retention_in_days
@@ -125,7 +133,9 @@ resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_po
   SQL Database Diagnostic Settings
 -------------------------------------------------------------------------------------------------- */
 module "azurerm_monitor_diagnostic_setting_db" {
-  source                     = "../diagnostic-settings"
+
+  source = "../diagnostic-settings"
+
   name                       = "${var.name}-database-diagnostic-settings"
   target_resource_id         = azurerm_mssql_database.defaultdb.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
