@@ -181,6 +181,13 @@ variable "primary_blob_endpoint_name" {
 
 variable "retention_days" {
   type        = number
+  description = "number of days for security alert log policies"
+  default     = 6
+}
+
+
+variable "retention_in_days" {
+  type        = number
   description = "number of days for audit log policies"
   default     = 6
 }

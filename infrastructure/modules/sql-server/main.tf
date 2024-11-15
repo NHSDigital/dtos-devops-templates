@@ -27,6 +27,7 @@ resource "azurerm_mssql_server" "azure_sql_server" {
 resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
   server_id              = azurerm_mssql_server.azure_sql_server.id
   log_monitoring_enabled = var.log_monitoring_enabled
+  retention_in_days      = var.retention_in_days
 }
 
 /* --------------------------------------------------------------------------------------------------
@@ -115,11 +116,9 @@ resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerabili
   SQL Database Configuration and Auditing Policy
 -------------------------------------------------------------------------------------------------- */
 resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_policy" {
-  database_id      = azurerm_mssql_database.defaultdb.id
-  storage_endpoint = var.primary_blob_endpoint_name
-  # storage_account_access_key              = azurerm_storage_account.storage_account_name.primary_access_key
-  # storage_account_access_key_is_secondary = false
-  #retention_days = var.retention_days
+  database_id       = azurerm_mssql_database.defaultdb.id
+  storage_endpoint  = var.primary_blob_endpoint_name
+  retention_in_days = var.retention_in_days
 }
 
 /* --------------------------------------------------------------------------------------------------
