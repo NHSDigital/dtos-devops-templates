@@ -67,6 +67,9 @@ jobs:
       pr_num_tag: ${{ env.PR_NUM_TAG }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: 'true'
 
       - name: Checkout dtos-devops-templates repository
         uses: actions/checkout@v4
@@ -115,6 +118,7 @@ jobs:
 
       - name: Build and Push Image
         working-directory: ${{ inputs.docker_compose_file_path  }}
+        continue-on-error: false
         run: |
           function=${{ matrix.function }}
           project_name=${{ inputs.project_name }}
@@ -143,14 +147,6 @@ jobs:
           export PR_NUM_TAG=${PR_NUM_TAG}
           echo "PR_NUM_TAG=${PR_NUM_TAG}" >> ${GITHUB_ENV}
 
-          export SBOM_REPOSITORY_REPORT="sbom-${function}-repository-report"
-          echo "SBOM_REPOSITORY_REPORT=${SBOM_REPOSITORY_REPORT}" >> ${GITHUB_ENV}
-          ${GITHUB_WORKSPACE}/templates/scripts/reports/create-sbom-report.sh
-
-          export VULNERABILITIES_REPOSITORY_REPORT="vulnerabilities-${function}-repository-report"
-          echo "VULNERABILITIES_REPOSITORY_REPORT=${VULNERABILITIES_REPOSITORY_REPORT}" >> ${GITHUB_ENV}
-          ${GITHUB_WORKSPACE}/templates/scripts/reports/scan-vulnerabilities.sh
-
           # Push the image to the repository
           if [ "${GITHUB_REF}" == 'refs/heads/main' ]; then
             docker push "${repo_name}:${COMMIT_HASH_TAG}"
@@ -159,6 +155,14 @@ jobs:
             fi
             docker push "${repo_name}:${ENVIRONMENT_TAG}"
           fi
+
+          export SBOM_REPOSITORY_REPORT="sbom-${function}-repository-report"
+          echo "SBOM_REPOSITORY_REPORT=$SBOM_REPOSITORY_REPORT" >> $GITHUB_ENV
+          ${GITHUB_WORKSPACE}/templates/scripts/reports/create-sbom-report.sh
+
+          export VULNERABILITIES_REPOSITORY_REPORT="vulnerabilities-${function}-repository-report"
+          echo "VULNERABILITIES_REPOSITORY_REPORT=$VULNERABILITIES_REPOSITORY_REPORT" >> $GITHUB_ENV
+          ${GITHUB_WORKSPACE}/templates/scripts/reports/scan-vulnerabilities.sh
 
           # Remove the image
           docker rmi "${repo_name}:${COMMIT_HASH_TAG}"
