@@ -179,19 +179,17 @@ variable "primary_blob_endpoint_name" {
   description = "name of storage account primary endpoint"
 }
 
-variable "retention_days" {
+variable "security_alert_policy_retention_days" {
   type        = number
   description = "number of days for security alert log policies"
   default     = 6
 }
 
-
-variable "retention_in_days" {
+variable "auditing_policy_retention_days" {
   type        = number
   description = "number of days for audit log policies"
   default     = 6
 }
-
 
 variable "vulnerability_assessment_enabled" {
   type        = bool

@@ -99,7 +99,7 @@ resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" 
   server_name         = azurerm_mssql_server.azure_sql_server.name
   resource_group_name = var.resource_group_name
   state               = var.sql_server_alert_policy_state
-  retention_days      = var.retention_days
+  retention_days      = var.security_alert_policy_retention_days
 }
 
 /* --------------------------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_po
 
   database_id       = azurerm_mssql_database.defaultdb.id
   storage_endpoint  = var.primary_blob_endpoint_name
-  retention_in_days = var.retention_in_days
+  retention_in_days = var.auditing_policy_retention_in_days
 }
 
 /* --------------------------------------------------------------------------------------------------
