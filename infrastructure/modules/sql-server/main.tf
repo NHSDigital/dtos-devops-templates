@@ -32,7 +32,7 @@ resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
 
   server_id              = azurerm_mssql_server.azure_sql_server.id
   log_monitoring_enabled = var.log_monitoring_enabled
-  retention_in_days      = var.retention_in_days
+  retention_in_days      = var.retention_auditing_policy_retention_in_daysin_days
 }
 
 /* --------------------------------------------------------------------------------------------------
