@@ -122,7 +122,6 @@ resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerabili
   SQL Database Configuration and Auditing Policy
 -------------------------------------------------------------------------------------------------- */
 resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_policy" {
-  count = var.extended_auditing_policy_enabled ? 1 : 0
 
   database_id       = azurerm_mssql_database.defaultdb.id
   storage_endpoint  = var.primary_blob_endpoint_name
