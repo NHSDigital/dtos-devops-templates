@@ -127,7 +127,7 @@ resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_po
 module "azurerm_monitor_diagnostic_setting_db" {
   source                     = "../diagnostic-settings"
   name                       = "${var.name}-database-diagnostic-settings"
-  target_resource_id         = azurerm_mssql_server.defaultdb.id
+  target_resource_id         = azurerm_mssql_database.defaultdb.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_log                = var.monitor_diagnostic_setting_database_enabled_logs
   metric                     = var.monitor_diagnostic_setting_database_metrics
