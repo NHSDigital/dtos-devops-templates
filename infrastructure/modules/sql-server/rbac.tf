@@ -4,7 +4,7 @@ module "rbac_assignmnents" {
 
   source = "../rbac-assignment"
 
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = azurerm_mssql_server.azure_sql_server.identity[0].principal_id
   role_definition_name = each.value
   scope                = var.storage_account_id
 }
