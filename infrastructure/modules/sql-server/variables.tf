@@ -138,12 +138,9 @@ variable "log_monitoring_enabled" {
   default     = true
 }
 
-# SQL Server Diagnostic Settings
-variable "storage_container_id" {
-  type        = string
-  description = "Storage container id to save audit data to"
-}
-
+/* --------------------------------------------------------------------------------------------------
+  Auditing and Diagnostics Variables
+-------------------------------------------------------------------------------------------------- */
 variable "monitor_diagnostic_setting_database_enabled_logs" {
   type        = list(string)
   description = "Controls what logs will be enabled for the database"
@@ -164,19 +161,29 @@ variable "monitor_diagnostic_setting_sql_server_metrics" {
   description = "Controls what metrics will be enabled for the sql server"
 }
 
+variable "primary_blob_endpoint_name" {
+  type        = string
+  description = "Name of storage account primary endpoint"
+}
+
+variable "storage_account_id" {
+  type        = string
+  description = "Id of the storage accont to send audit logging to"
+}
+
 variable "storage_account_name" {
   type        = string
-  description = "value of the storage account name"
+  description = "Name of the storage account to send audit logging to"
+}
+
+variable "storage_container_id" {
+  type        = string
+  description = "Storage container id to save audit data to"
 }
 
 variable "sql_server_alert_policy_state" {
   type        = string
   description = "Controls the sql server alert policy state"
-}
-
-variable "primary_blob_endpoint_name" {
-  type        = string
-  description = "name of storage account primary endpoint"
 }
 
 variable "security_alert_policy_retention_days" {
