@@ -4,7 +4,6 @@ resource "azurerm_api_management" "apim" {
   resource_group_name = var.resource_group_name
   publisher_name      = var.publisher_name
   publisher_email     = var.publisher_email
-  # public_ip_address_id = var.public_ip_address_id
 
   sku_name = "${var.sku_name}_${var.sku_capacity}"
   zones    = var.zones
@@ -107,4 +106,21 @@ resource "azurerm_api_management" "apim" {
   }
 
   tags = var.tags
+}
+
+
+
+
+/*_________________________________________________
+  Manages an API Management AAD Identity Provider.
+_________________________________________________*/
+
+resource "azurerm_api_management_identity_provider_aad" "apim" {
+  api_management_name = azurerm_api_management.apim.name
+  resource_group_name = azurerm_api_management.apim.resource_group_name
+
+  client_id       = var.client_id
+  client_secret   = var.client_secret
+  allowed_tenants = var.allowed_tenants
+  client_library  = var.client_library
 }

@@ -196,3 +196,30 @@ variable "zones" {
     error_message = "The number of availability zones must be less than or equal to 3."
   }
 }
+
+
+/*_________________________________________________
+  API Management AAD Identity Provider variables.
+_________________________________________________*/
+
+variable "allowed_tenants" {
+  description = "A list of allowed tenants for the API Management AAD Identity Provider."
+  type        = list(string)
+  default     = []
+}
+
+variable "client_id" {
+  description = "The client ID for the API Management AAD Identity Provider."
+  type        = string
+}
+
+variable "client_library" {
+  description = "The client library for the API Management AAD Identity Provider."
+  type        = string
+  default     = "MSAL"
+}
+
+variable "client_secret" {
+  description = "The client secret for the API Management AAD Identity Provider."
+  type        = string
+}
