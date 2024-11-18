@@ -22,7 +22,7 @@ variable "email" {
 
 variable "key_vaults" {
   description = "Key Vaults to store the certificates in."
-  type        = map(any)
+  type = map
 }
 
 variable "storage_account_name_hub" {
