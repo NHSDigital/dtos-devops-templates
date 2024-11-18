@@ -62,4 +62,3 @@ module "private_endpoint_keyvault" {
 
   tags = var.tags
 }
-
