@@ -45,6 +45,19 @@ variable "certificate_details" {
   default = []
 }
 
+variable "developer_portal_hostname_configuration" {
+  description = "Developer Portal hostname configurations."
+  type = list(object({
+    host_name                    = string
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+  default  = []
+  nullable = false
+}
+
 variable "gateway_disabled" {
   description = "Specifies whether the gateway is disabled."
   type        = bool
@@ -71,6 +84,32 @@ variable "identity_type" {
   default = "SystemAssigned"
 }
 
+variable "management_hostname_configuration" {
+  description = "List of management hostname configurations."
+  type = list(object({
+    host_name                    = string
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+  default  = []
+  nullable = false
+}
+
+variable "proxy_hostname_configuration" {
+  description = "List of proxy hostname configurations."
+  type = list(object({
+    host_name                    = string
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+  default  = []
+  nullable = false
+}
+
 variable "public_ip_address_id" {
   description = "The ID of the public IP address to associate with the API Management service."
   type        = string
@@ -89,6 +128,19 @@ variable "publisher_email" {
 variable "publisher_name" {
   description = "The name of the publisher of the API Management service."
   type        = string
+}
+
+variable "scm_hostname_configuration" {
+  description = "List of SCM hostname configurations."
+  type = list(object({
+    host_name                    = string
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+  default  = []
+  nullable = false
 }
 
 variable "sku_capacity" {
@@ -143,4 +195,31 @@ variable "zones" {
     condition     = length(var.zones) <= 3
     error_message = "The number of availability zones must be less than or equal to 3."
   }
+}
+
+
+/*_________________________________________________
+  API Management AAD Identity Provider variables.
+_________________________________________________*/
+
+variable "allowed_tenants" {
+  description = "A list of allowed tenants for the API Management AAD Identity Provider."
+  type        = list(string)
+  default     = []
+}
+
+variable "client_id" {
+  description = "The client ID for the API Management AAD Identity Provider."
+  type        = string
+}
+
+variable "client_library" {
+  description = "The client library for the API Management AAD Identity Provider."
+  type        = string
+  default     = "MSAL"
+}
+
+variable "client_secret" {
+  description = "The client secret for the API Management AAD Identity Provider."
+  type        = string
 }
