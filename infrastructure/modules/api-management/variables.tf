@@ -45,6 +45,19 @@ variable "certificate_details" {
   default = []
 }
 
+variable "developer_portal_hostname_configuration" {
+  description = "Developer Portal hostname configurations."
+  type = list(object({
+    host_name                    = string
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+  default  = []
+  nullable = false
+}
+
 variable "gateway_disabled" {
   description = "Specifies whether the gateway is disabled."
   type        = bool
@@ -71,6 +84,32 @@ variable "identity_type" {
   default = "SystemAssigned"
 }
 
+variable "management_hostname_configuration" {
+  description = "List of management hostname configurations."
+  type = list(object({
+    host_name                    = string
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+  default  = []
+  nullable = false
+}
+
+variable "proxy_hostname_configuration" {
+  description = "List of proxy hostname configurations."
+  type = list(object({
+    host_name                    = string
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+  default  = []
+  nullable = false
+}
+
 variable "public_ip_address_id" {
   description = "The ID of the public IP address to associate with the API Management service."
   type        = string
@@ -89,6 +128,19 @@ variable "publisher_email" {
 variable "publisher_name" {
   description = "The name of the publisher of the API Management service."
   type        = string
+}
+
+variable "scm_hostname_configuration" {
+  description = "List of SCM hostname configurations."
+  type = list(object({
+    host_name                    = string
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+  default  = []
+  nullable = false
 }
 
 variable "sku_capacity" {
