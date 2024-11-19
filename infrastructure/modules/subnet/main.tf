@@ -32,6 +32,10 @@ module "nsg" {
   location            = var.location
   nsg_rules           = var.network_security_group_nsg_rules
 
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  enabled_log                = var.monitor_diagnostic_setting_network_security_group_enabled_logs
+  metric                     = var.monitor_diagnostic_setting_network_security_group_metrics
+
   tags = var.tags
 }
 
