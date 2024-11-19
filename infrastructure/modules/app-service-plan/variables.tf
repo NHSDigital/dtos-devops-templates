@@ -13,6 +13,11 @@ variable "location" {
   description = "The location/region where the App Service Plan is created."
 }
 
+variable "enabled_log" {
+  type        = bool
+  description = "to enable logs for app service plans"
+}
+
 variable "log_analytics_workspace_id" {
   type        = string
   description = "value of the log analytics workspace id"
