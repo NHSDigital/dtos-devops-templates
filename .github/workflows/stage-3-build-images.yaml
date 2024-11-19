@@ -11,7 +11,7 @@ on:
         description: Environment of the deployment
         required: true
         type: string
-      docker_compose_file_path:
+      docker_compose_file:
         description: The path of the compose.yaml file needed to build docker images
         required: true
         type: string
@@ -21,6 +21,10 @@ on:
         type: string
       project_name:
         description: The name of the project
+        required: true
+        type: string
+      excluded_containers_csv_list:
+        description: Excluded containers in a comma separated list
         required: true
         type: string
 
@@ -40,12 +44,21 @@ jobs:
           path: ${{ inputs.function_app_source_code_path  }}
           dir_names: true
 
+      - name: Checkout dtos-devops-templates repository
+        uses: actions/checkout@v4
+        with:
+          repository: NHSDigital/dtos-devops-templates
+          path: templates
+          ref: feat/DTOSS-5411-Setup-GitHub-CI-for-Docker-Image-Creation-and-Security-Scans-improvements
+
       - name: Get docker compose function name(s)
         id: get-function-names
         env:
           CHANGED_FOLDERS: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-          bash ./scripts/deployment/get-docker-names.sh
+          DOCKER_COMPOSE_DIR="$(dirname "${{ inputs.docker_compose_file  }}")"
+          bash ./templates/scripts/deployments/get-docker-names.sh ${{ inputs.docker_compose_file  }}  ${{ inputs.excluded_containers_csv_list  }}
+          echo "DOCKER_COMPOSE_DIR=$DOCKER_COMPOSE_DIR" >> ${GITHUB_OUTPUT}
 
       - name: Print function names
         run: |
@@ -79,7 +92,7 @@ jobs:
           ref: main
 
       - name: Az CLI login
-        if: github.ref == 'refs/heads/main'
+        # if: github.ref == 'refs/heads/main'
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -87,7 +100,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Azure Container Registry login
-        if: github.ref == 'refs/heads/main'
+        # if: github.ref == 'refs/heads/main'
         run: az acr login --name ${{ secrets.ACR_NAME }}
 
       - name: Create Tags
@@ -117,7 +130,7 @@ jobs:
           echo "ENVIRONMENT_TAG=development" >> ${GITHUB_ENV}
 
       - name: Build and Push Image
-        working-directory: ${{ inputs.docker_compose_file_path  }}
+        working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         run: |
           function=${{ matrix.function }}
@@ -131,7 +144,7 @@ jobs:
           fi
 
           # Build the image
-          docker compose build ${function}
+          docker compose -f ${{ inputs.docker_compose_file  }} build ${function}
 
           repo_name="${{ secrets.ACR_NAME }}.azurecr.io/${project_name}-$function"
 
@@ -148,13 +161,13 @@ jobs:
           echo "PR_NUM_TAG=${PR_NUM_TAG}" >> ${GITHUB_ENV}
 
           # Push the image to the repository
-          if [ "${GITHUB_REF}" == 'refs/heads/main' ]; then
+          # if [ "${GITHUB_REF}" == 'refs/heads/main' ]; then
             docker push "${repo_name}:${COMMIT_HASH_TAG}"
             if [ "${PR_NUM_TAG}" != 'pr' ]; then
               docker push "${repo_name}:${PR_NUM_TAG}"
             fi
             docker push "${repo_name}:${ENVIRONMENT_TAG}"
-          fi
+          # fi
 
           export SBOM_REPOSITORY_REPORT="sbom-${function}-repository-report"
           echo "SBOM_REPOSITORY_REPORT=$SBOM_REPOSITORY_REPORT" >> $GITHUB_ENV

@@ -1,11 +1,12 @@
 #!/bin/bash
 
 if [ $# -lt 2 ]; then
-  echo "Usage: $0 <working_directory> <excluded_containers_comma_separated>"
+  echo "Usage: $0 <docker_compose_file> <excluded_containers_comma_separated>"
   exit 1
 fi
 
-WORKING_DIR=$1
+DOCKER_COMPOSE_FILE=$1
+WORKING_DIR="$(dirname "$1")"
 EXCLUDED_CONTAINERS=$2
 
 EXCLUSION_FILTER=$(echo "$EXCLUDED_CONTAINERS" | awk -v ORS='' '{split($0, arr, ","); for (i in arr) printf ".container_name != \"%s\" and ", arr[i]} END {print "1"}')
@@ -14,17 +15,24 @@ cd "$WORKING_DIR" || { echo "Directory not found: $WORKING_DIR"; exit 1; }
 
 declare -A docker_functions_map=()
 
-for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" compose.yaml); do
-  dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" compose.yaml | sed 's#.\/##')
-  servicename=$(yq eval ".services[] | select(.container_name == \"$service\") | .container_name" compose.yaml)
-  docker_functions_map["$dockerfile"]="$servicename"
+set -x
+
+for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" ${DOCKER_COMPOSE_FILE}); do
+  context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" ${DOCKER_COMPOSE_FILE})
+  dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" ${DOCKER_COMPOSE_FILE})
+
+  if [ -z ${dockerfile} ] || [ -z ${context} ] ; then
+    continue
+  fi
+  contextFiltered=$(echo ${context} | sed 's#^\./src/##' | sed 's#^\./##' | sed 's#/$##')
+  dockerfileFiltered=$(echo ${dockerfile} | sed 's#^\./##' | sed 's#\/Dockerfile##' | sed 's#Dockerfile##' )
+  docker_functions_map[${contextFiltered}${dockerfileFiltered}]=${service}
 done
 
-echo "declare -A docker_functions_map=("
+
 for key in "${!docker_functions_map[@]}"; do
-  echo "    [\"$key\"]=\"${docker_functions_map[$key]}\""
+  echo "Key: $key Value: ${docker_functions_map[$key]}"
 done
-echo ")"
 
 
 changed_functions=""
