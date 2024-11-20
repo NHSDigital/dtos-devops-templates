@@ -8,6 +8,11 @@ variable "enabled_log" {
   description = "value of the enabled log"
 }
 
+variable "enabled_log_trigger" {
+  type        = bool
+  description = "to enable logs as a trigger"
+}
+
 variable "eventhub_authorization_rule_id" {
   type        = string
   description = "value of the eventhub authorization rule id"
