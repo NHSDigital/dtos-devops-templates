@@ -46,6 +46,12 @@ variable "purge_protection_enabled" {
   default     = false
 }
 
+variable "rbac_roles" {
+  description = "List of RBAC roles to assign to the Key Vault."
+  type        = list(string)
+  default     = []
+}
+
 variable "soft_delete_retention" {
   type        = number
   description = "Name of the  Key Vault which is created."
