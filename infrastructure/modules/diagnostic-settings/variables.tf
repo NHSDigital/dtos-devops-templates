@@ -6,11 +6,7 @@ variable "name" {
 variable "enabled_log" {
   type        = list(string)
   description = "value of the enabled log"
-}
-
-variable "enabled_log_trigger" {
-  type        = bool
-  description = "to enable logs as a trigger"
+  default     = []
 }
 
 variable "eventhub_authorization_rule_id" {
@@ -34,6 +30,7 @@ variable "log_analytics_workspace_id" {
 variable "metric" {
   type        = list(string)
   description = "value of the metric"
+  default     = []
 }
 
 variable "storage_account_id" {
