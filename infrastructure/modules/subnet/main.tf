@@ -29,7 +29,6 @@ module "nsg" {
 
   log_analytics_workspace_id                                     = var.log_analytics_workspace_id
   monitor_diagnostic_setting_network_security_group_enabled_logs = var.monitor_diagnostic_setting_network_security_group_enabled_logs
-  monitor_diagnostic_setting_network_security_group_metrics      = var.monitor_diagnostic_setting_network_security_group_metrics
 
   name                = var.network_security_group_name
   resource_group_name = var.resource_group_name

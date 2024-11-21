@@ -29,11 +29,6 @@ variable "monitor_diagnostic_setting_network_security_group_enabled_logs" {
   description = "Controls what logs will be enabled for the NSG"
 }
 
-variable "monitor_diagnostic_setting_network_security_group_metrics" {
-  type        = list(string)
-  description = "Controls what metrics will be enabled for the NSG"
-}
-
 variable "nsg_rules" {
   description = "Additional NSG rules for securing subnets (Optional)."
   type = list(object({
