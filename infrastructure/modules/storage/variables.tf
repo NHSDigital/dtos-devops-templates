@@ -39,6 +39,16 @@ variable "containers" {
   }))
 }
 
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
+}
+
+variable "monitor_diagnostic_setting_storage_account_enabled_logs" {
+  type        = list(string)
+  description = "Controls what logs will be enabled for the storage"
+}
+
 variable "private_endpoint_properties" {
   description = "Consolidated properties for the Function App Private Endpoint."
   type = object({
@@ -66,6 +76,11 @@ variable "rbac_roles" {
   description = "List of RBAC roles to assign to the Storage Account."
   type        = list(string)
   default     = []
+}
+
+variable "storage_account_service" {
+  type    = set(string)
+  default = ["blobServices", "queueServices", "tableServices", "fileServices"]
 }
 
 variable "tags" {

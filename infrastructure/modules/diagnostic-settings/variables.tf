@@ -23,7 +23,7 @@ variable "eventhub_name" {
 
 variable "log_analytics_workspace_id" {
   type        = string
-  description = "value of the log analytics workspace id if logging to log analytic workspace is being used."
+  description = "id of the log analytics workspace to send resource logging to via diagnostic settings if logging to log analytic workspace is being used."
   default     = null
 }
 

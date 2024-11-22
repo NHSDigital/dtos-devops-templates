@@ -31,7 +31,7 @@ variable "resource_group_name" {
 
 variable "log_analytics_workspace_id" {
   type        = string
-  description = "value of the log analytics workspace id"
+  description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
 }
 
 variable "monitor_diagnostic_setting_log_analytics_workspace_enabled_logs" {

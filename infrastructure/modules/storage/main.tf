@@ -76,3 +76,16 @@ module "private_endpoint_queue_storage" {
 
   tags = var.tags
 }
+
+module "diagnostic-settings" {
+  for_each = var.storage_account_service
+
+  source = "../diagnostic-settings"
+
+  name                       = "${var.name}-diagnotic-setting-storage"
+  target_resource_id         = "${azurerm_storage_account.storage_account.id}/${each.value}/default"
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  enabled_log                = var.monitor_diagnostic_setting_storage_account_enabled_logs
+  metric                     = ["AllMetrics"]
+
+}
