@@ -80,7 +80,7 @@ module "private_endpoint_queue_storage" {
 module "diagnostic-settings" {
   for_each = var.storage_account_service
 
-  source                     = "../diagnostic-settings"
+  source = "../diagnostic-settings"
 
   name                       = "${var.name}-diagnotic-setting-storage"
   target_resource_id         = "${azurerm_storage_account.storage_account.id}/${each.value}/default"
