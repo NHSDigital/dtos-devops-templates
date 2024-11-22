@@ -29,11 +29,6 @@ variable "resource_group_name" {
   description = "The name of the resource group in which the Log Analytics Workspace is created. Changing this forces a new resource to be created."
 }
 
-variable "log_analytics_workspace_id" {
-  type        = string
-  description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
-}
-
 variable "monitor_diagnostic_setting_log_analytics_workspace_enabled_logs" {
   type        = list(string)
   description = "Controls what logs will be enabled for the Long Analytics Workspace"
