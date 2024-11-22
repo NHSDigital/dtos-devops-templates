@@ -144,6 +144,29 @@ variable "scm_hostname_configuration" {
   nullable = false
 }
 
+variable "sign_in_enabled" {
+  description = "Should anonymous users be redirected to the sign in page?"
+  type        = bool
+  default     = false
+}
+
+variable "sign_up_enabled" {
+  description = "Can users sign up on the development portal?"
+  type        = bool
+  default     = false
+}
+
+variable "terms_of_service_configuration" {
+  description = "Terms of service configurations."
+  type = list(object({
+    consent_required = optional(bool, false)
+    enabled          = optional(bool, false)
+    text             = optional(string, "")
+  }))
+  default  = []
+  nullable = false
+}
+
 variable "sku_capacity" {
   description = "The capacity of the SKU of the API Management service."
   type        = number
