@@ -36,6 +36,16 @@ variable "network_security_group_name" {
   description = "The name of the network security group."
 }
 
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "value of the log analytics workspace id"
+}
+
+variable "monitor_diagnostic_setting_network_security_group_enabled_logs" {
+  type        = list(string)
+  description = "Controls what logs will be enabled for the NSG"
+}
+
 variable "network_security_group_nsg_rules" {
   description = "The network security group rules."
   default     = []

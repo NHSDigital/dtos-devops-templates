@@ -27,6 +27,9 @@ module "nsg" {
 
   source = "../network-security-group"
 
+  log_analytics_workspace_id                                     = var.log_analytics_workspace_id
+  monitor_diagnostic_setting_network_security_group_enabled_logs = var.monitor_diagnostic_setting_network_security_group_enabled_logs
+
   name                = var.network_security_group_name
   resource_group_name = var.resource_group_name
   location            = var.location

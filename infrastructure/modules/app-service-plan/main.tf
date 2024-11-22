@@ -20,3 +20,19 @@ resource "azurerm_app_service_virtual_network_swift_connection" "appservice_vnet
   app_service_id = azurerm_service_plan.appserviceplan.id
   subnet_id      = var.vnet_integration_subnet_id
 }
+
+/* --------------------------------------------------------------------------------------------------
+  Diagnostic Settings
+-------------------------------------------------------------------------------------------------- */
+
+module "diagnostic-settings" {
+  source = "../diagnostic-settings"
+
+  name                       = "${var.name}-diagnostic-setting"
+  target_resource_id         = azurerm_service_plan.appserviceplan.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  #enabled_log                = var.enabled_log
+  metric = var.monitor_diagnostic_setting_appserviceplan_metrics
+
+}
+

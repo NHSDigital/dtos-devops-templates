@@ -117,6 +117,16 @@ variable "minimum_tls_version" {
   }
 }
 
+variable "monitor_diagnostic_setting_function_app_enabled_logs" {
+  type        = list(string)
+  description = "Controls what logs will be enabled for the function app"
+}
+
+variable "monitor_diagnostic_setting_function_app_metrics" {
+  type        = list(string)
+  description = "Controls what metrics will be enabled for the function app"
+}
+
 variable "private_endpoint_properties" {
   description = "Consolidated properties for the Function App Private Endpoint."
   type = object({

@@ -62,3 +62,19 @@ module "private_endpoint_keyvault" {
 
   tags = var.tags
 }
+
+/* --------------------------------------------------------------------------------------------------
+  Diagnostic Settings
+-------------------------------------------------------------------------------------------------- */
+
+module "diagnostic-settings" {
+  source = "../diagnostic-settings"
+
+  name                       = "${var.name}-diagnostic-setting"
+  target_resource_id         = azurerm_key_vault.keyvault.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  enabled_log                = var.monitor_diagnostic_setting_keyvault_enabled_logs
+  metric                     = var.monitor_diagnostic_setting_keyvault_metrics
+
+}
+

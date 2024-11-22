@@ -23,6 +23,21 @@ variable "disk_encryption" {
   default     = true
 }
 
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "value of the log analytics workspace id"
+}
+
+variable "monitor_diagnostic_setting_keyvault_enabled_logs" {
+  type        = list(string)
+  description = "Controls what logs will be enabled for the keyvault"
+}
+
+variable "monitor_diagnostic_setting_keyvault_metrics" {
+  type        = list(string)
+  description = "Controls what metrics will be enabled for the keyvault"
+}
+
 variable "private_endpoint_properties" {
   description = "Consolidated properties for the Key Vault Private Endpoint."
   type = object({

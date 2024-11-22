@@ -68,7 +68,7 @@ module "private_endpoint_sql_server" {
 /* --------------------------------------------------------------------------------------------------
   SQL Server Diagnostic Settings
 -------------------------------------------------------------------------------------------------- */
-module "azurerm_monitor_diagnostic_setting_sql_server" {
+module "diagnostic_setting_sql_server" {
 
   source = "../diagnostic-settings"
 

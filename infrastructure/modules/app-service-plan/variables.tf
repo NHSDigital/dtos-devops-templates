@@ -13,6 +13,16 @@ variable "location" {
   description = "The location/region where the App Service Plan is created."
 }
 
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "value of the log analytics workspace id"
+}
+
+variable "monitor_diagnostic_setting_appserviceplan_metrics" {
+  type        = list(string)
+  description = "Controls what metrics will be enabled for the appserviceplan"
+}
+
 variable "os_type" {
   type        = string
   description = "OS type for deployed App Service Plan."

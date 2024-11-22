@@ -6,6 +6,7 @@ variable "name" {
 variable "enabled_log" {
   type        = list(string)
   description = "value of the enabled log"
+  default     = []
 }
 
 variable "eventhub_authorization_rule_id" {
@@ -29,6 +30,7 @@ variable "log_analytics_workspace_id" {
 variable "metric" {
   type        = list(string)
   description = "value of the metric"
+  default     = []
 }
 
 variable "storage_account_id" {
