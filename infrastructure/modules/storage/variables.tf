@@ -39,6 +39,11 @@ variable "containers" {
   }))
 }
 
+variable "monitor_diagnostic_setting_storage_account_enabled_logs" {
+  type        = list(string)
+  description = "Controls what logs will be enabled for the sql server"
+}
+
 variable "private_endpoint_properties" {
   description = "Consolidated properties for the Function App Private Endpoint."
   type = object({
@@ -66,6 +71,11 @@ variable "rbac_roles" {
   description = "Map of RBAC roles to assign to the Storage Account."
   type        = map(string)
   default     = {}
+}
+
+variable "storage_account_service" {
+  type    = set(string)
+  default = ["blobServices", "queueServices", "tableServices", "fileServices"]
 }
 
 variable "tags" {
