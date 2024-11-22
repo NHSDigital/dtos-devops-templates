@@ -1,5 +1,5 @@
 # Need to give the deployment service principal the required permissions to the storage account
-module "rbac_assignmnents" {
+module "rbac_assignments" {
   for_each = toset(var.rbac_roles)
 
   source = "../rbac-assignment"

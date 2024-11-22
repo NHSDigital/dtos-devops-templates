@@ -1,5 +1,5 @@
 # Need to give the deployment service principal the required permissions to the key vault
-module "rbac_assignmnents" {
+module "rbac_assignments" {
   for_each = var.enable_rbac_authorization ? toset(var.rbac_roles) : []
 
   source = "../rbac-assignment"
