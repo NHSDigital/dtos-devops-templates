@@ -98,7 +98,10 @@ resource "azurerm_api_management" "apim" {
         }
       }
 
-      dynamic "sign_in" {
+    }
+  }
+
+  dynamic "sign_in" {
         for_each = var.sign_in_enabled ? ["enabled"] : []
         content {
           enabled = var.sign_in_enabled
@@ -120,9 +123,6 @@ resource "azurerm_api_management" "apim" {
           }
         }
       }
-
-    }
-  }
 
   identity {
     type         = var.identity_type
