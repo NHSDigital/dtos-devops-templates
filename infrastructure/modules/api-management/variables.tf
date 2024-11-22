@@ -101,6 +101,7 @@ variable "proxy_hostname_configuration" {
   description = "List of proxy hostname configurations."
   type = list(object({
     host_name                    = string
+    default_ssl_binding          = optional(bool, false)
     key_vault_id                 = optional(string)
     certificate                  = optional(string)
     certificate_password         = optional(string)
