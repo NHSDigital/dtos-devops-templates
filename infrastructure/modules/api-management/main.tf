@@ -102,27 +102,27 @@ resource "azurerm_api_management" "apim" {
   }
 
   dynamic "sign_in" {
-        for_each = var.sign_in_enabled ? ["enabled"] : []
+    for_each = var.sign_in_enabled ? ["enabled"] : []
+    content {
+      enabled = var.sign_in_enabled
+    }
+  }
+
+  dynamic "sign_up" {
+    for_each = var.sign_up_enabled ? ["enabled"] : []
+
+    content {
+      enabled = var.sign_up_enabled
+      dynamic "terms_of_service" {
+        for_each = var.terms_of_service_configuration
         content {
-          enabled = var.sign_in_enabled
+          consent_required = terms_of_service.value.consent_required
+          enabled          = terms_of_service.value.enabled
+          text             = terms_of_service.value.text
         }
       }
-
-      dynamic "sign_up" {
-        for_each = var.sign_up_enabled ? ["enabled"] : []
-
-        content {
-          enabled = var.sign_up_enabled
-          dynamic "terms_of_service" {
-            for_each = var.terms_of_service_configuration
-            content {
-              consent_required = terms_of_service.value.consent_required
-              enabled          = terms_of_service.value.enabled
-              text             = terms_of_service.value.text
-            }
-          }
-        }
-      }
+    }
+  }
 
   identity {
     type         = var.identity_type
