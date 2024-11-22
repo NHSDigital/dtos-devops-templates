@@ -1,5 +1,5 @@
 # Need to give the depolyment service principal the required permissions to the storage account
-module "rbac_assignmnents" {
+module "rbac_assignments" {
   for_each = { for idx, role in local.rbac_roles : idx => role }
 
   source = "../rbac-assignment"

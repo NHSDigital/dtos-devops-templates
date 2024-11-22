@@ -1,9 +1,10 @@
 resource "azurerm_api_management" "apim" {
-  name                = var.name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  publisher_name      = var.publisher_name
-  publisher_email     = var.publisher_email
+  name                 = var.name
+  location             = var.location
+  resource_group_name  = var.resource_group_name
+  publisher_name       = var.publisher_name
+  publisher_email      = var.publisher_email
+  public_ip_address_id = var.public_ip_address_id
 
   sku_name = "${var.sku_name}_${var.sku_capacity}"
   zones    = var.zones
@@ -96,7 +97,29 @@ resource "azurerm_api_management" "apim" {
           negotiate_client_certificate = scm.value.negotiate_client_certificate
         }
       }
+    }
+  }
 
+  dynamic "sign_in" {
+    for_each = var.sign_in_enabled ? ["enabled"] : []
+    content {
+      enabled = var.sign_in_enabled
+    }
+  }
+
+  dynamic "sign_up" {
+    for_each = var.sign_up_enabled ? ["enabled"] : []
+
+    content {
+      enabled = var.sign_up_enabled
+      dynamic "terms_of_service" {
+        for_each = var.terms_of_service_configuration
+        content {
+          consent_required = terms_of_service.value.consent_required
+          enabled          = terms_of_service.value.enabled
+          text             = terms_of_service.value.text
+        }
+      }
     }
   }
 

@@ -101,6 +101,7 @@ variable "proxy_hostname_configuration" {
   description = "List of proxy hostname configurations."
   type = list(object({
     host_name                    = string
+    default_ssl_binding          = optional(bool, false)
     key_vault_id                 = optional(string)
     certificate                  = optional(string)
     certificate_password         = optional(string)
@@ -138,6 +139,29 @@ variable "scm_hostname_configuration" {
     certificate                  = optional(string)
     certificate_password         = optional(string)
     negotiate_client_certificate = optional(bool, false)
+  }))
+  default  = []
+  nullable = false
+}
+
+variable "sign_in_enabled" {
+  description = "Should anonymous users be redirected to the sign in page?"
+  type        = bool
+  default     = false
+}
+
+variable "sign_up_enabled" {
+  description = "Can users sign up on the development portal?"
+  type        = bool
+  default     = false
+}
+
+variable "terms_of_service_configuration" {
+  description = "Terms of service configurations."
+  type = list(object({
+    consent_required = optional(bool, false)
+    enabled          = optional(bool, false)
+    text             = optional(string, "")
   }))
   default  = []
   nullable = false
