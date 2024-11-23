@@ -1,5 +1,3 @@
-data "azurerm_client_config" "current" {}
-
 resource "azurerm_key_vault" "keyvault" {
   name                = var.name
   location            = var.location
@@ -65,3 +63,4 @@ module "diagnostic-settings" {
   metric_enabled             = var.metric_enabled
 }
 
+data "azurerm_client_config" "current" {}
