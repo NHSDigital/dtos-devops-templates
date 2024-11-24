@@ -38,9 +38,7 @@ variable "backend_http_settings" {
 
 variable "frontend_port" {
   description = "A map of front end port numbers. The key name will be used to retrieve the name from var.names."
-  type        = map(object({
-    port = number
-  }))
+  type        = map(number)
 }
 
 variable "frontend_ip_configuration" {
@@ -56,6 +54,21 @@ variable "frontend_ip_configuration" {
 variable "gateway_subnet" {
   description = "The entire gateway subnet module object."
   type        = any
+}
+
+variable "http_listener" {
+  description = "A map of HTTP listeners configuration. The key name will be used to retrieve the name from var.names."
+  type        = map(object({
+    hostname                      = optional(string)
+    hostnames                     = optional(string)
+    firewall_policy_id            = optional(string)
+    frontend_ip_configuration_key = string
+    frontend_port_key             = string
+    protocol                      = string
+    require_sni                   = optional(bool, false)
+    ssl_certificate_key           = optional(string)
+    ssl_profile_name              = optional(string)
+  }))
 }
 
 variable "key_vault_id" {
@@ -98,6 +111,17 @@ variable "names" {
 
 variable "public_ip_address_id" {
   type = string
+}
+
+variable "request_routing_rule" {
+  description = "A map of request routing rules for the Application Gateway. The key name will be used to retrieve the name from var.names."
+  type        = map(object({
+    backend_address_pool_key  = string
+    backend_http_settings_key = string
+    http_listener_key         = string
+    priority                  = number
+    rule_type                 = string
+  }))
 }
 
 variable "resource_group_name" {

@@ -36,16 +36,16 @@ resource "azurerm_application_gateway" "this" {
   dynamic "frontend_port" {
     for_each = var.frontend_port
 
-    content = {
+    content {
       name = var.names.frontend_port_name[frontend_port.key]
-      port = frontend_port.value.port
+      port = frontend_port.value
     }
   }
 
   dynamic "frontend_ip_configuration" {
     for_each = var.frontend_ip_configuration
 
-    content = {
+    content {
       name                          = var.names.frontend_ip_configuration_name[frontend_ip_configuration.key]
       subnet_id                     = frontend_ip_configuration.value.subnet_id
       public_ip_address_id          = frontend_ip_configuration.value.public_ip_address_id
@@ -57,7 +57,7 @@ resource "azurerm_application_gateway" "this" {
   dynamic "backend_address_pool" {
     for_each = var.backend_address_pool
 
-    content = {
+    content {
       name         = var.names.backend_address_pool_name[backend_address_pool.key]
       fqdns        = backend_address_pool.value.fqdns
       ip_addresses = backend_address_pool.value.ip_addresses
@@ -67,7 +67,7 @@ resource "azurerm_application_gateway" "this" {
   dynamic "probe" {
     for_each = var.probe
 
-    content = {
+    content {
       host                                      = probe.value.host
       interval                                  = probe.value.interval
       minimum_servers                           = probe.value.minimum_servers
@@ -82,7 +82,7 @@ resource "azurerm_application_gateway" "this" {
       dynamic "match" {
         for_each = probe.value.match
 
-        content = {
+        content {
           status_code = match.value.status_code
           body        = match.value.body
         }
@@ -93,7 +93,7 @@ resource "azurerm_application_gateway" "this" {
   dynamic "ssl_certificate" {
     for_each = var.ssl_certificate
 
-    content = {
+    content {
       data                = ssl_certificate.value.data
       key_vault_secret_id = ssl_certificate.value.key_vault_secret_id
       name                = var.names.ssl_certificate[ssl_certificate.key]
@@ -104,7 +104,7 @@ resource "azurerm_application_gateway" "this" {
   dynamic "backend_http_settings" {
     for_each = var.backend_http_settings
 
-    content = {
+    content {
       affinity_cookie_name                = backend_http_settings.value.affinity_cookie_name
       cookie_based_affinity               = backend_http_settings.value.cookie_based_affinity
       host_name                           = backend_http_settings.value.host_name
@@ -128,27 +128,34 @@ resource "azurerm_application_gateway" "this" {
     }
   }
 
+  dynamic "http_listener" {
+    for_each = var.http_listener
 
-
-
-
-
-
-  http_listener {
-    host_name                      = "localhost"
-    name                           = var.names.unused.http_listener_name
-    frontend_ip_configuration_name = var.names.common_public.frontend_ip_configuration_name
-    frontend_port_name             = var.names.unused.frontend_port_name
-    protocol                       = "Http"
+    content {
+      hostname                       = http_listener.value.hostname
+      hostnames                      = http_listener.value.hostnames
+      name                           = var.names.http_listener_name[http_listener.key]
+      firewall_policy_id             = http_listener.value.firewall_policy_id
+      frontend_ip_configuration_name = var.names.frontend_ip_configuration_name[http_listener.value.frontend_ip_configuration_key]
+      frontend_port_name             = var.names.frontend_port_name[http_listener.value.frontend_port_key]
+      protocol                       = http_listener.value.protocol
+      require_sni                    = http_listener.value.require_sni
+      ssl_certificate_name           = var.names.ssl_certificate_name[http_listener.value.ssl_certificate_key]
+      ssl_profile_name               = http_listener.value.ssl_profile_name
+    }
   }
 
-  request_routing_rule {
-    name                       = var.names.unused.rule_name
-    rule_type                  = "Basic"
-    http_listener_name         = var.names.unused.http_listener_name
-    backend_address_pool_name  = var.names.unused.backend_address_pool_name
-    backend_http_settings_name = var.names.unused.backend_http_settings_name
-    priority                   = 20000
+  dynamic "request_routing_rule" {
+    for_each = var.request_routing_rule
+
+    content {
+      name                       = var.names.rule_name[request_routing_rule.key]
+      rule_type                  = request_routing_rule.value.rule_type
+      http_listener_name         = var.names.http_listener_name[request_routing_rule.value.http_listener_key]
+      backend_address_pool_name  = var.names.backend_address_pool_name[request_routing_rule.value.backend_address_pool_key]
+      backend_http_settings_name = var.names.backend_http_settings_name[request_routing_rule.value.backend_http_settings_key]
+      priority                   = request_routing_rule.value.priority
+    }
   }
 
   depends_on = [

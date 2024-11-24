@@ -11,8 +11,7 @@ locals {
       managed_identity_name         = upper("MI-${var.application}-${var.env}-${var.location_map[var.location]}")
       
       frontend_port_name = {
-        private = lower("feport-priv-${var.env}-${var.location_map[var.location]}-${var.application}")
-        public  = lower("feport-pub-${var.env}-${var.location_map[var.location]}-${var.application}")
+        https = lower("feport-https-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
       frontend_ip_configuration_name = {
         private = lower("feip-priv-${var.env}-${var.location_map[var.location]}-${var.application}")
