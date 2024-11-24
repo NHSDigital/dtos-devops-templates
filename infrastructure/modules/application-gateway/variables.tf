@@ -19,7 +19,7 @@ variable "backend_address_pool" {
 variable "backend_http_settings" {
   description = "A map of backend HTTP settings for the Application Gateway. The key name will be used to retrieve the name from var.names."
   type        = map(object({
-    cookie_based_affinity                 = string
+    cookie_based_affinity                 = optional(string)
     affinity_cookie_name                  = optional(string)
     path                                  = optional(string)
     port                                  = number
@@ -107,10 +107,6 @@ variable "min_tls_ver" {
 variable "names" {
   description = "A map containing configuration object names for the Application Gateway."
   type        = any
-}
-
-variable "public_ip_address_id" {
-  type = string
 }
 
 variable "request_routing_rule" {
