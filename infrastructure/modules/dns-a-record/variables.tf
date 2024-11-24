@@ -3,7 +3,8 @@ variable "name" {
 }
 
 variable "records" {
-  type = list(string)
+  type    = list(string)
+  default = []
 }
 
 variable "resource_group_name" {
@@ -17,7 +18,8 @@ variable "tags" {
 }
 
 variable "target_resource_id" {
-  type = optional(string)
+  type    = string
+  default = null
 }
 
 variable "ttl" {
