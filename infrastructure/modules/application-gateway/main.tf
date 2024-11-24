@@ -120,7 +120,7 @@ resource "azurerm_application_gateway" "this" {
       dynamic "connection_draining" {
         for_each = backend_http_settings.value.connection_draining
 
-        content = {
+        content {
           enabled           = connection_draining.value.enabled
           drain_timeout_sec = connection_draining.value.drain_timeout_sec
         }
