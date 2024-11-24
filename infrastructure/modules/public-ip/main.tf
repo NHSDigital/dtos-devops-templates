@@ -10,5 +10,4 @@ resource "azurerm_public_ip" "pip" {
   zones                = var.zones
 
   tags = var.tags
-
 }

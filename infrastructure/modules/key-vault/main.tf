@@ -15,7 +15,8 @@ resource "azurerm_key_vault" "keyvault" {
   enable_rbac_authorization = var.enable_rbac_authorization
 
   dynamic "access_policy" {
-    for_each = var.enable_rbac_authorization ? [] : [1] # Empty list disables the block
+    for_each = var.enable_rbac_authorization ? [] : [1]
+
     content {
       tenant_id = data.azurerm_client_config.current.tenant_id
       object_id = data.azurerm_client_config.current.object_id

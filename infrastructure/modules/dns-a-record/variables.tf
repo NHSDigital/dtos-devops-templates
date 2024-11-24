@@ -16,6 +16,10 @@ variable "tags" {
   default     = {}
 }
 
+variable "target_resource_id" {
+  type = optional(string)
+}
+
 variable "ttl" {
   type = string
 }

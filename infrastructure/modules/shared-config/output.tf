@@ -4,30 +4,48 @@ locals {
     location_code = lower(var.location_map[var.location])
 
     api-management = lower("APIM-${var.env}-${var.application}-${var.location_map[var.location]}")
+
     application-gateway = {
       name                          = lower("AGW-${var.env}-${var.location_map[var.location]}-${var.application}")
       gateway_ip_configuration_name = lower("gw-ip-${var.env}-${var.location_map[var.location]}-${var.application}")
-      unused = { # these items are needed to build a minimal Application Gateway resource
-        probe_name                 = lower("unused-backend-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
-        frontend_port_name         = lower("unused-feport-${var.env}-${var.location_map[var.location]}-${var.application}")
-        backend_address_pool_name  = lower("unused-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
-        backend_http_settings_name = lower("unused-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
-        http_listener_name         = lower("unused-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
-        rule_name                  = lower("unused-rule-${var.env}-${var.location_map[var.location]}-${var.application}")
+      managed_identity_name         = upper("MI-${var.application}-${var.env}-${var.location_map[var.location]}")
+      
+      frontend_port_name = {
+        private = lower("feport-priv-${var.env}-${var.location_map[var.location]}-${var.application}")
+        public  = lower("feport-pub-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
-      common_public = {
-        frontend_port_name             = lower("feport-${var.env}-${var.location_map[var.location]}-${var.application}")
-        frontend_ip_configuration_name = lower("feip-${var.env}-${var.location_map[var.location]}-${var.application}")
-        backend_address_pool_name      = lower("beap-${var.env}-${var.location_map[var.location]}-${var.application}")
-        backend_http_settings_name     = lower("htst-${var.env}-${var.location_map[var.location]}-${var.application}")
-        ssl_certificate_name           = "dtos-lets-encrypt"
+      frontend_ip_configuration_name = {
+        private = lower("feip-priv-${var.env}-${var.location_map[var.location]}-${var.application}")
+        public  = lower("feip-pub-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
-      common_private = {
-        frontend_port_name             = lower("feport-private-${var.env}-${var.location_map[var.location]}-${var.application}")
-        frontend_ip_configuration_name = lower("feip-private-${var.env}-${var.location_map[var.location]}-${var.application}")
-        ssl_certificate_name           = "dtos-lets-encrypt-private"
+      probe_name = {
+        apim_gateway = lower("apim-gw-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_portal  = lower("apim-ptl-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+      }
+      backend_address_pool_name = {
+        apim_gateway = lower("apim-gw-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_portal  = lower("apim-ptl-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+      }
+      backend_http_settings_name = {
+        apim_gateway = lower("apim-gw-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_portal  = lower("apim-gw-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+      }
+      ssl_certificate_name = {
+        private = "lets-encrypt-wildcard-private"
+        public  = "lets-encrypt-wildcard-public"
+      }
+      http_listener_name = {
+        apim_gateway_public  = lower("apim-gw-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_gateway_private = lower("apim-gw-priv-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_portal_private  = lower("apim-ptl-priv-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+      }
+      rule_name = {
+        apim_gateway_public  = lower("apim-gw-pub-rule-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_gateway_private = lower("apim-gw-priv-rule-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_portal_private  = lower("apim-ptl-priv-listener-${var.env}-${var.location_map[var.location]}-${var.application}")  
       }
     }
+
     app-insights                = lower("APPI-${var.env}-${var.location_map[var.location]}-${var.application}")
     app-service-plan            = lower("ASP-${var.env}-${var.location_map[var.location]}-${var.application}")
     app-service                 = lower("AS-${var.env}-${var.location_map[var.location]}-${var.application}")
