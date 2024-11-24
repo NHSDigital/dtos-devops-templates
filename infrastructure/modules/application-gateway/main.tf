@@ -132,8 +132,8 @@ resource "azurerm_application_gateway" "this" {
     for_each = var.http_listener
 
     content {
-      hostname                       = http_listener.value.hostname
-      hostnames                      = http_listener.value.hostnames
+      host_name                      = http_listener.value.host_name
+      host_names                     = http_listener.value.host_names
       name                           = var.names.http_listener_name[http_listener.key]
       firewall_policy_id             = http_listener.value.firewall_policy_id
       frontend_ip_configuration_name = var.names.frontend_ip_configuration_name[http_listener.value.frontend_ip_configuration_key]

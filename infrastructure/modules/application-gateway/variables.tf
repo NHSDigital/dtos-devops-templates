@@ -59,8 +59,8 @@ variable "gateway_subnet" {
 variable "http_listener" {
   description = "A map of HTTP listeners configuration. The key name will be used to retrieve the name from var.names."
   type        = map(object({
-    hostname                      = optional(string)
-    hostnames                     = optional(string)
+    host_name                     = optional(string)
+    host_names                    = optional(string)
     firewall_policy_id            = optional(string)
     frontend_ip_configuration_key = string
     frontend_port_key             = string
