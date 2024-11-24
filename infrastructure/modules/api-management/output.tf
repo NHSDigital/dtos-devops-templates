@@ -3,7 +3,7 @@ output "name" {
   value       = azurerm_api_management.apim.name
 }
 
-output "private_ip_address" {
+output "private_ip_addresses" {
   description = "The private IP address of the API Management service."
   value       = azurerm_api_management.apim.private_ip_addresses
 }
