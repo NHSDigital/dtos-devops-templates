@@ -16,5 +16,5 @@ variable "role_definition_name" {
 variable "skip_service_principal_aad_check" {
   description = "Enable skipping the principal aad check."
   type        = bool
-  default = false
+  default = true
 }
