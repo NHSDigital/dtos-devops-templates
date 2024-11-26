@@ -3,7 +3,8 @@ variable "name" {
 }
 
 variable "records" {
-  type = list(string)
+  type    = list(string)
+  default = null
 }
 
 variable "resource_group_name" {
@@ -14,6 +15,11 @@ variable "tags" {
   description = "A mapping of tags to assign to the resource."
   type        = map(string)
   default     = {}
+}
+
+variable "target_resource_id" {
+  type    = string
+  default = null
 }
 
 variable "ttl" {
