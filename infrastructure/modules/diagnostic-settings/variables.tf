@@ -33,12 +33,6 @@ variable "metric" {
   default     = []
 }
 
-variable "metric" {
-  type        = list(string)
-  description = "value of the metric"
-  default     = []
-}
-
 variable "metric_enabled" {
   type        = bool
   description = "to enable retention for diagnostic settings metric"
@@ -48,7 +42,7 @@ variable "metric_enabled" {
 variable "metric_retention_policy_days" {
   type        = number
   description = "value of the retention days for diagnostic settings metric"
-  default     = []
+  default     = null
 }
 
 variable "metric_retention_policy_enabled" {
