@@ -33,11 +33,11 @@ variable "metric" {
   default     = []
 }
 
-variable "metric_enabled" {
-  type        = bool
-  description = "to enable retention for diagnostic settings metric"
-  default     = true
-}
+# variable "metric_enabled" {
+#   type        = bool
+#   description = "to enable retention for diagnostic settings metric"
+#   default     = true
+# }
 
 variable "metric_retention_policy_days" {
   type        = number

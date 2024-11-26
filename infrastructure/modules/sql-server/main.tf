@@ -72,11 +72,14 @@ module "diagnostic_setting_sql_server" {
 
   source = "../diagnostic-settings"
 
-  name                       = "${var.name}-sql-server-diagnotic-setting"
-  target_resource_id         = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
-  log_analytics_workspace_id = var.log_analytics_workspace_id
-  enabled_log                = var.monitor_diagnostic_setting_sql_server_enabled_logs
-  metric                     = var.monitor_diagnostic_setting_sql_server_metrics
+  name                            = "${var.name}-sql-server-diagnotic-setting"
+  target_resource_id              = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
+  log_analytics_workspace_id      = var.log_analytics_workspace_id
+  enabled_log                     = var.monitor_diagnostic_setting_sql_server_enabled_logs
+  metric                          = var.monitor_diagnostic_setting_sql_server_metrics
+  metric_enabled                  = var.metric_enabled
+  metric_retention_policy_enabled = var.metric_retention_policy_enabled
+  metric_retention_policy_days    = var.metric_retention_policy_days
 }
 
 /* --------------------------------------------------------------------------------------------------
