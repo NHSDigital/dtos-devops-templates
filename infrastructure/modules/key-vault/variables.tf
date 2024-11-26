@@ -28,6 +28,24 @@ variable "log_analytics_workspace_id" {
   description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
 }
 
+variable "metric_enabled" {
+  type        = bool
+  description = "to enable retention for diagnostic settings metric"
+  default     = true
+}
+
+variable "metric_retention_policy_days" {
+  type        = number
+  description = "value of the retention days for diagnostic settings metric set to 30 days by default"
+  default     = 30
+}
+
+variable "metric_retention_policy_enabled" {
+  type        = bool
+  description = "to enable retention for diagnostic settings metric"
+  default     = true
+}
+
 variable "monitor_diagnostic_setting_keyvault_enabled_logs" {
   type        = list(string)
   description = "Controls what logs will be enabled for the keyvault"
