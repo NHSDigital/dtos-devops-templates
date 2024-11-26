@@ -33,6 +33,24 @@ variable "metric" {
   default     = []
 }
 
+variable "metrics" {
+  type        = list(string)
+  description = "value of the metric"
+  default     = []
+}
+
+variable "metric_retention_policy_days" {
+  type        = number
+  description = "value of the retention days for diagnostic settings metric"
+  default     = []
+}
+
+variable "metric_retention_policy_enabled" {
+  type        = bool
+  description = "to enable retention for diagnostic settings metric"
+  default     = []
+}
+
 variable "storage_account_id" {
   type        = string
   description = "value of the storage account id if logging to storage account is being used."

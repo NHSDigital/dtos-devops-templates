@@ -1,3 +1,7 @@
+data "azurerm_monitor_diagnostic_categories" "this" {
+  resource_id = var.target_resource_id
+}
+
 resource "azurerm_monitor_diagnostic_setting" "this" {
   name                       = var.name
   target_resource_id         = var.target_resource_id
@@ -14,11 +18,14 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
     }
   }
 
-  dynamic "metric" {
-    for_each = var.metric
+  dynamic "metrics" {
+    for_each = data.azurerm_monitor_diagnostic_categories.this.metrics
     content {
-      category = metric.value
+      category = metrics.value
+      enabled  = true
+      retention_policy {
+        days    = var.metric_retention_policy_days
+        enabled = true
+      }
     }
   }
-
-}
