@@ -141,6 +141,24 @@ variable "log_monitoring_enabled" {
 /* --------------------------------------------------------------------------------------------------
   Auditing and Diagnostics Variables
 -------------------------------------------------------------------------------------------------- */
+variable "metric_enabled" {
+  type        = bool
+  description = "to enable retention for diagnostic settings metric"
+  default     = true
+}
+
+variable "metric_retention_policy_days" {
+  type        = number
+  description = "value of the retention days for diagnostic settings metric set to 30 days by default"
+  default     = 30
+}
+
+variable "metric_retention_policy_enabled" {
+  type        = bool
+  description = "to enable retention for diagnostic settings metric"
+  default     = true
+}
+
 variable "monitor_diagnostic_setting_database_enabled_logs" {
   type        = list(string)
   description = "Controls what logs will be enabled for the database"
