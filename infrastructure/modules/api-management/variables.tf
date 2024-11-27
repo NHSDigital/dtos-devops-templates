@@ -240,7 +240,7 @@ variable "client_id" {
 variable "client_library" {
   description = "The client library for the API Management AAD Identity Provider."
   type        = string
-  default     = "MSAL"
+  default     = "MSAL-2"
 }
 
 variable "client_secret" {
