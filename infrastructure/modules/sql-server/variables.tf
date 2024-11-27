@@ -144,7 +144,7 @@ variable "log_monitoring_enabled" {
 variable "metric_enabled" {
   type        = bool
   description = "to enable retention for diagnostic settings metric"
-  default     = true
+  default     = false
 }
 
 variable "metric_retention_policy_days" {
@@ -156,7 +156,7 @@ variable "metric_retention_policy_days" {
 variable "metric_retention_policy_enabled" {
   type        = bool
   description = "to enable retention for diagnostic settings metric"
-  default     = true
+  default     = false
 }
 
 variable "monitor_diagnostic_setting_database_enabled_logs" {
