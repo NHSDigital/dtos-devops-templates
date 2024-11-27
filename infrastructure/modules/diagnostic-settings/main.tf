@@ -19,7 +19,7 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
   }
 
   dynamic "metric" {
-    for_each = data.azurerm_monitor_diagnostic_categories.this.metrics
+    for_each = data.azurerm_monitor_diagnostic_categories.this.metric
 
     content {
       category = metric.value
