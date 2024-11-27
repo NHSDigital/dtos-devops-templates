@@ -9,3 +9,7 @@ output "key_vault_id" {
 output "key_vault_url" {
   value = azurerm_key_vault.keyvault.vault_uri
 }
+
+output "diagnostic_categories_metrics" {
+  value = module.diagnostic_settings.diagnostic_categories_metrics
+}
