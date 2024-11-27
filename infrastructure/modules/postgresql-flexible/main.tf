@@ -43,12 +43,12 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "po
 
 # Create the server configurations
 resource "azurerm_postgresql_flexible_server_configuration" "postgresql_flexible_config" {
-  for_each  = var.postgresql_configurations
+  for_each = var.postgresql_configurations
 
   server_id = azurerm_postgresql_flexible_server.postgresql_flexible_server.id
 
-  name      = each.key
-  value     = each.value
+  name  = each.key
+  value = each.value
 }
 
 /* --------------------------------------------------------------------------------------------------
