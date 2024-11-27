@@ -30,4 +30,4 @@ steps:
       workingDirectory: $(TF_DIRECTORY)
       inlineScript: |
         ${{ parameters.tfApplyScript }}
-        terraform apply -auto-approve $(TF_PLAN_ARTIFACT)/$(ENVIRONMENT).tfplan
+        terraform apply -auto-approve -input=false $(TF_PLAN_ARTIFACT)/$(ENVIRONMENT).tfplan
