@@ -11,5 +11,5 @@ output "key_vault_url" {
 }
 
 output "diagnostic_categories_metrics" {
-  value = module.diagnostic_settings.diagnostic_categories_metrics
+  value = module.diagnostic-settings.diagnostic_categories_metrics
 }
