@@ -28,3 +28,11 @@ steps:
       PathtoPublish: $(Build.ArtifactStagingDirectory)
       ArtifactName: $(TF_PLAN_ARTIFACT)
       publishLocation: Container
+
+  - task: Bash@3
+    displayName: Display Terraform Output
+    inputs:
+      targetType: inline
+      script: |
+        echo "Fetching Terraform outputs..."
+        terraform output diagnostic_categories_metrics
