@@ -68,7 +68,7 @@ module "private_endpoint_keyvault" {
   Diagnostic Settings
 -------------------------------------------------------------------------------------------------- */
 
-module "diagnostic-settings" {
+module "diagnostic-settings" { #needs to be changed to an underscore.
   source = "../diagnostic-settings"
 
   name                            = "${var.name}-diagnostic-setting"

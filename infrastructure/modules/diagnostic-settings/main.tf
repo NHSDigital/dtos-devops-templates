@@ -19,15 +19,27 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
   }
 
   dynamic "metric" {
-    for_each = data.azurerm_monitor_diagnostic_categories.this.metrics
+    for_each = var.metric
 
     content {
       category = metric.value
-      enabled  = var.metric_enabled
       retention_policy {
         days    = var.metric_retention_policy_days
         enabled = var.metric_retention_policy_enabled
       }
     }
   }
+
+  # dynamic "metric" {
+  #   for_each = data.azurerm_monitor_diagnostic_categories.this.metrics
+
+  #   content {
+  #     category = metric.value
+  #     enabled  = var.metric_enabled
+  #     retention_policy {
+  #       days    = var.metric_retention_policy_days
+  #       enabled = var.metric_retention_policy_enabled
+  #     }
+  #   }
+  # }
 }
