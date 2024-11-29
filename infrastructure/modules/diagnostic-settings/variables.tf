@@ -33,23 +33,23 @@ variable "metric" {
   default     = []
 }
 
-variable "metric_enabled" {
-  type        = bool
-  description = "to enable retention for diagnostic settings metric"
-  default     = true
-}
+# variable "metric_enabled" {
+#   type        = bool
+#   description = "to enable retention for diagnostic settings metric"
+#   default     = true
+# }
 
-variable "metric_retention_policy_days" {
-  type        = number
-  description = "value of the retention days for diagnostic settings metric set to 30 days by default"
-  default     = 30
-}
+# variable "metric_retention_policy_days" {
+#   type        = number
+#   description = "value of the retention days for diagnostic settings metric set to 30 days by default"
+#   default     = 30
+# }
 
-variable "metric_retention_policy_enabled" {
-  type        = bool
-  description = "to enable retention for diagnostic settings metric"
-  default     = true
-}
+# variable "metric_retention_policy_enabled" {
+#   type        = bool
+#   description = "to enable retention for diagnostic settings metric"
+#   default     = true
+# }
 
 variable "storage_account_id" {
   type        = string
