@@ -22,7 +22,8 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
     for_each = var.metric
 
     content {
-      category = metric.value
+      category = metric.value      
+      enabled  = var.metric_enabled
       # retention_policy {
       #   days    = var.metric_retention_policy_days
       #   enabled = var.metric_retention_policy_enabled
