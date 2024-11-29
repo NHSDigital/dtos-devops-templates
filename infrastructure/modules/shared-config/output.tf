@@ -26,7 +26,7 @@ locals {
         apim_portal  = lower("apim-portal-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
       backend_http_settings_name = {
-        apim_shared = lower("apim-shared-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_shared  = lower("apim-shared-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
         apim_gateway = lower("apim-gateway-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
         apim_portal  = lower("apim-portal-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
       }

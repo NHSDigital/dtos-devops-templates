@@ -19,11 +19,11 @@ variable "log_analytics_workspace_id" {
   description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
 }
 
-# variable "metric_enabled" {
-#   type        = bool
-#   description = "to enable retention for diagnostic settings metric"
-#   default     = false
-# }
+variable "metric_enabled" {
+  type        = bool
+  description = "to enable retention for diagnostic settings metric"
+  default     = false
+}
 
 # variable "metric_retention_policy_days" {
 #   type        = number

@@ -26,22 +26,22 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
       # retention_policy {
       #   days    = var.metric_retention_policy_days
       #   enabled = var.metric_retention_policy_enabled
-    # }
+      # }
+    }
   }
-}
 
-# dynamic "metric" {
-#   for_each = data.azurerm_monitor_diagnostic_categories.this.metrics
+  # dynamic "metric" {
+  #   for_each = data.azurerm_monitor_diagnostic_categories.this.metrics
 
-#   content {
-#     category = metric.value
-#     enabled  = var.metric_enabled
-#     # retention_policy {
-#     #   days    = var.metric_retention_policy_days
-#     #   enabled = var.metric_retention_policy_enabled
-#     # }
-#   }
-# }
+  #   content {
+  #     category = metric.value
+  #     enabled  = var.metric_enabled
+  #     # retention_policy {
+  #     #   days    = var.metric_retention_policy_days
+  #     #   enabled = var.metric_retention_policy_enabled
+  #     # }
+  #   }
+  # }
 
 
 }
