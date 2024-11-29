@@ -3,15 +3,6 @@ variable "enable_rbac_authorization" {
   default = false
 }
 
-variable "name" {
-  type = string
-}
-
-variable "resource_group_name" {
-  type        = string
-  description = "The name of the resource group in which to create the Key Vault. Changing this forces a new resource to be created."
-}
-
 variable "location" {
   type        = string
   description = "The location/region where the  Key Vault is created."
@@ -56,6 +47,10 @@ variable "monitor_diagnostic_setting_keyvault_metrics" {
   description = "Controls what metrics will be enabled for the keyvault"
 }
 
+variable "name" {
+  type = string
+}
+
 variable "private_endpoint_properties" {
   description = "Consolidated properties for the Key Vault Private Endpoint."
   type = object({
@@ -77,6 +72,11 @@ variable "purge_protection_enabled" {
   type        = bool
   description = "Should the purge protection be enabled."
   default     = false
+}
+
+variable "resource_group_name" {
+  type        = string
+  description = "The name of the resource group in which to create the Key Vault. Changing this forces a new resource to be created."
 }
 
 variable "rbac_roles" {
