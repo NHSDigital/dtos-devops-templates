@@ -63,8 +63,5 @@ module "diagnostic-settings" { #needs to be changed to an underscore.
   enabled_log                = var.monitor_diagnostic_setting_keyvault_enabled_logs
   metric                     = var.monitor_diagnostic_setting_keyvault_metrics
   metric_enabled             = var.metric_enabled
-  # metric_retention_policy_enabled = var.metric_retention_policy_enabled
-  # metric_retention_policy_days    = var.metric_retention_policy_days
-
 }
 

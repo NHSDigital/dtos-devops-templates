@@ -77,9 +77,6 @@ module "diagnostic_setting_sql_server" {
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_log                = var.monitor_diagnostic_setting_sql_server_enabled_logs
   metric                     = var.monitor_diagnostic_setting_sql_server_metrics
-  # metric_enabled                  = var.metric_enabled
-  # metric_retention_policy_enabled = var.metric_retention_policy_enabled
-  # metric_retention_policy_days    = var.metric_retention_policy_days
 }
 
 /* --------------------------------------------------------------------------------------------------
