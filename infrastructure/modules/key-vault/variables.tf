@@ -22,7 +22,7 @@ variable "log_analytics_workspace_id" {
 variable "metric_enabled" {
   type        = bool
   description = "to enable retention for diagnostic settings metric"
-  default     = false
+  default     = true
 }
 
 variable "monitor_diagnostic_setting_keyvault_enabled_logs" {
