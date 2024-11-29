@@ -1,3 +1,5 @@
+data "azurerm_client_config" "current" {}
+
 resource "azurerm_application_gateway" "this" {
   name                = var.names.name
   resource_group_name = var.resource_group_name
@@ -140,7 +142,7 @@ resource "azurerm_application_gateway" "this" {
       frontend_port_name             = var.names.frontend_port_name[http_listener.value.frontend_port_key]
       protocol                       = http_listener.value.protocol
       require_sni                    = http_listener.value.require_sni
-      ssl_certificate_name           = var.names.ssl_certificate_name[http_listener.value.ssl_certificate_key]
+      ssl_certificate_name           = http_listener.value.ssl_certificate_key != null ? var.names.ssl_certificate_name[http_listener.value.ssl_certificate_key] : null
       ssl_profile_name               = http_listener.value.ssl_profile_name
     }
   }
@@ -159,7 +161,7 @@ resource "azurerm_application_gateway" "this" {
   }
 
   depends_on = [
-    module.key_vault_rbac_assignments
+    azurerm_key_vault_access_policy.appgw
   ]
 
   tags = var.tags
@@ -169,4 +171,22 @@ resource "azurerm_user_assigned_identity" "appgw" {
   name                = var.names.managed_identity_name
   resource_group_name = var.resource_group_name
   location            = var.location
+}
+
+# Application Gateway cannot use RBAC auth for Key Vault, unless by PowerShell. An Azure Policy exemption will be needed when this is forbidden by NHS
+# https://learn.microsoft.com/azure/application-gateway/key-vault-certs?WT.mc_id=Portal-Microsoft_Azure_HybridNetworking#key-vault-azure-role-based-access-control-permission-model
+resource "azurerm_key_vault_access_policy" "appgw" {
+  key_vault_id = var.key_vault_id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_user_assigned_identity.appgw.principal_id
+
+  secret_permissions = [
+    "Get",
+    "List",
+  ]
+
+  certificate_permissions = [
+    "Get",
+    "List",
+  ]
 }

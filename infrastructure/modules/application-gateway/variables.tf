@@ -93,7 +93,7 @@ variable "probe" {
     minimum_servers                           = optional(number)
     port                                      = optional(number)
     match = optional(object({
-      status_code = list(number)
+      status_code = list(string)
       body        = optional(string)
     }))
   }))
