@@ -7,9 +7,9 @@ resource "azurerm_log_analytics_workspace" "log_analytics_workspace" {
 
   # It is not necessary to create a managed identity for the Log Analytics Workspace as one is
   # created by default when the workspace is created with using the same name as the workspace.
-  # identity {
-  #   type = "SystemAssigned"
-  # }
+  identity {
+    type = "SystemAssigned"
+  }
 
   tags = var.tags
 }
