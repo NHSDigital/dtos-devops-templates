@@ -67,6 +67,7 @@ locals {
     docker-worker-windows-nb    = lower("WWK${var.env}${var.location_map[var.location]}${var.application}")
     external-load-balancer      = lower("ELB-${var.env}-${var.location_map[var.location]}-${var.application}")
     event-grid-topic            = lower("EVGT-${var.env}-${var.location_map[var.location]}")
+    event-hub-namespace         = lower("EVHNS-${var.env}-${var.location_map[var.location]}-${var.application}")
     firewall                    = lower("FW-${var.env}-${var.location_map[var.location]}-${var.application}")
     function-app                = lower("${var.env}-${var.location_map[var.location]}")
     internal-load-balancer      = lower("ILB-${var.env}-${var.location_map[var.location]}-${var.application}")
