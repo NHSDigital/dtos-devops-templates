@@ -49,6 +49,11 @@ variable "monitor_diagnostic_setting_storage_account_enabled_logs" {
   description = "Controls what logs will be enabled for the storage"
 }
 
+variable "monitor_diagnostic_setting_storage_account_metrics" {
+  type        = list(string)
+  description = "Controls what metrics will be enabled for the storage"
+}
+
 variable "private_endpoint_properties" {
   description = "Consolidated properties for the Function App Private Endpoint."
   type = object({

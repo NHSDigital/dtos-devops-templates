@@ -19,6 +19,12 @@ variable "log_analytics_workspace_id" {
   description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
 }
 
+variable "metric_enabled" {
+  type        = bool
+  description = "to enable retention for diagnostic settings metric"
+  default     = true
+}
+
 variable "monitor_diagnostic_setting_keyvault_enabled_logs" {
   type        = list(string)
   description = "Controls what logs will be enabled for the keyvault"
