@@ -37,6 +37,7 @@ variable "event_hubs" {
   description = "A map of Event Hubs to create within the namespace."
   type = map(object({
     name              = string
+    consumer_group    = string
     partition_count   = number
     message_retention = number
   }))
