@@ -5,8 +5,8 @@ resource "azurerm_log_analytics_workspace" "log_analytics_workspace" {
   sku                 = var.law_sku
   retention_in_days   = var.retention_days
 
-  # It is not necessary to create a managed identity for the Log Analytics Workspace as one is
-  # created by default when the workspace is created with using the same name as the workspace.
+  # A Managed Identity is created by default when creating a Log Analytics Workspace but still
+  # need to add the identity block to the resource to enable it to be accessible in the outputs
   identity {
     type = "SystemAssigned"
   }
