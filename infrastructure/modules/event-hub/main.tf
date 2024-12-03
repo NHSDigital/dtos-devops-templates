@@ -1,3 +1,6 @@
+/* --------------------------------------------------------------------------------------------------
+  Event Hubs Namespace and Authorization Rule
+-------------------------------------------------------------------------------------------------- */
 resource "azurerm_eventhub_namespace" "eventhub_ns" {
 
   name                = var.name
@@ -37,15 +40,28 @@ resource "azurerm_eventhub_namespace_authorization_rule" "auth_rule" {
   manage = var.auth_rule.manage
 }
 
+/* --------------------------------------------------------------------------------------------------
+  Event Hubs and Consumer Groups
+-------------------------------------------------------------------------------------------------- */
+
 resource "azurerm_eventhub" "eventhub" {
   # create multiple event hubs per namespace
   for_each = var.event_hubs
 
-  name                = each.value.name
-  namespace_id        = azurerm_eventhub_namespace.eventhub_ns.id
+  name         = each.value.name
+  namespace_id = azurerm_eventhub_namespace.eventhub_ns.id
 
   partition_count   = each.value.partition_count
   message_retention = each.value.message_retention
+}
+
+resource "azurerm_eventhub_consumer_group" "consumer_group" {
+  for_each = var.event_hubs
+
+  name                = each.value.consumer_group
+  eventhub_name       = azurerm_eventhub.eventhub[each.key].name
+  namespace_name      = azurerm_eventhub_namespace.eventhub_ns.name
+  resource_group_name = azurerm_eventhub_namespace.eventhub_ns.resource_group_name
 }
 
 /* --------------------------------------------------------------------------------------------------
