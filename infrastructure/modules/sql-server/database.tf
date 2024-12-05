@@ -8,6 +8,8 @@ resource "azurerm_mssql_database" "defaultdb" {
   read_scale           = var.read_scale
   sku_name             = var.sku
   storage_account_type = var.storage_account_type
+  zone_redundant       = var.zone_redundant
+
 
   tags = var.tags
 
