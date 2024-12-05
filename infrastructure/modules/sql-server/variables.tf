@@ -115,6 +115,12 @@ variable "read_scale" {
   default     = false
 }
 
+variable "storage_account_type" {
+  type        = string
+  description = "storage account type: Geo, GeoZone, Local and Zone"
+  default     = "Local"
+}
+
 variable "sku" {
   type        = string #checkType
   description = "Specifies the name of the SKU used by the database. For example, GP_S_Gen5_2,HS_Gen4_1,BC_Gen5_2, ElasticPool, Basic,S0, P2 ,DW100c, DS100. Changing this from the HyperScale service tier to another service tier will create a new resource."
@@ -125,6 +131,12 @@ variable "tags" {
   type        = map(string)
   description = "Resource tags to be applied throughout the deployment."
   default     = {}
+}
+
+variable "zone_redundant" {
+  type        = bool
+  description = "To disable zone redundancy."
+  default     = false
 }
 
 variable "log_analytics_workspace_id" {
