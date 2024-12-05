@@ -8,6 +8,8 @@ resource "azurerm_mssql_server" "azure_sql_server" {
   minimum_tls_version           = var.tlsver
   public_network_access_enabled = var.public_network_access_enabled
 
+  backup_storage_redundancy = var.backup_storage_redundancy
+
   tags = var.tags
 
   azuread_administrator {

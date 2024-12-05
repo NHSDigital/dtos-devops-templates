@@ -48,6 +48,11 @@ variable "kv_id" {
   description = "Name of the Key Vault in which the admin credentials are put"
 }
 
+variable "backup_storage_redundancy" {
+  type        = string
+  description = "Name of backup storage redundancy possible values: Local, Zone, or Geo"
+}
+
 variable "private_endpoint_properties" {
   description = "Consolidated properties for the Function App Private Endpoint."
   type = object({
