@@ -48,11 +48,6 @@ variable "kv_id" {
   description = "Name of the Key Vault in which the admin credentials are put"
 }
 
-variable "backup_storage_redundancy" {
-  type        = string
-  description = "Name of backup storage redundancy possible values: Local, Zone, or Geo"
-}
-
 variable "private_endpoint_properties" {
   description = "Consolidated properties for the Function App Private Endpoint."
   type = object({
@@ -118,6 +113,11 @@ variable "read_scale" {
   type        = bool
   description = "If enabled, connections that have application intent set to readonly in their connection string may be routed to a readonly secondary replica. This property is only settable for Premium and Business Critical databases."
   default     = false
+}
+
+variable "storage_account_type" {
+  type        = string
+  description = "storage account type: Geo, GeoZone, Local and Zone"
 }
 
 variable "sku" {
