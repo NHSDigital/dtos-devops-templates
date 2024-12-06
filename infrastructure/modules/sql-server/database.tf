@@ -1,12 +1,15 @@
 
 resource "azurerm_mssql_database" "defaultdb" {
-  name         = var.db_name_suffix # using only the suffix, as this is the naming convention from DToS Devs
-  server_id    = azurerm_mssql_server.azure_sql_server.id
-  collation    = var.collation
-  license_type = var.licence_type
-  max_size_gb  = var.max_gb
-  read_scale   = var.read_scale
-  sku_name     = var.sku
+  name                 = var.db_name_suffix # using only the suffix, as this is the naming convention from DToS Devs
+  server_id            = azurerm_mssql_server.azure_sql_server.id
+  collation            = var.collation
+  license_type         = var.licence_type
+  max_size_gb          = var.max_gb
+  read_scale           = var.read_scale
+  sku_name             = var.sku
+  storage_account_type = var.storage_account_type
+  zone_redundant       = var.zone_redundant
+
 
   tags = var.tags
 
