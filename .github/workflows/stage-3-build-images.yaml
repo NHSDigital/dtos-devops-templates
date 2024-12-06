@@ -11,6 +11,7 @@ on:
         description: Environment of the deployment
         required: true
         type: string
+        default: development
       docker_compose_file:
         description: The path of the compose.yaml file needed to build docker images
         required: true
@@ -127,7 +128,7 @@ jobs:
           echo "Commit hash tag: ${SHORT_COMMIT_HASH}"
           echo "COMMIT_HASH_TAG=${SHORT_COMMIT_HASH}" >> ${GITHUB_ENV}
 
-          echo "ENVIRONMENT_TAG=development" >> ${GITHUB_ENV}
+          echo "ENVIRONMENT_TAG=${{ inputs.environment_tag }}" >> ${GITHUB_ENV}
 
       - name: Build and Push Image
         working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}

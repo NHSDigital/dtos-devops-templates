@@ -34,7 +34,7 @@ changed_functions=""
 if [ -z "$CHANGED_FOLDERS" ]; then
     changed_functions="null"
     echo "No files changed"
-elif [[ "$CHANGED_FOLDERS" == *Shared* ]]; then
+elif [[ "$CHANGED_FOLDERS" =~ (?i)Shared ]]; then
     echo "Shared folder changed, returning all functions"
     for key in "${!docker_functions_map[@]}"; do
         changed_functions+=" ${docker_functions_map[$key]}"
