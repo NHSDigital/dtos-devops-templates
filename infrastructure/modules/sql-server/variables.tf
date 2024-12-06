@@ -118,6 +118,7 @@ variable "read_scale" {
 variable "storage_account_type" {
   type        = string
   description = "storage account type: Geo, GeoZone, Local and Zone"
+  default = "Local"
 }
 
 variable "sku" {
