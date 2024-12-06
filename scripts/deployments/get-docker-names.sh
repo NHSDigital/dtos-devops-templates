@@ -9,9 +9,9 @@ DOCKER_COMPOSE_FILE=$1
 WORKING_DIR="$(dirname "$1")"
 EXCLUDED_CONTAINERS=$2
 
-EXCLUSION_FILTER=$(echo "$EXCLUDED_CONTAINERS" | awk -v ORS='' '{split($0, arr, ","); for (i in arr) printf ".container_name != \"%s\" and ", arr[i]} END {print "1"}')
+EXCLUSION_FILTER=$(echo "${EXCLUDED_CONTAINERS}" | awk -v ORS='' '{split($0, arr, ","); for (i in arr) printf ".container_name != \"%s\" and ", arr[i]} END {print "1"}')
 
-cd "$WORKING_DIR" || { echo "Directory not found: $WORKING_DIR"; exit 1; }
+cd "${WORKING_DIR}" || { echo "Directory not found: ${WORKING_DIR}"; exit 1; }
 
 declare -A docker_functions_map=()
 
@@ -31,18 +31,18 @@ done
 
 changed_functions=""
 
-if [ -z "$CHANGED_FOLDERS" ]; then
+if [ -z "${CHANGED_FOLDERS}" ]; then
     changed_functions="null"
     echo "No files changed"
-elif [[ "$CHANGED_FOLDERS" =~ (?i)Shared ]]; then
+elif [[ "${CHANGED_FOLDERS,,}" =~ shared ]]; then
     echo "Shared folder changed, returning all functions"
     for key in "${!docker_functions_map[@]}"; do
         changed_functions+=" ${docker_functions_map[$key]}"
         echo "Adding in: ${docker_functions_map[$key]}"
     done
 else
-    echo "files changed $CHANGED_FOLDERS "
-    for folder in $CHANGED_FOLDERS; do
+    echo "files changed ${CHANGED_FOLDERS} "
+    for folder in ${CHANGED_FOLDERS}; do
       echo "Add this function in: ${folder} "
       echo "Add this which maps to: ${docker_functions_map[$folder]} "
       changed_functions+=" ${docker_functions_map[$folder]}"
@@ -50,9 +50,9 @@ else
 fi
 
 # Format the output for the github matrix:
-changed_functions_json=$(printf '["%s"]' "$(echo $changed_functions | sed 's/ /","/g')")
+changed_functions_json=$(printf '["%s"]' "$(echo ${changed_functions} | sed 's/ /","/g')")
 
 echo "Final list of functions to rebuild:"
-echo "$changed_functions_json"
+echo "${changed_functions_json}"
 
-echo "FUNC_NAMES=$changed_functions_json" >> "$GITHUB_OUTPUT"
+echo "FUNC_NAMES=${changed_functions_json}" >> "${GITHUB_OUTPUT}"
