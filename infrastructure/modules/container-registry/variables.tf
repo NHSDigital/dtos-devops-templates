@@ -37,7 +37,7 @@ variable "private_endpoint_properties" {
 
 variable "public_network_access_enabled" {
   type        = bool
-  description = "Controls whether data in the account may be accessed from public networks."
+  description = "Controls whether the acr may be accessed from public networks."
   default     = false
 }
 
@@ -55,4 +55,9 @@ variable "tags" {
   type        = map(string)
   description = "Resource tags to be applied throughout the deployment."
   default     = {}
+}
+
+variable "zone_redundancy_enabled" {
+  type    = bool
+  default = false
 }
