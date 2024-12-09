@@ -12,3 +12,9 @@ variable "role_definition_name" {
   description = "The name of the role definition to assign."
   type        = string
 }
+
+variable "skip_service_principal_aad_check" {
+  description = "Enable skipping the principal aad check."
+  type        = bool
+  default     = false
+}
