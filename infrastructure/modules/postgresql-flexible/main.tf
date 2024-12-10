@@ -46,7 +46,7 @@ resource "azurerm_key_vault_secret" "db_admin_pwd" {
 
   name         = var.key_vault_admin_pwd_secret_name
   value        = resource.random_password.admin_password[0].result
-  key_vault_id = var.key_vault_admin_pwd_secret_name
+  key_vault_id = var.key_vault_id
 }
 
 # Create the Active Directory Administrator for the Postgres Flexible Server
