@@ -1,4 +1,3 @@
-
 resource "azurerm_postgresql_flexible_server_database" "postgresql_flexible_db" {
   for_each = var.databases
 

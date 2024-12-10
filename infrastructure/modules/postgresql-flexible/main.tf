@@ -3,7 +3,6 @@ resource "azurerm_postgresql_flexible_server" "postgresql_flexible_server" {
   resource_group_name = var.resource_group_name
   location            = var.location
 
-
   public_network_access_enabled = var.public_network_access_enabled
   sku_name                      = var.sku_name
   storage_mb                    = var.storage_mb
@@ -16,9 +15,12 @@ resource "azurerm_postgresql_flexible_server" "postgresql_flexible_server" {
 
   authentication {
     active_directory_auth_enabled = true
-    password_auth_enabled         = true
+    password_auth_enabled         = var.password_auth_enabled
     tenant_id                     = var.tenant_id
   }
+
+  administrator_login    = length(var.administrator_login) > 0 && var.password_auth_enabled ? var.administrator_login : null
+  administrator_password = length(var.administrator_login) > 0 && var.password_auth_enabled ? random_password.admin_password[0].result : null
 
   # Postgres Flexible Server does not support User Assigned Identity
   # so do not enable for now. If required, create the identity in an
@@ -29,6 +31,22 @@ resource "azurerm_postgresql_flexible_server" "postgresql_flexible_server" {
   # }
 
   tags = var.tags
+}
+
+resource "random_password" "admin_password" {
+  count = length(var.administrator_login) > 0 && var.password_auth_enabled ? 1 : 0
+
+  length           = 30
+  special          = true
+  override_special = "!@#$%^&*()-_=+[]{}<>:?"
+}
+
+resource "azurerm_key_vault_secret" "db_admin_pwd" {
+  count = length(var.administrator_login) > 0 && var.password_auth_enabled ? 1 : 0
+
+  name         = var.key_vault_admin_pwd_secret_name
+  value        = resource.random_password.admin_password[0].result
+  key_vault_id = var.key_vault_id
 }
 
 # Create the Active Directory Administrator for the Postgres Flexible Server
