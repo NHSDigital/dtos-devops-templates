@@ -13,6 +13,11 @@ variable "location" {
   type        = string
 }
 
+variable "administrator_login" {
+  type    = string
+  default = null
+}
+
 variable "backup_retention_days" {
   description = "The number of days to retain backups for the PostgreSQL Flexible Server."
   type        = number
@@ -21,6 +26,23 @@ variable "backup_retention_days" {
 variable "geo_redundant_backup_enabled" {
   description = "Whether geo-redundant backup is enabled for the PostgreSQL Flexible Server."
   type        = bool
+}
+
+variable "key_vault_id" {
+  description = "ID of the Key Vault in which to store the Admin password, if one is created."
+  type        = string
+  default     = null
+}
+
+variable "key_vault_admin_pwd_secret_name" {
+  description = "Key Vault secret name in which to store the Admin password, if one is created."
+  type        = string
+  default     = null
+}
+
+variable "password_auth_enabled" {
+  type    = bool
+  default = false
 }
 
 variable "postgresql_admin_object_id" {
