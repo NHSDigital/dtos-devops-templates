@@ -36,7 +36,7 @@ resource "azurerm_postgresql_flexible_server" "postgresql_flexible_server" {
 resource "random_password" "admin_password" {
   count = length(var.administrator_login) > 0 && var.password_auth_enabled ? 1 : 0
 
-  length           = 20
+  length           = 30
   special          = true
   override_special = "!@#$%^&*()-_=+[]{}<>:?"
 }
