@@ -82,16 +82,16 @@ module "diagnostic_setting_sql_server" {
 /* --------------------------------------------------------------------------------------------------
   SQL Server Extended Auditing Policy
 -------------------------------------------------------------------------------------------------- */
-resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
+# resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
 
-  server_id              = azurerm_mssql_server.azure_sql_server.id
-  log_monitoring_enabled = var.log_monitoring_enabled
-  retention_in_days      = var.auditing_policy_retention_in_days
+#   server_id              = azurerm_mssql_server.azure_sql_server.id
+#   log_monitoring_enabled = var.log_monitoring_enabled
+#   retention_in_days      = var.auditing_policy_retention_in_days
 
-  depends_on = [
-    module.rbac_assignments
-  ]
-}
+#   depends_on = [
+#     module.rbac_assignments
+#   ]
+# }
 
 /* --------------------------------------------------------------------------------------------------
   Security Alert Policy for SQL Server
