@@ -82,6 +82,8 @@ locals {
     network-security-group      = upper("NSG-${var.env}-${var.location_map[var.location]}-${var.application}")
     postgres-sql-server         = lower("postgres-${var.application}-${var.env}-${var.location_map[var.location]}")
     private-ssh-key             = lower("ssh-pri-${var.env}${var.location_map[var.location]}${var.application}")
+    private-link-scope          = lower("ampls-${var.env}${var.location_map[var.location]}${var.application}")
+    private-link-scoped-service = lower("ampls-svc-${var.env}${var.location_map[var.location]}${var.application}")
     public-ip-address           = lower("PIP-${var.env}-${var.location_map[var.location]}-${var.application}")
     public-ip-dns               = lower("${var.env}${var.location_map[var.location]}${var.application}")
     public-ssh-key              = lower("ssh-pub-${var.env}${var.location_map[var.location]}${var.application}")
