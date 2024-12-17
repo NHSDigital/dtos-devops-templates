@@ -72,6 +72,16 @@ variable "function_app_slots" {
   default = []
 }
 
+variable "health_check_path" {
+  type        = string
+  description = "The path to be checked for this function app health."
+}
+
+variable "health_check_eviction_time_in_min" {
+  type        = number
+  description = "The time in minutes a node can be unhealthy before being removed from the load balancer."
+}
+
 variable "http_version" {
   type        = string
   description = "The HTTP version to use for the function app. Override standard default."
