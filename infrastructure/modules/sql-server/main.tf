@@ -92,13 +92,13 @@ module "diagnostic_setting_sql_server" {
 /* --------------------------------------------------------------------------------------------------
   Security Alert Policy for SQL Server
 -------------------------------------------------------------------------------------------------- */
-# resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" {
+resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" {
 
-#   server_name         = azurerm_mssql_server.azure_sql_server.name
-#   resource_group_name = var.resource_group_name
-#   state               = var.sql_server_alert_policy_state
-#   retention_days      = var.security_alert_policy_retention_days
-# }
+  server_name         = azurerm_mssql_server.azure_sql_server.name
+  resource_group_name = var.resource_group_name
+  state               = var.sql_server_alert_policy_state
+  retention_days      = var.security_alert_policy_retention_days
+}
 
 /* --------------------------------------------------------------------------------------------------
   Vulnerability Assessment for SQL Server
