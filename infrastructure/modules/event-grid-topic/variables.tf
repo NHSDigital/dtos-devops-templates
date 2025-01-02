@@ -32,3 +32,19 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "private_endpoint_properties" {
+  description = "Consolidated properties for the Event Grid Private Endpoint."
+  type = object({
+    private_dns_zone_ids                 = optional(list(string), [])
+    private_endpoint_enabled             = optional(bool, false)
+    private_endpoint_subnet_id           = optional(string, "")
+    private_endpoint_resource_group_name = optional(string, "")
+    private_service_connection_is_manual = optional(bool, false)
+  })
+
+  validation {
+    condition     = var.private_endpoint_properties.private_endpoint_enabled == false || (length(var.private_endpoint_properties.private_dns_zone_ids) > 0 && length(var.private_endpoint_properties.private_endpoint_subnet_id) > 0)
+    error_message = "Both private_dns_zone_ids and private_endpoint_subnet_id must be provided if private_endpoint_enabled is true."
+  }
+}

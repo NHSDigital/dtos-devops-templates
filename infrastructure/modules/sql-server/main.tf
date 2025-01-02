@@ -68,53 +68,53 @@ module "private_endpoint_sql_server" {
 /* --------------------------------------------------------------------------------------------------
   SQL Server Diagnostic Settings
 -------------------------------------------------------------------------------------------------- */
-module "diagnostic_setting_sql_server" {
+# module "diagnostic_setting_sql_server" {
 
-  source = "../diagnostic-settings"
+#   source = "../diagnostic-settings"
 
-  name                       = "${var.name}-sql-server-diagnotic-setting"
-  target_resource_id         = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
-  log_analytics_workspace_id = var.log_analytics_workspace_id
-  enabled_log                = var.monitor_diagnostic_setting_sql_server_enabled_logs
-  metric                     = var.monitor_diagnostic_setting_sql_server_metrics
-}
+#   name                       = "${var.name}-sql-server-diagnotic-setting"
+#   target_resource_id         = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
+#   log_analytics_workspace_id = var.log_analytics_workspace_id
+#   enabled_log                = var.monitor_diagnostic_setting_sql_server_enabled_logs
+#   metric                     = var.monitor_diagnostic_setting_sql_server_metrics
+# }
 
 /* --------------------------------------------------------------------------------------------------
   SQL Server Extended Auditing Policy
 -------------------------------------------------------------------------------------------------- */
-resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
+# resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
 
-  server_id              = azurerm_mssql_server.azure_sql_server.id
-  log_monitoring_enabled = var.log_monitoring_enabled
-  retention_in_days      = var.auditing_policy_retention_in_days
+#   server_id              = azurerm_mssql_server.azure_sql_server.id
+#   log_monitoring_enabled = var.log_monitoring_enabled
+#   retention_in_days      = var.auditing_policy_retention_in_days
 
-  depends_on = [
-    module.rbac_assignments
-  ]
-}
+#   depends_on = [
+#     module.rbac_assignments
+#   ]
+# }
 
 /* --------------------------------------------------------------------------------------------------
   Security Alert Policy for SQL Server
 -------------------------------------------------------------------------------------------------- */
-resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" {
+# resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" {
 
-  server_name         = azurerm_mssql_server.azure_sql_server.name
-  resource_group_name = var.resource_group_name
-  state               = var.sql_server_alert_policy_state
-  retention_days      = var.security_alert_policy_retention_days
-}
+#   server_name         = azurerm_mssql_server.azure_sql_server.name
+#   resource_group_name = var.resource_group_name
+#   state               = var.sql_server_alert_policy_state
+#   retention_days      = var.security_alert_policy_retention_days
+# }
 
 /* --------------------------------------------------------------------------------------------------
   Vulnerability Assessment for SQL Server
 -------------------------------------------------------------------------------------------------- */
-resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerability_assessment" {
-  count = var.vulnerability_assessment_enabled ? 1 : 0
+# resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerability_assessment" {
+#   count = var.vulnerability_assessment_enabled ? 1 : 0
 
-  server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sql_server_alert_policy.id
-  storage_container_path          = var.storage_container_id
+#   server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sql_server_alert_policy.id
+#   storage_container_path          = var.storage_container_id
 
-  recurring_scans {
-    enabled                   = true
-    email_subscription_admins = true
-  }
-}
+#   recurring_scans {
+#     enabled                   = true
+#     email_subscription_admins = true
+#   }
+# }
