@@ -107,14 +107,14 @@ resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
 /* --------------------------------------------------------------------------------------------------
   Vulnerability Assessment for SQL Server
 -------------------------------------------------------------------------------------------------- */
-resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerability_assessment" {
-  count = var.vulnerability_assessment_enabled ? 1 : 0
+# resource "azurerm_mssql_server_vulnerability_assessment" "sql_server_vulnerability_assessment" {
+#   count = var.vulnerability_assessment_enabled ? 1 : 0
 
-  server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sql_server_alert_policy.id
-  storage_container_path          = var.storage_container_id
+#   server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sql_server_alert_policy.id
+#   storage_container_path          = var.storage_container_id
 
-  recurring_scans {
-    enabled                   = true
-    email_subscription_admins = true
-  }
-}
+#   recurring_scans {
+#     enabled                   = true
+#     email_subscription_admins = true
+#   }
+# }
