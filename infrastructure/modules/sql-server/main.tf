@@ -68,16 +68,16 @@ module "private_endpoint_sql_server" {
 /* --------------------------------------------------------------------------------------------------
   SQL Server Diagnostic Settings
 -------------------------------------------------------------------------------------------------- */
-module "diagnostic_setting_sql_server" {
+# module "diagnostic_setting_sql_server" {
 
-  source = "../diagnostic-settings"
+#   source = "../diagnostic-settings"
 
-  name                       = "${var.name}-sql-server-diagnotic-setting"
-  target_resource_id         = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
-  log_analytics_workspace_id = var.log_analytics_workspace_id
-  enabled_log                = var.monitor_diagnostic_setting_sql_server_enabled_logs
-  metric                     = var.monitor_diagnostic_setting_sql_server_metrics
-}
+#   name                       = "${var.name}-sql-server-diagnotic-setting"
+#   target_resource_id         = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
+#   log_analytics_workspace_id = var.log_analytics_workspace_id
+#   enabled_log                = var.monitor_diagnostic_setting_sql_server_enabled_logs
+#   metric                     = var.monitor_diagnostic_setting_sql_server_metrics
+# }
 
 /* --------------------------------------------------------------------------------------------------
   SQL Server Extended Auditing Policy
@@ -96,13 +96,13 @@ resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
 /* --------------------------------------------------------------------------------------------------
   Security Alert Policy for SQL Server
 -------------------------------------------------------------------------------------------------- */
-resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" {
+# resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" {
 
-  server_name         = azurerm_mssql_server.azure_sql_server.name
-  resource_group_name = var.resource_group_name
-  state               = var.sql_server_alert_policy_state
-  retention_days      = var.security_alert_policy_retention_days
-}
+#   server_name         = azurerm_mssql_server.azure_sql_server.name
+#   resource_group_name = var.resource_group_name
+#   state               = var.sql_server_alert_policy_state
+#   retention_days      = var.security_alert_policy_retention_days
+# }
 
 /* --------------------------------------------------------------------------------------------------
   Vulnerability Assessment for SQL Server
