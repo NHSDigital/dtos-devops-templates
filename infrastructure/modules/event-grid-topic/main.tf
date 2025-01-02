@@ -22,12 +22,12 @@ resource "azurerm_eventgrid_topic" "azurerm_eventgrid" {
   Private Endpoint Configuration
 -------------------------------------------------------------------------------------------------- */
 
-module "private_endpoint" {
+module "private_endpoint_eventgrid" {
   count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
 
   source = "../private-endpoint"
 
-  name                = "${var.topic_name}-private-endpoint"
+  name                = "${var.topic_name}-azure-eventgrid-private-endpoint"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
@@ -40,7 +40,7 @@ module "private_endpoint" {
   private_service_connection = {
     name                           = "${var.topic_name}-private-endpoint-connection"
     private_connection_resource_id = azurerm_eventgrid_topic.azurerm_eventgrid.id
-    subresource_names              = ["sites"]
+    subresource_names              = ["topic"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
   }
 
