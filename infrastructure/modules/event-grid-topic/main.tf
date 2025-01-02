@@ -39,7 +39,7 @@ module "private_endpoint" {
 
   private_service_connection = {
     name                           = "${var.topic_name}-private-endpoint-connection"
-    private_connection_resource_id = azurerm_linux_function_app.function_app.id
+    private_connection_resource_id = azurerm_eventgrid_topic.azurerm_eventgrid.id
     subresource_names              = ["sites"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
   }
