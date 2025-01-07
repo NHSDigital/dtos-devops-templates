@@ -111,10 +111,20 @@ while [[ $# -gt 0 ]]; do
     cert_name="${domain/\*\./wildcard-}"
     cert_name="${cert_name//./-}"
 
+    thumbprint_local=$(openssl x509 -in certbot/config/live/${trimmed_domain}/cert.pem -noout -fingerprint -sha1 | sed 's/.*=//;s/://g')
+    thumbprint64_local=$(echo "${thumbprint_local}" | xxd -r -p | base64)
+
     # Import certificate into each Key Vault
-    openssl pkcs12 -export -inkey certbot/config/live/${trimmed_domain}/privkey.pem -in certbot/config/live/${trimmed_domain}/fullchain.pem -out ${trimmed_domain}.pfx -password pass:
     for kv_name in "${kv_names[@]}"; do
-        az keyvault certificate import --vault-name "${kv_name}" --name "${cert_name}" --file "${trimmed_domain}.pfx" --password ""
+        # Retrieve the thumbprint of any pre-existing certificate with this name in Key Vault
+        # Key Vault doesn't check thumbprints, and will create a new version even if the thumbprint is identical, causing unnecessary downstream Terraform changes where the cert is used
+        thumbprint64_kv=$(az keyvault certificate show --vault-name "${kv_name}" --name "${cert_name}" --query "x509Thumbprint" --output tsv || true) # continue on failure
+        if [[ "${thumbprint64_local}" == "${thumbprint64_kv}" ]]; then
+            echo "Certificate ${cert_name} with thumbprint ${thumbprint_local} already exists in Key Vault ${kv_name}, skipping import."
+        else
+            openssl pkcs12 -export -inkey certbot/config/live/${trimmed_domain}/privkey.pem -in certbot/config/live/${trimmed_domain}/fullchain.pem -out ${trimmed_domain}.pfx -password pass:
+            az keyvault certificate import --vault-name "${kv_name}" --name "${cert_name}" --file "${trimmed_domain}.pfx" --password ""
+        fi
     done
     [[ -e "${trimmed_domain}.pfx" ]] && rm "${trimmed_domain}.pfx"
 done
