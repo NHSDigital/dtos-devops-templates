@@ -120,8 +120,9 @@ while [[ $# -gt 0 ]]; do
         # Key Vault doesn't check thumbprints, and will create a new version even if the thumbprint is identical, causing unnecessary downstream Terraform changes where the cert is used
         thumbprint64_kv=$(az keyvault certificate show --vault-name "${kv_name}" --name "${cert_name}" --query "x509Thumbprint" --output tsv || true) # continue on failure
         if [[ "${thumbprint64_local}" == "${thumbprint64_kv}" ]]; then
-            echo "Certificate ${cert_name} with thumbprint ${thumbprint_local} already exists in Key Vault ${kv_name}, skipping import."
+            echo "Certificate ${cert_name} with thumbprint ${thumbprint_local} already exists in Key Vault ${kv_name}, skipping import..."
         else
+            echo "Importing certificate ${cert_name} into Key Vault ${kv_name}..."
             openssl pkcs12 -export -inkey certbot/config/live/${trimmed_domain}/privkey.pem -in certbot/config/live/${trimmed_domain}/fullchain.pem -out ${trimmed_domain}.pfx -password pass:
             az keyvault certificate import --vault-name "${kv_name}" --name "${cert_name}" --file "${trimmed_domain}.pfx" --password ""
         fi
