@@ -5,7 +5,6 @@ parameters:
     type: string
 
 steps:
-  - checkout: none
   - task: AzureCLI@2
     name: publish_images
     displayName: Publish $(SELECT_IMAGE_TAG) images to $(ADD_IMAGE_TAG)
