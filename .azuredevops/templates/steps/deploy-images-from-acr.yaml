@@ -1,0 +1,46 @@
+---
+
+parameters:
+  - name: serviceConnection
+    type: string
+
+steps:
+  - task: AzureCLI@2
+    name: deploy_images
+    displayName: Deploy images with tag $(ADD_IMAGE_TAG)
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      addSpnToEnvironment: true
+      failOnStandardError: false
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        # Prerequisite: A DNS A record for the chosen Dev ACR must exist in the Prod privatelink.azurecr.io zone, resolving to the public IP for that ACR
+        set -eo pipefail
+        declare -a pids
+
+        wait_for_completion() {
+          # acr tasks are backgrounded for parallelism
+          local -n arr=$1
+          for pid in "${arr[@]}"; do
+            wait ${pid}
+          done
+        }
+
+        [[ "${DEST_REGISTRY}" =~ dev ]] && az account set -s ${TF_VAR_HUB_SUBSCRIPTION_ID}
+        repos=$(az acr repository list --name ${DEST_REGISTRY} --output tsv)
+
+        for repo in ${repos}; do
+          functionName=$(echo $repo | sed "s/$(PROJECT_NAME)/$(FUNCTION_NAME_PREFIX)/")
+          echo "##[debug] Deploying ${repo}:${ADD_IMAGE_TAG} to ${functionName}..."
+
+          # Output the command to be run for debugging purposes
+          echo "##[debug] az functionapp config container set --name $functionName --resource-group $(FUNCTION_RESOURCE_GROUP) --docker-custom-image-name ${DEST_REGISTRY}.azurecr.io/${repo}:${ADD_IMAGE_TAG} --registry-server https://${DEST_REGISTRY}.azurecr.io"
+
+          # Uncomment the following line to actually run the command
+          # az functionapp config container set --name $functionName --resource-group $(FUNCTION_RESOURCE_GROUP) --docker-custom-image-name ${DEST_REGISTRY}.azurecr.io/${repo}:${ADD_IMAGE_TAG} --registry-server https://${DEST_REGISTRY}.azurecr.io &
+
+          pids+=($!)
+        done
+        wait_for_completion pids
+        echo "##[debug] All images imported"
