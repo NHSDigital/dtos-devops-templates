@@ -55,12 +55,18 @@ resource "azurerm_windows_virtual_machine" "this" {
     disk_size_gb         = var.vm_disk_size
   }
 
-  source_image_reference {
-    publisher = var.source_image_publisher
-    offer     = var.source_image_offer
-    sku       = var.source_image_sku
-    version   = var.source_image_version
+  dynamic "source_image_reference" {
+    for_each = var.source_image_reference != null && var.source_image_from_gallery == null ? [1] : []
+
+    content {
+      publisher = var.source_image_reference.publisher
+      offer     = var.source_image_reference.offer
+      sku       = var.source_image_reference.sku
+      version   = var.source_image_reference.version
+    }
   }
+
+  source_image_id = var.source_image_from_gallery != null && var.source_image_reference == null ? data.azurerm_shared_image.gallery_image[0].id : null
 
   termination_notification {
     enabled = true
@@ -154,4 +160,12 @@ resource "azurerm_virtual_machine_extension" "hostpooljoin" {
   }
 
   depends_on = [azurerm_virtual_machine_extension.aadjoin]
+}
+
+data "azurerm_shared_image" "gallery_image" {
+  count = var.source_image_from_gallery != null ? 1 : 0
+
+  name                = var.source_image_from_gallery.image_name
+  gallery_name        = var.source_image_from_gallery.gallery_name
+  resource_group_name = var.source_image_from_gallery.gallery_rg_name
 }
