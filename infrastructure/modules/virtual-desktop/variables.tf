@@ -70,20 +70,23 @@ variable "maximum_sessions_allowed" {
   default = 16
 }
 
-variable "source_image_offer" {
-  type = string
+variable "source_image_from_gallery" {
+  type = object({
+    image_name      = string
+    gallery_name    = string
+    gallery_rg_name = string
+  })
+  default = null
 }
 
-variable "source_image_publisher" {
-  type = string
-}
-
-variable "source_image_sku" {
-  type = string
-}
-
-variable "source_image_version" {
-  type = string
+variable "source_image_reference" {
+  type = object({
+    offer     = string
+    publisher = string
+    sku       = string
+    version   = string
+  })
+  default = null
 }
 
 variable "subnet_id" {
