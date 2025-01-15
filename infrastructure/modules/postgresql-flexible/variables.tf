@@ -154,15 +154,21 @@ variable "private_endpoint_properties" {
   })
 }
 
-# /* --------------------------------------------------------------------------------------------------
-#   Auditing and Diagnostics Variables
-# -------------------------------------------------------------------------------------------------- */
-# variable "monitor_diagnostic_setting_database_enabled_logs" {
-#   type        = list(string)
-#   description = "Controls what logs will be enabled for the database"
-# }
 
-# variable "monitor_diagnostic_setting_database_metrics" {
-#   type        = list(string)
-#   description = "Controls what metrics will be enabled for the database"
-# }
+/* --------------------------------------------------------------------------------------------------
+  Auditing and Diagnostics Variables
+-------------------------------------------------------------------------------------------------- */
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
+}
+
+variable "monitor_diagnostic_setting_postgresql_server_enabled_logs" {
+  type        = list(string)
+  description = "Controls what logs will be enabled for the sql server"
+}
+
+variable "monitor_diagnostic_setting_postgresql_server_metrics" {
+  type        = list(string)
+  description = "Controls what metrics will be enabled for the sql server"
+}
