@@ -99,7 +99,7 @@ module "private_endpoint_postgresql_flexible_server" {
 }
 
 /* --------------------------------------------------------------------------------------------------
-  PostgresSQL Server Diagnostic Settings
+  PostgreSQL Server Diagnostic Settings
 -------------------------------------------------------------------------------------------------- */
 module "diagnostic_setting_postgresql_server" {
 

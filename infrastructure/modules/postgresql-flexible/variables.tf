@@ -172,17 +172,3 @@ variable "monitor_diagnostic_setting_postgresql_server_metrics" {
   type        = list(string)
   description = "Controls what metrics will be enabled for the sql server"
 }
-
-
-# /* --------------------------------------------------------------------------------------------------
-#   Auditing and Diagnostics Variables
-# -------------------------------------------------------------------------------------------------- */
-# variable "monitor_diagnostic_setting_database_enabled_logs" {
-#   type        = list(string)
-#   description = "Controls what logs will be enabled for the database"
-# }
-
-# variable "monitor_diagnostic_setting_database_metrics" {
-#   type        = list(string)
-#   description = "Controls what metrics will be enabled for the database"
-# }
