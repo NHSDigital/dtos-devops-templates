@@ -76,6 +76,7 @@ variable "health_check_path" {
   type        = string
   description = "When configured will enable health checking. Setting example= /api/health"
   default     = ""
+}
 
 variable "http_version" {
   type        = string
