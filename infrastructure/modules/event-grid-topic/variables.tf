@@ -22,6 +22,12 @@ variable "identity_type" {
   description = "The identity type of the Event Grid."
 }
 
+variable "public_network_access_enabled" {
+  type        = string
+  default     = false
+  description = "Whether or not public network access is allowed for Event Grid."
+}
+
 variable "topic_name" {
   description = "The name of the Event Grid topic."
   type        = string

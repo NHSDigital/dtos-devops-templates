@@ -1,7 +1,8 @@
 resource "azurerm_eventgrid_topic" "azurerm_eventgrid" {
-  name                = var.topic_name
-  resource_group_name = var.resource_group_name
-  location            = var.location
+  name                          = var.topic_name
+  resource_group_name           = var.resource_group_name
+  location                      = var.location
+  public_network_access_enabled = var.public_network_access_enabled
 
   identity {
     type = var.identity_type

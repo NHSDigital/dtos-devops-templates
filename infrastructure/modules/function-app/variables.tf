@@ -96,56 +96,20 @@ variable "health_check_eviction_time_in_min" {
 
 variable "ip_restrictions" {
   type = map(object({
-      headers                   = optional(string, "") # (string, "")
-      ip_address                = optional(string, "")
-      name                      = optional(string, "")
-      priority                  = optional(number)
-      action                    = optional(string, "Deny")
-      service_tag               = optional(string, "")
-      virtual_network_subnet_id = optional(string, "")
+    headers = optional(list(object({
+      x_azure_fdid      = optional(list(string))
+      x_fd_health_probe = optional(list(string))
+      x_forwarded_for   = optional(list(string))
+      x_forwarded_host  = optional(list(string))
+    })), [])
+    ip_address                = optional(string)
+    name                      = optional(string)
+    priority                  = optional(number)
+    action                    = optional(string, "Deny")
+    service_tag               = optional(string)
+    virtual_network_subnet_id = optional(string)
   }))
   default = {}
-}
-
-variable "headers" {
-  description = "Name of the FNApp firewall rule header"
-  type = string
-}
-
-variable "ip_address" {
-  description = "The CIDR notation of the IP or IP Range to match"
-  type = string
-}
-
-variable "name" {
-  description = "Name of the FNApp firewall rule"
-  type = number
-}
-
-variable "priority" {
-  description = "The priority of the FNApp firewall rule"
-  type = string
-}
-
-variable "action" {
-  description = "Action to perform by the firewall rule"
-  default     = "Deny"
-  type = string
-
-  validation {
-    condition     = contains(["Allow", "Deny"], var.action)
-    error_message = "Firewall rule action must be either Allow or Deny"
-  }
-}
-
-variable "service_tag" {
-  description = "Name of the service to be allowed/declined access"
-  type = string
-}
-
-variable "subnet_id" {
-  description = "The Virtual Network Subnet ID used for this IP Restriction"
-  type = string
 }
 
 variable "http_version" {
