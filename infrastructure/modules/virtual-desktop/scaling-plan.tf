@@ -1,3 +1,6 @@
+# Pre-requisite: RBAC assignment at subscription level of role 'Desktop Virtualization Power On Off Contributor' for Service Principal 'Windows Virtual Desktop'
+# https://learn.microsoft.com/en-gb/azure/virtual-desktop/autoscale-create-assign-scaling-plan?tabs=portal%2Cintune&pivots=power-management#create-a-custom-rbac-role
+
 resource "azurerm_virtual_desktop_scaling_plan" "this" {
   name                = var.scaling_plan_name
   location            = var.location
