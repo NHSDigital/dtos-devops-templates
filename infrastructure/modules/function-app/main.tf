@@ -31,6 +31,7 @@ resource "azurerm_linux_function_app" "function_app" {
     container_registry_use_managed_identity       = var.cont_registry_use_mi
     container_registry_managed_identity_client_id = var.acr_mi_client_id
     ftps_state                                    = var.ftps_state
+    health_check_path                             = var.health_check_path
 
     minimum_tls_version = var.minimum_tls_version
 
