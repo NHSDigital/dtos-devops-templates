@@ -3,6 +3,11 @@ variable "custom_rdp_properties" {
   default = null
 }
 
+variable "computer_name_prefix" {
+  type    = string
+  default = "avd"
+}
+
 variable "dag_default_desktop_display_name" {
   type    = string
   default = "SessionDesktop"
@@ -68,6 +73,11 @@ variable "location" {
 variable "maximum_sessions_allowed" {
   type    = number
   default = 16
+}
+
+variable "scaling_plan_name" {
+  description = "The name of the AVD scaling plan"
+  type        = string
 }
 
 variable "source_image_from_gallery" {

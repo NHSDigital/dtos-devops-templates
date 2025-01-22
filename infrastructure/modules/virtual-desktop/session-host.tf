@@ -38,7 +38,7 @@ resource "azurerm_windows_virtual_machine" "this" {
   size                              = var.vm_size
   admin_username                    = "azureadmin"
   admin_password                    = random_password.admin_password.result
-  computer_name                     = "avd-${random_string.suffix[count.index].result}"
+  computer_name                     = "${var.computer_name_prefix}${random_string.suffix[count.index].result}"
   license_type                      = var.vm_license_type
   encryption_at_host_enabled        = true # az feature register --namespace Microsoft.Compute --name EncryptionAtHost
   secure_boot_enabled               = true

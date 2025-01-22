@@ -2,6 +2,11 @@ variable "env" {
   description = "Environment acronym for deployment"
 }
 
+variable "env_type" {
+  description = "Environment grouping for shared hub (live/nonlive)"
+  default     = "nonlive"
+}
+
 variable "location" {
   description = "Location for the deployment"
 }
