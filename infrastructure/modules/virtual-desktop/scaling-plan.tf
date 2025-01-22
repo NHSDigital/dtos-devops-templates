@@ -1,6 +1,8 @@
+data "azurerm_client_config" "this" {}
+
 resource "azurerm_role_definition" "avd_rbac" {
   name        = "AVD-AutoScale"
-  scope       = var.resource_group_id
+  scope       = data.azurerm_client_config.this.subscription_id
   description = "AVD AutoScale Role"
   permissions {
     actions = [
@@ -22,16 +24,19 @@ resource "azurerm_role_definition" "avd_rbac" {
     not_actions = []
   }
   assignable_scopes = [
-    var.resource_group_id
+    data.azurerm_client_config.this.subscription_id
   ]
 }
 
 data "azuread_service_principal" "avd_sp" {
-  display_name = "Azure Virtual Desktop"
+  # display_name = "Azure Virtual Desktop"
+  # Microsoft are inconsistent with the naming
+  # https://learn.microsoft.com/en-us/azure/virtual-desktop/service-principal-assign-roles?tabs=portal
+  app_id = "9cdead84-a844-4324-93f2-b2e6bb768d07"
 }
 
 resource "azurerm_role_assignment" "avd_rbac_assign" {
-  scope                            = var.resource_group_id
+  scope                            = data.azurerm_client_config.this.subscription_id
   role_definition_id               = azurerm_role_definition.avd_rbac.role_definition_resource_id
   principal_id                     = data.azuread_service_principal.avd_sp.id
   skip_service_principal_aad_check = true
