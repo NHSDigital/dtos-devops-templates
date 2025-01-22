@@ -70,6 +70,11 @@ variable "maximum_sessions_allowed" {
   default = 16
 }
 
+variable "scaling_plan_name" {
+  description = "The name of the AVD scaling plan"
+  type        = string
+}
+
 variable "source_image_from_gallery" {
   type = object({
     image_name      = string
