@@ -32,7 +32,7 @@ data "azuread_service_principal" "avd_sp" {
   # display_name = "Azure Virtual Desktop"
   # Microsoft are inconsistent with the naming
   # https://learn.microsoft.com/en-us/azure/virtual-desktop/service-principal-assign-roles?tabs=portal
-  app_id = "9cdead84-a844-4324-93f2-b2e6bb768d07"
+  client_id = "9cdead84-a844-4324-93f2-b2e6bb768d07"
 }
 
 resource "azurerm_role_assignment" "avd_rbac_assign" {
