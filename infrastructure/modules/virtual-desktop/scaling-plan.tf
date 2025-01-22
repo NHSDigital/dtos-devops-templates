@@ -2,7 +2,7 @@ data "azurerm_client_config" "this" {}
 
 resource "azurerm_role_definition" "avd_rbac" {
   name        = "AVD-AutoScale"
-  scope       = data.azurerm_client_config.this.subscription_id
+  scope       = "/subscriptions/${data.azurerm_client_config.this.subscription_id}"
   description = "AVD AutoScale Role"
   permissions {
     actions = [
@@ -24,7 +24,7 @@ resource "azurerm_role_definition" "avd_rbac" {
     not_actions = []
   }
   assignable_scopes = [
-    data.azurerm_client_config.this.subscription_id
+    "/subscriptions/${data.azurerm_client_config.this.subscription_id}"
   ]
 }
 
@@ -36,7 +36,7 @@ data "azuread_service_principal" "avd_sp" {
 }
 
 resource "azurerm_role_assignment" "avd_rbac_assign" {
-  scope                            = data.azurerm_client_config.this.subscription_id
+  scope                            = "/subscriptions/${data.azurerm_client_config.this.subscription_id}"
   role_definition_id               = azurerm_role_definition.avd_rbac.role_definition_resource_id
   principal_id                     = data.azuread_service_principal.avd_sp.id
   skip_service_principal_aad_check = true
