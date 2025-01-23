@@ -19,7 +19,7 @@ resource "azurerm_container_registry" "acr" {
 -------------------------------------------------------------------------------------------------- */
 
 module "private_endpoint_container_registry" {
-  count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
+  count = var.private_endpoint_properties != null ? 1 : 0
 
   source = "../private-endpoint"
 

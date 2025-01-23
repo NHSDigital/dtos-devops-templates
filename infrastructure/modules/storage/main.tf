@@ -28,7 +28,7 @@ resource "azurerm_storage_container" "container" {
 -------------------------------------------------------------------------------------------------- */
 
 module "private_endpoint_blob_storage" {
-  count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
+  count = var.private_endpoint_properties != null ? 1 : 0
 
   source = "../private-endpoint"
 
@@ -53,7 +53,7 @@ module "private_endpoint_blob_storage" {
 }
 
 module "private_endpoint_queue_storage" {
-  count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
+  count = var.private_endpoint_properties != null ? 1 : 0
 
   source = "../private-endpoint"
 

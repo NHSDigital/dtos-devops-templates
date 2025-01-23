@@ -69,7 +69,7 @@ resource "azurerm_eventhub_consumer_group" "consumer_group" {
 -------------------------------------------------------------------------------------------------- */
 
 module "private_endpoint_eventhub" {
-  count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
+  count = var.private_endpoint_properties != null ? 1 : 0
 
   source = "../private-endpoint"
 

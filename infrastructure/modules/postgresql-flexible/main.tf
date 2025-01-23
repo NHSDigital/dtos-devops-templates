@@ -74,7 +74,7 @@ resource "azurerm_postgresql_flexible_server_configuration" "postgresql_flexible
 -------------------------------------------------------------------------------------------------- */
 
 module "private_endpoint_postgresql_flexible_server" {
-  count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
+  count = var.private_endpoint_properties != null ? 1 : 0
 
   source = "../private-endpoint"
 
