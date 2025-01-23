@@ -1,6 +1,6 @@
 resource "azurerm_eventgrid_event_subscription" "eventgrid_event_subscription" {
-  name     = var.subscription_name
-  scope    = var.azurerm_eventgrid_id
+  name  = var.subscription_name
+  scope = var.azurerm_eventgrid_id
 
   dynamic "azure_function_endpoint" {
     for_each = var.subscriber_function_details
