@@ -94,6 +94,12 @@ variable "health_check_eviction_time_in_min" {
   default     = null
 }
 
+variable "ip_restriction_default_action" {
+  description = "Default action for FW rules"
+  type        = string
+  default     = "Deny"
+}
+
 variable "ip_restrictions" {
   type = map(object({
     headers = optional(list(object({
