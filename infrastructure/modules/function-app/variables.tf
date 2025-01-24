@@ -23,6 +23,11 @@ variable "app_settings" {
   default     = {}
 }
 
+variable "app_service_logs_retention_period_days" {
+  type        = string
+  description = "The retention period for logs in days."
+}
+
 variable "asp_id" {
   type        = string
   description = "The ID of the AppServicePlan."
@@ -40,6 +45,11 @@ variable "cont_registry_use_mi" {
 variable "cors_allowed_origins" {
   type    = list(string)
   default = [""]
+}
+
+variable "disk_quota_mb" {
+  type        = string
+  description = "The amount of disk space to use for app service logs."
 }
 
 variable "ftp_publish_basic_authentication_enabled" {
