@@ -24,7 +24,7 @@ variable "app_settings" {
 }
 
 variable "app_service_logs_retention_period_days" {
-  type        = string
+  type        = number
   description = "The retention period for logs in days."
   default     = ""
 }
@@ -49,7 +49,7 @@ variable "cors_allowed_origins" {
 }
 
 variable "disk_quota_mb" {
-  type        = string
+  type        = number
   description = "The amount of disk space to use for app service logs."
   default     = ""
 }
