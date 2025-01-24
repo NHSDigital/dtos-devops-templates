@@ -26,7 +26,6 @@ variable "app_settings" {
 variable "app_service_logs_retention_period_days" {
   type        = number
   description = "The retention period for logs in days."
-  default     = ""
 }
 
 variable "asp_id" {
@@ -51,7 +50,6 @@ variable "cors_allowed_origins" {
 variable "disk_quota_mb" {
   type        = number
   description = "The amount of disk space to use for app service logs."
-  default     = ""
 }
 
 variable "ftp_publish_basic_authentication_enabled" {
