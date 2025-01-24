@@ -24,7 +24,7 @@ variable "app_settings" {
 }
 
 variable "app_service_logs_retention_period_days" {
-  type        = string
+  type        = number
   description = "The retention period for logs in days."
 }
 
