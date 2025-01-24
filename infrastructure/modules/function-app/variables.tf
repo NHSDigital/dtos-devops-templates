@@ -48,7 +48,7 @@ variable "cors_allowed_origins" {
 }
 
 variable "disk_quota_mb" {
-  type        = string
+  type        = number
   description = "The amount of disk space to use for app service logs."
 }
 
