@@ -23,15 +23,23 @@ variable "app_settings" {
   default     = {}
 }
 
-variable "app_service_logs_disk_quota_mb" {
-  type        = number
-  description = "The amount of disk space to use for app service logs."
+variable "app_service_logs" {
+  type = object({
+    disk_quota_mb         = number
+    retention_period_days = number
+  })
+  default = null
 }
 
-variable "app_service_logs_retention_period_days" {
-  type        = number
-  description = "The retention period for logs in days."
-}
+# variable "app_service_logs_disk_quota_mb" {
+#   type        = number
+#   description = "The amount of disk space to use for app service logs."
+# }
+
+# variable "app_service_logs_retention_period_days" {
+#   type        = number
+#   description = "The retention period for logs in days."
+# }
 
 variable "asp_id" {
   type        = string

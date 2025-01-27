@@ -33,8 +33,8 @@ resource "azurerm_linux_function_app" "function_app" {
     ftps_state                                    = var.ftps_state
     health_check_path                             = var.health_check_path
     app_service_logs {
-      disk_quota_mb         = var.app_service_logs_disk_quota_mb
-      retention_period_days = var.app_service_logs_retention_period_days
+      disk_quota_mb         = var.app_service_logs.disk_quota_mb
+      retention_period_days = var.app_service_logs.retention_period_days
     }
 
     minimum_tls_version = var.minimum_tls_version
