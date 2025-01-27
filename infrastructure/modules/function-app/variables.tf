@@ -23,6 +23,11 @@ variable "app_settings" {
   default     = {}
 }
 
+variable "app_service_logs_disk_quota_mb" {
+  type        = number
+  description = "The amount of disk space to use for app service logs."
+}
+
 variable "app_service_logs_retention_period_days" {
   type        = number
   description = "The retention period for logs in days."
@@ -45,11 +50,6 @@ variable "cont_registry_use_mi" {
 variable "cors_allowed_origins" {
   type    = list(string)
   default = [""]
-}
-
-variable "disk_quota_mb" {
-  type        = number
-  description = "The amount of disk space to use for app service logs."
 }
 
 variable "ftp_publish_basic_authentication_enabled" {
