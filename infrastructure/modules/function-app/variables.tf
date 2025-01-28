@@ -84,8 +84,14 @@ variable "function_app_slots" {
 
 variable "health_check_path" {
   type        = string
-  description = "When configured will enable health checking. Setting example= /api/health"
-  default     = ""
+  description = "The path to be checked for this function app health."
+  default     = null
+}
+
+variable "health_check_eviction_time_in_min" {
+  type        = number
+  description = "The time in minutes a node can be unhealthy before being removed from the load balancer."
+  default     = null
 }
 
 variable "http_version" {
