@@ -73,6 +73,12 @@ variable "function_app_name" {
   description = "Name of the Function App"
 }
 
+variable "health_check_path" {
+  type        = string
+  description = "When configured will enable health checking. Setting example= /api/health"
+  default     = ""
+}
+
 variable "function_app_slots" {
   description = "function app slots"
   type = list(object({
