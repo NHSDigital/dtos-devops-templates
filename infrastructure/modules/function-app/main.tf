@@ -48,6 +48,23 @@ resource "azurerm_linux_function_app" "function_app" {
       }
     }
 
+    # Function app Firewall restrictions
+    ip_restriction_default_action = var.ip_restriction_default_action
+
+    dynamic "ip_restriction" {
+      for_each = var.ip_restrictions
+      content {
+        headers                   = ip_restriction.value.headers
+        ip_address                = ip_restriction.value.ip_address
+        name                      = ip_restriction.value.name
+        priority                  = ip_restriction.value.priority
+        action                    = ip_restriction.value.action
+        service_tag               = ip_restriction.value.service_tag
+        virtual_network_subnet_id = ip_restriction.value.virtual_network_subnet_id
+      }
+    }
+
+
     use_32_bit_worker = var.worker_32bit
   }
 
