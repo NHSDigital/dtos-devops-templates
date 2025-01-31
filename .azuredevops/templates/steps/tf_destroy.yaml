@@ -11,5 +11,5 @@ steps:
       provider: azurerm
       command: destroy
       workingDirectory: $(TF_DIRECTORY)
-      commandOptions: -var-file=$(tfVarsFile) -var="environment=$(ENVIRONMENT)"
+      commandOptions: -var-file=$(tfVarsFile) $(tfCommandOptions) -var="environment=$(ENVIRONMENT)"
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
