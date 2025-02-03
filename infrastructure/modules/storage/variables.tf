@@ -31,6 +31,18 @@ variable "account_tier" {
   default     = "Standard"
 }
 
+variable "blob_properties_delete_retention_policy" {
+  type        = number
+  description = "The value set for blob properties delete retention policy."
+  default     = null
+}
+
+variable "blob_properties_versioning_enabled" {
+  type        = bool
+  description = "To enable versioning for blob."
+  default     = false
+}
+
 variable "containers" {
   description = "Definition of Containers configuration"
   type = map(object({
