@@ -15,18 +15,18 @@ cd "${WORKING_DIR}" || { echo "Directory not found: ${WORKING_DIR}"; exit 1; }
 
 declare -A docker_functions_map=()
 
-set -x
+# set -x  # Uncomment for debugging
 
-for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" ${DOCKER_COMPOSE_FILE}); do
-  context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" ${DOCKER_COMPOSE_FILE})
-  dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" ${DOCKER_COMPOSE_FILE})
+for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" "${DOCKER_COMPOSE_FILE}"); do
+  context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" "${DOCKER_COMPOSE_FILE}")
+  dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" "${DOCKER_COMPOSE_FILE}")
 
-  if [ -z ${dockerfile} ] || [ -z ${context} ] ; then
+  if [ -z "${dockerfile}" ] || [ -z "${context}" ] ; then
     continue
   fi
-  contextFiltered=$(echo ${context} | sed 's#^\./src/##' | sed 's#^\./##' | sed 's#/$##')
-  dockerfileFiltered=$(echo ${dockerfile} | sed 's#^\./##' | sed 's#\/Dockerfile##' | sed 's#Dockerfile##' )
-  docker_functions_map[${contextFiltered}${dockerfileFiltered}]=${service}
+  contextFiltered=$(echo "${context}" | sed 's#^\./src/##' | sed 's#^\./##' | sed 's#/$##')
+  dockerfileFiltered=$(echo "${dockerfile}" | sed 's#^\./##' | sed 's#\/Dockerfile##' | sed 's#Dockerfile##' )
+  docker_functions_map["${contextFiltered}${dockerfileFiltered}"]="${service}"
 done
 
 changed_functions=""
@@ -42,17 +42,22 @@ elif [[ "${CHANGED_FOLDERS,,}" =~ shared ]]; then
     done
 else
     echo "files changed ${CHANGED_FOLDERS} "
+
     for folder in ${CHANGED_FOLDERS}; do
-      echo "Add this function in: ${folder} "
-      echo "Add this which maps to: ${docker_functions_map[$folder]} "
-      changed_functions+=" ${docker_functions_map[$folder]}"
+      echo "Checking folder: ${folder}"
+      for key in "${!docker_functions_map[@]}";
+        if [[ "$key" == "$folder" ]]; then
+          echo "Found match: ${folder} -> ${docker_functions_map[$key]}"
+          changed_functions+=" ${docker_functions_map[$key]}"
+          break
+        fi
+      done
     done
 fi
 
-# Format the output for the github matrix:
-changed_functions_json=$(printf '["%s"]' "$(echo ${changed_functions} | sed 's/ /","/g')")
+changed_functions_json=$(printf '["%s"]' "$(echo "${changed_functions}" | sed 's/ /","/g')")
 
 echo "Final list of functions to rebuild:"
 echo "${changed_functions_json}"
 
-echo "FUNC_NAMES=${changed_functions_json}" >> "${GITHUB_OUTPUT}"
+echo "FUNC_NAMES+=${changed_functions_json}" >> "${GITHUB_OUTPUT}"

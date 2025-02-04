@@ -12,8 +12,8 @@ on:
         required: true
         type: string
         default: development
-      docker_compose_file:
-        description: The path of the compose.yaml file needed to build docker images
+      docker_compose_files:
+        description: "Path to docker-compose files (space separated)"
         required: true
         type: string
       function_app_source_code_path:
@@ -57,9 +57,13 @@ jobs:
         env:
           CHANGED_FOLDERS: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-          DOCKER_COMPOSE_DIR="$(dirname "${{ inputs.docker_compose_file  }}")"
-          bash ./templates/scripts/deployments/get-docker-names.sh ${{ inputs.docker_compose_file  }}  ${{ inputs.excluded_containers_csv_list  }}
-          echo "DOCKER_COMPOSE_DIR=$DOCKER_COMPOSE_DIR" >> ${GITHUB_OUTPUT}
+          IFS=' ' read -r -a COMPOSE_FILES <<< "${{ inputs.docker_compose_files }}"
+
+          for COMPOSE_FILE in "${COMPOSE_FILES[@]}"; do
+            DOCKER_COMPOSE_DIR="$(dirname "$COMPOSE_FILE")"
+            echo "Processing $COMPOSE_FILE (directory: $DOCKER_COMPOSE_DIR)"
+            bash ./templates/scripts/deployments/get-docker-names.sh "$COMPOSE_FILE" "${{ inputs.excluded_containers_csv_list }}"
+          done
 
       - name: Print function names
         run: |
