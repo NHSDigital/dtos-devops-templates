@@ -84,6 +84,11 @@ variable "identity_type" {
   default = "SystemAssigned"
 }
 
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
+}
+
 variable "management_hostname_configuration" {
   description = "List of management hostname configurations."
   type = list(object({
@@ -95,6 +100,30 @@ variable "management_hostname_configuration" {
   }))
   default  = []
   nullable = false
+}
+
+variable "metric_enabled" {
+  type        = bool
+  description = "to enable retention for diagnostic settings metric"
+  default     = false
+}
+
+variable "min_api_version" {
+  type        = string
+  description = "Controls what logs will be enabled for apim"
+  default     = "2021-08-01"
+}
+
+variable "monitor_diagnostic_setting_apim_enabled_logs" {
+  type        = list(string)
+  description = "Controls what logs will be enabled for apim"
+  default     = null
+}
+
+variable "monitor_diagnostic_setting_apim_metrics" {
+  type        = list(string)
+  description = "Controls what metrics will be enabled for apim"
+  default     = null
 }
 
 variable "proxy_hostname_configuration" {
