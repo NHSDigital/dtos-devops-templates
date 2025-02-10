@@ -48,11 +48,15 @@ function create-report() {
 function run-syft-natively() {
 
 
-if [ -z "$CHECK_DOCKER_IMAGE" ]; then
+if [ ! -z "$CHECK_DOCKER_IMAGE" ]; then
+    echo "scan docker image"
+
     syft scan docker:$CHECK_DOCKER_IMAGE \
       --config "$PWD/scripts/config/syft.yaml" \
       --output spdx-json="$PWD/$SBOM_REPOSITORY_REPORT.tmp.json"
   else
+    echo "scan file system"
+
     syft packages dir:"$PWD" \
       --config "$PWD/scripts/config/syft.yaml" \
       --output spdx-json="$PWD/$SBOM_REPOSITORY_REPORT.tmp.json"
@@ -68,7 +72,11 @@ function run-syft-in-docker() {
   # shellcheck disable=SC2155
   local image=$(name=ghcr.io/anchore/syft docker-get-image-version-and-pull)
 
-  if [ -z "$CHECK_DOCKER_IMAGE" ]; then
+  echo CHECK_DOCKER_IMAGE ${CHECK_DOCKER_IMAGE}
+
+  if [ ! -z "$CHECK_DOCKER_IMAGE" ]; then
+    echo "scan docker image"
+
     docker run --rm --platform linux/amd64 \
       --volume "$PWD":/workdir \
       --volume /var/run/docker.sock:/var/run/docker.sock  \
@@ -77,6 +85,8 @@ function run-syft-in-docker() {
         --config /workdir/scripts/config/syft.yaml \
         --output spdx-json=/workdir/$SBOM_REPOSITORY_REPORT.tmp.json
   else
+    echo "scan file system"
+
     docker run --rm --platform linux/amd64 \
       --volume "$PWD":/workdir \
       "$image" \

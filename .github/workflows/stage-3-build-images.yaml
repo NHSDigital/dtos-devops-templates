@@ -172,11 +172,11 @@ jobs:
 
           export SBOM_REPOSITORY_REPORT="sbom-${function}-repository-report"
           echo "SBOM_REPOSITORY_REPORT=$SBOM_REPOSITORY_REPORT" >> $GITHUB_ENV
-          ${GITHUB_WORKSPACE}/templates/scripts/reports/create-sbom-report.sh
+          bash -x ${GITHUB_WORKSPACE}/templates/scripts/reports/create-sbom-report.sh
 
           export VULNERABILITIES_REPOSITORY_REPORT="vulnerabilities-${function}-repository-report"
           echo "VULNERABILITIES_REPOSITORY_REPORT=$VULNERABILITIES_REPOSITORY_REPORT" >> $GITHUB_ENV
-          ${GITHUB_WORKSPACE}/templates/scripts/reports/scan-vulnerabilities.sh
+          bash -x ${GITHUB_WORKSPACE}/templates/scripts/reports/scan-vulnerabilities.sh
 
           # Remove the image
           docker rmi "${repo_name}:${COMMIT_HASH_TAG}"
