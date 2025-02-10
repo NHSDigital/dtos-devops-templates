@@ -10,6 +10,13 @@ resource "azurerm_storage_account" "storage_account" {
 
   tags = var.tags
 
+  blob_properties {
+    delete_retention_policy {
+      days = var.blob_properties_delete_retention_policy
+    }
+    versioning_enabled = var.blob_properties_versioning_enabled
+  }
+
   lifecycle {
     ignore_changes = [tags]
   }
