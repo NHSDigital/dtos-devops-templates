@@ -88,11 +88,11 @@ variable "private_endpoint_properties" {
       can(var.private_endpoint_properties == null) ||
       (can(var.private_endpoint_properties.private_endpoint_enabled) && var.private_endpoint_properties.private_endpoint_enabled == false) ||
       (can(var.private_endpoint_properties.private_endpoint_enabled) && var.private_endpoint_properties.private_endpoint_enabled == true &&
-        can(length(var.private_endpoint_properties.private_dns_zone_ids)) &&
-        length(var.private_endpoint_properties.private_dns_zone_ids) > 0 &&
+        can(length(var.private_endpoint_properties.private_dns_zone_ids_eventhub)) &&
+        length(var.private_endpoint_properties.private_dns_zone_ids_eventhub) > 0 &&
         can(length(var.private_endpoint_properties.private_endpoint_subnet_id)) &&
     length(var.private_endpoint_properties.private_endpoint_subnet_id) > 0))
-    error_message = "Both private_dns_zone_ids and private_endpoint_subnet_id must be provided if private_endpoint_enabled is true."
+    error_message = "Both private_dns_zone_ids_eventhub and private_endpoint_subnet_id must be provided if private_endpoint_enabled is true."
   }
 }
 
