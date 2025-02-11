@@ -220,7 +220,12 @@ variable "sql_server_alert_policy_state" {
 
 variable "storage_account_id" {
   type        = string
-  description = "Id of the storage accont to send audit logging to"
+  description = "Id of the storage account to send audit logging to"
+}
+
+variable "storage_account_name" {
+  type        = string
+  description = "Name of the storage account to send audit logging to (unused)"
 }
 
 variable "storage_container_id" {
