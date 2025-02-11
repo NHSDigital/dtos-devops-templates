@@ -24,7 +24,7 @@ resource "azurerm_virtual_desktop_scaling_plan" "this" {
     ramp_down_notification_message       = "You will be logged off in 15 mins. Please make sure to save your work."
     ramp_down_capacity_threshold_percent = 80
     ramp_down_stop_hosts_when            = "ZeroActiveSessions"
-    off_peak_start_time                  = "19:00"
+    off_peak_start_time                  = "22:00"
     off_peak_load_balancing_algorithm    = "DepthFirst"
   }
 

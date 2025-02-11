@@ -6,10 +6,13 @@ resource "azurerm_api_management" "apim" {
   publisher_email      = var.publisher_email
   public_ip_address_id = var.public_ip_address_id
 
+  min_api_version = var.min_api_version
+
   sku_name = "${var.sku_name}_${var.sku_capacity}"
   zones    = var.zones
 
   virtual_network_type = var.virtual_network_type
+
 
   dynamic "virtual_network_configuration" {
     for_each = toset(var.virtual_network_configuration)
@@ -147,3 +150,21 @@ resource "azurerm_api_management_identity_provider_aad" "apim" {
   allowed_tenants = var.allowed_tenants
   client_library  = var.client_library
 }
+
+
+/* --------------------------------------------------------------------------------------------------
+  Diagnostic Settings
+-------------------------------------------------------------------------------------------------- */
+
+module "diagnostic-settings" {
+  source = "../diagnostic-settings"
+
+  name                       = "${var.name}-diagnostic-setting"
+  target_resource_id         = azurerm_api_management.apim.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  enabled_log                = var.monitor_diagnostic_setting_apim_enabled_logs
+  metric                     = var.monitor_diagnostic_setting_apim_metrics
+  metric_enabled             = var.metric_enabled
+}
+
+
