@@ -57,6 +57,19 @@ variable "private_endpoint_properties" {
     private_endpoint_resource_group_name = optional(string, "")
     private_service_connection_is_manual = optional(bool, false)
   })
+
+  # Validation rule does not work when var.private_endpoint_properties is null
+  validation {
+    condition = (
+      can(var.private_endpoint_properties == null) ||
+      (can(var.private_endpoint_properties.private_endpoint_enabled) && var.private_endpoint_properties.private_endpoint_enabled == false) ||
+      (can(var.private_endpoint_properties.private_endpoint_enabled) && var.private_endpoint_properties.private_endpoint_enabled == true &&
+        can(length(var.private_endpoint_properties.private_dns_zone_ids_sql)) &&
+        length(var.private_endpoint_properties.private_dns_zone_ids_sql) > 0 &&
+        can(length(var.private_endpoint_properties.private_endpoint_subnet_id)) &&
+    length(var.private_endpoint_properties.private_endpoint_subnet_id) > 0))
+    error_message = "Both private_dns_zone_ids_sql and private_endpoint_subnet_id must be provided if private_endpoint_enabled is true."
+  }
 }
 
 variable "public_network_access_enabled" {

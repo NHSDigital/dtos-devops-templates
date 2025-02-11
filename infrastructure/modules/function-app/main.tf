@@ -80,7 +80,7 @@ resource "azurerm_linux_function_app" "function_app" {
 -------------------------------------------------------------------------------------------------- */
 
 module "private_endpoint" {
-  count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
+  count = var.private_endpoint_properties != null ? 1 : 0
 
   source = "../private-endpoint"
 

@@ -1,0 +1,15 @@
+---
+
+steps:
+  - template: tf_init.yaml
+
+  - task: TerraformTaskV4@4
+    name: TerraformDestroy
+    displayName: Terraform Destroy - $(ENVIRONMENT) environment
+    continueOnError: false
+    inputs:
+      provider: azurerm
+      command: destroy
+      workingDirectory: $(TF_DIRECTORY)
+      commandOptions: -var-file=$(tfVarsFile) $(tfCommandOptions) -var="environment=$(ENVIRONMENT)"
+      environmentServiceNameAzureRM: $(SERVICE_CONNECTION)

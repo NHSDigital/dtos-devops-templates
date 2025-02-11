@@ -41,7 +41,7 @@ resource "azurerm_mssql_firewall_rule" "firewall_rule" {
   Private Endpoint Configuration for SQL Server
 -------------------------------------------------------------------------------------------------- */
 module "private_endpoint_sql_server" {
-  count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
+  count = var.private_endpoint_properties != null ? 1 : 0
 
   source = "../private-endpoint"
 
