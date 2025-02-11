@@ -163,8 +163,20 @@ variable "log_monitoring_enabled" {
 }
 
 /* --------------------------------------------------------------------------------------------------
-  Auditing and Diagnostics Variables
+  Auditing and Diagnostics Variables - Database
 -------------------------------------------------------------------------------------------------- */
+
+variable "database_extended_auditing_policy_enabled" {
+  type        = bool
+  description = "Enable extended auditing policy for SQL database"
+  default     = true
+}
+
+variable "primary_blob_endpoint_name" {
+  type        = string
+  description = "Name of storage account primary endpoint"
+}
+
 variable "monitor_diagnostic_setting_database_enabled_logs" {
   type        = list(string)
   description = "Controls what logs will be enabled for the database"
@@ -173,6 +185,16 @@ variable "monitor_diagnostic_setting_database_enabled_logs" {
 variable "monitor_diagnostic_setting_database_metrics" {
   type        = list(string)
   description = "Controls what metrics will be enabled for the database"
+}
+
+/* --------------------------------------------------------------------------------------------------
+  Auditing and Diagnostics Variables - Server
+-------------------------------------------------------------------------------------------------- */
+
+variable "auditing_policy_retention_in_days" {
+  type        = number
+  description = "number of days for audit log policies"
+  default     = 6
 }
 
 variable "monitor_diagnostic_setting_sql_server_enabled_logs" {
@@ -185,24 +207,10 @@ variable "monitor_diagnostic_setting_sql_server_metrics" {
   description = "Controls what metrics will be enabled for the sql server"
 }
 
-variable "primary_blob_endpoint_name" {
-  type        = string
-  description = "Name of storage account primary endpoint"
-}
-
-variable "storage_account_id" {
-  type        = string
-  description = "Id of the storage accont to send audit logging to"
-}
-
-variable "storage_account_name" {
-  type        = string
-  description = "Name of the storage account to send audit logging to"
-}
-
-variable "storage_container_id" {
-  type        = string
-  description = "Storage container id to save audit data to"
+variable "security_alert_policy_retention_days" {
+  type        = number
+  description = "number of days for security alert log policies"
+  default     = 6
 }
 
 variable "sql_server_alert_policy_state" {
@@ -210,16 +218,14 @@ variable "sql_server_alert_policy_state" {
   description = "Controls the sql server alert policy state"
 }
 
-variable "security_alert_policy_retention_days" {
-  type        = number
-  description = "number of days for security alert log policies"
-  default     = 6
+variable "storage_account_id" {
+  type        = string
+  description = "Id of the storage accont to send audit logging to"
 }
 
-variable "auditing_policy_retention_in_days" {
-  type        = number
-  description = "number of days for audit log policies"
-  default     = 6
+variable "storage_container_id" {
+  type        = string
+  description = "Storage container id to save audit data to"
 }
 
 variable "vulnerability_assessment_enabled" {
