@@ -24,7 +24,7 @@ resource "azurerm_eventgrid_topic" "azurerm_eventgrid" {
 -------------------------------------------------------------------------------------------------- */
 
 module "private_endpoint_eventgrid" {
-  count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
+  count = can(var.private_endpoint_properties.private_endpoint_enabled) ? 1 : 0
 
   source = "../private-endpoint"
 
