@@ -152,6 +152,18 @@ variable "private_endpoint_properties" {
     private_endpoint_resource_group_name = optional(string, "")
     private_service_connection_is_manual = optional(bool, false)
   })
+
+  validation {
+    condition = (
+      can(var.private_endpoint_properties == null) ||
+      can(var.private_endpoint_properties.private_endpoint_enabled == false) ||
+      can((length(var.private_endpoint_properties.private_dns_zone_ids_postgresql) > 0 &&
+        length(var.private_endpoint_properties.private_endpoint_subnet_id) > 0
+        )
+      )
+    )
+    error_message = "Both private_dns_zone_ids and private_endpoint_subnet_id must be provided if private_endpoint_enabled is true."
+  }
 }
 
 
