@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x  # Uncomment for debugging
+
 if [ $# -lt 2 ]; then
   echo "Usage: $0 <docker_compose_file> <excluded_containers_comma_separated>"
   exit 1
@@ -14,8 +16,6 @@ EXCLUSION_FILTER=$(echo "${EXCLUDED_CONTAINERS}" | awk -v ORS='' '{split($0, arr
 cd "${WORKING_DIR}" || { echo "Directory not found: ${WORKING_DIR}"; exit 1; }
 
 declare -A docker_functions_map=()
-
-# set -x  # Uncomment for debugging
 
 for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" "${DOCKER_COMPOSE_FILE}"); do
   context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" "${DOCKER_COMPOSE_FILE}")
