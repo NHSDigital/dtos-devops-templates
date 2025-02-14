@@ -9,8 +9,6 @@ module "rbac_assignments" {
   scope                = var.storage_account_id
 }
 
-data "azurerm_client_config" "current" {}
-
 locals {
   rbac_roles = {
     storage_account_contributor    = "Storage Account Contributor"
