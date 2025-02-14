@@ -1,5 +1,10 @@
 ---
 
+parameters:
+  - name: tfCommandOptions
+    type: string
+    default: ''
+
 steps:
   - template: tf_init.yaml
 
@@ -11,5 +16,5 @@ steps:
       provider: azurerm
       command: destroy
       workingDirectory: $(TF_DIRECTORY)
-      commandOptions: -var-file=$(tfVarsFile) $(tfCommandOptions) -var="environment=$(ENVIRONMENT)"
+      commandOptions: -var-file=$(tfVarsFile) ${{ parameters.tfCommandOptions }} -var="environment=$(ENVIRONMENT)"
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
