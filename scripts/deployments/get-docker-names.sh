@@ -2,16 +2,16 @@
 
 set -x  # Uncomment for debugging
 
-if [ $# -lt 2 ]; then
-  echo "Usage: $0 <docker_compose_file> <excluded_containers_comma_separated>"
+if [ $# -lt 3 ]; then
+  echo "Usage: $0 <docker_compose_file> <docker_compose_directory> <excluded_containers_comma_separated>"
   exit 1
 fi
 
 set -x
 
 DOCKER_COMPOSE_FILE=$1
-WORKING_DIR="$(dirname "$1")"
-EXCLUDED_CONTAINERS=$2
+WORKING_DIR=$2
+EXCLUDED_CONTAINERS=$3
 
 find . -type f | grep -i compose
 
@@ -23,7 +23,6 @@ cd "${WORKING_DIR}" || { echo "Directory not found: ${WORKING_DIR}"; exit 1; }
 
 echo "Alastair 2"
 
-ABSOLUTE_PATH_DOCKER_COMPOSE_FILE=$(find . -type f | grep -i compose.core)
 
 pwd
 
@@ -33,15 +32,15 @@ echo DOCKER_COMPOSE_FILE: ${DOCKER_COMPOSE_FILE}
 
 # ABSOLUTE_PATH_DOCKER_COMPOSE_FILE="./application/CohortManager/compose.core.yaml"
 
-ls -l ${ABSOLUTE_PATH_DOCKER_COMPOSE_FILE}
+ls -l ${DOCKER_COMPOSE_FILE}
 
 echo "Alastair 3"
 
 declare -A docker_functions_map=()
 
-for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" "${ABSOLUTE_PATH_DOCKER_COMPOSE_FILE}"); do
-  context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" "${ABSOLUTE_PATH_DOCKER_COMPOSE_FILE}")
-  dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" "${ABSOLUTE_PATH_DOCKER_COMPOSE_FILE}")
+for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" "${DOCKER_COMPOSE_FILE}"); do
+  context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" "${DOCKER_COMPOSE_FILE}")
+  dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" "${DOCKER_COMPOSE_FILE}")
 
   if [ -z "${dockerfile}" ] || [ -z "${context}" ] ; then
     continue
