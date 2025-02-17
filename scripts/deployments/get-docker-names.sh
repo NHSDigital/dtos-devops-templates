@@ -23,7 +23,7 @@ cd "${WORKING_DIR}" || { echo "Directory not found: ${WORKING_DIR}"; exit 1; }
 
 echo "Alastair 2"
 
-find . -type f | grep -i compose
+ABSOLUTE_PATH_DOCKER_COMPOSE_FILE=$(find . -type f | grep -i compose-core)
 
 pwd
 
@@ -31,7 +31,7 @@ echo DOCKER_COMPOSE_FILE: ${DOCKER_COMPOSE_FILE}
 
 # ABSOLUTE_PATH_DOCKER_COMPOSE_FILE=$( echo $(pwd)/${DOCKER_COMPOSE_FILE} )
 
-ABSOLUTE_PATH_DOCKER_COMPOSE_FILE="./application/CohortManager/compose.core.yaml"
+# ABSOLUTE_PATH_DOCKER_COMPOSE_FILE="./application/CohortManager/compose.core.yaml"
 
 ls -l ${ABSOLUTE_PATH_DOCKER_COMPOSE_FILE}
 
