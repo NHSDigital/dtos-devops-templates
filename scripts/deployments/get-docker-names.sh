@@ -23,7 +23,7 @@ cd "${WORKING_DIR}" || { echo "Directory not found: ${WORKING_DIR}"; exit 1; }
 
 echo "Alastair 2"
 
-ABSOLUTE_PATH_DOCKER_COMPOSE_FILE=$(find . -type f | grep -i compose-core)
+ABSOLUTE_PATH_DOCKER_COMPOSE_FILE=$(find . -type f | grep -i compose.core)
 
 pwd
 
