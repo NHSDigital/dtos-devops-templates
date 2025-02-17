@@ -7,9 +7,13 @@ if [ $# -lt 2 ]; then
   exit 1
 fi
 
+set -x
+
 DOCKER_COMPOSE_FILE=$1
 WORKING_DIR="$(dirname "$1")"
 EXCLUDED_CONTAINERS=$2
+
+find . -type f
 
 EXCLUSION_FILTER=$(echo "${EXCLUDED_CONTAINERS}" | awk -v ORS='' '{split($0, arr, ","); for (i in arr) printf ".container_name != \"%s\" and ", arr[i]} END {print "1"}')
 
