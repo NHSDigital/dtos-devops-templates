@@ -29,14 +29,18 @@ pwd
 
 echo DOCKER_COMPOSE_FILE: ${DOCKER_COMPOSE_FILE}
 
+ABSOLUTE_PATH_DOCKER_COMPOSE_FILE=$( echo $(pwd)/${DOCKER_COMPOSE_FILE} )
+
+
+ls -l ${ABSOLUTE_PATH_DOCKER_COMPOSE_FILE}
 
 echo "Alastair 3"
 
 declare -A docker_functions_map=()
 
-for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" "${DOCKER_COMPOSE_FILE}"); do
-  context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" "${DOCKER_COMPOSE_FILE}")
-  dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" "${DOCKER_COMPOSE_FILE}")
+for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" "${ABSOLUTE_PATH_DOCKER_COMPOSE_FILE}"); do
+  context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" "${ABSOLUTE_PATH_DOCKER_COMPOSE_FILE}")
+  dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" "${ABSOLUTE_PATH_DOCKER_COMPOSE_FILE}")
 
   if [ -z "${dockerfile}" ] || [ -z "${context}" ] ; then
     continue
