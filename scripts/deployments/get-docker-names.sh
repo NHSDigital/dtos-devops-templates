@@ -13,7 +13,9 @@ DOCKER_COMPOSE_FILE=$1
 WORKING_DIR="$(dirname "$1")"
 EXCLUDED_CONTAINERS=$2
 
-find . -type f
+find . -type f | grep -i compose
+
+pwd
 
 EXCLUSION_FILTER=$(echo "${EXCLUDED_CONTAINERS}" | awk -v ORS='' '{split($0, arr, ","); for (i in arr) printf ".container_name != \"%s\" and ", arr[i]} END {print "1"}')
 
