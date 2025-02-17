@@ -9,8 +9,8 @@ fi
 
 set -x
 
-DOCKER_COMPOSE_FILE=$1
-WORKING_DIR=$2
+DOCKER_COMPOSE_FILE=$(basename $1)
+WORKING_DIR=$(dirname $1)
 EXCLUDED_CONTAINERS=$3
 
 find . -type f | grep -i compose
