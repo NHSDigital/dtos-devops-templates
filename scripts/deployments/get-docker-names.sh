@@ -21,6 +21,12 @@ EXCLUSION_FILTER=$(echo "${EXCLUDED_CONTAINERS}" | awk -v ORS='' '{split($0, arr
 
 cd "${WORKING_DIR}" || { echo "Directory not found: ${WORKING_DIR}"; exit 1; }
 
+echo "Alastair 2"
+
+find . -type f | grep -i compose
+
+pwd
+
 declare -A docker_functions_map=()
 
 for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" "${DOCKER_COMPOSE_FILE}"); do
