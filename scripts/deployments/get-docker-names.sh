@@ -2,8 +2,8 @@
 
 set -x  # Uncomment for debugging
 
-if [ $# -lt 3 ]; then
-  echo "Usage: $0 <docker_compose_file> <docker_compose_directory> <excluded_containers_comma_separated>"
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 <docker_compose_file> <excluded_containers_comma_separated>"
   exit 1
 fi
 
