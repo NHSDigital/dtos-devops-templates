@@ -27,6 +27,11 @@ find . -type f | grep -i compose
 
 pwd
 
+echo DOCKER_COMPOSE_FILE: ${DOCKER_COMPOSE_FILE}
+
+
+echo "Alastair 3"
+
 declare -A docker_functions_map=()
 
 for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" "${DOCKER_COMPOSE_FILE}"); do
