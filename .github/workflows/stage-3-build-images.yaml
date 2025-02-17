@@ -67,7 +67,7 @@ jobs:
           for COMPOSE_FILE in "${COMPOSE_FILES[@]}"; do
             DOCKER_COMPOSE_DIR="$(dirname "$COMPOSE_FILE")"
             echo "Processing $COMPOSE_FILE (directory: $DOCKER_COMPOSE_DIR)"
-            bash -x ./templates/scripts/deployments/get-docker-names.sh "$COMPOSE_FILE" "${DOCKER_COMPOSE_DIR}" "${{ inputs.excluded_containers_csv_list }}"
+            bash -x ./templates/scripts/deployments/get-docker-names.sh "$COMPOSE_FILE" "${{ inputs.excluded_containers_csv_list }}"
           done
 
       - name: Print function names
