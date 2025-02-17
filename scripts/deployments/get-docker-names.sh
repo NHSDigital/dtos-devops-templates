@@ -23,14 +23,10 @@ cd "${WORKING_DIR}" || { echo "Directory not found: ${WORKING_DIR}"; exit 1; }
 
 echo "Alastair 2"
 
-
 pwd
 
 echo DOCKER_COMPOSE_FILE: ${DOCKER_COMPOSE_FILE}
 
-# ABSOLUTE_PATH_DOCKER_COMPOSE_FILE=$( echo $(pwd)/${DOCKER_COMPOSE_FILE} )
-
-# ABSOLUTE_PATH_DOCKER_COMPOSE_FILE="./application/CohortManager/compose.core.yaml"
 
 ls -l ${DOCKER_COMPOSE_FILE}
 
@@ -67,6 +63,8 @@ else
     for folder in ${CHANGED_FOLDERS}; do
       echo "Checking folder: ${folder}"
       for key in "${!docker_functions_map[@]}";
+        echo key: $key
+        echo folder: $folder
         if [[ "$key" == "$folder" ]]; then
           echo "Found match: ${folder} -> ${docker_functions_map[$key]}"
           changed_functions+=" ${docker_functions_map[$key]}"
