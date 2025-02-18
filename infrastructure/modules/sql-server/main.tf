@@ -79,7 +79,7 @@ module "diagnostic_setting_sql_server" {
   metric                     = var.monitor_diagnostic_setting_sql_server_metrics
 
   # Add dependency on the database we create as the master database will be created by that point too
-  depends_on = [ azurerm_mssql_database.defaultdb ]
+  depends_on = [azurerm_mssql_database.defaultdb]
 }
 
 /* --------------------------------------------------------------------------------------------------
