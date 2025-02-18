@@ -50,8 +50,8 @@ module "private_endpoint_container_registry" {
 module "diagnostic-settings" {
   source = "../diagnostic-settings"
 
-  name                       = "${var.azurerm_container_registry}-diagnostic-setting"
-  target_resource_id         = azurerm_linux_function_app.function_app.id
+  name                       = "${var.name}-diagnostic-setting"
+  target_resource_id         = azurerm_container_registry.acr.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_log                = var.monitor_diagnostic_setting_acr_enabled_logs
   metric                     = var.monitor_diagnostic_setting_acr_metrics
