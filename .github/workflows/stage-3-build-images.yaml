@@ -56,14 +56,16 @@ jobs:
         id: get-function-names
         env:
           CHANGED_FOLDERS: ${{ steps.changed-files.outputs.all_changed_files }}
+          COMPOSE_FILE: ${{ inputs.docker_compose_file }}
+          EXCLUDED_CONTAINERS: ${{ inputs.excluded_containers_csv_list }}
         run: |
-          DOCKER_COMPOSE_DIR="$(dirname "${{ inputs.docker_compose_file  }}")"
-          bash ./templates/scripts/deployments/get-docker-names.sh ${{ inputs.docker_compose_file  }}  ${{ inputs.excluded_containers_csv_list  }}
+          DOCKER_COMPOSE_DIR="$(dirname "${COMPOSE_FILE}")"
+          bash ./templates/scripts/deployments/get-docker-names.sh ${COMPOSE_FILE} ${EXCLUDED_CONTAINERS}
           echo "DOCKER_COMPOSE_DIR=$DOCKER_COMPOSE_DIR" >> ${GITHUB_OUTPUT}
 
       - name: Print function names
         run: |
-          echo "The branch is: " ${{ github.ref }}
+          echo "The branch is: " ${GITHUB_REF}
           echo "FUNC_NAMES before setting output: ${{ steps.get-function-names.outputs.FUNC_NAMES }}"
           echo "FUNC_NAMES=${FUNC_NAMES}" >> ${GITHUB_OUTPUT}
 
@@ -107,10 +109,10 @@ jobs:
       - name: Create Tags
         env:
           GH_TOKEN: ${{ github.token }}
+          ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
         continue-on-error: false
         run: |
-          echo "GITHUB_REF: ${GITHUB_REF}"
-          echo "The branch is: ${{ github.ref }}"
+          echo "The branch is: ${GITHUB_REF}"
 
           if [[ "${GITHUB_REF}" == refs/pull/*/merge ]]; then
             PR_NUM_TAG=$(echo "${GITHUB_REF}" | sed 's/refs\/pull\/\([0-9]*\)\/merge/\1/')
@@ -128,16 +130,17 @@ jobs:
           echo "Commit hash tag: ${SHORT_COMMIT_HASH}"
           echo "COMMIT_HASH_TAG=${SHORT_COMMIT_HASH}" >> ${GITHUB_ENV}
 
-          echo "ENVIRONMENT_TAG=${{ inputs.environment_tag }}" >> ${GITHUB_ENV}
+          echo "ENVIRONMENT_TAG=${ENVIRONMENT_TAG}" >> ${GITHUB_ENV}
 
       - name: Build and Push Image
         working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
+        env:
+          COMPOSE_FILE: ${{ inputs.docker_compose_file }}
+          PROJECT_NAME: ${{ inputs.project_name }}
         run: |
           function=${{ matrix.function }}
-          project_name=${{ inputs.project_name }}
-
-          echo project_name: $project_name
+          echo PROJECT_NAME: ${PROJECT_NAME}
 
           if [ -z "${function}" ]; then
             echo "Function variable is empty. Skipping Docker build."
@@ -145,17 +148,17 @@ jobs:
           fi
 
           # Build the image
-          docker compose -f ${{ inputs.docker_compose_file  }} -p ${project_name} build --no-cache --pull ${function}
+          docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build --no-cache --pull ${function}
 
-          repo_name="${{ secrets.ACR_NAME }}.azurecr.io/${project_name}-$function"
+          repo_name="${{ secrets.ACR_NAME }}.azurecr.io/${PROJECT_NAME}-${function}"
 
           # Tag the image
-          docker tag ${project_name}-${function}:latest "$repo_name:${COMMIT_HASH_TAG}"
-          docker tag ${project_name}-${function}:latest "$repo_name:${PR_NUM_TAG}"
-          docker tag ${project_name}-${function}:latest "$repo_name:${ENVIRONMENT_TAG}"
+          docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${COMMIT_HASH_TAG}"
+          docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${PR_NUM_TAG}"
+          docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${ENVIRONMENT_TAG}"
 
           # If this variable is set, the create-sbom-report.sh script will scan this docker image instead.
-          export CHECK_DOCKER_IMAGE=${project_name}-${function}:latest
+          export CHECK_DOCKER_IMAGE=${PROJECT_NAME}-${function}:latest
           export FORCE_USE_DOCKER=true
 
           export PR_NUM_TAG=${PR_NUM_TAG}
@@ -180,13 +183,13 @@ jobs:
 
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
 
-          SCAN_RESULTS=$(grype "${project_name}-${function}:latest" --scope all-layers)
+          SCAN_RESULTS=$(grype "${PROJECT_NAME}-${function}:latest" --scope all-layers)
           # ANSI color codes
           RED="\033[0;31m"
           RESET="\033[0m"
 
           # Define your log file
-          VULNERABILITIES_SUMMARY_LOGFILE="${project_name}-${function}-vulnerabilities-summary.txt"
+          VULNERABILITIES_SUMMARY_LOGFILE="${PROJECT_NAME}-${function}-vulnerabilities-summary.txt"
           echo "VULNERABILITIES_SUMMARY_LOGFILE=$VULNERABILITIES_SUMMARY_LOGFILE" >> $GITHUB_ENV
 
           # Clear existing log file (or create if it doesn't exist)
@@ -195,7 +198,7 @@ jobs:
           for SEVERITY in CRITICAL HIGH MEDIUM; do
             {
               echo ""
-              echo "${project_name}-${function}: vulnerabilities"
+              echo "${PROJECT_NAME}-${function}: vulnerabilities"
               echo -e "=== ${RED}${SEVERITY}${RESET} Vulnerabilities list ==="
               # If grep finds nothing, we print a fallback message
               echo "$SCAN_RESULTS" | grep -i "$SEVERITY" || echo "No $SEVERITY vulnerabilities found."
@@ -206,7 +209,7 @@ jobs:
           docker rmi "${repo_name}:${COMMIT_HASH_TAG}"
           docker rmi "${repo_name}:${PR_NUM_TAG}"
           docker rmi "${repo_name}:${ENVIRONMENT_TAG}"
-          docker rmi ${project_name}-${function}:latest
+          docker rmi ${PROJECT_NAME}-${function}:latest
 
       - name: Compress SBOM report
         shell: bash
