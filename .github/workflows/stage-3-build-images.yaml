@@ -134,8 +134,6 @@ jobs:
         working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         run: |
-          set -x
-          
           function=${{ matrix.function }}
           project_name=${{ inputs.project_name }}
 
@@ -147,7 +145,6 @@ jobs:
           fi
 
           # Build the image
-          docker compose ls
           docker compose -f ${{ inputs.docker_compose_file  }} -p ${project_name} build --no-cache --pull ${function}
 
           repo_name="${{ secrets.ACR_NAME }}.azurecr.io/${project_name}-$function"
