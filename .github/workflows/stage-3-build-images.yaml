@@ -134,6 +134,8 @@ jobs:
         working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         run: |
+          set -x
+          
           function=${{ matrix.function }}
           project_name=${{ inputs.project_name }}
 
