@@ -147,7 +147,8 @@ jobs:
           fi
 
           # Build the image
-          docker compose -f ${{ inputs.docker_compose_file  }} build --no-cache --pull ${function}
+          docker compose ls
+          docker compose -f ${{ inputs.docker_compose_file  }} -p ${project_name} build --no-cache --pull ${function}
 
           repo_name="${{ secrets.ACR_NAME }}.azurecr.io/${project_name}-$function"
 
