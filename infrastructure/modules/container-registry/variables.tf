@@ -19,6 +19,21 @@ variable "admin_enabled" {
   description = "Specifies whether the admin user is enabled."
 }
 
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
+}
+
+variable "monitor_diagnostic_setting_acr_enabled_logs" {
+  type        = list(string)
+  description = "Controls what logs will be enabled for the acr"
+}
+
+variable "monitor_diagnostic_setting_acr_metrics" {
+  type        = list(string)
+  description = "Controls what metrics will be enabled for the acr"
+}
+
 variable "private_endpoint_properties" {
   description = "Consolidated properties for the Function App Private Endpoint."
   type = object({
