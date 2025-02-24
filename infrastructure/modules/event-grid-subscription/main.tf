@@ -2,11 +2,13 @@ resource "azurerm_eventgrid_event_subscription" "eventgrid_event_subscription" {
   name  = var.subscription_name
   scope = var.azurerm_eventgrid_id
 
-  dynamic "azure_function_endpoint" {
-    for_each = var.subscriber_function_details
-    content {
-      function_id = azure_function_endpoint.value.function_endpoint
-    }
+  azure_function_endpoint {
+    # This must be the resource ID of the Azure Function
+    function_id = var.function_endpoint
+
+    # Optional: configure batch options
+    # max_events_batch_size           = 1   # e.g., deliver one event per batch
+    # preferred_batch_size_in_kilobytes = 64
   }
 
   storage_blob_dead_letter_destination {
@@ -17,11 +19,8 @@ resource "azurerm_eventgrid_event_subscription" "eventgrid_event_subscription" {
   # tags = var.tags
 }
 
-
 resource "azurerm_role_assignment" "eventgrid_subscription_role" {
-  for_each = { for idx, endpoint in var.subscriber_function_details : idx => endpoint }
-
-  principal_id         = each.value.principal_id
+  principal_id         = var.principal_id
   role_definition_name = "EventGrid Data Receiver"
   scope                = var.azurerm_eventgrid_id
 }
