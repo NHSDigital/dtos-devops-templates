@@ -17,6 +17,7 @@ steps:
     inlineScript: |
       # Output current Azure context
       az account show
+      az account set -s "Digital Screening DToS - Core Services NFT"
       az group list --output table
       echo "Service connection"
       echo "Service connection is: ${{ parameters.serviceConnection }}"
@@ -118,7 +119,7 @@ steps:
     command: 'test'
     projects: '$(System.DefaultWorkingDirectory)/tests/smoke-tests/dtos-cohort-manager-smoke-tests/dtos-cohort-manager-smoke-tests.csproj'
     publishTestResults: true
-    azureSubscription: sc-cohort-manager-nft
+    azureSubscription: ${{ parameters.serviceConnection }}
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results'
@@ -129,4 +130,4 @@ steps:
     mergeTestResults: true
     createTestRun: true
     testResultFormat: VSTest
-    azureSubscription: sc-cohort-manager-nft
+    azureSubscription: ${{ parameters.serviceConnection }}
