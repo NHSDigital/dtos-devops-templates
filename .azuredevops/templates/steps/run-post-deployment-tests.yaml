@@ -35,7 +35,14 @@ steps:
       $sqlConnection.Open()
       # Output SQL Connection State:
       Write-Host "SQL Connection State: $($sqlConnection.State)"
-      # Test SQL here:
+      # Execute SQL query and output results:
+      $command = $sqlConnection.CreateCommand()
+      $command.CommandText = "SELECT [name] from sys.database_principals where [type] = 'E' order by [name]"
+      $reader = $command.ExecuteReader()
+      while ($reader.Read()) {
+          Write-Host "Name: $($reader["name"])"
+      }
+      $reader.Close()
       $sqlConnection.Close()
     azurePowerShellVersion: 'LatestVersion'
 
