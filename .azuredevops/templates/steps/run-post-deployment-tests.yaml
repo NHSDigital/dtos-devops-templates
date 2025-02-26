@@ -5,6 +5,18 @@ parameters:
   type: string
 
 steps:
+- task: AzureCLI@2
+  name: debug_output
+  displayName: 'Debug Output'
+  inputs:
+    azureSubscription: ${{ parameters.serviceConnection }}
+    addSpnToEnvironment: true
+    failOnStandardError: false
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      # Output current Azure context
+      az account show
 
 - task: UseDotNet@2
   displayName: 'Use .NET 9 SDK'
