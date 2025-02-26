@@ -25,7 +25,7 @@ steps:
 
 - task: AzurePowerShell@5
   inputs:
-    azureSubscription: 'my_serviceconnection'
+    azureSubscription: ${{ parameters.serviceConnection }}
     ScriptType: 'InlineScript'
     Inline: |
       $token = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token
