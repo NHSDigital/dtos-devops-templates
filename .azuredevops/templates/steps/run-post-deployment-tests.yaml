@@ -33,6 +33,8 @@ steps:
       $sqlConnection.ConnectionString = "$(DTOS_DATABASE_CONNECTION_STRING)"
       $sqlConnection.AccessToken = $token
       $sqlConnection.Open()
+      # Output SQL Connection State:
+      Write-Host "SQL Connection State: $($sqlConnection.State)"
       # Test SQL here:
       $sqlConnection.Close()
     azurePowerShellVersion: 'LatestVersion'
