@@ -17,7 +17,7 @@ steps:
     inlineScript: |
       # Output current Azure context
       az account show
-      az account set -s "Digital Screening DToS - Core Services NFT"
+      az account set -s $(TARGET_SUBSCRIPTION_ID)
       az group list --output table
       echo "Service connection"
       echo "Service connection is: ${{ parameters.serviceConnection }}"
