@@ -20,6 +20,22 @@ steps:
       az group list --output table
       echo "Service connection"
       echo "Service connection is: ${{ parameters.serviceConnection }}"
+      echo "Database connection string"
+      echo "Database connection string is: $(DTOS_DATABASE_CONNECTION_STRING)"
+
+- task: AzurePowerShell@5
+  inputs:
+    azureSubscription: 'my_serviceconnection'
+    ScriptType: 'InlineScript'
+    Inline: |
+      $token = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token
+      $sqlConnection = New-Object System.Data.SqlClient.SqlConnection
+      $sqlConnection.ConnectionString = "$(DTOS_DATABASE_CONNECTION_STRING)"
+      $sqlConnection.AccessToken = $token
+      $sqlConnection.Open()
+      # Test SQL here:
+      $sqlConnection.Close()
+    azurePowerShellVersion: 'LatestVersion'
 
 - task: UseDotNet@2
   displayName: 'Use .NET 9 SDK'
