@@ -91,7 +91,7 @@ steps:
     command: 'test'
     projects: '$(System.DefaultWorkingDirectory)/tests/smoke-tests/dtos-cohort-manager-smoke-tests/dtos-cohort-manager-smoke-tests.csproj'
     publishTestResults: true
-    azureSubscription: ${{ parameters.serviceConnection }}
+    azureSubscription: sc-cohort-manager-nft
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results'
@@ -102,4 +102,4 @@ steps:
     mergeTestResults: true
     createTestRun: true
     testResultFormat: VSTest
-    azureSubscription: ${{ parameters.serviceConnection }}
+    azureSubscription: sc-cohort-manager-nft
