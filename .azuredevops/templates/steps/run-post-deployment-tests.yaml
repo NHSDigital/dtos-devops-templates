@@ -18,6 +18,8 @@ steps:
       # Output current Azure context
       az account show
       az group list --output table
+      echo "Service connection"
+      echo "Service connection is: ${{ parameters.serviceConnection }}"
 
 - task: UseDotNet@2
   displayName: 'Use .NET 9 SDK'
