@@ -16,9 +16,6 @@ EXCLUDED_CONTAINERS=$3
 EXCLUSION_FILTER=$(echo "${EXCLUDED_CONTAINERS}" | awk -v ORS='' '{split($0, arr, ","); for (i in arr) printf ".container_name != \"%s\" and ", arr[i]} END {print "1"}')
 
 cd "${WORKING_DIR}" || { echo "Directory not found: ${WORKING_DIR}"; exit 1; }
-echo DOCKER_COMPOSE_FILE: ${DOCKER_COMPOSE_FILE}
-
-ls -l ${DOCKER_COMPOSE_FILE}
 
 declare -A docker_functions_map=()
 
