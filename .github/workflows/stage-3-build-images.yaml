@@ -70,6 +70,7 @@ jobs:
             FUNC_NAMES="$FUNC_NAMES $local_func_names"
           done
 
+          echo "local func names: $local_func_names"
           echo "FUNC_NAMES=$FUNC_NAMES" >> "$GITHUB_OUTPUT"
 
       - name: Print function names
