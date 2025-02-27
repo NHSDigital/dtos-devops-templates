@@ -47,6 +47,10 @@ for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_n
   docker_functions_map["${contextFiltered}${dockerfileFiltered}"]="${service}"
 done
 
+for key in "${!docker_functions_map[@]}"; do
+  echo "Key: ${key}, Value: ${docker_functions_map[$key]}"
+done
+
 changed_functions=""
 
 if [ -z "${CHANGED_FOLDERS}" ]; then
