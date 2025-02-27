@@ -60,12 +60,13 @@ jobs:
         run: |
           IFS=' ' read -r -a COMPOSE_FILES <<< "${{ inputs.docker_compose_file }}"
           FUNC_NAMES=""
+          local_func_names=""
 
           find . -type f | grep -i compose
           for COMPOSE_FILE in "${COMPOSE_FILES[@]}"; do
             DOCKER_COMPOSE_DIR="$(dirname "$COMPOSE_FILE")"
             echo "Processing $COMPOSE_FILE (directory: $DOCKER_COMPOSE_DIR)"
-            local_func_names=$(bash ./templates/scripts/deployments/get-docker-names.sh "$COMPOSE_FILE" "${{ inputs.excluded_containers_csv_list }}")
+            bash ./templates/scripts/deployments/get-docker-names.sh "$COMPOSE_FILE" "${{ inputs.excluded_containers_csv_list }}" >> $local_func_names
             echo "Function names from $COMPOSE_FILE: $local_func_names"
             FUNC_NAMES+="$FUNC_NAMES $local_func_names"
           done
