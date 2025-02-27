@@ -28,7 +28,7 @@ for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_n
   fi
   contextFiltered=$(echo "${context}" | sed 's#^\./src/Functions/##' | sed 's#^\./src/##' | sed 's#^\./##' | sed 's#/$##')
   dockerfileFiltered=$(echo "${dockerfile}" | sed 's#^\./##' | sed 's#\/Dockerfile##' | sed 's#Dockerfile##' )
-  echo docker_functions_map "${contextFiltered}${dockerfileFiltered}" = "${service}"
+  #echo docker_functions_map "${contextFiltered}${dockerfileFiltered}" = "${service}"
   docker_functions_map["${contextFiltered}${dockerfileFiltered}"]="${service}"
 done
 
@@ -45,7 +45,7 @@ elif [[ "${CHANGED_FOLDERS,,}" =~ shared ]]; then
     echo "Shared folder changed, returning all functions"
     for key in "${!docker_functions_map[@]}"; do
         changed_functions+=" ${docker_functions_map[$key]}"
-        echo "Adding in: ${docker_functions_map[$key]}"
+        #echo "Adding in: ${docker_functions_map[$key]}"
     done
 else
     echo "files changed ${CHANGED_FOLDERS} "
