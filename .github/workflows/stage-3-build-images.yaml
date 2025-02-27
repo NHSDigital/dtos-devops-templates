@@ -67,9 +67,9 @@ jobs:
             DOCKER_COMPOSE_DIR="$(dirname "$COMPOSE_FILE")"
             echo "Processing $COMPOSE_FILE (directory: $DOCKER_COMPOSE_DIR)"
             bash ./templates/scripts/deployments/get-docker-names.sh "$COMPOSE_FILE" "${{ inputs.excluded_containers_csv_list }}"
-            local_func_names= "$changed_functions_json"
+            #local_func_names= "$changed_functions_json"
             #echo "Function names from $COMPOSE_FILE: $local_func_names"
-            FUNC_NAMES+=" $local_func_names"
+            FUNC_NAMES+=$(cat /tmp/local_changed_functions.txt)
           done
 
           echo "alastair ": $FUNC_NAMES
