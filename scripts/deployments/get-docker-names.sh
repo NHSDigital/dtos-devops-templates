@@ -67,7 +67,7 @@ else
     done
 fi
 
-changed_functions_json+=$(printf '["%s"]' "$(echo "${changed_functions}" | sed 's/ /","/g')")
+changed_functions_json=$(printf '["%s"]' "$(echo "${changed_functions}" | sed 's/ /","/g')")
 
 echo "Final list of functions to rebuild:"
 echo "${changed_functions_json}" >> "$GITHUB_OUTPUT"
