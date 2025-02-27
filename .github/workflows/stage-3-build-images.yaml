@@ -59,41 +59,24 @@ jobs:
           CHANGED_FOLDERS: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           IFS=' ' read -r -a COMPOSE_FILES <<< "${{ inputs.docker_compose_file }}"
+          FUNC_NAMES=""
 
           find . -type f | grep -i compose
           for COMPOSE_FILE in "${COMPOSE_FILES[@]}"; do
             DOCKER_COMPOSE_DIR="$(dirname "$COMPOSE_FILE")"
             echo "Processing $COMPOSE_FILE (directory: $DOCKER_COMPOSE_DIR)"
-            bash -x ./templates/scripts/deployments/get-docker-names.sh "$COMPOSE_FILE" "${{ inputs.excluded_containers_csv_list }}"
+            local_func_names=$(bash ./templates/scripts/deployments/get-docker-names.sh "$COMPOSE_FILE" "${{ inputs.excluded_containers_csv_list }}")
+            echo "Function names from $COMPOSE_FILE: $local_func_names"
+            FUNC_NAMES="$FUNC_NAMES $local_func_names"
           done
 
-      - name: Aggregate function names
-        id: aggregate-function-names
-        run: |
-          # Get all the FUNC_NAMES lines from the output
-          FUNC_NAMES_LINES=$(grep "FUNC_NAMES=" "$GITHUB_OUTPUT")
-          # Extract the JSON arrays and concatenate them
-          AGGREGATED_JSON="["
-          for LINE in $FUNC_NAMES_LINES; do
-            JSON_ARRAY="${LINE:11}" # Remove "FUNC_NAMES=" prefix
-            # Remove the opening and closing brackets for all but the last array
-            if [[ "$LINE" != "${FUNC_NAMES_LINES[-1]}" ]]; then
-              JSON_ARRAY="${JSON_ARRAY:1:-1}," # Remove [] and add a comma
-            else
-              JSON_ARRAY="${JSON_ARRAY:1:-1}" # Remove []
-            fi
-
-            AGGREGATED_JSON+="$JSON_ARRAY"
-          done
-          AGGREGATED_JSON+="]"
-
-          echo "::set-output name=function_names::$AGGREGATED_JSON"
+          echo "FUNC_NAMES=$FUNC_NAMES" >> "$GITHUB_OUTPUT"
 
       - name: Print function names
         run: |
           echo "The branch is: " ${{ github.ref }}
           echo "FUNC_NAMES before setting output: ${{ steps.get-function-names.outputs.FUNC_NAMES }}"
-          echo "FUNC_NAMES=${FUNC_NAMES}" >> ${AGGREGATED_JSON}
+          echo "FUNC_NAMES=${FUNC_NAMES}" >> ${GITHUB_OUTPUT}
 
   build-and-push:
     runs-on: ubuntu-latest
