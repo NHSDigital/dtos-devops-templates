@@ -39,7 +39,7 @@ done
 #   echo "Key: ${key}, Value: ${docker_functions_map[$key]}"
 # done
 
-# changed_functions=""
+changed_functions=""
 
 if [ -z "${CHANGED_FOLDERS}" ]; then
     changed_functions="null"
