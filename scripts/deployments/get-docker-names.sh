@@ -41,7 +41,7 @@ for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_n
   if [ -z "${dockerfile}" ] || [ -z "${context}" ] ; then
     continue
   fi
-  contextFiltered=$(echo "${context}" | sed 's#^\./src/##' | sed 's#^\./##' | sed 's#^\./scr/Functions/##' | sed 's#/$##')
+  contextFiltered=$(echo "${context}" | sed 's#^\./scr/Functions/##' | sed 's#^\./src/##' | sed 's#^\./##' | sed 's#/$##')
   dockerfileFiltered=$(echo "${dockerfile}" | sed 's#^\./##' | sed 's#\/Dockerfile##' | sed 's#Dockerfile##' )
   echo docker_functions_map "${contextFiltered}${dockerfileFiltered}" = "${service}"
   docker_functions_map["${contextFiltered}${dockerfileFiltered}"]="${service}"
