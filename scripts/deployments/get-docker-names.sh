@@ -1,13 +1,13 @@
 #!/bin/bash
 
-set -x  # Uncomment for debugging
+#set -x  # Uncomment for debugging
 
 if [ $# -lt 2 ]; then
   echo "Usage: $0 <docker_compose_file> <excluded_containers_comma_separated>"
   exit 1
 fi
 
-set -x
+#set -x
 
 DOCKER_COMPOSE_FILE=$(basename $1)
 WORKING_DIR=$(dirname $1)
@@ -70,6 +70,6 @@ fi
 changed_functions_json=$(printf '["%s"]' "$(echo "${changed_functions}" | sed 's/ /","/g')")
 
 echo "Final list of functions to rebuild:"
-echo "${changed_functions_json}" #>> "$GITHUB_OUTPUT"
+echo "${changed_functions_json}" >> "$GITHUB_OUTPUT"
 
 #echo "FUNC_NAMES+=${changed_functions_json}" >> "${GITHUB_OUTPUT}"
