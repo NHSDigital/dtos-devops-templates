@@ -13,24 +13,12 @@ DOCKER_COMPOSE_FILE=$(basename $1)
 WORKING_DIR=$(dirname $1)
 EXCLUDED_CONTAINERS=$3
 
-find . -type f | grep -i compose
-
-pwd
-
 EXCLUSION_FILTER=$(echo "${EXCLUDED_CONTAINERS}" | awk -v ORS='' '{split($0, arr, ","); for (i in arr) printf ".container_name != \"%s\" and ", arr[i]} END {print "1"}')
 
 cd "${WORKING_DIR}" || { echo "Directory not found: ${WORKING_DIR}"; exit 1; }
-
-echo "Alastair 2"
-
-pwd
-
 echo DOCKER_COMPOSE_FILE: ${DOCKER_COMPOSE_FILE}
 
-
 ls -l ${DOCKER_COMPOSE_FILE}
-
-echo "Alastair 3"
 
 declare -A docker_functions_map=()
 
@@ -47,11 +35,11 @@ for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_n
   docker_functions_map["${contextFiltered}${dockerfileFiltered}"]="${service}"
 done
 
-for key in "${!docker_functions_map[@]}"; do
-  echo "Key: ${key}, Value: ${docker_functions_map[$key]}"
-done
+# for key in "${!docker_functions_map[@]}"; do
+#   echo "Key: ${key}, Value: ${docker_functions_map[$key]}"
+# done
 
-changed_functions=""
+# changed_functions=""
 
 if [ -z "${CHANGED_FOLDERS}" ]; then
     changed_functions="null"
