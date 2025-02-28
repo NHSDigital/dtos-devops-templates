@@ -5,48 +5,6 @@ parameters:
   type: string
 
 steps:
-- task: AzureCLI@2
-  name: debug_output
-  displayName: 'Debug Output'
-  inputs:
-    azureSubscription: ${{ parameters.serviceConnection }}
-    addSpnToEnvironment: true
-    failOnStandardError: false
-    scriptType: bash
-    scriptLocation: inlineScript
-    inlineScript: |
-      # Output current Azure context
-      az account show
-      az account set -s $(TARGET_SUBSCRIPTION_ID)
-      az group list --output table
-      echo "Service connection"
-      echo "Service connection is: ${{ parameters.serviceConnection }}"
-      echo "Database connection string"
-      echo "Database connection string is: $(DTOS_DATABASE_CONNECTION_STRING)"
-
-- task: AzurePowerShell@5
-  inputs:
-    azureSubscription: ${{ parameters.serviceConnection }}
-    ScriptType: 'InlineScript'
-    Inline: |
-      $token = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token
-      $sqlConnection = New-Object System.Data.SqlClient.SqlConnection
-      $sqlConnection.ConnectionString = "$(DTOS_DATABASE_CONNECTION_STRING)"
-      $sqlConnection.AccessToken = $token
-      $sqlConnection.Open()
-      # Output SQL Connection State:
-      Write-Host "SQL Connection State: $($sqlConnection.State)"
-      # Execute SQL query and output results:
-      $command = $sqlConnection.CreateCommand()
-      $command.CommandText = "SELECT [name] from sys.database_principals where [type] = 'E' order by [name]"
-      $reader = $command.ExecuteReader()
-      while ($reader.Read()) {
-          Write-Host "Name: $($reader["name"])"
-      }
-      $reader.Close()
-      $sqlConnection.Close()
-    azurePowerShellVersion: 'LatestVersion'
-
 - task: UseDotNet@2
   displayName: 'Use .NET 9 SDK'
   inputs:
