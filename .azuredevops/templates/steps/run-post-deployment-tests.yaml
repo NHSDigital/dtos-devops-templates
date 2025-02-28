@@ -5,7 +5,6 @@ parameters:
   type: string
 
 steps:
-
 - task: UseDotNet@2
   displayName: 'Use .NET 9 SDK'
   inputs:
@@ -72,13 +71,19 @@ steps:
     projects: '$(Build.SourcesDirectory)/tests/smoke-tests/dtos-cohort-manager-smoke-tests.sln'
     arguments: '--configuration Release'
 
+- script: |
+    export AZURE_IDENTITY_DISABLE_MANAGED_IDENTITY=true
+  displayName: 'Export Identity Config'
+
 - task: DotNetCoreCLI@2
   displayName: 'Run SpecFlow Tests'
   inputs:
     command: 'test'
     projects: '$(System.DefaultWorkingDirectory)/tests/smoke-tests/dtos-cohort-manager-smoke-tests/dtos-cohort-manager-smoke-tests.csproj'
     publishTestResults: true
-    azureSubscription: sc-cohort-manager-dev
+    connectedServiceName: ${{ parameters.serviceConnection }}
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results'
@@ -89,4 +94,4 @@ steps:
     mergeTestResults: true
     createTestRun: true
     testResultFormat: VSTest
-    azureSubscription: sc-cohort-manager-dev
+    azureSubscription: ${{ parameters.serviceConnection }}
