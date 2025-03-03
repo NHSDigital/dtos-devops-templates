@@ -59,22 +59,18 @@ jobs:
           CHANGED_FOLDERS: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           IFS=' ' read -r -a COMPOSE_FILES <<< "${{ inputs.docker_compose_file }}"
+          names_from_compose=""
           FUNC_NAMES=""
-          local_func_names=""
 
           find . -type f | grep -i compose
           for COMPOSE_FILE in "${COMPOSE_FILES[@]}"; do
             DOCKER_COMPOSE_DIR="$(dirname "$COMPOSE_FILE")"
             echo "Processing $COMPOSE_FILE (directory: $DOCKER_COMPOSE_DIR)"
             bash ./templates/scripts/deployments/get-docker-names.sh "$COMPOSE_FILE" "${{ inputs.excluded_containers_csv_list }}"
-            ls -l
-            FUNC_NAMES+=$(cat ./local_changed_functions.txt)
-            #echo "Function names from $COMPOSE_FILE: $local_func_names"
+            names_from_compose+=$(cat ./local_changed_functions.txt)
           done
-
           pwd
-
-          #echo "FUNC_NAMES=$changed_functions_json"
+          FUNC_NAMES=$(echo "${names_from_compose}" | sed 's#\]\[#,#g')
           echo "FUNCNames value": $FUNC_NAMES
 
       - name: Print function names
