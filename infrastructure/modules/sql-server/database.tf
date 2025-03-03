@@ -1,5 +1,6 @@
 
 resource "azurerm_mssql_database" "defaultdb" {
+
   name                 = var.db_name_suffix # using only the suffix, as this is the naming convention from DToS Devs
   server_id            = azurerm_mssql_server.azure_sql_server.id
   collation            = var.collation
@@ -10,6 +11,22 @@ resource "azurerm_mssql_database" "defaultdb" {
   storage_account_type = var.storage_account_type
   zone_redundant       = var.zone_redundant
 
+  dynamic "short_term_retention_policy" {
+    for_each = var.short_term_retention_policy != null ? [1] : []
+    content {
+      retention_days = var.short_term_retention_policy
+    }
+  }
+
+  dynamic "long_term_retention_policy" {
+    for_each = var.long_term_retention_policy != {} ? [1] : []
+    content {
+      weekly_retention  = var.long_term_retention_policy.weekly_retention
+      monthly_retention = var.long_term_retention_policy.monthly_retention
+      yearly_retention  = var.long_term_retention_policy.yearly_retention
+      week_of_year      = var.long_term_retention_policy.week_of_year
+    }
+  }
 
   tags = var.tags
 

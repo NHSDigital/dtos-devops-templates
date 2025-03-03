@@ -115,6 +115,16 @@ variable "licence_type" {
   default     = "LicenseIncluded"
 }
 
+variable "long_term_retention_policy" {
+  type = object({
+    weekly_retention  = optional(string, "")
+    monthly_retention = optional(string, "")
+    yearly_retention  = optional(string, "")
+    week_of_year      = optional(number, 1)
+  })
+  description = "The long term retention policy for the database"
+}
+
 variable "max_gb" {
   type        = number
   description = "The max size of the database in gigabytes"
