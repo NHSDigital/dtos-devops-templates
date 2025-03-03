@@ -71,6 +71,8 @@ jobs:
             #echo "Function names from $COMPOSE_FILE: $local_func_names"
           done
 
+          pwd
+
           echo "FUNC_NAMES=$changed_functions_json"
           echo "FUNCNames value": $FUNC_NAMES
 
