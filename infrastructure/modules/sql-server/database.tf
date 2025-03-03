@@ -18,8 +18,13 @@ resource "azurerm_mssql_database" "defaultdb" {
     }
   }
 
-  dynamic "long_term_retention_policy" {
-    for_each = var.long_term_retention_policy != {} ? [1] : []
+dynamic "long_term_retention_policy" {
+    for_each = var.long_term_retention_policy != {} && (
+      var.long_term_retention_policy.weekly_retention != null ||
+      var.long_term_retention_policy.monthly_retention != null ||
+      var.long_term_retention_policy.yearly_retention != null ||
+      var.long_term_retention_policy.week_of_year != null
+    ) ? [1] : []
     content {
       weekly_retention  = var.long_term_retention_policy.weekly_retention
       monthly_retention = var.long_term_retention_policy.monthly_retention
