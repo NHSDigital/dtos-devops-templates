@@ -140,7 +140,7 @@ variable "read_scale" {
 
 variable "short_term_retention_policy" {
   description = "The short term retention policy for the database (in days)"
-  type        = optional(number)
+  type        = number
   default     = null
 }
 
