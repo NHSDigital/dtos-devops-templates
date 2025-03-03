@@ -71,7 +71,6 @@ jobs:
 
           names_from_compose=$(echo "${names_from_compose}" | sed 's#\]\[#,#g')
 
-          echo "Final list of images to rebuild": $FUNC_NAMES
           echo "FUNC_NAMES=$names_from_compose" >> "$GITHUB_OUTPUT"
 
       - name: Print function names
