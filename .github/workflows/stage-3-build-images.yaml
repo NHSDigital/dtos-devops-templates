@@ -69,7 +69,6 @@ jobs:
             bash ./templates/scripts/deployments/get-docker-names.sh "$COMPOSE_FILE" "${{ inputs.excluded_containers_csv_list }}"
             #local_func_names= "$changed_functions_json"
             #echo "Function names from $COMPOSE_FILE: $local_func_names"
-            FUNC_NAMES+=$(cat ./local_changed_functions.txt)
           done
 
           echo "alastair ": $FUNC_NAMES
