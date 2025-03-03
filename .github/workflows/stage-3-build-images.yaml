@@ -69,9 +69,9 @@ jobs:
             bash ./templates/scripts/deployments/get-docker-names.sh "$COMPOSE_FILE" "${{ inputs.excluded_containers_csv_list }}"
             names_from_compose+=$(cat ./local_changed_functions.txt)
           done
-          pwd
+
           FUNC_NAMES=$(echo "${names_from_compose}" | sed 's#\]\[#,#g')
-          echo "FUNCNames value": $FUNC_NAMES
+          echo "FUNCNames value": $FUNC_NAMES >> ${GITHUB_OUTPUT}
 
       - name: Print function names
         run: |
