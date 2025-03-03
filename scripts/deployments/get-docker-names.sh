@@ -32,10 +32,6 @@ for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_n
   docker_functions_map["${contextFiltered}${dockerfileFiltered}"]="${service}"
 done
 
-# for key in "${!docker_functions_map[@]}"; do
-#   echo "Key: ${key}, Value: ${docker_functions_map[$key]}"
-# done
-
 changed_functions=""
 
 if [ -z "${CHANGED_FOLDERS}" ]; then
@@ -45,7 +41,7 @@ elif [[ "${CHANGED_FOLDERS,,}" =~ shared ]]; then
     echo "Shared folder changed, returning all functions"
     for key in "${!docker_functions_map[@]}"; do
         changed_functions+=" ${docker_functions_map[$key]}"
-        #echo "Adding in: ${docker_functions_map[$key]}"
+        echo "Adding in: ${docker_functions_map[$key]}"
     done
 else
     echo "files changed ${CHANGED_FOLDERS} "
@@ -68,10 +64,4 @@ changed_functions_json=$(printf '["%s"]' "$(echo "${changed_functions}" | sed 's
 
 echo "List of functions to rebuild from ${DOCKER_COMPOSE_FILE}:"
 echo ${changed_functions_json}
-
 echo ${changed_functions_json} > ../../local_changed_functions.txt
-
-#echo "${changed_functions_json}" >> "$GITHUB_OUTPUT"
-#echo "local_func_names=$changed_functions_json" >> "$GITHUB_OUTPUT"
-
-

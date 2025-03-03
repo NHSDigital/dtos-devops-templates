@@ -62,7 +62,6 @@ jobs:
           names_from_compose=""
           FUNC_NAMES=""
 
-          find . -type f | grep -i compose
           for COMPOSE_FILE in "${COMPOSE_FILES[@]}"; do
             DOCKER_COMPOSE_DIR="$(dirname "$COMPOSE_FILE")"
             echo "Processing $COMPOSE_FILE (directory: $DOCKER_COMPOSE_DIR)"
@@ -71,7 +70,8 @@ jobs:
           done
 
           names_from_compose=$(echo "${names_from_compose}" | sed 's#\]\[#,#g')
-          echo "FUNCNames value": $FUNC_NAMES
+
+          echo "Final list of images to rebuild": $FUNC_NAMES
           echo "FUNC_NAMES=$names_from_compose" >> "$GITHUB_OUTPUT"
 
       - name: Print function names
