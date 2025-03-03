@@ -8,12 +8,14 @@ variable "resource_group_name" {
   description = "The name of the resource group in which to create the Event Grid. Changing this forces a new resource to be created."
 }
 
-variable "subscriber_function_details" {
-  type = list(object({
-    function_endpoint = string
-    principal_id      = string
-  }))
-  default = []
+variable "function_endpoint" {
+  type        = string
+  description = "The function endpoint value"
+}
+
+variable "principal_id" {
+  type        = string
+  description = "The principal id of the function app."
 }
 
 variable "azurerm_eventgrid_id" {
