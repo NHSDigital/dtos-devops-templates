@@ -51,12 +51,16 @@ resource "azurerm_linux_web_app" "linux_web_app" {
     use_32_bit_worker = var.worker_32bit
   }
 
-  storage_account {
-    access_key   = var.storage_account_access_key
-    account_name = var.storage_account_name
-    name         = var.storage_name
-    share_name   = var.share_name
-    type         = var.storage_type
+  dynamic storage_account {
+    for_each = var.storage_name != null ? [1] : []
+
+    content {
+      access_key   = var.storage_account_access_key
+      account_name = var.storage_account_name
+      name         = var.storage_name
+      share_name   = var.share_name
+      type         = var.storage_type
+    }
   }
 
   tags = var.tags

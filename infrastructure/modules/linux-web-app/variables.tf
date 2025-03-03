@@ -7,11 +7,6 @@ variable "acr_mi_client_id" {
   description = "The Managed Identity Id for the Azure Container Registry."
 }
 
-# variable "ai_connstring" {
-#   type        = string
-#   description = "The App Insights connection string."
-# }
-
 variable "always_on" {
   type        = bool
   description = "Should the Function App be always on. Override standard default."
@@ -22,7 +17,6 @@ variable "app_settings" {
   description = "Map of values for the app settings"
   default     = {}
 }
-
 
 variable "asp_id" {
   type        = string
@@ -199,26 +193,31 @@ variable "resource_group_name" {
 variable "storage_account_access_key" {
   type        = string
   description = "The Storage Account Primary Access Key."
+  default     = null
 }
 
 variable "storage_account_name" {
   type        = string
   description = "The name of the Storage Account."
+  default     = null
 }
 
 variable "storage_name" {
   type        = string
   description = "The name of the Storage Account."
+  default     = null
 }
 
 variable "share_name" {
   type        = string
   description = "The name which should be used for this Storage Account."
+  default     = null
 }
 
 variable "storage_type" {
   type        = string
   description = "The Azure Storage Type. Possible values include AzureFiles and AzureBlob"
+  default     = null
 }
 
 variable "tags" {
