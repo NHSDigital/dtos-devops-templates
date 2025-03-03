@@ -118,10 +118,10 @@ variable "licence_type" {
 variable "long_term_retention_policy" {
   description = "The long term retention policy for the database"
   type = object({
-    weekly_retention  = optional(string, "")
-    monthly_retention = optional(string, "")
-    yearly_retention  = optional(string, "")
-    week_of_year      = optional(number, 1)
+    weekly_retention  = optional(string, null)
+    monthly_retention = optional(string, null)
+    yearly_retention  = optional(string, null)
+    week_of_year      = optional(number, null)
   })
   default = {}
 }
