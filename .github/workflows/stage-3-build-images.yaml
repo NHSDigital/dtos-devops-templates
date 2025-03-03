@@ -70,8 +70,9 @@ jobs:
             names_from_compose+=$(cat ./local_changed_functions.txt)
           done
 
-          FUNC_NAMES=$(echo "${names_from_compose}" | sed 's#\]\[#,#g')
+          names_from_compose=$(echo "${names_from_compose}" | sed 's#\]\[#,#g')
           echo "FUNCNames value": $FUNC_NAMES
+          echo "FUNC_NAMES=$names_from_compose" >> "$GITHUB_OUTPUT"
 
       - name: Print function names
         run: |
