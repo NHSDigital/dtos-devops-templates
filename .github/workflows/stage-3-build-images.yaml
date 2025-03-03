@@ -71,7 +71,7 @@ jobs:
           done
 
           FUNC_NAMES=$(echo "${names_from_compose}" | sed 's#\]\[#,#g')
-          echo "FUNCNames value": $FUNC_NAMES >> ${GITHUB_OUTPUT}
+          echo "FUNCNames value": $FUNC_NAMES
 
       - name: Print function names
         run: |
