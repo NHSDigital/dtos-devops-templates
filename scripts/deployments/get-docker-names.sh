@@ -47,6 +47,7 @@ else
     echo "files changed ${CHANGED_FOLDERS} "
 
     for folder in ${CHANGED_FOLDERS}; do
+      folder=$(echo "${folder}" | sed 's#^\Functions/##')
       echo "Checking folder: ${folder}"
       for key in "${!docker_functions_map[@]}"; do
         echo key: $key
