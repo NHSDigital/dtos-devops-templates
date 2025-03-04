@@ -71,6 +71,7 @@ locals {
     event-hub-namespace                 = lower("EVHNS-${var.env}-${var.location_map[var.location]}-${var.application}")
     firewall                            = lower("FW-${var.env}-${var.location_map[var.location]}-${var.application}")
     function-app                        = lower("${var.env}-${var.location_map[var.location]}")
+    linux-web-app                       = lower("${var.env}-${var.location_map[var.location]}")
     internal-load-balancer              = lower("ILB-${var.env}-${var.location_map[var.location]}-${var.application}")
     key-vault                           = upper("KV-${var.application}-${var.env}-${var.location_map[var.location]}")
     kubernetes-service                  = lower("AKS-${var.env}-${var.location_map[var.location]}-${var.application}")
