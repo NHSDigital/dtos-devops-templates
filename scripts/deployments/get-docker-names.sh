@@ -71,4 +71,4 @@ else
   echo "No changed functions in ${DOCKER_COMPOSE_FILE}"
   echo ${changed_functions_json}
   echo "" > ../../local_changed_functions.txt
-
+fi
