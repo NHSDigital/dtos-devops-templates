@@ -115,6 +115,17 @@ variable "licence_type" {
   default     = "LicenseIncluded"
 }
 
+variable "long_term_retention_policy" {
+  description = "The long term retention policy for the database"
+  type = object({
+    weekly_retention  = optional(string, null)
+    monthly_retention = optional(string, null)
+    yearly_retention  = optional(string, null)
+    week_of_year      = optional(number, null)
+  })
+  default = {}
+}
+
 variable "max_gb" {
   type        = number
   description = "The max size of the database in gigabytes"
@@ -125,6 +136,12 @@ variable "read_scale" {
   type        = bool
   description = "If enabled, connections that have application intent set to readonly in their connection string may be routed to a readonly secondary replica. This property is only settable for Premium and Business Critical databases."
   default     = false
+}
+
+variable "short_term_retention_policy" {
+  type        = number
+  description = "The short term retention policy for the database (in days)"
+  default     = null
 }
 
 variable "storage_account_type" {
