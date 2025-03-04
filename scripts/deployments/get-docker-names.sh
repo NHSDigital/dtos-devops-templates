@@ -67,5 +67,8 @@ if [[ ${#changed_functions_json} -gt 4 ]]; then
   echo "List of functions to rebuild from ${DOCKER_COMPOSE_FILE}:"
   echo ${changed_functions_json}
   echo ${changed_functions_json} > ../../local_changed_functions.txt
+else if
+  echo "No changed functions in ${DOCKER_COMPOSE_FILE}"
+  echo ${changed_functions_json}
+  echo "" > ../../local_changed_functions.txt
 fi
-
