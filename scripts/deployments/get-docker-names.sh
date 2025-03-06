@@ -36,7 +36,7 @@ non_matched_changes=()
 
 for compose_file in ${COMPOSE_FILES_CSV}; do
 
-    echo -e "Parsing Docker compose file '${compose_file}'...\n"
+    echo -e "\nParsing Docker compose file '${compose_file}'...\n"
     declare -A docker_services_map=()
 
     # STEP 1 - Create a map of folder paths to services
@@ -113,7 +113,7 @@ EOF
 fi
 
 # Format the output for the github matrix in the next workflow step (first IFS is still set to comma, which is needed here)
-changed_services_json="[${changed_services[*]}]"
+changed_services_json=$(jq -R -c 'split(",")' <<< "${changed_services[*]}")
 
 IFS=$IFS_OLD
 echo "List of services to build:"
