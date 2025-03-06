@@ -42,7 +42,7 @@ jobs:
       - uses: tj-actions/changed-files@v45
         id: changed-files
         with:
-          path: ${{ inputs.function_app_source_code_path  }}
+          path: ${{ inputs.function_app_source_code_path }}
           dir_names: true
 
       - name: Checkout dtos-devops-templates repository
@@ -52,22 +52,13 @@ jobs:
           path: templates
           ref: main
 
-      - name: Get docker compose function name(s)
+      - name: Determine which Docker container(s) to build
         id: get-function-names
         env:
           CHANGED_FOLDERS: ${{ steps.changed-files.outputs.all_changed_files }}
           COMPOSE_FILE: ${{ inputs.docker_compose_file }}
           EXCLUDED_CONTAINERS: ${{ inputs.excluded_containers_csv_list }}
-        run: |
-          DOCKER_COMPOSE_DIR="$(dirname "${COMPOSE_FILE}")"
-          bash ./templates/scripts/deployments/get-docker-names.sh ${COMPOSE_FILE} ${EXCLUDED_CONTAINERS}
-          echo "DOCKER_COMPOSE_DIR=$DOCKER_COMPOSE_DIR" >> ${GITHUB_OUTPUT}
-
-      - name: Print function names
-        run: |
-          echo "The branch is: " ${GITHUB_REF}
-          echo "FUNC_NAMES before setting output: ${{ steps.get-function-names.outputs.FUNC_NAMES }}"
-          echo "FUNC_NAMES=${FUNC_NAMES}" >> ${GITHUB_OUTPUT}
+        run: bash ./templates/scripts/deployments/get-docker-names.sh ${COMPOSE_FILE} ${EXCLUDED_CONTAINERS}
 
   build-and-push:
     runs-on: ubuntu-latest
@@ -78,7 +69,7 @@ jobs:
     strategy:
       matrix:
         function: ${{ fromJSON(needs.get-functions.outputs.FUNC_NAMES) }}
-    if: needs.get-functions.outputs.FUNC_NAMES != '["null"]' && needs.get-functions.outputs.FUNC_NAMES != '[]' && needs.get-functions.outputs.FUNC_NAMES != '[""]'
+    if: needs.get-functions.outputs.FUNC_NAMES != '[]'
     outputs:
       pr_num_tag: ${{ env.PR_NUM_TAG }}
     steps:
