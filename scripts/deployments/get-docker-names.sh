@@ -23,7 +23,7 @@ remove_from_array() {
 
 
 IFS=' ' read -r -a source_changes <<< "${CHANGED_FOLDERS}"
-echo "Changed source code folder(s):"
+echo -e "\nChanged source code folder(s):"
 printf "  - %s\n" "${source_changes[@]}"
 echo
 
@@ -36,7 +36,7 @@ non_matched_changes=()
 
 for compose_file in ${COMPOSE_FILES_CSV}; do
 
-    echo -e "\nParsing Docker compose file '${compose_file}'...\n"
+    echo -e "Parsing Docker compose file '${compose_file}'...\n"
     declare -A docker_services_map=()
 
     # STEP 1 - Create a map of folder paths to services
@@ -67,10 +67,10 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
 
     # STEP 2 - Now check the source code changes against the map created in STEP 1 to determine which containers to build
     if [[ ${#source_changes[@]} -eq 0 ]]; then
-        echo "No files changed"
+        echo "No files changed."
 
     elif [[ "${source_changes[*],,}" =~ shared ]]; then
-        echo "Shared folder changed, building all images"
+        echo "Shared folder changed, building all images."
         for key in "${!docker_services_map[@]}"; do
             changed_services+=("${docker_services_map[$key]}")
         done
