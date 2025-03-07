@@ -52,7 +52,7 @@ variable "cors_allowed_origins" {
   default = [""]
 }
 
-variable "entra_id_group_ids" {
+variable "azuread_group_ids" {
   type    = list(string)
   default = []
 }
