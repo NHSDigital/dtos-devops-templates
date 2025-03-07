@@ -146,6 +146,8 @@ jobs:
 
           repo_name="${{ secrets.ACR_NAME }}.azurecr.io/${PROJECT_NAME}-${function}"
 
+          echo "ENVIRONMENT_TAG: ${ENVIRONMENT_TAG}"
+
           # Tag the image
           docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${COMMIT_HASH_TAG}"
           docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${PR_NUM_TAG}"
