@@ -18,7 +18,7 @@ resource "azurerm_mssql_database" "defaultdb" {
     }
   }
 
-dynamic "long_term_retention_policy" {
+  dynamic "long_term_retention_policy" {
     for_each = var.long_term_retention_policy != {} && (
       var.long_term_retention_policy.weekly_retention != null ||
       var.long_term_retention_policy.monthly_retention != null ||
