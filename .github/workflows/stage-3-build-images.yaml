@@ -131,6 +131,8 @@ jobs:
           COMPOSE_FILE: ${{ inputs.docker_compose_file }}
           PROJECT_NAME: ${{ inputs.project_name }}
         run: |
+          set -x
+
           function=${{ matrix.function }}
           echo PROJECT_NAME: ${PROJECT_NAME}
 
