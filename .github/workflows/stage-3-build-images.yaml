@@ -104,6 +104,7 @@ jobs:
           ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
         continue-on-error: false
         run: |
+          set -x
           echo "The branch is: ${GITHUB_REF}"
 
           if [[ "${GITHUB_REF}" == refs/pull/*/merge ]]; then
