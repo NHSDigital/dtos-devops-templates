@@ -8,7 +8,7 @@ on:
 
   workflow_call:
     inputs:
-      environment_tag: development
+      environment_tag:
         description: Environment of the deployment
         required: true
         type: string
