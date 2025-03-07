@@ -28,6 +28,11 @@ variable "assigned_identity_ids" {
   description = "The list of User Assigned Identity IDs to assign to the Web App."
 }
 
+variable "azuread_group_ids" {
+  type    = list(string)
+  default = []
+}
+
 variable "cont_registry_use_mi" {
   description = "Should connections for Azure Container Registry use Managed Identity."
 }
