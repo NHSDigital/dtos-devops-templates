@@ -112,7 +112,7 @@ EOF
     echo "#### $warning_message" >> "$GITHUB_STEP_SUMMARY"
 fi
 
-changed_services_json=$(jq -c -n '$ARGS.positional | unique' --args "${changed_services[@]}")
+changed_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${changed_services[@]}")"
 
 IFS=$IFS_OLD
 echo "List of services to build:"
