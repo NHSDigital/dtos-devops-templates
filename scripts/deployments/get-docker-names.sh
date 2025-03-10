@@ -40,17 +40,17 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
     declare -A docker_services_map=()
 
     # STEP 1 - Create a map of folder paths to services
-    for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" ${compose_file}); do
+    for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" "${compose_file}"); do
         # Combine the context and dockerfile variables to determine the container root
         # We need to filter these since there are various ways these can be defined (leading ./ or trailing / for instance)
-        context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" ${compose_file})
-        dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" ${compose_file})
+        context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" "${compose_file}")
+        dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" "${compose_file}")
 
-        if [[ -z ${dockerfile} ]] || [[ -z ${context} ]]; then
+        if [[ -z "${dockerfile}" ]] || [[ -z "${context}" ]]; then
             continue
         fi
-        context_filtered=$(echo ${context} | sed 's#^\./src/##' | sed 's#^\./##' | sed 's#/$##')
-        dockerfile_filtered=$(echo ${dockerfile} | sed 's#^\./##' | sed 's#\/Dockerfile##' | sed 's#Dockerfile##')
+        context_filtered=$(echo "${context}" | sed 's#^\./src/##' | sed 's#^\./##' | sed 's#/$##')
+        dockerfile_filtered=$(echo "${dockerfile}" | sed 's#^\./##' | sed 's#\/Dockerfile##' | sed 's#Dockerfile##')
         if [[ -n "${context_filtered}" ]] && [[ -n "${dockerfile_filtered}" ]]; then
             function_path="${context_filtered}/${dockerfile_filtered}"
         else
@@ -76,12 +76,12 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
         done
     else
         echo "Checking changed folders..."
-        for folder in ${source_changes[@]}; do
+        for folder in "${source_changes[@]}"; do
             matched="false"
             for function_path in "${!docker_services_map[@]}"; do
                 # The changed folder may be a deeper path than the Function path, so it must be matched this way around
                 if [[ "${folder}" =~ ${function_path} ]]; then
-                    changed_services+=(${docker_services_map[$function_path]})
+                    changed_services+=("${docker_services_map[$function_path]}")
                     echo "  - ${folder} matches service '${docker_services_map[$function_path]}'"
                     matched="true"
                     remove_from_array "$folder" source_changes
@@ -98,7 +98,7 @@ done
 
 if [ ${#non_matched_changes[@]} -ne 0 ]; then
     # Remove duplicates (non-matched items across several compose files)
-    unique_changes=($(printf "%s\n" "${non_matched_changes[@]}" | sort -u))
+    unique_changes=("$(printf "%s\n" "${non_matched_changes[@]}" | sort -u)")
 
     warning_message=$(
         cat <<EOF
@@ -112,8 +112,7 @@ EOF
     echo "#### $warning_message" >> "$GITHUB_STEP_SUMMARY"
 fi
 
-# Format the output for the github matrix in the next workflow step (first IFS is still set to comma, which is needed here)
-changed_services_json=$(jq -R -c 'split(",")' <<< "${changed_services[*]}")
+changed_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${changed_services[@]}")"
 
 IFS=$IFS_OLD
 echo "List of services to build:"
@@ -121,4 +120,4 @@ echo "${changed_services_json}"
 echo "FUNC_NAMES=${changed_services_json}" >> "${GITHUB_OUTPUT}"
 
 # Assumes all compose files are together in the same folder
-echo "DOCKER_COMPOSE_DIR=$(dirname "${COMPOSE_FILE}")" >> ${GITHUB_OUTPUT}
+echo "DOCKER_COMPOSE_DIR=$(dirname "${compose_file}")" >> "${GITHUB_OUTPUT}"
