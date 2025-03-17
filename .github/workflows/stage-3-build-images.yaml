@@ -39,8 +39,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+<<<<<<< HEAD
           # to allow git diff between HEAD and the previous commit to main branch
           fetch-depth: 2
+=======
+          token: ${{ secrets.GITHUB_TOKEN }}
+>>>>>>> 8fe61ab (wip)
 
       - name: Checkout dtos-devops-templates repository
         uses: actions/checkout@v4
