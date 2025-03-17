@@ -1,13 +1,6 @@
 #!/bin/bash
 
-if [[ $# -lt 1 ]] || [[ $# -gt 2 ]] ; then
-    echo "Usage: $0 <docker_compose_file_comma_separated> <excluded_containers_comma_separated>"
-    exit 1
-fi
-
-COMPOSE_FILES_CSV=$1
-EXCLUDED_CONTAINERS_CSV=$2
-
+set -eo pipefail
 
 remove_from_array() {
     local item_to_remove="$1"
@@ -21,13 +14,34 @@ remove_from_array() {
     target_array=("${filtered_array[@]}")
 }
 
+if [[ -z "${COMPOSE_FILES_CSV}" ]]; then
+    echo "🚫 Error: COMPOSE_FILES_CSV has not been defined (comma separated)."
+    exit 1
+fi
 
-IFS=' ' read -r -a source_changes <<< "${CHANGED_FOLDERS}"
+# CHANGED_FOLDERS_CSV can be supplied via environment variable for local testing
+if [[ -z "${CHANGED_FOLDERS_CSV}" ]]; then
+    if [[ -z "${SOURCE_CODE_PATH}" ]]; then
+        echo "🚫 Error: SOURCE_CODE_PATH has not been defined."
+        exit 1
+    fi
+    if [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF}" == "refs/heads/main" ]]; then
+        # Compare the HEAD of the feature branch being merged with the previous commit on main (HEAD^) immediately prior to the merge.
+        # needs fetch-depth: 2 parameter for actions/checkout@v4
+        mapfile -t source_changes < <(git diff --name-only HEAD^ -- "${SOURCE_CODE_PATH}" | sed -r 's#(^.*/).*$#\1#' | sort -u)
+    else
+        git fetch origin main
+        mapfile -t source_changes < <(git diff --name-only origin/main..HEAD -- "${SOURCE_CODE_PATH}" | sed -r 's#(^.*/).*$#\1#' | sort -u)
+    fi
+else
+    IFS=',' read -r -a source_changes <<< "${CHANGED_FOLDERS_CSV}"
+fi
+
 echo -e "\nChanged source code folder(s):"
 printf "  - %s\n" "${source_changes[@]}"
 echo
 
-EXCLUSION_FILTER=$(echo "${EXCLUDED_CONTAINERS_CSV}" | awk -v ORS='' '{split($0, arr, ","); for (i in arr) printf ".container_name != \"%s\" and ", arr[i]} END {print "1"}')
+[[ -n "${EXCLUDED_CONTAINERS_CSV}" ]] && EXCLUSION_FILTER="select($(echo "${EXCLUDED_CONTAINERS_CSV}" | awk -v ORS='' '{split($0, arr, ","); for (i in arr) printf ".container_name != \"%s\" and ", arr[i]} END {print "1"}')) |"
 
 IFS_OLD=$IFS
 IFS=$', \n'
@@ -40,7 +54,7 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
     declare -A docker_services_map=()
 
     # STEP 1 - Create a map of folder paths to services
-    for service in $(yq eval ".services[] | select($EXCLUSION_FILTER) | .container_name" "${compose_file}"); do
+    for service in $(yq eval ".services[] | ${EXCLUSION_FILTER} .container_name" "${compose_file}"); do
         # Combine the context and dockerfile variables to determine the container root
         # We need to filter these since there are various ways these can be defined (leading ./ or trailing / for instance)
         context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" "${compose_file}")
