@@ -26,10 +26,10 @@ if [[ -z "${CHANGED_FOLDERS_CSV}" ]]; then
         exit 1
     fi
     if [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF}" == "refs/heads/main" ]]; then
-        # Merge to main - compare feature branch with the previous commit on main immediately prior to the merge (HEAD^), needs 'fetch-depth: 2' parameter for actions/checkout@v4
+        # Merge to main - compare merging feature branch with main immediately prior to the merge (HEAD^), needs 'fetch-depth: 2' parameter for actions/checkout@v4
         mapfile -t source_changes < <(git diff --name-only HEAD^ -- "${SOURCE_CODE_PATH}" | sed -r 's#(^.*/).*$#\1#' | sort -u)
     else
-        # PR creation or update - compare feature branch against main, folder paths only, unique list
+        # PR creation or update - compare feature branch with main, folder paths only, unique list
         git fetch origin main
         mapfile -t source_changes < <(git diff --name-only origin/main..HEAD -- "${SOURCE_CODE_PATH}" | sed -r 's#(^.*/).*$#\1#' | sort -u)
     fi
