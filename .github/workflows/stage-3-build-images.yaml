@@ -39,11 +39,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: tj-actions/changed-files@v45
+      # - uses: tj-actions/changed-files@v45
+      #   id: changed-files
+      #   with:
+      #     path: ${{ inputs.function_app_source_code_path }}
+      #     dir_names: true
+      - name: Get changed files and directories
         id: changed-files
-        with:
-          path: ${{ inputs.function_app_source_code_path }}
-          dir_names: true
+        run: |
+          # Ensure the main branch is fetched
+          git fetch origin main
+
+          # List files changed compared to main for the given path
+          changed_files=$(git diff --name-only origin/main -- "${{ inputs.function_app_source_code_path }}")
+          echo "Changed files:"
+          echo "$changed_files"
+
+          # Extract unique directories from the changed files
+          changed_dirs=$(echo "$changed_files" | xargs -n1 dirname | sort -u)
+          echo "Changed directories:"
+          echo "$changed_dirs"
+
+          # Optionally set outputs for later steps
+          echo "::set-output name=changed_files::$changed_files"
+          echo "::set-output name=changed_dirs::$changed_dirs"
 
       - name: Checkout dtos-devops-templates repository
         uses: actions/checkout@v4
