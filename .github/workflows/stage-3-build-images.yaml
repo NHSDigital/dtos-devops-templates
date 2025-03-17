@@ -39,26 +39,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: tj-actions/changed-files@v45
-        id: changed-files
-        with:
-          path: ${{ inputs.function_app_source_code_path }}
-          dir_names: true
-
       - name: Checkout dtos-devops-templates repository
         uses: actions/checkout@v4
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
           ref: main
+          # to allow git diff between HEAD and the previous commit to main branch
+          fetch-depth: 2
 
       - name: Determine which Docker container(s) to build
         id: get-function-names
         env:
-          CHANGED_FOLDERS: ${{ steps.changed-files.outputs.all_changed_files }}
-          COMPOSE_FILE: ${{ inputs.docker_compose_file }}
-          EXCLUDED_CONTAINERS: ${{ inputs.excluded_containers_csv_list }}
-        run: bash ./templates/scripts/deployments/get-docker-names.sh ${COMPOSE_FILE} ${EXCLUDED_CONTAINERS}
+          COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file }}
+          EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
+          SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
+        run: bash ./templates/scripts/deployments/get-docker-names.sh
 
   build-and-push:
     runs-on: ubuntu-latest
