@@ -15,21 +15,21 @@ remove_from_array() {
 }
 
 if [[ -z "${COMPOSE_FILES_CSV}" ]]; then
-    echo "🚫 Error: COMPOSE_FILES_CSV has not been defined (comma separated)."
+    echo "❌ Error: COMPOSE_FILES_CSV has not been defined (comma separated)."
     exit 1
 fi
 
 # CHANGED_FOLDERS_CSV can be supplied via environment variable for local testing
 if [[ -z "${CHANGED_FOLDERS_CSV}" ]]; then
     if [[ -z "${SOURCE_CODE_PATH}" ]]; then
-        echo "🚫 Error: SOURCE_CODE_PATH has not been defined."
+        echo "❌ Error: SOURCE_CODE_PATH has not been defined."
         exit 1
     fi
     if [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF}" == "refs/heads/main" ]]; then
-        # Compare the HEAD of the feature branch being merged with the previous commit on main (HEAD^) immediately prior to the merge.
-        # needs fetch-depth: 2 parameter for actions/checkout@v4
+        # Merge to main - compare feature branch with the previous commit on main immediately prior to the merge (HEAD^), needs 'fetch-depth: 2' parameter for actions/checkout@v4
         mapfile -t source_changes < <(git diff --name-only HEAD^ -- "${SOURCE_CODE_PATH}" | sed -r 's#(^.*/).*$#\1#' | sort -u)
     else
+        # PR creation or update - compare feature branch against main, folder paths only, unique list
         git fetch origin main
         mapfile -t source_changes < <(git diff --name-only origin/main..HEAD -- "${SOURCE_CODE_PATH}" | sed -r 's#(^.*/).*$#\1#' | sort -u)
     fi
