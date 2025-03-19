@@ -38,6 +38,9 @@ jobs:
       FUNC_NAMES: ${{ steps.get-function-names.outputs.FUNC_NAMES }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # to allow git diff between HEAD and the previous commit to main branch
+          fetch-depth: 2
 
       - name: Checkout dtos-devops-templates repository
         uses: actions/checkout@v4
@@ -45,8 +48,6 @@ jobs:
           repository: NHSDigital/dtos-devops-templates
           path: templates
           ref: main
-          # to allow git diff between HEAD and the previous commit to main branch
-          fetch-depth: 2
 
       - name: Determine which Docker container(s) to build
         id: get-function-names
