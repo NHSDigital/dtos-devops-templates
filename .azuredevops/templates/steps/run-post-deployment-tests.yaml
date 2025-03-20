@@ -69,7 +69,7 @@ steps:
     downloadPath: '$(System.DefaultWorkingDirectory)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Build Smoke Tests Solution'
+  displayName: 'Build Test Frmamework Solution'
   inputs:
     command: 'build'
     projects: '$(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}/${{ parameters.testProjectName }}.sln'
@@ -80,7 +80,7 @@ steps:
   displayName: 'Export Identity Config'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Run SpecFlow Tests'
+  displayName: 'Run Tests'
   inputs:
     command: 'test'
     projects: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{ parameters.testProjectName }}.csproj'
@@ -94,7 +94,7 @@ steps:
   condition: succeededOrFailed()
   inputs:
     testResultsFiles: '**/*.trx'
-    testRunTitle: 'SpecFlow Tests'
+    testRunTitle: 'Tests'
     mergeTestResults: true
     createTestRun: true
     testResultFormat: VSTest
