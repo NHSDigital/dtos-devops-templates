@@ -72,7 +72,12 @@ resource "azurerm_windows_virtual_machine" "this" {
     enabled = true
   }
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      EnablePrivateNetworkGC = "TRUE" # mandated by Azure Policy
+    }
+  )
 
   lifecycle {
     ignore_changes = [vm_agent_platform_updates_enabled]
