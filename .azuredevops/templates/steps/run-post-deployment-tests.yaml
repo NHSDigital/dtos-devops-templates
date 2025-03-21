@@ -3,6 +3,10 @@
 parameters:
 - name: serviceConnection
   type: string
+- name: testProjectDirectory
+  type: string
+- name: testProjectName
+  type: string
 
 steps:
 - task: UseDotNet@2
@@ -26,7 +30,7 @@ steps:
 - task: FileTransform@1
   displayName: 'Transform Configuration Files'
   inputs:
-    folderPath: '$(System.DefaultWorkingDirectory)/tests/smoke-tests/dtos-cohort-manager-smoke-tests/Config'
+    folderPath: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/Config'
     fileType: 'json'
     targetFiles: '*.json'
 
@@ -35,7 +39,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $sourcePath = '$(System.DefaultWorkingDirectory)/tests/smoke-tests/dtos-cohort-manager-smoke-tests/TestFiles'
+      $sourcePath = '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/TestFiles'
       $targetPath = '$(Build.ArtifactStagingDirectory)/TestFiles'
 
       # Check if the source directory exists
@@ -65,10 +69,10 @@ steps:
     downloadPath: '$(System.DefaultWorkingDirectory)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Build Smoke Tests Solution'
+  displayName: 'Build Test Framework Solution'
   inputs:
     command: 'build'
-    projects: '$(Build.SourcesDirectory)/tests/smoke-tests/dtos-cohort-manager-smoke-tests.sln'
+    projects: '$(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}/${{ parameters.testProjectName }}.sln'
     arguments: '--configuration Release'
 
 - script: |
@@ -76,10 +80,10 @@ steps:
   displayName: 'Export Identity Config'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Run SpecFlow Tests'
+  displayName: 'Run Tests'
   inputs:
     command: 'test'
-    projects: '$(System.DefaultWorkingDirectory)/tests/smoke-tests/dtos-cohort-manager-smoke-tests/dtos-cohort-manager-smoke-tests.csproj'
+    projects: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{ parameters.testProjectName }}.csproj'
     publishTestResults: true
     connectedServiceName: ${{ parameters.serviceConnection }}
   env:
@@ -90,7 +94,7 @@ steps:
   condition: succeededOrFailed()
   inputs:
     testResultsFiles: '**/*.trx'
-    testRunTitle: 'SpecFlow Tests'
+    testRunTitle: 'Tests'
     mergeTestResults: true
     createTestRun: true
     testResultFormat: VSTest
