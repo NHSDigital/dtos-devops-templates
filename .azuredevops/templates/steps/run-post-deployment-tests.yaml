@@ -5,8 +5,10 @@ parameters:
   type: string
 - name: testProjectDirectory
   type: string
+  default: 'tests/smoke-tests/NHS.CohortManager.SmokeTests'
 - name: testProjectName
   type: string
+  default: 'NHS.CohortManager.SmokeTests'
 
 steps:
 - task: UseDotNet@2
