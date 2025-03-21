@@ -33,6 +33,8 @@ jobs:
   get-functions:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
+      pull-requests: read
       id-token: write
     outputs:
       FUNC_NAMES: ${{ steps.get-function-names.outputs.FUNC_NAMES }}
@@ -41,6 +43,7 @@ jobs:
         with:
           # to allow git diff between HEAD and the previous commit to main branch
           fetch-depth: 2
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout dtos-devops-templates repository
         uses: actions/checkout@v4
@@ -62,6 +65,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      pull-requests: read
     needs: get-functions
     strategy:
       matrix:
@@ -72,6 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 1
           submodules: 'true'
 
