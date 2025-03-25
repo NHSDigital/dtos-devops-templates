@@ -80,6 +80,7 @@ locals {
     log-analytics-workspace             = lower("LAW-${var.env}-${var.location_map[var.location]}-${var.application}")
     logic-app                           = lower("LA-${var.env}-${var.location_map[var.location]}-${var.application}")
     managed-devops-pool                 = lower("private-pool-${var.env}-${var.location_map[var.location]}")
+    managed-identity                    = lower("MI-${var.env}-${var.location_map[var.location]}")
     network-interface                   = upper("${var.env}-${var.location_map[var.location]}-${var.application}")
     network-security-group              = upper("NSG-${var.env}-${var.location_map[var.location]}-${var.application}")
     postgres-sql-server                 = lower("postgres-${var.application}-${var.env}-${var.location_map[var.location]}")
