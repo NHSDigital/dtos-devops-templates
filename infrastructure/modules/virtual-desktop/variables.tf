@@ -89,6 +89,12 @@ variable "source_image_from_gallery" {
   default = null
 }
 
+variable "source_image_id" {
+  description = "The resource id of an OS image, possibly in a remote subscription"
+  type        = string
+  default     = null
+}
+
 variable "source_image_reference" {
   type = object({
     offer     = string
