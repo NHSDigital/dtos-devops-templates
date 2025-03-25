@@ -66,7 +66,9 @@ resource "azurerm_windows_virtual_machine" "this" {
     }
   }
 
-  source_image_id = var.source_image_from_gallery != null && var.source_image_reference == null ? data.azurerm_shared_image.gallery_image[0].id : null
+  source_image_id = var.source_image_id != null ? var.source_image_id : (
+    var.source_image_from_gallery != null && var.source_image_reference == null ? data.azurerm_shared_image.gallery_image[0].id : null
+  )
 
   termination_notification {
     enabled = true
