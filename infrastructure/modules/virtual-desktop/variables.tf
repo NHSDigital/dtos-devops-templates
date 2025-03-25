@@ -90,7 +90,7 @@ variable "source_image_from_gallery" {
 }
 
 variable "source_image_id" {
-  description = "The resource id of an OS image, possibly in a remote subscription"
+  description = "The resource id of an OS image, possibly in a remote subscription (remember to grant 'Compute Gallery Image Reader' RBAC role)"
   type        = string
   default     = null
 }
