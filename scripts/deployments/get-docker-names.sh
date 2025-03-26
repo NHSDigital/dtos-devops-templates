@@ -56,8 +56,8 @@ while [ ${#files_to_process[@]} -gt 0 ]; do
     for include in "${includes[@]}"; do
         echo "  - ${include}"
         if [[ ! ",${COMPOSE_FILES_CSV}," =~ ",${include}," ]]; then
-            COMPOSE_FILES_CSV="${COMPOSE_FILES_CSV},$(dirname ${compose_file})/${include}"
-            files_to_process+=("$(dirname ${compose_file})/${include}")
+            COMPOSE_FILES_CSV="${COMPOSE_FILES_CSV},$(dirname "${compose_file}")/${include}"
+            files_to_process+=("$(dirname "${compose_file}")/${include}")
         fi
     done
 done
