@@ -46,7 +46,7 @@ echo
 IFS_OLD=$IFS
 IFS=$', \n'
 
-echo -e "Adding Docker compose file includes..."
+echo "Adding Docker compose file includes..."
 files_to_process=(${COMPOSE_FILES_CSV})
 while [ ${#files_to_process[@]} -gt 0 ]; do
     compose_file="${files_to_process[0]}"
