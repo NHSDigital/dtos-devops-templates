@@ -67,6 +67,7 @@ changed_services=()
 non_matched_changes=()
 
 for compose_file in ${COMPOSE_FILES_CSV}; do
+
     echo -e "Parsing Docker compose file '${compose_file}'...\n"
     declare -A docker_services_map=()
 
