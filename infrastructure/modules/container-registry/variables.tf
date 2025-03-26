@@ -19,6 +19,12 @@ variable "admin_enabled" {
   description = "Specifies whether the admin user is enabled."
 }
 
+variable "anonymous_pull_enabled" {
+  type        = bool
+  description = "Specifies whether the anonymous pull is enabled."
+  default     = false
+}
+
 variable "log_analytics_workspace_id" {
   type        = string
   description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
