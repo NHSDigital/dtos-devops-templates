@@ -52,7 +52,7 @@ while [ ${#files_to_process[@]} -gt 0 ]; do
     compose_file="${files_to_process[0]}"
     files_to_process=("${files_to_process[@]:1}")  # Remove the first file from the list
     includes=($(yq -r '.include[]' "${compose_file}"))
-    
+
     for include in "${includes[@]}"; do
         echo "  - ${include}"
         if [[ ! ",${COMPOSE_FILES_CSV}," =~ ",${include}," ]]; then
