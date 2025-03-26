@@ -45,11 +45,28 @@ echo
 
 IFS_OLD=$IFS
 IFS=$', \n'
+
+echo -e "Adding Docker compose file includes..."
+files_to_process=(${COMPOSE_FILES_CSV})
+while [ ${#files_to_process[@]} -gt 0 ]; do
+    compose_file="${files_to_process[0]}"
+    files_to_process=("${files_to_process[@]:1}")  # Remove the first file from the list
+    includes=($(yq -r '.include[]' "${compose_file}"))
+    
+    for include in "${includes[@]}"; do
+        echo "  - ${include}"
+        if [[ ! ",${COMPOSE_FILES_CSV}," =~ ",${include}," ]]; then
+            COMPOSE_FILES_CSV="${COMPOSE_FILES_CSV},$(dirname ${compose_file})/${include}"
+            files_to_process+=("$(dirname ${compose_file})/${include}")
+        fi
+    done
+done
+echo
+
 changed_services=()
 non_matched_changes=()
 
 for compose_file in ${COMPOSE_FILES_CSV}; do
-
     echo -e "Parsing Docker compose file '${compose_file}'...\n"
     declare -A docker_services_map=()
 
@@ -98,8 +115,8 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
                     changed_services+=("${docker_services_map[$function_path]}")
                     echo "  - ${folder} matches service '${docker_services_map[$function_path]}'"
                     matched="true"
-                    remove_from_array "$folder" source_changes
-                    remove_from_array "$folder" non_matched_changes # In case it's in this array from a previous compose file iteration
+                    remove_from_array "${folder}" source_changes
+                    remove_from_array "${folder}" non_matched_changes # In case it's in this array from a previous compose file iteration
                     continue
                 fi
             done
