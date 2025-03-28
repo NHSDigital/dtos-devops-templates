@@ -1,0 +1,30 @@
+---
+
+parameters:
+  - name: serviceConnection
+    type: string
+  - name: resourceGroupName
+    type: string
+  - name: serverName
+    type: string
+  - name: databaseName
+    type: string
+  - name: sku
+    type: string
+
+steps:
+- task: AzureCLI@2
+  displayName: 'Scale database to ${{ parameters.sku }}'
+  inputs:
+    azureSubscription:  ${{ parameters.serviceConnection }}
+    addSpnToEnvironment: true
+    failOnStandardError: false
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az sql db update \
+        --resource-group ${{ parameters.resourceGroupName }} \
+        --server ${{ parameters.serverName }} \
+        --name ${{ parameters.databaseName }} \
+        --edition Standard \
+        --service-objective ${{ parameters.sku }}
