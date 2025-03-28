@@ -1,0 +1,34 @@
+---
+
+parameters:
+  - name: serviceConnection
+    type: string
+  - name: subscriptionId
+    type: string
+  - name: resourceGroupName
+    type: string
+  - name: serverName
+    type: string
+  - name: databaseName
+    type: string
+  - name: sku
+    type: string
+
+steps:
+- task: AzureCLI@2
+  displayName: 'Scale database'
+  inputs:
+    azureSubscription:  ${{ parameters.serviceConnection }}
+    addSpnToEnvironment: true
+    failOnStandardError: false
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      echo "##vso[task.logissue type=warning;]Scaling database ${{ parameters.serverName }}/${{ parameters.databaseName }} to ${{ parameters.sku }}"
+      az sql db update \
+        --server ${{ parameters.serverName }} \
+        --subscription ${{ parameters.subscriptionId }} \
+        --resource-group ${{ parameters.resourceGroupName }} \
+        --name ${{ parameters.databaseName }} \
+        --edition Standard \
+        --service-objective ${{ parameters.sku }}
