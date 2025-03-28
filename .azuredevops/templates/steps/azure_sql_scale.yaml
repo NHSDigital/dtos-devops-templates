@@ -14,7 +14,7 @@ parameters:
 
 steps:
 - task: AzureCLI@2
-  displayName: 'Scale database to ${{ parameters.sku }}'
+  displayName: 'Scale database {{ parameters.serverName }}/{{ parameters.databaseName }} to ${{ parameters.sku }}'
   inputs:
     azureSubscription:  ${{ parameters.serviceConnection }}
     addSpnToEnvironment: true
