@@ -51,7 +51,7 @@ resource "azurerm_linux_web_app" "linux_web_app" {
     use_32_bit_worker = var.worker_32bit
   }
 
-  dynamic storage_account {
+  dynamic "storage_account" {
     for_each = var.storage_name != null ? [1] : []
 
     content {
