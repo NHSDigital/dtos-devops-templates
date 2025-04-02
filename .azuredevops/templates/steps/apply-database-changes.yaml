@@ -5,13 +5,17 @@ parameters:
     type: string
   - name: resourceGroupSQL
     type: string
+  - name: containerGroupName
+    type: string
+  - name: containerName
+    type: string
+  - name: containerImageName
+    type: string
   - name: miNameACR
     type: string
   - name: miNameSQL
     type: string
   - name: acrServerName
-    type: string
-  - name: containerImageName
     type: string
   - name: sqlConnectionString
     type: string
@@ -35,11 +39,11 @@ steps:
         managedIdentityIdSQL=$(echo $managedIdentitySQL | jq -r '.clientId')
 
         # Export the variables for use in the container instance creation:
-        export CONTAINER_GROUP_NAME='acigrp-cohort-manager-db-migration'
-        export CONTAINER_NAME='cohort-manager-db-migration'
+        export CONTAINER_GROUP_NAME='${{ parameters.containerGroupName }}'
+        export CONTAINER_NAME='${{ parameters.containerName }}'
         export CONTAINER_IMAGE='${{ parameters.acrServerName }}/${{ parameters.containerImageName }}'
         export ACR_SERVER='${{ parameters.acrServerName }}'
-        export MI_ID_ACR="/subscriptions/$subscriptionId/resourcegroups/${{ parameters.resourceGroupSQL }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ parameters.miNameACR }}"
+        export MI_ID_ACR="/subscriptions/$subscriptionId/resourceGroups/${{ parameters.resourceGroupSQL }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ parameters.miNameACR }}"
         export MI_ID_SQL="/subscriptions/$subscriptionId/resourceGroups/${{ parameters.resourceGroupSQL }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ parameters.miNameSQL }}"
         export SQL_CONNECTION_STRING='${{ parameters.sqlConnectionString }}'
         export SQL_IDENTITY_CLIENT_ID="$managedIdentityIdSQL"
@@ -48,11 +52,11 @@ steps:
         temp_yaml=$(mktemp)
 
         # Substitute environment variables and write to the temporary file
-        envsubst < '.azuredevops/templates/resources/deploy-container-instance-sql-db-migration.yaml' > "$temp_yaml"
+        envsubst < $(Build.SourcesDirectory)/dtos-devops-templates/.azuredevops/templates/resources/deploy-container-instance-sql-db-migration.yaml > "$temp_yaml"
 
-        az container create \
-            --name $CONTAINER_GROUP_NAME \
-            --resource-group ${{ parameters.resourceGroupSQL }} \
-            --subscription $subscriptionId \
-            --file "${temp_yaml}" \
-            --verbose
+        # az container create \
+        #     --name $CONTAINER_GROUP_NAME \
+        #     --resource-group ${{ parameters.resourceGroupSQL }} \
+        #     --subscription $subscriptionId \
+        #     --file "${temp_yaml}" \
+        #     --verbose
