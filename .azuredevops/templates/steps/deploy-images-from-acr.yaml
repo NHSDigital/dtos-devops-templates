@@ -27,7 +27,7 @@ steps:
           done
         }
 
-        [[ "${DEST_REGISTRY}" =~ dev ]] && az account set -s ${TF_VAR_HUB_SUBSCRIPTION_ID}
+        az account set -s $(TF_VAR_TARGET_SUBSCRIPTION_ID)
 
         functionApps=$(az functionapp list --resource-group $(FUNCTION_RESOURCE_GROUP) --query "[].name" -o tsv)
         for functionApp in $functionApps; do
@@ -36,10 +36,10 @@ steps:
           echo "##[debug] Deploying ${imageName}:${ADD_IMAGE_TAG} to ${functionApp}..."
 
           # Output the command to be run for debugging purposes:
-          echo "##[debug] az functionapp config container set --name $imageName --resource-group $(FUNCTION_RESOURCE_GROUP) --docker-custom-image-name ${DEST_REGISTRY}.azurecr.io/${imageName}:${ADD_IMAGE_TAG} --registry-server https://${DEST_REGISTRY}.azurecr.io"
+          echo "##[debug] az functionapp config container set --name $imageName --resource-group $(FUNCTION_RESOURCE_GROUP) --docker-custom-image-name ${SRC_REGISTRY}.azurecr.io/${imageName}:${ADD_IMAGE_TAG} --registry-server https://${SRC_REGISTRY}.azurecr.io"
 
           # Uncomment the following line to actually push the new image to the function app. Note that this also causes the function app to restart.
-          # az functionapp config container set --name $imageName --resource-group $(FUNCTION_RESOURCE_GROUP) --docker-custom-image-name ${DEST_REGISTRY}.azurecr.io/${imageName}:${ADD_IMAGE_TAG} --registry-server https://${DEST_REGISTRY}.azurecr.io &
+          # az functionapp config container set --name $imageName --resource-group $(FUNCTION_RESOURCE_GROUP) --docker-custom-image-name ${SRC_REGISTRY}.azurecr.io/${imageName}:${ADD_IMAGE_TAG} --registry-server https://${SRC_REGISTRY}.azurecr.io &
 
           pids+=($!)
         done
