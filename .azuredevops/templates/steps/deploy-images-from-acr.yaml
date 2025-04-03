@@ -39,7 +39,7 @@ steps:
           echo "##[debug] az functionapp config container set --name $functionApp --resource-group $(FUNCTION_RESOURCE_GROUP) --docker-custom-image-name ${SRC_REGISTRY}.azurecr.io/${imageName}:${ADD_IMAGE_TAG} --registry-server https://${SRC_REGISTRY}.azurecr.io"
 
           # Uncomment the following line to actually push the new image to the function app. Note that this also causes the function app to restart.
-          # az functionapp config container set --name $functionApp --resource-group $(FUNCTION_RESOURCE_GROUP) --docker-custom-image-name ${SRC_REGISTRY}.azurecr.io/${imageName}:${ADD_IMAGE_TAG} --registry-server https://${SRC_REGISTRY}.azurecr.io &
+          az functionapp config container set --name $functionApp --resource-group $(FUNCTION_RESOURCE_GROUP) --docker-custom-image-name ${SRC_REGISTRY}.azurecr.io/${imageName}:${ADD_IMAGE_TAG} --registry-server https://${SRC_REGISTRY}.azurecr.io &
 
           pids+=($!)
         done
