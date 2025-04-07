@@ -219,6 +219,7 @@ variable "resource_group_name" {
 variable "storage_account_access_key" {
   type        = string
   description = "The Storage Account Primary Access Key."
+  default     = null
 }
 
 variable "storage_account_name" {
