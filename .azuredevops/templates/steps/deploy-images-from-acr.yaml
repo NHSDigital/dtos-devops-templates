@@ -34,10 +34,8 @@ steps:
 
           imageName="${PROJECT_NAME}-$(echo $functionApp | sed "s/^$(ENVIRONMENT_SHORT)-uks-//")"
 
-          # Output the command to be run for debugging purposes:
-          echo "##[debug] az functionapp config container set --name $functionApp --resource-group $(FUNCTION_RESOURCE_GROUP) --image ${SRC_REGISTRY}.azurecr.io/${imageName}:${ADD_IMAGE_TAG} --registry-server https://${SRC_REGISTRY}.azurecr.io"
-
-          # Push the new image to the function app and perfoam manual restart. Pair the commands to run in parallel:
+          # Push the new image to the function app and perform manual restart. Pair the commands to run in parallel:
+          echo "##[debug] $functionApp updating and restarting with image ${SRC_REGISTRY}.azurecr.io/${imageName}:${ADD_IMAGE_TAG}" && \
           az functionapp config container set --name $functionApp --resource-group $(FUNCTION_RESOURCE_GROUP) --image ${SRC_REGISTRY}.azurecr.io/${imageName}:${ADD_IMAGE_TAG} && \
           az functionapp restart --name $functionApp --resource-group $(FUNCTION_RESOURCE_GROUP) &
 

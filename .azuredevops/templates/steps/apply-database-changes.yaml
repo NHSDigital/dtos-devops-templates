@@ -3,22 +3,6 @@
 parameters:
   - name: serviceConnection
     type: string
-  - name: resourceGroupSQL
-    type: string
-  - name: containerGroupName
-    type: string
-  - name: containerName
-    type: string
-  - name: containerImageName
-    type: string
-  - name: miNameACR
-    type: string
-  - name: miNameSQL
-    type: string
-  - name: acrServerName
-    type: string
-  - name: sqlConnectionString
-    type: string
 
 steps:
   - task: AzureCLI@2
@@ -37,18 +21,19 @@ steps:
         subscriptionId=$(TF_VAR_TARGET_SUBSCRIPTION_ID)
         az account set -s $subscriptionId
 
-        managedIdentitySQL=$(az identity show --name ${{ parameters.miNameSQL }} --resource-group ${{ parameters.resourceGroupSQL }} --subscription $subscriptionId) # allows script to be re-run
-        managedIdentityIdSQL=$(echo $managedIdentitySQL | jq -r '.clientId')
+        managedIdentityClientIdSQL=$(az identity show --id $(MANAGED_IDENTITY_ID_SQL) --query "{clientId: clientId}" -o tsv)
+        echo "$(MANAGED_IDENTITY_ID_ACR)"
+        echo "$(MANAGED_IDENTITY_ID_SQL)"
 
         # Export the variables for use in the container instance creation:
-        export CONTAINER_GROUP_NAME='${{ parameters.containerGroupName }}'
-        export CONTAINER_NAME='${{ parameters.containerName }}'
-        export CONTAINER_IMAGE='${{ parameters.acrServerName }}/${{ parameters.containerImageName }}'
-        export ACR_SERVER='${{ parameters.acrServerName }}'
-        export MI_ID_ACR="/subscriptions/$subscriptionId/resourceGroups/${{ parameters.resourceGroupSQL }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ parameters.miNameACR }}"
-        export MI_ID_SQL="/subscriptions/$subscriptionId/resourceGroups/${{ parameters.resourceGroupSQL }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ parameters.miNameSQL }}"
-        export SQL_CONNECTION_STRING='${{ parameters.sqlConnectionString }}'
-        export SQL_IDENTITY_CLIENT_ID="$managedIdentityIdSQL"
+        export CONTAINER_GROUP_NAME='$(DB_MIGRATION_CONTAINER_GROUP_NAME)'
+        export CONTAINER_NAME='$(DB_MIGRATION_CONTAINER_NAME)'
+        export CONTAINER_IMAGE='$(SRC_REGISTRY).azurecr.io/$(DB_MIGRATION_IMAGE_NAME):$(ADD_IMAGE_TAG)'
+        export ACR_SERVER='$(SRC_REGISTRY).azurecr.io'
+        export MI_ID_ACR="$(MANAGED_IDENTITY_ID_ACR)"
+        export MI_ID_SQL="$(MANAGED_IDENTITY_ID_SQL)"
+        export SQL_CONNECTION_STRING='$(DTOS_DATABASE_CONNECTION_STRING)'
+        export SQL_IDENTITY_CLIENT_ID="$managedIdentityClientIdSQL"
 
         # Create a temporary file to store the substituted YAML
         temp_yaml=$(mktemp)
@@ -56,9 +41,9 @@ steps:
         # Substitute environment variables and write to the temporary file
         envsubst < $(Build.SourcesDirectory)/dtos-devops-templates/.azuredevops/templates/resources/deploy-container-instance-sql-db-migration.yaml > "$temp_yaml"
 
-        # az container create \
-        #     --name $CONTAINER_GROUP_NAME \
-        #     --resource-group ${{ parameters.resourceGroupSQL }} \
-        #     --subscription $subscriptionId \
-        #     --file "${temp_yaml}" \
-        #     --verbose
+        az container create \
+            --name $(DB_MIGRATION_CONTAINER_GROUP_NAME) \
+            --resource-group $(RESOURCE_GROUP_NAME_SQL) \
+            --subscription $subscriptionId \
+            --file "${temp_yaml}" \
+            --verbose
