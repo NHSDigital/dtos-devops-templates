@@ -22,8 +22,6 @@ steps:
         az account set -s $subscriptionId
 
         managedIdentityClientIdSQL=$(az identity show --id $(MANAGED_IDENTITY_ID_SQL) --query "{clientId: clientId}" -o tsv)
-        echo "$(MANAGED_IDENTITY_ID_ACR)"
-        echo "$(MANAGED_IDENTITY_ID_SQL)"
 
         # Export the variables for use in the container instance creation:
         export CONTAINER_GROUP_NAME='$(DB_MIGRATION_CONTAINER_GROUP_NAME)'
