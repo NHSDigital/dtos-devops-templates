@@ -32,8 +32,8 @@ steps:
         export ACR_SERVER='$(SRC_REGISTRY).azurecr.io'
         export MI_ID_ACR="$(MANAGED_IDENTITY_ID_ACR)"
         export MI_ID_SQL="$(MANAGED_IDENTITY_ID_SQL)"
-        export SQL_CONNECTION_STRING='$(DTOS_DATABASE_CONNECTION_STRING)'
         export SQL_IDENTITY_CLIENT_ID="$managedIdentityClientIdSQL"
+        export SQL_CONNECTION_STRING='$(DTOS_DATABASE_CONNECTION_STRING)'
 
         # Create a temporary file to store the substituted YAML
         temp_yaml=$(mktemp)
