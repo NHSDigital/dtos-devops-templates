@@ -39,9 +39,9 @@ steps:
         # Substitute environment variables and write to the temporary file
         envsubst < $(Build.SourcesDirectory)/dtos-devops-templates/.azuredevops/templates/resources/deploy-container-instance-sql-db-migration.yaml > "$temp_yaml"
 
-        az container create \
-            --name $(DB_MIGRATION_CONTAINER_GROUP_NAME) \
-            --resource-group $(RESOURCE_GROUP_NAME_SQL) \
-            --subscription $subscriptionId \
-            --file "${temp_yaml}" \
-            --verbose
+        # az container create \
+        #     --name $(DB_MIGRATION_CONTAINER_GROUP_NAME) \
+        #     --resource-group $(RESOURCE_GROUP_NAME_SQL) \
+        #     --subscription $subscriptionId \
+        #     --file "${temp_yaml}" \
+        #     --verbose
