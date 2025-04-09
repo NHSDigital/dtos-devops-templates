@@ -73,7 +73,10 @@ if [[ ${#kv_names[@]} -eq 0 || -z "${email}" || -z "${subscription_id_target}" |
     exit 1
 fi
 
-pip3 install certbot certbot-dns-azure
+# Temporary until version 4 is actually working with library josepy 2.0.0
+pip3 install 'certbot==2.11.1' certbot-dns-azure
+#pip3 install certbot certbot-dns-azure
+
 mkdir -p .terraform/certbot
 cd .terraform # to prevent any temp files being accidentally written back to repo during local deployment
 

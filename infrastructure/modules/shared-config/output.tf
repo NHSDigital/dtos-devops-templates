@@ -22,27 +22,67 @@ locals {
         apim_portal  = lower("apim-portal-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
       backend_address_pool_name = {
-        apim_gateway = lower("apim-gateway-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
-        apim_portal  = lower("apim-portal-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_gateway   = lower("apim-gateway-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_portal    = lower("apim-portal-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_dev = lower("cohman-www-dev-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_nft = lower("cohman-www-nft-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_int = lower("cohman-www-int-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_pre = lower("cohman-www-pre-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_prd = lower("cohman-www-prd-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_dev = lower("parman-www-dev-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_nft = lower("parman-www-nft-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_int = lower("parman-www-int-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_pre = lower("parman-www-pre-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_prd = lower("parman-www-prd-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
       backend_http_settings_name = {
-        apim_shared  = lower("apim-shared-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
-        apim_gateway = lower("apim-gateway-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
-        apim_portal  = lower("apim-portal-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_shared    = lower("apim-shared-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_gateway   = lower("apim-gateway-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_portal    = lower("apim-portal-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_dev = lower("cohman-www-dev-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_nft = lower("cohman-www-nft-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_int = lower("cohman-www-int-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_pre = lower("cohman-www-pre-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_prd = lower("cohman-www-prd-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_dev = lower("parman-www-dev-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_nft = lower("parman-www-nft-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_int = lower("parman-www-int-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_pre = lower("parman-www-pre-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_prd = lower("parman-www-prd-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
       ssl_certificate_name = {
         private = "lets-encrypt-wildcard-private"
         public  = "lets-encrypt-wildcard-public"
       }
       http_listener_name = {
-        apim_gateway_public  = lower("apim-gateway-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
-        apim_gateway_private = lower("apim-gateway-priv-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
-        apim_portal_private  = lower("apim-portal-priv-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_gateway_public   = lower("apim-gateway-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_gateway_private  = lower("apim-gateway-priv-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_portal_private   = lower("apim-portal-priv-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_dev_public = lower("cohman-www-dev-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_nft_public = lower("cohman-www-nft-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_int_public = lower("cohman-www-int-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_pre_public = lower("cohman-www-pre-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_prd_public = lower("cohman-www-prd-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_dev_public = lower("parman-www-dev-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_nft_public = lower("parman-www-nft-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_int_public = lower("parman-www-int-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_pre_public = lower("parman-www-pre-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_prd_public = lower("parman-www-prd-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
       rule_name = {
-        apim_gateway_public  = lower("apim-gateway-pub-rule-${var.env}-${var.location_map[var.location]}-${var.application}")
-        apim_gateway_private = lower("apim-gateway-priv-rule-${var.env}-${var.location_map[var.location]}-${var.application}")
-        apim_portal_private  = lower("apim-portal-priv-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_gateway_public   = lower("apim-gateway-pub-rule-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_gateway_private  = lower("apim-gateway-priv-rule-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_portal_private   = lower("apim-portal-priv-rule-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_dev_public = lower("cohman-www-dev-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_nft_public = lower("cohman-www-nft-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_int_public = lower("cohman-www-int-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_pre_public = lower("cohman-www-pre-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_prd_public = lower("cohman-www-prd-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_dev_public = lower("parman-www-dev-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_nft_public = lower("parman-www-nft-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_int_public = lower("parman-www-int-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_pre_public = lower("parman-www-pre-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_prd_public = lower("parman-www-prd-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
     }
 

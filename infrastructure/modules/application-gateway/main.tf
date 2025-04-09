@@ -113,7 +113,7 @@ resource "azurerm_application_gateway" "this" {
       name                                = var.names.backend_http_settings_name[backend_http_settings.key]
       path                                = backend_http_settings.value.path
       pick_host_name_from_backend_address = backend_http_settings.value.pick_host_name_from_backend_address
-      probe_name                          = var.names.probe_name[backend_http_settings.value.probe_key]
+      probe_name                          = backend_http_settings.value.probe_key != null ? var.names.probe_name[backend_http_settings.value.probe_key] : null
       port                                = backend_http_settings.value.port
       protocol                            = backend_http_settings.value.protocol
       request_timeout                     = backend_http_settings.value.request_timeout
