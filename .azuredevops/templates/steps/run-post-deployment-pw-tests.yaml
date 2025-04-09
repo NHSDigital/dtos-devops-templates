@@ -16,7 +16,6 @@ steps:
 
 - script: |
     npm install
-    npx playwright install
   displayName: 'Install Dependencies and Playwright'
 
 
@@ -30,13 +29,6 @@ steps:
       **/TestResults/*
       **/drop/*
     RemoveSourceFolder: false
-
-- task: FileTransform@1
-  displayName: 'Transform Configuration Files'
-  inputs:
-    folderPath: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/Config'
-    fileType: 'json'
-    targetFiles: '*.json'
 
 - task: PowerShell@2
   displayName: 'Copy Test Files'
@@ -76,7 +68,7 @@ steps:
     export AZURE_IDENTITY_DISABLE_MANAGED_IDENTITY=true
   displayName: 'Export Identity Config'
 
-- task: DotNetCoreCLI@2
+- task: NodeTool@0
   displayName: 'Run Tests'
   inputs:
     command: 'npm test'
