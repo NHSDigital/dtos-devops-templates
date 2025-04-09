@@ -14,11 +14,6 @@ steps:
     versionSpec: '20.x'
   displayName: 'Install Node.js'
 
-- script: |
-    npm install
-  displayName: 'Install Dependencies and Playwright'
-
-
 - task: DeleteFiles@1
   displayName: 'Clean Build Directory'
   inputs:
@@ -71,7 +66,7 @@ steps:
 - task: NodeTool@0
   displayName: 'Run Tests'
   inputs:
-    command: 'npm test'
+    command: 'npm install && npm test'
     projects: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
     publishTestResults: true
     connectedServiceName: ${{ parameters.serviceConnection }}
