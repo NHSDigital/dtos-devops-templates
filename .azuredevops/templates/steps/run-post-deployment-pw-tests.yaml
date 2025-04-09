@@ -1,0 +1,98 @@
+---
+
+parameters:
+- name: serviceConnection
+  type: string
+- name: testProjectDirectory
+  type: string
+- name: testProjectName
+  type: string
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    npx playwright install
+  displayName: 'Install Dependencies and Playwright'
+
+
+- task: DeleteFiles@1
+  displayName: 'Clean Build Directory'
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)'
+    Contents: |
+      **/bin/*
+      **/obj/*
+      **/TestResults/*
+      **/drop/*
+    RemoveSourceFolder: false
+
+- task: FileTransform@1
+  displayName: 'Transform Configuration Files'
+  inputs:
+    folderPath: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/Config'
+    fileType: 'json'
+    targetFiles: '*.json'
+
+- task: PowerShell@2
+  displayName: 'Copy Test Files'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $sourcePath = '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/TestFiles'
+      $targetPath = '$(Build.ArtifactStagingDirectory)/TestFiles'
+
+      # Check if the source directory exists
+      if (!(Test-Path -Path $sourcePath)) {
+        Write-Error "Source directory not found: $sourcePath"
+        exit 1
+      }
+
+      # Create the target directory if it doesn't exist
+      if (!(Test-Path -Path $targetPath)) {
+        New-Item -ItemType Directory -Path $targetPath
+      }
+
+      # Copy the files
+      Copy-Item -Path $sourcePath -Destination $targetPath -Recurse -Force
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'TestFiles'
+
+- task: DownloadBuildArtifacts@0
+  inputs:
+    buildType: 'current'
+    downloadType: 'single'
+    artifactName: 'TestFiles'
+    downloadPath: '$(System.DefaultWorkingDirectory)'
+
+- script: |
+    export AZURE_IDENTITY_DISABLE_MANAGED_IDENTITY=true
+  displayName: 'Export Identity Config'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run Tests'
+  inputs:
+    command: 'npm test'
+    projects: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
+    publishTestResults: true
+    connectedServiceName: ${{ parameters.serviceConnection }}
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFiles: '**/*.trx'
+    testRunTitle: 'Tests'
+    mergeTestResults: true
+    createTestRun: true
+    testResultFormat: VSTest
+    azureSubscription: ${{ parameters.serviceConnection }}
