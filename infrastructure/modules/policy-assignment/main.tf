@@ -10,7 +10,14 @@ resource "azurerm_subscription_policy_assignment" "this" {
   subscription_id      = var.subscription_id
   enforce              = var.enforce
 
-  non_compliance_messages = ["This resource is not compliant with policy ${var.policy_definition_id}."]
+  non_compliance_message {
+    content = ["This resource is not compliant with policy ${var.policy_definition_id}."]
+
+  }
+
+  # non_compliance_messages = ["This resource is not compliant with policy ${var.policy_definition_id}."]
+
+
 
   parameters = jsonencode({
     log_analytics_workspace_id = {
