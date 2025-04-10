@@ -1,5 +1,3 @@
----
-
 parameters:
 - name: serviceConnection
   type: string
@@ -27,12 +25,11 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $sourcePath = '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}'
-      $targetPath = '$(Build.ArtifactStagingDirectory)/TestFiles'
-      dir
-      dir $(System.DefaultWorkingDirectory)
-      dir $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}
-      dir $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}
+      $sourcePath = "$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
+      $targetPath = "$(Build.ArtifactStagingDirectory)/TestFiles"
+
+      Write-Host "Source path: $sourcePath"
+      Write-Host "Target path: $targetPath"
 
       # Check if the source directory exists
       if (!(Test-Path -Path $sourcePath)) {
@@ -42,23 +39,22 @@ steps:
 
       # Create the target directory if it doesn't exist
       if (!(Test-Path -Path $targetPath)) {
-        New-Item -ItemType Directory -Path $targetPath
+        New-Item -ItemType Directory -Path $targetPath -Force
       }
 
       # Copy the files
-      Copy-Item -Path $sourcePath -Destination $targetPath -Recurse -Force
+      Copy-Item -Path "$sourcePath\*" -Destination $targetPath -Recurse -Force
+
+      # Verify files were copied
+      Write-Host "Files copied to target directory:"
+      Get-ChildItem -Path $targetPath -Recurse | ForEach-Object { Write-Host $_.FullName }
 
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish Test Files'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'TestFiles'
-
-- task: DownloadBuildArtifacts@0
-  inputs:
-    buildType: 'current'
-    downloadType: 'single'
-    artifactName: 'TestFiles'
-    downloadPath: '$(System.DefaultWorkingDirectory)'
+    publishLocation: 'Container'
 
 - script: |
     export AZURE_IDENTITY_DISABLE_MANAGED_IDENTITY=true
@@ -74,11 +70,15 @@ steps:
   displayName: 'Install npm dependencies'
   workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
 
-- task: NodeTool@1
+- script: |
+    echo "Current working directory:"
+    pwd
+    echo "Contents of the directory:"
+    ls -la
+    echo "Running tests..."
+    npm test
   displayName: 'Run Tests'
-  inputs:
-    command: 'npm test'
-    projects: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
@@ -86,9 +86,10 @@ steps:
   displayName: 'Publish Test Results'
   condition: succeededOrFailed()
   inputs:
+    testResultsFormat: 'VSTest'
     testResultsFiles: '**/*.trx'
-    testRunTitle: 'Tests'
+    searchFolder: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
+    testRunTitle: '${{ parameters.testProjectName }} Tests'
     mergeTestResults: true
-    createTestRun: true
-    testResultFormat: VSTest
-    azureSubscription: ${{ parameters.serviceConnection }}
+    failTaskOnFailedTests: true
+    publishRunAttachments: true
