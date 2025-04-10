@@ -72,10 +72,8 @@ steps:
 - task: NodeTool@1
   displayName: 'Install npm'
   inputs:
-    command: 'npm install'
+    command: 'npm ci && npm install'
     projects: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
-    publishTestResults: true
-    connectedServiceName: ${{ parameters.serviceConnection }}
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
@@ -84,8 +82,11 @@ steps:
   inputs:
     command: 'npm test'
     projects: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
-    publishTestResults: true
-    connectedServiceName: ${{ parameters.serviceConnection }}
+    customCommand: |
+      echo "Current working directory:"
+      pwd
+      echo "Contents of the directory:"
+      ls -la
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
