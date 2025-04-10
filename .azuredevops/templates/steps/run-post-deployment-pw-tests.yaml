@@ -70,23 +70,11 @@ steps:
   displayName: 'Install Node.js'
 
 - task: NodeTool@1
-  displayName: 'Install npm'
-  inputs:
-    command: 'npm ci && npm install'
-    projects: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
-  env:
-    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-
-- task: NodeTool@1
   displayName: 'Run Tests'
   inputs:
-    command: 'npm test'
+    command: 'cd $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
+    command: 'npm install && npm test'
     projects: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
-    customCommand: |
-      echo "Current working directory:"
-      pwd
-      echo "Contents of the directory:"
-      ls -la
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
