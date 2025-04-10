@@ -43,7 +43,6 @@ resource "azurerm_windows_virtual_machine" "this" {
   encryption_at_host_enabled        = true # az feature register --namespace Microsoft.Compute --name EncryptionAtHost
   secure_boot_enabled               = true
   vtpm_enabled                      = true
-  vm_agent_platform_updates_enabled = true
 
   identity {
     type = "SystemAssigned"
@@ -80,10 +79,6 @@ resource "azurerm_windows_virtual_machine" "this" {
       EnablePrivateNetworkGC = "TRUE" # mandated by Azure Policy
     }
   )
-
-  lifecycle {
-    ignore_changes = [vm_agent_platform_updates_enabled]
-  }
 }
 
 resource "azurerm_virtual_machine_extension" "aadjoin" {
