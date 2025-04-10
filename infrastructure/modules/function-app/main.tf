@@ -33,7 +33,7 @@ resource "azurerm_linux_function_app" "function_app" {
     ftps_state                                    = var.ftps_state
     minimum_tls_version                           = var.minimum_tls_version
     health_check_path                             = var.health_check_path
-    health_check_eviction_time_in_min             = var.health_check_path == null ? null : (
+    health_check_eviction_time_in_min = var.health_check_path == null ? null : (
       var.health_check_eviction_time_in_min == null ? 10 : var.health_check_eviction_time_in_min
     )
 

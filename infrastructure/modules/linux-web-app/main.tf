@@ -26,7 +26,7 @@ resource "azurerm_linux_web_app" "linux_web_app" {
     ftps_state                                    = var.ftps_state
     minimum_tls_version                           = var.minimum_tls_version
     health_check_path                             = var.health_check_path
-    health_check_eviction_time_in_min             = var.health_check_path == null ? null : (
+    health_check_eviction_time_in_min = var.health_check_path == null ? null : (
       var.health_check_eviction_time_in_min == null ? 10 : var.health_check_eviction_time_in_min
     )
 
@@ -53,7 +53,7 @@ resource "azurerm_linux_web_app" "linux_web_app" {
     use_32_bit_worker = var.worker_32bit
   }
 
-  dynamic storage_account {
+  dynamic "storage_account" {
     for_each = var.storage_name != null ? [1] : []
 
     content {
