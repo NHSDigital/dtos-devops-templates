@@ -13,8 +13,12 @@ parameters:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '20.x'
+    versionSpec: '22.x'
   displayName: 'Install Node.js'
+
+- script: |
+    npm install
+  displayName: 'Install NPM Packages'
 
 - task: DeleteFiles@1
   displayName: 'Clean Build Directory'
@@ -69,10 +73,10 @@ steps:
     export AZURE_IDENTITY_DISABLE_MANAGED_IDENTITY=true
   displayName: 'Export Identity Config'
 
-- task: NodeTool@0
+- task: NodeTool@1
   displayName: 'Run Tests'
   inputs:
-    command: 'npm install && npm test'
+    command: 'npm test'
     projects: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
     publishTestResults: true
     connectedServiceName: ${{ parameters.serviceConnection }}
