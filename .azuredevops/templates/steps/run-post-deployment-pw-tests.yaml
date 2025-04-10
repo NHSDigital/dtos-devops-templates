@@ -32,7 +32,10 @@ steps:
     script: |
       $sourcePath = '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/TestFiles'
       $targetPath = '$(Build.ArtifactStagingDirectory)/TestFiles'
-
+      dir
+      dir $(System.DefaultWorkingDirectory)
+      dir $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}
+      dir $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/TestFiles
       # Check if the source directory exists
       if (!(Test-Path -Path $sourcePath)) {
         Write-Error "Source directory not found: $sourcePath"
