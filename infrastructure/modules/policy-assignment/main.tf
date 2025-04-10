@@ -11,7 +11,7 @@ resource "azurerm_subscription_policy_assignment" "this" {
   enforce              = var.enforce
 
   non_compliance_message {
-    content = ["This resource is not compliant with policy ${var.policy_definition_id}."]
+    content = "This resource is not compliant with policy ${var.policy_definition_id}."
 
   }
 
