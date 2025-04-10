@@ -79,7 +79,7 @@ steps:
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-- task: NodeTool@2
+- task: NodeTool@1
   displayName: 'Run Tests'
   inputs:
     command: 'npm test'
