@@ -72,8 +72,7 @@ steps:
 - task: NodeTool@1
   displayName: 'Run Tests'
   inputs:
-    command: 'cd $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
-    command: 'npm install && npm test'
+    command: 'cd $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }} && npm install && npm test'
     projects: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
