@@ -7,6 +7,8 @@ parameters:
   type: string
 - name: testProjectName
   type: string
+- name: testfileDirectory
+  type: string
 
 steps:
 - task: NodeTool@0
@@ -30,12 +32,12 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $sourcePath = '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/TestFiles'
+      $sourcePath = '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}'
       $targetPath = '$(Build.ArtifactStagingDirectory)/TestFiles'
       dir
       dir $(System.DefaultWorkingDirectory)
       dir $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}
-      dir $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/tests/e2e/testFiles
+      dir $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}
       dir $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/TestFiles
 
       # Check if the source directory exists
