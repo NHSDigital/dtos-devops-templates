@@ -35,7 +35,9 @@ steps:
       dir
       dir $(System.DefaultWorkingDirectory)
       dir $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}
+      dir $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/tests/e2e/testFiles
       dir $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/TestFiles
+
       # Check if the source directory exists
       if (!(Test-Path -Path $sourcePath)) {
         Write-Error "Source directory not found: $sourcePath"
