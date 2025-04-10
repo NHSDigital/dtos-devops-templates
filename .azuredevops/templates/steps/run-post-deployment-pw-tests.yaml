@@ -53,6 +53,7 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'TestFiles'
 
+
 - task: DownloadBuildArtifacts@0
   inputs:
     buildType: 'current'
@@ -65,14 +66,18 @@ steps:
   displayName: 'Export Identity Config'
 
 - task: NodeTool@0
-  inputs:
-    versionSpec: '22.x'
   displayName: 'Install Node.js'
+  inputs:
+  versionSpec: '22.x'
+- script: |
+   npm install
+  displayName: 'Install npm dependencies'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
 
 - task: NodeTool@1
   displayName: 'Run Tests'
   inputs:
-    command: 'cd $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }} && npm install && npm test'
+    command: 'npm test'
     projects: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
