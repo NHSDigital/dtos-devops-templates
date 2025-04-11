@@ -80,10 +80,10 @@ steps:
   displayName: 'Run Tests'
   workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
   env:
-    NODE_ENV: 'ci'
+    CONTAINER_NAME: $(CONTAINER_NAME)
+    Is_CloudEnvironment: $(Is_CloudEnvironment)
     CAASFOLDER_STORAGE_CONNECTION_STRING: $(CAASFOLDER_STORAGE_CONNECTION_STRING)
-    DTOS_DATABASE_CONNECTION_STRING: $(DTOS_DATABASE_CONNECTION_STRING)
-    MANAGED_IDENTITY_CLIENT_ID: $(MANAGED_IDENTITY_CLIENT_ID)
+    ENDPOINT_COHORT_DISTRIBUTION_DATA_SERVICE: $(ENDPOINT_COHORT_DISTRIBUTION_DATA_SERVICE)
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Playwright Test Reports'
