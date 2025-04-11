@@ -3,8 +3,8 @@ variable "certificates" {
   type        = map(string)
 }
 
-variable "dns_zone_name" {
-  type = string
+variable "dns_zone_names" {
+  type = list(string)
 }
 
 variable "dns_zone_resource_group_name" {

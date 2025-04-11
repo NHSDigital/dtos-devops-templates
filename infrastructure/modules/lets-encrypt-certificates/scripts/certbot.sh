@@ -92,6 +92,10 @@ fi
 
 az account set --subscription "${subscription_id_target}"
 
+echo -e "\nCERTBOT_DNS.INI"
+cat certbot_dns.ini
+echo
+
 # Process each domain (certificate subject) serially
 while [[ $# -gt 0 ]]; do
     domain="$1"
