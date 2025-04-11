@@ -31,9 +31,11 @@ resource "azurerm_linux_function_app" "function_app" {
     container_registry_use_managed_identity       = var.cont_registry_use_mi
     container_registry_managed_identity_client_id = var.acr_mi_client_id
     ftps_state                                    = var.ftps_state
-    health_check_path                             = var.health_check_path
-    health_check_eviction_time_in_min             = var.health_check_eviction_time_in_min
     minimum_tls_version                           = var.minimum_tls_version
+    health_check_path                             = var.health_check_path
+    health_check_eviction_time_in_min = var.health_check_path == null ? null : (
+      var.health_check_eviction_time_in_min == null ? 10 : var.health_check_eviction_time_in_min
+    )
 
     app_service_logs {
       disk_quota_mb         = var.app_service_logs_disk_quota_mb

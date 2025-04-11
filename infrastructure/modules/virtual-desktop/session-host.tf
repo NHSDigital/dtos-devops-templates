@@ -31,18 +31,18 @@ resource "random_string" "suffix" {
 resource "azurerm_windows_virtual_machine" "this" {
   count = var.vm_count
 
-  name                              = "${var.vm_name_prefix}-${random_string.suffix[count.index].result}"
-  location                          = var.location
-  resource_group_name               = var.resource_group_name
-  network_interface_ids             = [azurerm_network_interface.this[count.index].id]
-  size                              = var.vm_size
-  admin_username                    = "azureadmin"
-  admin_password                    = random_password.admin_password.result
-  computer_name                     = "${var.computer_name_prefix}${random_string.suffix[count.index].result}"
-  license_type                      = var.vm_license_type
-  encryption_at_host_enabled        = true # az feature register --namespace Microsoft.Compute --name EncryptionAtHost
-  secure_boot_enabled               = true
-  vtpm_enabled                      = true
+  name                       = "${var.vm_name_prefix}-${random_string.suffix[count.index].result}"
+  location                   = var.location
+  resource_group_name        = var.resource_group_name
+  network_interface_ids      = [azurerm_network_interface.this[count.index].id]
+  size                       = var.vm_size
+  admin_username             = "azureadmin"
+  admin_password             = random_password.admin_password.result
+  computer_name              = "${var.computer_name_prefix}${random_string.suffix[count.index].result}"
+  license_type               = var.vm_license_type
+  encryption_at_host_enabled = true # az feature register --namespace Microsoft.Compute --name EncryptionAtHost
+  secure_boot_enabled        = true
+  vtpm_enabled               = true
 
   identity {
     type = "SystemAssigned"
