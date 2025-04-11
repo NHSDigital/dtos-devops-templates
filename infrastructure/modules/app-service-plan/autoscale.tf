@@ -1,4 +1,3 @@
-
 resource "azurerm_monitor_autoscale_setting" "asp_autoscale" {
   name                = "${var.name}-autoscale"
   resource_group_name = var.resource_group_name
