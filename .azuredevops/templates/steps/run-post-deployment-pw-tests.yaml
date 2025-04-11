@@ -80,16 +80,26 @@ steps:
   displayName: 'Run Tests'
   workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
   env:
-    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    NODE_ENV: 'ci'
+    CAASFOLDER_STORAGE_CONNECTION_STRING: $(CAASFOLDER_STORAGE_CONNECTION_STRING)
+    DTOS_DATABASE_CONNECTION_STRING: $(DTOS_DATABASE_CONNECTION_STRING)
+    MANAGED_IDENTITY_CLIENT_ID: $(MANAGED_IDENTITY_CLIENT_ID)
 
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results'
-  condition: succeededOrFailed()
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Playwright Test Reports'
   inputs:
-    testResultsFormat: 'VSTest'
-    testResultsFiles: '**/*.trx'
-    searchFolder: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
-    testRunTitle: '${{ parameters.testProjectName }} Tests'
-    mergeTestResults: true
-    failTaskOnFailedTests: true
-    publishRunAttachments: true
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
+    ArtifactName: 'PlaywrightHTMLReport'
+    publishLocation: 'Container'
+
+# - task: PublishTestResults@2
+#   displayName: 'Publish Test Results'
+#   condition: succeededOrFailed()
+#   inputs:
+#     testResultsFormat: 'JUnit'
+#     testResultsFiles: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml'
+#     searchFolder: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
+#     testRunTitle: '${{ parameters.testProjectName }} Tests'
+#     mergeTestResults: true
+#     failTaskOnFailedTests: true
+#     publishRunAttachments: true
