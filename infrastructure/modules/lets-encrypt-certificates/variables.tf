@@ -4,7 +4,8 @@ variable "certificates" {
 }
 
 variable "dns_zone_names" {
-  type = list(string)
+  type = map(string)
+  description = "Map of zone identifiers to their full private DNS zone names"
 }
 
 variable "dns_zone_resource_group_name" {

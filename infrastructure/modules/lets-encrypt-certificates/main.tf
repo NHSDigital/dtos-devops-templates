@@ -5,8 +5,8 @@ resource "local_file" "certbot_ini_file" {
   content         = <<EOT
 dns_azure_use_cli_credentials = true
 dns_azure_environment = "AzurePublicCloud"
-%{ for name, zone in var.dns_zones ~}
-dns_azure_zone${index(keys(var.dns_zones), name) + 1} = ${zone}:${data.azurerm_dns_zone.lookup[name].id}
+%{ for name, zone in var.dns_zone_names ~}
+dns_azure_zone${index(keys(var.dns_zone_names), name) + 1} = ${zone}:${data.azurerm_dns_zone.lookup[name].id}
 %{ endfor ~}
 EOT
 }
