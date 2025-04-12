@@ -101,6 +101,7 @@ while [[ $# -gt 0 ]]; do
       --authenticator dns-azure \
       --preferred-challenges dns \
       --dns-azure-config certbot_dns.ini \
+      --dns-azure-propagation-seconds 20 \
       --config-dir certbot/config \
       --work-dir certbot/work \
       --logs-dir certbot/logs \
