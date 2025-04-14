@@ -205,16 +205,27 @@ jobs:
           docker rmi "${repo_name}:${ENVIRONMENT_TAG}"
           docker rmi ${PROJECT_NAME}-${function}:latest
 
-          # Finally restart the function app
-          # if [ "${GITHUB_REF}" == 'refs/heads/main' ]; then
-          bash -x ${GITHUB_WORKSPACE}/templates/scripts/azure/restart-function-app.sh ${PROJECT_NAME}-${function}
-          # fi
+      - name: Combine State File Outputs JSON
+        env:
+          backendAzureRmContainerName: development
+          backendAzureRmStorageAccountName: sanhsdigitalscreening
+          statefilename: resources
+        run: |
+            function get_state() { az storage blob download -c $(backendAzureRmContainerName) -n "$1.tfstate" --account-name $(backendAzureRmStorageAccountName) --auth-mode login; }
+            jq -s 'reduce .[] as $item ({}; . + $item.outputs)' <(get_state $(statefilename) ) > tf_outputs.json
+
+            echo tf_outputs.json Alastair
+            cat tf_outputs.json
+
+            # Finally restart the function app
+            bash -x ${GITHUB_WORKSPACE}/templates/scripts/azure/restart-function-app.sh ${PROJECT_NAME}-${function}
 
       - name: Compress SBOM report
         shell: bash
         run: |
           echo SBOM_REPOSITORY_REPORT: ${SBOM_REPOSITORY_REPORT}
           zip "${SBOM_REPOSITORY_REPORT}.json.zip" "${SBOM_REPOSITORY_REPORT}.json"
+
 
       - name: Upload SBOM report as an artefact
         uses: actions/upload-artifact@v4
