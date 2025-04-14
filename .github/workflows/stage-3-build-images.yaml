@@ -168,11 +168,11 @@ jobs:
 
           export SBOM_REPOSITORY_REPORT="sbom-${function}-repository-report"
           echo "SBOM_REPOSITORY_REPORT=$SBOM_REPOSITORY_REPORT" >> $GITHUB_ENV
-          bash -x ${GITHUB_WORKSPACE}/templates/scripts/reports/create-sbom-report.sh
+          bash ${GITHUB_WORKSPACE}/templates/scripts/reports/create-sbom-report.sh
 
           export VULNERABILITIES_REPOSITORY_REPORT="vulnerabilities-${function}-repository-report"
           echo "VULNERABILITIES_REPOSITORY_REPORT=$VULNERABILITIES_REPOSITORY_REPORT" >> $GITHUB_ENV
-          bash -x ${GITHUB_WORKSPACE}/templates/scripts/reports/scan-vulnerabilities.sh
+          bash ${GITHUB_WORKSPACE}/templates/scripts/reports/scan-vulnerabilities.sh
 
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
 
@@ -203,6 +203,11 @@ jobs:
           docker rmi "${repo_name}:${PR_NUM_TAG}"
           docker rmi "${repo_name}:${ENVIRONMENT_TAG}"
           docker rmi ${PROJECT_NAME}-${function}:latest
+
+          # Finally restart the function app
+          if [ "${GITHUB_REF}" == 'refs/heads/main' ]; then
+            bash -x ${GITHUB_WORKSPACE}/templates/scripts/azure/restart-function-app.sh ${PROJECT_NAME}-${function}
+          fi
 
       - name: Compress SBOM report
         shell: bash
