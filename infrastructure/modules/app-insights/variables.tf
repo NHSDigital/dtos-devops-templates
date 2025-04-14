@@ -2,6 +2,10 @@
 variable "location" {
   type        = string
   description = "The location/region where the AI is created."
+  validation {
+    condition     = contains(["uksouth", "ukwest"], var.location)
+    error_message = "The location must be either uksouth or ukwest."
+  }
 }
 
 variable "name" {

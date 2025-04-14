@@ -158,13 +158,13 @@ jobs:
           echo "PR_NUM_TAG=${PR_NUM_TAG}" >> ${GITHUB_ENV}
 
           # Push the image to the repository
-          # if [ "${GITHUB_REF}" == 'refs/heads/main' ]; then
+          if [ "${GITHUB_REF}" == 'refs/heads/main' ]; then
             docker push "${repo_name}:${COMMIT_HASH_TAG}"
             if [ "${PR_NUM_TAG}" != 'pr' ]; then
               docker push "${repo_name}:${PR_NUM_TAG}"
             fi
             docker push "${repo_name}:${ENVIRONMENT_TAG}"
-          # fi
+          fi
 
           export SBOM_REPOSITORY_REPORT="sbom-${function}-repository-report"
           echo "SBOM_REPOSITORY_REPORT=$SBOM_REPOSITORY_REPORT" >> $GITHUB_ENV
@@ -205,9 +205,9 @@ jobs:
           docker rmi ${PROJECT_NAME}-${function}:latest
 
           # Finally restart the function app
-          if [ "${GITHUB_REF}" == 'refs/heads/main' ]; then
-            bash -x ${GITHUB_WORKSPACE}/templates/scripts/azure/restart-function-app.sh ${PROJECT_NAME}-${function}
-          fi
+          # if [ "${GITHUB_REF}" == 'refs/heads/main' ]; then
+          bash -x ${GITHUB_WORKSPACE}/templates/scripts/azure/restart-function-app.sh ${PROJECT_NAME}-${function}
+          # fi
 
       - name: Compress SBOM report
         shell: bash

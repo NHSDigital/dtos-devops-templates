@@ -11,6 +11,10 @@ variable "resource_group_name" {
 variable "location" {
   description = "The location/region where the Event Hub namespace is created."
   type        = string
+  validation {
+    condition     = contains(["uksouth", "ukwest"], var.location)
+    error_message = "The location must be either uksouth or ukwest."
+  }
 }
 
 variable "auth_rule" {
