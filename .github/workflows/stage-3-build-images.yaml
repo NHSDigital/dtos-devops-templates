@@ -211,11 +211,12 @@ jobs:
           backendAzureRmStorageAccountName: sanhsdigitalscreening
           statefilename: resources
         run: |
-            function get_state() { az storage blob download -c $(backendAzureRmContainerName) -n "$1.tfstate" --account-name $(backendAzureRmStorageAccountName) --auth-mode login; }
-            jq -s 'reduce .[] as $item ({}; . + $item.outputs)' <(get_state $(statefilename) ) > tf_outputs.json
+            function get_state() { az storage blob download -c ${backendAzureRmContainerName} -n "$1.tfstate" --account-name ${backendAzureRmStorageAccountName} --auth-mode login; }
+            jq -s 'reduce .[] as $item ({}; . + $item.outputs)' <(get_state ${statefilename} ) > tf_outputs.json
 
             echo tf_outputs.json Alastair
             cat tf_outputs.json
+
 
             # Finally restart the function app
             bash -x ${GITHUB_WORKSPACE}/templates/scripts/azure/restart-function-app.sh ${PROJECT_NAME}-${function}
