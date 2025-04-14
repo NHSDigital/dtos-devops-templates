@@ -2,6 +2,8 @@
 
 set -eo pipefail
 
+FUNCTION_APP_NAME=$1
+
 if [[ -z "${FUNCTION_APP_NAME}" ]]; then
     echo "❌ Error: FUNCTION_APP_NAME has not been defined."
     exit 1

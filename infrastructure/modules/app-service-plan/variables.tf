@@ -11,6 +11,10 @@ variable "resource_group_name" {
 variable "location" {
   type        = string
   description = "The location/region where the App Service Plan is created."
+  validation {
+    condition     = contains(["uksouth", "ukwest"], var.location)
+    error_message = "The location must be either uksouth or ukwest."
+  }
 }
 
 variable "log_analytics_workspace_id" {
