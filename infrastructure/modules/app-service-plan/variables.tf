@@ -1,6 +1,11 @@
 variable "name" {
-  type        = string
   description = "Name of the App Service Plan."
+  type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_]{0,58}[a-zA-Z0-9]$", var.name))
+    error_message = "The App Service Plan name must be between 1 and 60 characters, start and end with an alphanumeric character, and can contain alphanumeric characters and hyphens (underscores are not allowed at the start or end)."
+
+  }
 }
 
 variable "resource_group_name" {

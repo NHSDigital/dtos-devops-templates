@@ -1,6 +1,10 @@
 variable "name" {
   type        = string
   description = "The name of the vnet."
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9.-]{0,78}[a-zA-Z0-9]$", var.name))
+    error_message = "The Virtual Network name must be between 1 and 80 characters, start and end with an alphanumeric character, and can contain alphanumeric characters, hyphens, and periods."
+  }
 }
 
 variable "resource_group_name" {

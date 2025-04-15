@@ -1,5 +1,10 @@
 variable "name" {
-  type = string
+  description = "The name of the DNS A Record service."
+  type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_]{0,253}[a-zA-Z0-9]$", var.name))
+    error_message = "The DNS A Record service name must be between 1 and 255 characters and can only contain alphanumeric characters, hyphens, and underscores."
+  }
 }
 
 variable "records" {

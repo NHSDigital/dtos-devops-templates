@@ -16,6 +16,10 @@ variable "allow_virtual_network_access" {
 variable "name" {
   description = "The name of the Peering connection."
   type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9.-]{0,78}[a-zA-Z0-9]$", var.name))
+    error_message = "The Virtual Network Peering name must be between 1 and 80 characters, start and end with an alphanumeric character, and can contain alphanumeric characters, hyphens, and periods."
+  }
 }
 
 variable "peer_complete_virtual_networks_enabled" {
