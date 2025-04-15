@@ -95,10 +95,11 @@ steps:
     publishLocation: 'Container'
 
 - task: PublishTestResults@2
+  displayName: 'Publish JUnit Test Results'
   condition: succeededOrFailed()
   inputs:
     testResultsFormat: 'JUnit'
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/test-results.xml'
+    testResultsFiles: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml'
     failTaskOnFailedTests: true
-    condition: succeededOrFailed()
-  displayName: 'Publish Test Results'
+    mergeTestResults: true
+    publishRunAttachments: true
