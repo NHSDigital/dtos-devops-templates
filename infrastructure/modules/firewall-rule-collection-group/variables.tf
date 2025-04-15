@@ -2,8 +2,8 @@ variable "name" {
   description = "The name of the firewall network rule."
   type        = string
   validation {
-    condition     = can(regex("^[a-zA-Z0-9-]{1,80}$", var.name))
-    error_message = "The name must be a maximum of 80 characters and contain only alphanumeric characters."
+    condition     = can(regex("^[a-zA-Z0-9_][a-zA-Z0-9-_]{0,78}[a-zA-Z0-9_]$", var.name))
+    error_message = "The Firewall Rule Collection Group name must be between 1 and 80 characters and can only contain alphanumeric characters, hyphens, and underscores."
   }
 }
 

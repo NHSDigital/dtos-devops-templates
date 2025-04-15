@@ -36,7 +36,12 @@ variable "monitor_diagnostic_setting_keyvault_metrics" {
 }
 
 variable "name" {
-  type = string
+  description = "The name of the Key Vault."
+  type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-]{1,22}[a-zA-Z0-9]$", var.name))
+    error_message = "The Key Vault name must be between 3 and 24 characters, start with a letter, end with a letter or number, and can only contain alphanumeric characters and hyphens."
+  }
 }
 
 variable "private_endpoint_properties" {

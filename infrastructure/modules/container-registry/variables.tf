@@ -5,8 +5,12 @@ variable "resource_group_name" {
 }
 
 variable "name" {
-  type        = string
   description = "The Azure Container Registry name."
+  type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_]{0,48}[a-zA-Z0-9]$", var.name))
+    error_message = "The Container Registry name must be between 1 and 50 characters, start with an alphanumeric character, end with an alphanumeric character, and can only contain alphanumeric characters, hyphens, and underscores."
+  }
 }
 
 variable "location" {

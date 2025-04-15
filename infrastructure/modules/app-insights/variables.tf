@@ -5,8 +5,12 @@ variable "location" {
 }
 
 variable "name" {
-  type        = string
   description = "Is the App Insights workspace name."
+  type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_]{0,253}[a-zA-Z0-9]$", var.name))
+    error_message = "The App Insights workspace name must be between 1 and 255 characters, start and end with an alphanumeric character, and can contain alphanumeric characters, hyphens, periods, and underscores (but not at the start or end)."
+  }
 }
 
 variable "tags" {

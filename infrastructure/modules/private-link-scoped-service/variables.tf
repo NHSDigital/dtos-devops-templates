@@ -1,6 +1,10 @@
 variable "name" {
   type        = string
-  description = "The name (in FQDN form) of the zone."
+  description = "The name of the Azure Monitor Private Link Scoped Service."
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9.-]{0,62}[a-zA-Z0-9]$", var.name))
+    error_message = "The Azure Monitor Private Link Scoped Service name must be between 1 and 64 characters, start and end with an alphanumeric character, and can contain alphanumeric characters, hyphens, and periods."
+  }
 }
 
 variable "resource_group_name" {

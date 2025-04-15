@@ -1,6 +1,10 @@
 variable "name" {
-  type        = string
   description = "The name of the nsg."
+  type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,78}[a-zA-Z0-9.]+$", var.name))
+    error_message = "The Azure Network Security Group name must be between 1 and 80 characters, start with an alphanumeric character, end with an alphanumeric character, or period, and can contain alphanumeric characters, periods, underscores and hyphens."
+  }
 }
 
 variable "resource_group_name" {

@@ -26,6 +26,10 @@ variable "dag_friendly_name" {
 variable "dag_name" {
   description = "The name of the AVD Desktop Application Group (DAG)"
   type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9.-]{0,62}[a-zA-Z0-9]$", var.dag_name))
+    error_message = "The Virtual Desktop Application Group name must be between 1 and 64 characters, start and end with an alphanumeric character, and can contain alphanumeric characters, hyphens, and periods."
+  }
 }
 
 variable "dag_type" {
@@ -54,6 +58,10 @@ variable "host_pool_friendly_name" {
 variable "host_pool_name" {
   description = "The name of the AVD host pool"
   type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9.-]{0,62}[a-zA-Z0-9]$", var.host_pool_name))
+    error_message = "The Virtual Desktop Host Pool name must be between 1 and 64 characters, start and end with an alphanumeric character, and can contain alphanumeric characters, hyphens, and periods."
+  }
 }
 
 variable "host_pool_type" {
@@ -158,6 +166,10 @@ variable "workspace_friendly_name" {
 variable "workspace_name" {
   description = "The name of the AVD workspace"
   type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9.-]{0,62}[a-zA-Z0-9]$", var.workspace_name))
+    error_message = "The Virtual Desktop Workspace name must be between 1 and 64 characters, start and end with an alphanumeric character, and can contain alphanumeric characters, hyphens, and periods."
+  }
 }
 
 variable "resource_group_id" {
