@@ -98,7 +98,7 @@ steps:
   condition: succeededOrFailed()
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: '**/test-results/*.xml'
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/test-results.xml'
     failTaskOnFailedTests: true
     condition: succeededOrFailed()
   displayName: 'Publish Test Results'
