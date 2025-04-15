@@ -81,7 +81,7 @@ variable "function_app_name" {
   description = "Name of the Function App"
   type        = string
   validation {
-    condition     = can(regex("^[a-zA-Z0-9_][a-zA-Z0-9-_]{0,58}[a-zA-Z0-9_]$", var.name))
+    condition     = can(regex("^[a-zA-Z0-9_][a-zA-Z0-9-_]{0,58}[a-zA-Z0-9_]$", var.function_app_name))
     error_message = "The Function App name must be between 1 and 60 characters and can only contain alphanumeric characters, hyphens, and underscores."
   }
 }
