@@ -1,6 +1,10 @@
 variable "subscription_name" {
   description = "The name of the Event Grid event subscription."
   type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9_][a-zA-Z0-9-_]{0,62}[a-zA-Z0-9_]$", var.name))
+    error_message = "The Event Grid Subscription name must be between 1 and 64 characters and can only contain alphanumeric characters, hyphens, and underscores."
+  }
 }
 
 variable "resource_group_name" {

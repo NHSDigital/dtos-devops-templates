@@ -15,8 +15,12 @@ variable "function_app_slot_enabled" {
 }
 
 variable "name" {
-  type        = string
   description = "The function app slot name."
+  type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9_][a-zA-Z0-9-_]{0,58}[a-zA-Z0-9_]$", var.name))
+    error_message = "The Function App Slot name must be between 1 and 60 characters and can only contain alphanumeric characters, hyphens, and underscores."
+  }
 }
 
 variable "tags" {

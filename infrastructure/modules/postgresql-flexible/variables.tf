@@ -1,6 +1,10 @@
 variable "name" {
   description = "The name of the PostgreSQL Flexible Server."
   type        = string
+  validation {
+    condition     = can(regex("^[a-z][a-z0-9-]{1,61}[a-z0-9]$", var.name))
+    error_message = "The Azure PostgreSQL Flexible Server name must be between 3 and 63 characters, start with a lowercase letter, end with a lowercase letter or number, and can contain lowercase letters, numbers, and hyphens."
+  }
 }
 
 variable "resource_group_name" {
