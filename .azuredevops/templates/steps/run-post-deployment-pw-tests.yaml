@@ -93,3 +93,13 @@ steps:
     PathtoPublish: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
     ArtifactName: 'PlaywrightHTMLReport'
     publishLocation: 'Container'
+
+- task: PublishTestResults@2
+  displayName: 'Publish JUnit Test Results'
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml'
+    failTaskOnFailedTests: true
+    mergeTestResults: true
+    publishRunAttachments: true
