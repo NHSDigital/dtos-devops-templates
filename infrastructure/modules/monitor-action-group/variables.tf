@@ -14,23 +14,55 @@ variable "short_name" {
 }
 
 variable "email_receiver" {
-  description = "email receiver properties."
-  type = list(object({
+  description = "Email receiver properties."
+  type = map(object({
     name                    = string
     email_address           = string
+    use_common_alert_schema = optional(bool, false)
+  }))
+  default = {}
+}
+
+variable "event_hub_receiver" {
+  description = "event hub receiver properties."
+  type = map(object({
+    name                    = string
+    event_hub_namespace     = string
+    event_hub_name          = string
+    subscription_id         = string
     use_common_alert_schema = bool
   }))
-  default = []
+  default = {}
+}
+
+variable "sms_receiver" {
+  description = "sms receiver properties."
+  type = map(object({
+    name         = string
+    country_code = string
+    phone_number = string
+  }))
+  default = {}
+}
+
+variable "voice_receiver" {
+  description = "voice receiver properties."
+  type = map(object({
+    name         = string
+    country_code = string
+    phone_number = string
+  }))
+  default = {}
 }
 
 variable "webhook_receiver" {
   description = "webhook receiver properties."
-  type = list(object({
+  type = map(object({
     name                    = string
     service_uri             = string
     use_common_alert_schema = bool
   }))
-  default = []
+  default = {}
 }
 
 variable "location" {
