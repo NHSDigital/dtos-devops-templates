@@ -27,10 +27,12 @@ steps:
     pwd
     echo "Contents of the directory:"
     ls -la
-    echo "decrypt files ..."
-    gpg --batch --yes --passphrase $(ENCRYPTION_PASSWORD) -o ADD_2_RECORDS_-_CAAS_BREAST_SCREENING_COHORT.parquet -d ADD_2_RECORDS_-_CAAS_BREAST_SCREENING_COHORT.parquet.gpg
-  displayName: 'Decrypt Parquet File'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}/01'
+    echo "Decrypting all .gpg files..."
+    cd $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{ parameters.testfileDirectory }}/01
+    for file in *.gpg; do
+      gpg --batch --yes --passphrase $(ENCRYPTION_PASSWORD) -o "${file%.gpg}" -d "$file"
+    done
+    displayName: 'Decrypt Parquet File'
 
 # Copy Test Files
 - task: PowerShell@2
