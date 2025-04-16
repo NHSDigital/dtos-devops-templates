@@ -27,12 +27,18 @@ steps:
     pwd
     echo "Contents of the directory:"
     ls -la
-    echo "Decrypting all .gpg files..."
-    cd $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{ parameters.testfileDirectory }}/01
+    echo "Decrypting files..."
     for file in *.gpg; do
-      gpg --batch --yes --passphrase $(ENCRYPTION_PASSWORD) -o "${file%.gpg}" -d "$file"
+      echo "Decrypting $file..."
+      if gpg --batch --yes --passphrase $(ENCRYPTION_PASSWORD) -o "${file%.gpg}" -d "$file"; then
+        echo "Successfully decrypted $file"
+      else
+        echo "Failed to decrypt $file" >&2
+        exit 1
+      fi
     done
-    displayName: 'Decrypt Parquet File'
+  displayName: 'Decrypt Parquet File'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}/01'
 
 # Copy Test Files
 - task: PowerShell@2
