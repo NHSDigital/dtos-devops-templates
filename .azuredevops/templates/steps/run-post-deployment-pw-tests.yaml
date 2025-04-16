@@ -20,6 +20,19 @@ steps:
       **/drop/*
     RemoveSourceFolder: false
 
+steps:
+- script: |
+    $sourcePath = "$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
+
+    Write-Host "Source path: $sourcePath"
+    # Check if the source directory exists
+    if (!(Test-Path -Path $sourcePath)) {
+    Write-Error "Source directory not found: $sourcePath"
+    exit 1
+    }
+  gpg --batch --yes --passphrase $(ENCRYPTION_PASSWORD) -o ADD_2_RECORDS_-_CAAS_BREAST_SCREENING_COHORT.parquet -d ADD_2_RECORDS_-_CAAS_BREAST_SCREENING_COHORT.parquet.gpg
+  displayName: Decrypt Parquet File
+
 - task: PowerShell@2
   displayName: 'Copy Test Files'
   inputs:
