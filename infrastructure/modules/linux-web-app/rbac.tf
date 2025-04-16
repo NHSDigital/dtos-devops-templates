@@ -4,7 +4,7 @@ module "rbac_assignments" {
 
   source = "../rbac-assignment"
 
-  principal_id         = azurerm_linux_web_app.linux_web_app.identity.0.principal_id
+  principal_id         = azurerm_linux_web_app.this.identity.0.principal_id
   role_definition_name = each.value.role_definition_name
   scope                = each.value.scope
 }

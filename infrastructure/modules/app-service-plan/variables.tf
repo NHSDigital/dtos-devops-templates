@@ -35,6 +35,12 @@ variable "sku_name" {
   default     = "B1"
 }
 
+variable "tags" {
+  type        = map(string)
+  description = "Resource tags to be applied throughout the deployment."
+  default     = {}
+}
+
 variable "vnet_integration_enabled" {
   type        = bool
   description = "Indicates whether the App Service Plan is integrated with a VNET."
@@ -47,11 +53,24 @@ variable "vnet_integration_subnet_id" {
   default     = ""
 }
 
-variable "tags" {
-  type        = map(string)
-  description = "Resource tags to be applied throughout the deployment."
-  default     = {}
+variable "wildcard_ssl_cert_key_vault_secret_id" {
+  type        = string
+  description = "Wildcard SSL certificate Key Vault secret id, for App Service Custom Domain binding."
+  default     = null
 }
+
+variable "wildcard_ssl_cert_key_vault_id" {
+  type        = string
+  description = "Wildcard SSL certificate Key Vault id, needed if the Key Vault is in a different subscription."
+  default     = null
+}
+
+variable "wildcard_ssl_cert_name" {
+  type        = string
+  description = "Wildcard SSL certificate name, for Custom Domain binding."
+  default     = null
+}
+
 
 ## autoscale rule ##
 
@@ -59,6 +78,7 @@ variable "metric" {
   type    = string
   default = "MemoryPercentage"
 }
+
 variable "capacity_min" {
   type    = string
   default = "1"
