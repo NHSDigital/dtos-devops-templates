@@ -9,6 +9,7 @@ parameters:
   type: string
 
 steps:
+# Clean Build Directory
 - task: DeleteFiles@1
   displayName: 'Clean Build Directory'
   inputs:
@@ -20,19 +21,20 @@ steps:
       **/drop/*
     RemoveSourceFolder: false
 
-steps:
+# Decrypt Parquet File
 - script: |
     $sourcePath = "$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
 
     Write-Host "Source path: $sourcePath"
     # Check if the source directory exists
     if (!(Test-Path -Path $sourcePath)) {
-    Write-Error "Source directory not found: $sourcePath"
-    exit 1
+      Write-Error "Source directory not found: $sourcePath"
+      exit 1
     }
-  gpg --batch --yes --passphrase $(ENCRYPTION_PASSWORD) -o ADD_2_RECORDS_-_CAAS_BREAST_SCREENING_COHORT.parquet -d ADD_2_RECORDS_-_CAAS_BREAST_SCREENING_COHORT.parquet.gpg
-  displayName: Decrypt Parquet File
+    gpg --batch --yes --passphrase $(ENCRYPTION_PASSWORD) -o ADD_2_RECORDS_-_CAAS_BREAST_SCREENING_COHORT.parquet -d ADD_2_RECORDS_-_CAAS_BREAST_SCREENING_COHORT.parquet.gpg
+  displayName: 'Decrypt Parquet File'
 
+# Copy Test Files
 - task: PowerShell@2
   displayName: 'Copy Test Files'
   inputs:
@@ -62,6 +64,7 @@ steps:
       Write-Host "Files copied to target directory:"
       Get-ChildItem -Path $targetPath -Recurse | ForEach-Object { Write-Host $_.FullName }
 
+# Publish Test Files
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Test Files'
   inputs:
@@ -69,20 +72,24 @@ steps:
     ArtifactName: 'TestFiles'
     publishLocation: 'Container'
 
+# Export Identity Config
 - script: |
     export AZURE_IDENTITY_DISABLE_MANAGED_IDENTITY=true
   displayName: 'Export Identity Config'
 
+# Install Node.js
 - task: NodeTool@0
   displayName: 'Install Node.js'
   inputs:
     versionSpec: '22.x'
 
+# Install npm Dependencies
 - script: |
     npm install
   displayName: 'Install npm dependencies'
   workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
 
+# Run Playwright Tests
 - script: |
     echo "Current working directory:"
     pwd
@@ -100,6 +107,7 @@ steps:
     ENDPOINT_PARTICIPANT_MANAGEMENT_DATA_SERVICE: $(ENDPOINT_PARTICIPANT_MANAGEMENT_DATA_SERVICE)
     ENDPOINT_EXCEPTION_MANAGEMENT_DATA_SERVICE: $(ENDPOINT_EXCEPTION_MANAGEMENT_DATA_SERVICE)
 
+# Publish Playwright HTML Report
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Playwright Test Reports'
   inputs:
@@ -107,6 +115,7 @@ steps:
     ArtifactName: 'PlaywrightHTMLReport'
     publishLocation: 'Container'
 
+# Publish JUnit Test Results
 - task: PublishTestResults@2
   displayName: 'Publish JUnit Test Results'
   condition: succeededOrFailed()
