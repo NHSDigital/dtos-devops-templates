@@ -110,8 +110,23 @@ variable "metric_enabled" {
 
 variable "min_api_version" {
   type        = string
-  description = "Controls what logs will be enabled for apim"
+  description = "Controls the minimum API version to support for the API Management service."
   default     = "2021-08-01"
+  validation {
+    condition     = var.min_api_version == "2021-08-01"
+    error_message = "The min_api_version must be '2021-08-01'."
+  }
+  # validation {
+  #   condition = contains([
+  #     "2021-08-01",
+  #     "2020-12-01",
+  #     "2020-06-01",
+  #     "2019-12-01",
+  #     "2019-01-01",
+  #     "2018-06-01-preview",
+  #     "2017-03-01",
+  #   ], var.min_api_version) common and generally recommended min_api_version values listed.
+  error_message = "The min_api_version must be one of the following: 2021-08-01, 2020-12-01, 2020-06-01, 2019-12-01, 2019-01-01, 2018-06-01-preview, or 2017-03-01."
 }
 
 variable "monitor_diagnostic_setting_apim_enabled_logs" {
@@ -144,6 +159,10 @@ variable "public_ip_address_id" {
   description = "The ID of the public IP address to associate with the API Management service."
   type        = string
   default     = null
+  validation {
+    condition     = var.public_ip_address_id == null || can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}$", var.public_ip_address_id))
+    error_message = "The public_ip_address_id must be a valid IPv4 address (e.g., 192.168.1.1) or null."
+  }
 }
 
 variable "publisher_email" {
