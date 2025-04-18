@@ -1,5 +1,7 @@
 
 resource "azurerm_monitor_autoscale_setting" "asp_autoscale" {
+  count              = var.metric != "" ? 1 : 0
+
   name                = "${var.name}-autoscale"
   resource_group_name = var.resource_group_name
   location            = var.location
