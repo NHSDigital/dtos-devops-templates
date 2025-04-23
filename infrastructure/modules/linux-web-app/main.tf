@@ -94,7 +94,7 @@ resource "azurerm_app_service_custom_hostname_binding" "this" {
   app_service_name    = azurerm_linux_web_app.this.name
   resource_group_name = azurerm_linux_web_app.this.resource_group_name
 
-  depends_on          = [azurerm_dns_txt_record.validation]
+  depends_on = [azurerm_dns_txt_record.validation]
 
   # Ignore ssl_state and thumbprint as they are managed using azurerm_app_service_certificate_binding
   lifecycle {

@@ -74,7 +74,7 @@ if [[ ${#kv_names[@]} -eq 0 || -z "${email}" || -z "${subscription_id_target}" |
 fi
 
 # Temporary until version 4 is actually working with library josepy 2.0.0
-pip3 install 'certbot==2.11.1' certbot-dns-azure
+pip3 install 'certbot==3.3.0' certbot-dns-azure
 #pip3 install certbot certbot-dns-azure
 
 mkdir -p .terraform/certbot
@@ -84,17 +84,13 @@ echo "Attempting retrieval of stored certificate creation state..."
 az account set --subscription "${subscription_id_hub}"
 az storage blob download --account-name "${storage_account_name}" --container-name "${container_name}" --name "${environment}.zip" --file "./certbot_state.zip" --auth-mode login || true # continue on failure
 if [[ -e ./certbot_state.zip ]]; then
-    unzip -o ./certbot_state.zip
+    unzip -oq ./certbot_state.zip
     rm ./certbot_state.zip
     # reset canonical paths in renewal conf files to match the local environment
     sed -i "s#agent_workdir#${agent_workdir}#g" certbot/config/renewal/*.conf
 fi
 
 az account set --subscription "${subscription_id_target}"
-
-echo -e "\nCERTBOT_DNS.INI"
-cat certbot_dns.ini
-echo
 
 # Process each domain (certificate subject) serially
 while [[ $# -gt 0 ]]; do
@@ -140,7 +136,7 @@ done
 echo "Persisting certificate creation state to Azure Storage Account..."
 # reset canonical paths in renewal conf files to something predictable
 sed -i "s#${agent_workdir}#agent_workdir#g" certbot/config/renewal/*.conf
-zip -ry certbot_state.zip certbot/config certbot/logs
+zip -ryq certbot_state.zip certbot/config certbot/logs
 az account set --subscription "${subscription_id_hub}"
 az storage blob upload --account-name "${storage_account_name}" --container-name "${container_name}" --file "./certbot_state.zip" --name "${environment}.zip" --overwrite --auth-mode login
 
