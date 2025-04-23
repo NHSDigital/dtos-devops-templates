@@ -20,7 +20,7 @@ variable "email_receiver" {
     email_address           = string
     use_common_alert_schema = optional(bool, false)
   }))
-  default = {}
+  default = null
 }
 
 variable "event_hub_receiver" {
@@ -32,7 +32,7 @@ variable "event_hub_receiver" {
     subscription_id         = string
     use_common_alert_schema = bool
   }))
-  default = {}
+  default = null
 }
 
 variable "sms_receiver" {
@@ -42,7 +42,7 @@ variable "sms_receiver" {
     country_code = string
     phone_number = string
   }))
-  default = {}
+  default = null
 }
 
 variable "voice_receiver" {
@@ -52,7 +52,7 @@ variable "voice_receiver" {
     country_code = string
     phone_number = string
   }))
-  default = {}
+  default = null
 }
 
 variable "webhook_receiver" {
@@ -62,7 +62,7 @@ variable "webhook_receiver" {
     service_uri             = string
     use_common_alert_schema = bool
   }))
-  default = {}
+  default = null
 }
 
 variable "location" {

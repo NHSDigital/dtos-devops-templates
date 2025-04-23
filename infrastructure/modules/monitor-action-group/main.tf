@@ -4,7 +4,7 @@ resource "azurerm_monitor_action_group" "this" {
   short_name          = var.short_name
 
   dynamic "email_receiver" {
-    for_each = var.email_receiver != {} ? var.email_receiver : {}
+    for_each = var.email_receiver != null ? var.email_receiver : {}
     content {
       name                    = email_receiver.value.name
       email_address           = email_receiver.value.email_address
@@ -13,7 +13,7 @@ resource "azurerm_monitor_action_group" "this" {
   }
 
   dynamic "event_hub_receiver" {
-    for_each = var.event_hub_receiver != {} ? var.event_hub_receiver : {}
+    for_each = var.event_hub_receiver != null ? var.event_hub_receiver : {}
     content {
       name                    = event_hub_receiver.value.name
       event_hub_namespace     = event_hub_receiver.value.event_hub_namespace
@@ -24,7 +24,7 @@ resource "azurerm_monitor_action_group" "this" {
   }
 
   dynamic "sms_receiver" {
-    for_each = var.sms_receiver != {} ? var.sms_receiver : {}
+    for_each = var.sms_receiver != null ? var.sms_receiver : {}
     content {
       name         = sms_receiver.value.name
       country_code = sms_receiver.value.country_code
@@ -33,7 +33,7 @@ resource "azurerm_monitor_action_group" "this" {
   }
 
   dynamic "voice_receiver" {
-    for_each = var.voice_receiver != {} ? var.voice_receiver : {}
+    for_each = var.voice_receiver != null ? var.voice_receiver : {}
     content {
       name         = voice_receiver.value.name
       country_code = voice_receiver.value.country_code
@@ -42,7 +42,7 @@ resource "azurerm_monitor_action_group" "this" {
   }
 
   dynamic "webhook_receiver" {
-    for_each = var.webhook_receiver != {} ? var.webhook_receiver : {}
+    for_each = var.webhook_receiver != null ? var.webhook_receiver : {}
     content {
       name                    = webhook_receiver.value.name
       service_uri             = webhook_receiver.value.service_uri
