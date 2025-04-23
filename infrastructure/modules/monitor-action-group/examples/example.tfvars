@@ -1,3 +1,12 @@
+regions = {
+  uksouth = {
+    is_primary_region = true
+    address_space     = "10.113.0.0/16"
+    connect_peering   = false
+    subnets           = {}
+  }
+}
+
 monitor_action_group = {
 
   action_group_1 = {
@@ -25,7 +34,7 @@ monitor_action_group = {
         service_uri             = "http://example.com/alert1"
         use_common_alert_schema = false
       }
-      monitoring_stack = {
+      monitoring_alerts = {
         name                    = "webhook2"
         service_uri             = "http://example.com/slack"
         use_common_alert_schema = false
