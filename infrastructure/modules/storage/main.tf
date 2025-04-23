@@ -59,6 +59,31 @@ module "private_endpoint_blob_storage" {
   tags = var.tags
 }
 
+module "private_endpoint_table_storage" {
+  count = can(var.private_endpoint_properties.private_endpoint_enabled && var.private_endpoint_properties.private_dns_zone_ids_table != []) ? 1 : 0
+
+  source = "../private-endpoint"
+
+  name                = "${var.name}-table-private-endpoint"
+  resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
+  location            = var.location
+  subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
+
+  private_dns_zone_group = {
+    name                 = "${var.name}-table-private-endpoint-zone-group"
+    private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids_table
+  }
+
+  private_service_connection = {
+    name                           = "${var.name}-table-private-endpoint-connection"
+    private_connection_resource_id = azurerm_storage_account.storage_account.id
+    subresource_names              = ["table"]
+    is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
+  }
+
+  tags = var.tags
+}
+
 module "private_endpoint_queue_storage" {
   count = can(var.private_endpoint_properties.private_endpoint_enabled) ? 1 : 0
 
