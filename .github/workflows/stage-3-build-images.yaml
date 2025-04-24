@@ -287,20 +287,16 @@ jobs:
             echo "Processing repository: $repo_name"
 
             echo "  Checking for existing target tag: $SHORT_COMMIT_HASH"
-            target_tag_check_output=$(az acr repository show-manifests --name "$ACR_NAME" --repository "$repo_name" --query "[?tags.contains(@, '${SHORT_COMMIT_HASH}')]" --output tsv 2>&1)
-            target_tag_check_status=$? # Get exit status of the check command
+            target_tag_check_output=$(az acr manifest list-metadata --registry "$ACR_NAME" --name "$repo_name" --query "[?tags.contains(@, '${SHORT_COMMIT_HASH}')]" --output tsv 2>&1)
+            target_tag_check_status=$?
 
-            if [ $target_tag_check_status -ne 0 ]; then
-                echo "  ⚠️ Warning: Failed to check for existing target tag '$SHORT_COMMIT_HASH' for repo '$repo_name'. Error: $target_tag_check_output"
-                echo "  Proceeding to import attempt regardless..."
-            elif [ -n "$target_tag_check_output" ]; then
-                # Check command succeeded (exit status 0) AND output is non-empty, meaning tag exists
-                echo "  Target tag '$SHORT_COMMIT_HASH' already exists. Skipping import for this repository."
-                echo "---"
-                continue
+            if [ $target_tag_check_status -eq 0 ] && [ -n "$target_tag_check_output" ]; then
+              echo "  Target tag '$SHORT_COMMIT_HASH' already exists. Skipping import for this repository."
+              echo "---"
+              continue
             fi
 
-            echo "Target tag '$SHORT_COMMIT_HASH' not found or check failed. Attempting import: $source_image -> $target_image"
+            echo "  Proceeding with import attempt: $source_image -> $target_image"
 
             az acr import \
               --name "$ACR_NAME" \
