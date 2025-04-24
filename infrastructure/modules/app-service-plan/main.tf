@@ -1,5 +1,4 @@
 resource "azurerm_service_plan" "appserviceplan" {
-
   name                = var.name
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -21,10 +20,6 @@ resource "azurerm_app_service_virtual_network_swift_connection" "appservice_vnet
   subnet_id      = var.vnet_integration_subnet_id
 }
 
-/* --------------------------------------------------------------------------------------------------
-  Diagnostic Settings
--------------------------------------------------------------------------------------------------- */
-
 module "diagnostic-settings" {
   source = "../diagnostic-settings"
 
@@ -33,6 +28,4 @@ module "diagnostic-settings" {
   log_analytics_workspace_id = var.log_analytics_workspace_id
   #enabled_log                = var.enabled_log
   metric = var.monitor_diagnostic_setting_appserviceplan_metrics
-
 }
-

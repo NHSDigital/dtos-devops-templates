@@ -1,5 +1,7 @@
 data "azurerm_dns_zone" "lookup" {
-  name                = var.dns_zone_name
+  for_each = var.dns_zone_names
+
+  name                = each.value
   resource_group_name = var.dns_zone_resource_group_name
 }
 
