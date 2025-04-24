@@ -266,6 +266,7 @@ jobs:
 
         run: |
           echo "Attempting to tag all repositories in ACR $ACR_NAME with short commit hash: $SHORT_COMMIT_HASH"
+          echo "Source tag for import will be: $ENVIRONMENT_TAG"
 
           # Get list of repositories
           repo_list=$(az acr repository list --name "$ACR_NAME" --output tsv)
@@ -282,12 +283,12 @@ jobs:
 
           for repo_name in $repo_list; do
             source_image="${ACR_NAME}.azurecr.io/${repo_name}:${ENVIRONMENT_TAG}"
-            target_image="${ACR_NAME}.azurecr.io/${repo_name}:${SHORT_COMMIT_HASH}"
+            target_image="${repo_name}:${SHORT_COMMIT_HASH}"
 
             echo "Processing repository: $repo_name"
 
             echo "  Checking for existing target tag: $SHORT_COMMIT_HASH"
-            target_tag_check_output=$(az acr manifest list-metadata --registry "$ACR_NAME" --name "$repo_name" --query "[?tags.contains(@, '${SHORT_COMMIT_HASH}')]" --output tsv 2>&1)
+            target_tag_check_output=$(az acr manifest list-metadata --registry "$ACR_NAME" --name "$repo_name" --query "[?tags.contains(@, '${SHORT_COMMIT_HASH}')]" --output tsv)
             target_tag_check_status=$?
 
             if [ $target_tag_check_status -eq 0 ] && [ -n "$target_tag_check_output" ]; then
