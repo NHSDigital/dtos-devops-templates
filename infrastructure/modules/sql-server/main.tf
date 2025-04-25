@@ -20,7 +20,10 @@ resource "azurerm_mssql_server" "azure_sql_server" {
   }
 
   lifecycle {
-    ignore_changes = [tags]
+    ignore_changes = [
+      tags,
+      express_vulnerability_assessment_enabled
+    ]
   }
 }
 
