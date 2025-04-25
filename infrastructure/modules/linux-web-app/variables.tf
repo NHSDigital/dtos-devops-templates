@@ -47,6 +47,11 @@ variable "docker_image_name" {
   default = ""
 }
 
+variable "entra_id_group_ids" {
+  type    = list(string)
+  default = []
+}
+
 variable "ftp_publish_basic_authentication_enabled" {
   type        = bool
   description = "Enable basic authentication for FTP. Defaults to false."
