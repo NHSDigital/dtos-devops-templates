@@ -1,6 +1,4 @@
-
 resource "azurerm_mssql_database" "defaultdb" {
-
   name                 = var.db_name_suffix # using only the suffix, as this is the naming convention from DToS Devs
   server_id            = azurerm_mssql_server.azure_sql_server.id
   collation            = var.collation
@@ -42,11 +40,12 @@ resource "azurerm_mssql_database" "defaultdb" {
   }
 }
 
+
 /* --------------------------------------------------------------------------------------------------
   SQL Database Diagnostic Settings
 -------------------------------------------------------------------------------------------------- */
-module "azurerm_monitor_diagnostic_setting_db" {
 
+module "azurerm_monitor_diagnostic_setting_db" {
   source = "../diagnostic-settings"
 
   name                       = "${var.name}-database-diagnostic-settings"
@@ -56,9 +55,11 @@ module "azurerm_monitor_diagnostic_setting_db" {
   metric                     = var.monitor_diagnostic_setting_database_metrics
 }
 
+
 /* --------------------------------------------------------------------------------------------------
   SQL Database Configuration and Auditing Policy
 -------------------------------------------------------------------------------------------------- */
+
 resource "azurerm_mssql_database_extended_auditing_policy" "database_auditing_policy" {
   count = var.database_extended_auditing_policy_enabled ? 1 : 0
 

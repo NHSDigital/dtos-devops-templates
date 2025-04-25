@@ -94,9 +94,11 @@ variable "tlsver" {
   default     = 1.2
 }
 
+
 /* --------------------------------------------------------------------------------------------------
   Database Variables
 -------------------------------------------------------------------------------------------------- */
+
 variable "collation" {
   type        = string
   description = "Specifies the collation of the database. Changing this forces a new resource to be created."
@@ -179,6 +181,7 @@ variable "log_monitoring_enabled" {
   default     = true
 }
 
+
 /* --------------------------------------------------------------------------------------------------
   Auditing and Diagnostics Variables - Database
 -------------------------------------------------------------------------------------------------- */
@@ -203,6 +206,7 @@ variable "monitor_diagnostic_setting_database_metrics" {
   type        = list(string)
   description = "Controls what metrics will be enabled for the database"
 }
+
 
 /* --------------------------------------------------------------------------------------------------
   Auditing and Diagnostics Variables - Server

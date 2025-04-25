@@ -1,5 +1,4 @@
-resource "azurerm_linux_web_app" "linux_web_app" {
-
+resource "azurerm_linux_web_app" "this" {
   name                = var.linux_web_app_name
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -68,6 +67,50 @@ resource "azurerm_linux_web_app" "linux_web_app" {
   tags = var.tags
 }
 
+
+/* --------------------------------------------------------------------------------------------------
+  Custom Domain and Certificate Bindings
+-------------------------------------------------------------------------------------------------- */
+
+resource "azurerm_dns_txt_record" "validation" {
+  for_each = toset(var.custom_domains)
+
+  provider = azurerm.hub # Terraform Managed Identity will need DNS Contributor RBAC role on the DNS Zone
+
+  name                = "asuid.${split(".", each.key)[0]}"
+  zone_name           = replace(each.key, "${split(".", each.key)[0]}.", "")
+  resource_group_name = var.public_dns_zone_rg_name
+  ttl                 = 300
+
+  record {
+    value = azurerm_linux_web_app.this.custom_domain_verification_id
+  }
+}
+
+resource "azurerm_app_service_custom_hostname_binding" "this" {
+  for_each = toset(var.custom_domains)
+
+  hostname            = each.key
+  app_service_name    = azurerm_linux_web_app.this.name
+  resource_group_name = azurerm_linux_web_app.this.resource_group_name
+
+  depends_on = [azurerm_dns_txt_record.validation]
+
+  # Ignore ssl_state and thumbprint as they are managed using azurerm_app_service_certificate_binding
+  lifecycle {
+    ignore_changes = [ssl_state, thumbprint]
+  }
+}
+
+resource "azurerm_app_service_certificate_binding" "this" {
+  for_each = toset(var.custom_domains)
+
+  hostname_binding_id = azurerm_app_service_custom_hostname_binding.this[each.key].id
+  certificate_id      = var.wildcard_ssl_cert_id
+  ssl_state           = "SniEnabled"
+}
+
+
 /* --------------------------------------------------------------------------------------------------
   Private Endpoint Configuration
 -------------------------------------------------------------------------------------------------- */
@@ -89,7 +132,7 @@ module "private_endpoint" {
 
   private_service_connection = {
     name                           = "${var.linux_web_app_name}-private-endpoint-connection"
-    private_connection_resource_id = azurerm_linux_web_app.linux_web_app.id
+    private_connection_resource_id = azurerm_linux_web_app.this.id
     subresource_names              = ["sites"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
   }
@@ -107,7 +150,7 @@ module "linux_web_app_slots" {
   source = "../linux-web-app-slots"
 
   name                        = each.value.linux_web_app_slots_name
-  linux_web_app_id            = azurerm_linux_web_app.linux_web_app.id
+  linux_web_app_id            = azurerm_linux_web_app.this.id
   linux_web_app_slots_enabled = each.value.linux_web_app_slots_enabled
 
   storage_account_access_key = var.storage_account_access_key
@@ -128,7 +171,7 @@ module "diagnostic-settings" {
   source = "../diagnostic-settings"
 
   name                       = "${var.linux_web_app_name}-diagnostic-setting"
-  target_resource_id         = azurerm_linux_web_app.linux_web_app.id
+  target_resource_id         = azurerm_linux_web_app.this.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_log                = var.monitor_diagnostic_setting_linux_web_app_enabled_logs
   metric                     = var.monitor_diagnostic_setting_linux_web_app_metrics

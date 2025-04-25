@@ -18,8 +18,18 @@ locals {
         public  = lower("feip-pub-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
       probe_name = {
-        apim_gateway = lower("apim-gateway-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
-        apim_portal  = lower("apim-portal-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_gateway   = lower("apim-gateway-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        apim_portal    = lower("apim-portal-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_dev = lower("cohman-www-dev-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_nft = lower("cohman-www-nft-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_int = lower("cohman-www-int-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_pre = lower("cohman-www-pre-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        cohman_www_prd = lower("cohman-www-prd-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_dev = lower("parman-www-dev-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_nft = lower("parman-www-nft-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_int = lower("parman-www-int-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_pre = lower("parman-www-pre-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
+        parman_www_prd = lower("parman-www-prd-probe-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
       backend_address_pool_name = {
         apim_gateway   = lower("apim-gateway-beap-${var.env}-${var.location_map[var.location]}-${var.application}")
@@ -51,8 +61,10 @@ locals {
         parman_www_prd = lower("parman-www-prd-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
       ssl_certificate_name = {
-        private = "lets-encrypt-wildcard-private"
-        public  = "lets-encrypt-wildcard-public"
+        nationalscreening_private = "lets-encrypt-nationalscreening-wildcard-private"
+        nationalscreening_public  = "lets-encrypt-nationalscreening-wildcard-public"
+        screening_private         = "lets-encrypt-screening-wildcard-private"
+        screening_public          = "lets-encrypt-screening-wildcard-public"
       }
       http_listener_name = {
         apim_gateway_public   = lower("apim-gateway-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")

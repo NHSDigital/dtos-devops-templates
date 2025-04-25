@@ -9,7 +9,7 @@ variable "acr_mi_client_id" {
 
 variable "always_on" {
   type        = bool
-  description = "Should the Function App be always on. Override standard default."
+  description = "Should the Web App be always on. Override standard default."
   default     = true
 }
 
@@ -25,7 +25,7 @@ variable "asp_id" {
 
 variable "assigned_identity_ids" {
   type        = list(string)
-  description = "The list of User Assigned Identity IDs to assign to the Function App."
+  description = "The list of User Assigned Identity IDs to assign to the Web App."
 }
 
 variable "cont_registry_use_mi" {
@@ -34,12 +34,22 @@ variable "cont_registry_use_mi" {
 
 variable "cors_allowed_origins" {
   type    = list(string)
-  default = [""]
+  default = []
+}
+
+variable "custom_domains" {
+  type    = list(string)
+  default = []
 }
 
 variable "docker_image_name" {
   type    = string
   default = ""
+}
+
+variable "entra_id_group_ids" {
+  type    = list(string)
+  default = []
 }
 
 variable "ftp_publish_basic_authentication_enabled" {
@@ -108,12 +118,12 @@ variable "http_version" {
 
 variable "https_only" {
   type        = bool
-  description = "Can the Function App only be accessed via HTTPS? Override standard default."
+  description = "Can the Web App only be accessed via HTTPS? Override standard default."
   default     = true
 }
 
 variable "linux_web_app_name" {
-  description = "Name of the Function App"
+  description = "Name of the Web App"
 }
 
 variable "linux_web_app_slots" {
@@ -127,7 +137,7 @@ variable "linux_web_app_slots" {
 
 variable "location" {
   type        = string
-  description = "The location/region where the Function App is created."
+  description = "The location/region where the Web App is created."
 }
 
 variable "log_analytics_workspace_id" {
@@ -156,7 +166,7 @@ variable "monitor_diagnostic_setting_linux_web_app_metrics" {
 }
 
 variable "private_endpoint_properties" {
-  description = "Consolidated properties for the Function App Private Endpoint."
+  description = "Consolidated properties for the Web App Private Endpoint."
   type = object({
     private_dns_zone_ids                 = optional(list(string), [])
     private_endpoint_enabled             = optional(bool, false)
@@ -171,9 +181,15 @@ variable "private_endpoint_properties" {
   }
 }
 
+variable "public_dns_zone_rg_name" {
+  type        = string
+  description = "Name of the Resource Group containing the public DNS zones in the Hub subscription."
+  default     = null
+}
+
 variable "public_network_access_enabled" {
   type        = bool
-  description = "Should the Function App be accessible from the public network. Override standard default."
+  description = "Should the Web App be accessible from the public network. Override standard default."
   default     = false
 }
 
@@ -187,7 +203,7 @@ variable "rbac_role_assignments" {
 
 variable "resource_group_name" {
   type        = string
-  description = "The name of the resource group in which to create the Function App. Changing this forces a new resource to be created."
+  description = "The name of the resource group in which to create the Web App. Changing this forces a new resource to be created."
 }
 
 variable "storage_account_access_key" {
@@ -228,7 +244,7 @@ variable "tags" {
 
 variable "vnet_integration_subnet_id" {
   type        = string
-  description = "The ID of the subnet to integrate the Function App with."
+  description = "The ID of the subnet to integrate the Web App with."
   default     = null
 }
 
@@ -238,7 +254,13 @@ variable "webdeploy_publish_basic_authentication_enabled" {
   default     = false
 }
 
+variable "wildcard_ssl_cert_id" {
+  type        = string
+  description = "The ID of the wildcard SSL certificate associated to the App Service Plan, used for Custom Domain binding."
+  default     = null
+}
+
 variable "worker_32bit" {
   type        = bool
-  description = "Should the Windows Function App use a 32-bit worker process. Defaults to true"
+  description = "Should the Windows Web App use a 32-bit worker process. Defaults to true"
 }

@@ -1,5 +1,4 @@
 resource "azurerm_mssql_server" "azure_sql_server" {
-
   name                = var.name
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -21,13 +20,18 @@ resource "azurerm_mssql_server" "azure_sql_server" {
   }
 
   lifecycle {
-    ignore_changes = [tags]
+    ignore_changes = [
+      tags,
+      express_vulnerability_assessment_enabled
+    ]
   }
 }
+
 
 /* --------------------------------------------------------------------------------------------------
   SQL Server Firewall
 -------------------------------------------------------------------------------------------------- */
+
 resource "azurerm_mssql_firewall_rule" "firewall_rule" {
   for_each = var.firewall_rules
 
@@ -37,9 +41,11 @@ resource "azurerm_mssql_firewall_rule" "firewall_rule" {
   end_ip_address   = each.value.end_ip
 }
 
+
 /* --------------------------------------------------------------------------------------------------
   Private Endpoint Configuration for SQL Server
 -------------------------------------------------------------------------------------------------- */
+
 module "private_endpoint_sql_server" {
   count = can(var.private_endpoint_properties.private_endpoint_enabled) ? 1 : 0
 
@@ -65,11 +71,12 @@ module "private_endpoint_sql_server" {
   tags = var.tags
 }
 
+
 /* --------------------------------------------------------------------------------------------------
   SQL Server Diagnostic Settings
 -------------------------------------------------------------------------------------------------- */
-module "diagnostic_setting_sql_server" {
 
+module "diagnostic_setting_sql_server" {
   source = "../diagnostic-settings"
 
   name                       = "${var.name}-sql-server-diagnotic-setting"
@@ -82,11 +89,12 @@ module "diagnostic_setting_sql_server" {
   depends_on = [azurerm_mssql_database.defaultdb]
 }
 
+
 /* --------------------------------------------------------------------------------------------------
   SQL Server Extended Auditing Policy
 -------------------------------------------------------------------------------------------------- */
-resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
 
+resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
   server_id              = azurerm_mssql_server.azure_sql_server.id
   log_monitoring_enabled = var.log_monitoring_enabled
   retention_in_days      = var.auditing_policy_retention_in_days
@@ -96,11 +104,12 @@ resource "azurerm_mssql_server_extended_auditing_policy" "azure_sql_server" {
   ]
 }
 
+
 /* --------------------------------------------------------------------------------------------------
   Security Alert Policy for SQL Server
 -------------------------------------------------------------------------------------------------- */
-resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" {
 
+resource "azurerm_mssql_server_security_alert_policy" "sql_server_alert_policy" {
   server_name         = azurerm_mssql_server.azure_sql_server.name
   resource_group_name = var.resource_group_name
   state               = var.sql_server_alert_policy_state
