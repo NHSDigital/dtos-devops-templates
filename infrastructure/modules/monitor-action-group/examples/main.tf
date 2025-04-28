@@ -32,3 +32,4 @@ locals {
     for object in local.monitor_action_group_object_list : "${object.action_group_key}-${object.region}" => object
   }
 }
+
