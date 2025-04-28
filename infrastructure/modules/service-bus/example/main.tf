@@ -33,3 +33,4 @@ locals {
     for object in local.azure_service_bus_object_list : "${object.service_bus_key}-${object.region}" => object
   }
 }
+

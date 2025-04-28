@@ -26,3 +26,4 @@ resource "azurerm_servicebus_topic" "this" {
   support_ordering                        = each.value.support_ordering
   status                                  = each.value.status
 }
+
