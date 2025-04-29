@@ -11,3 +11,15 @@ output "key_vault_certificates" {
     }
   }
 }
+
+output "key_vault_certificate_pfx_blobs" {
+  value = {
+    for k, v in local.letsencrypt_certs_map : k => {
+      name                  = v.cert_key
+      subject               = v.cert_subject
+      location              = v.region
+      id                    = data.azurerm_key_vault_secret.pfx_blob[k].id
+      versionless_id        = data.azurerm_key_vault_secret.pfx_blob[k].versionless_id
+    }
+  }
+}
