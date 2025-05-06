@@ -16,7 +16,7 @@ terraform.tfstate.backup
 *.code-workspace
 !project.code-workspace
 
-**/__azurerite_db*git rm --cached __azurite_db*
+**/__azurerite_db*
 
 # Please, add your custom content below!
 
