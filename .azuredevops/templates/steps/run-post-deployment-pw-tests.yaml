@@ -7,6 +7,9 @@ parameters:
   type: string
 - name: testfileDirectory
   type: string
+- name: slackWebHook
+  type: string
+  default: ''
 
 steps:
 - task: DeleteFiles@1
@@ -99,7 +102,22 @@ steps:
   condition: succeededOrFailed()
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml'
+    testResultsFiles: $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
     failTaskOnFailedTests: true
     mergeTestResults: true
     publishRunAttachments: true
+
+- task: PythonScript@0
+  displayName: 'Run Python Script'
+  condition: and(succeededOrFailed(), ne('${{ parameters.slackWebHook }}', ''))
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: '$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py'
+    arguments: >
+      -env $(ENVIRONMENT)
+      --report_path $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
+      --build_url $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)
+      -d $(Build.BuildId)
+      -m $(Build.BuildNumber)
+      -u $(Build.RequestedFor)'
+      -webhook ${{ parameters.slackWebHook }}

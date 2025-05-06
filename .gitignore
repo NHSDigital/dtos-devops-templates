@@ -16,4 +16,74 @@ terraform.tfstate.backup
 *.code-workspace
 !project.code-workspace
 
+**/__azurerite_db*git rm --cached __azurite_db*
+
 # Please, add your custom content below!
+
+#
+# PYTHON RELATED THINGIES
+#********************************
+
+# JUnit test files
+results.xml
+
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+
+# Python Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Python Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.python-version
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+
+# Pyre
+.pyre/
+
+# Pylint
+.pylint.d/
+
+# Profiling
+.prof
+
+#********************************
+
+
