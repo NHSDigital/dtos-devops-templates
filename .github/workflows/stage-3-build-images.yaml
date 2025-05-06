@@ -246,6 +246,19 @@ jobs:
     permissions:
       id-token: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          # to allow git diff between HEAD and the previous commit to main branch
+          fetch-depth: 2
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout dtos-devops-templates repository
+        uses: actions/checkout@v4
+        with:
+          repository: NHSDigital/dtos-devops-templates
+          path: templates
+          ref: main
+
       - name: Az CLI login
         if: github.ref == 'refs/heads/main'
         uses: azure/login@v2
