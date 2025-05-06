@@ -9,33 +9,88 @@ logger.setLevel(logging.INFO)
 
 import argparse
 
+
 def str_to_bool(val):
     val = str(val).lower()
     true_vals = {"yes", "true", "t", "1"}
     false_vals = {"no", "false", "f", "0"}
 
-    if val in true_vals: return True
-    if val in false_vals: return False
+    if val in true_vals:
+        return True
+    if val in false_vals:
+        return False
 
     raise argparse.ArgumentTypeError("Boolean value expected (true/false).")
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Send Slack notifications for post-deployment test results or deployments."
     )
 
-    parser.add_argument("-b", "--build_url", help="The URL of the completed build and artifacts.", required=False)
-    parser.add_argument("-e", "--env", help="The environment related to the build and artifacts.", required=False)
-    parser.add_argument("-p", "--source", help="The pipeline source containing the build and artifacts.", required=False)
-    parser.add_argument("-r", "--report_path", help="Path to the test report file (e.g., JUnit XML).", required=False)
-    parser.add_argument("-s", "--success", help="Flag to indicate test success (overrides report parsing).", default=None, type=str_to_bool, nargs='?', const=True, )
-    parser.add_argument("-d", "--deploy_id", help="The ID of the deployment associated with this test run.", required=False)
-    parser.add_argument("-m", "--deploy_date", help="The date and time the deployment started.", required=False)
-    parser.add_argument("-u", "--deploy_user", help="The user who initiated/triggered the deployment.", required=False)
-    parser.add_argument("-v", "--verbose", help="Enable verbose output.", action="store_true")
-    parser.add_argument("-w", "--webhook", help="The URL of a WebHook instance in Slack.", required=False)
+    parser.add_argument(
+        "-b",
+        "--build_url",
+        help="The URL of the completed build and artifacts.",
+        required=False,
+    )
+    parser.add_argument(
+        "-e",
+        "--env",
+        help="The environment related to the build and artifacts.",
+        required=False,
+    )
+    parser.add_argument(
+        "-p",
+        "--source",
+        help="The pipeline source containing the build and artifacts.",
+        required=False,
+    )
+    parser.add_argument(
+        "-r",
+        "--report_path",
+        help="Path to the test report file (e.g., JUnit XML).",
+        required=False,
+    )
+    parser.add_argument(
+        "-s",
+        "--success",
+        help="Flag to indicate test success (overrides report parsing).",
+        default=None,
+        type=str_to_bool,
+        nargs="?",
+        const=True,
+    )
+    parser.add_argument(
+        "-d",
+        "--deploy_id",
+        help="The ID of the deployment associated with this test run.",
+        required=False,
+    )
+    parser.add_argument(
+        "-m",
+        "--deploy_date",
+        help="The date and time the deployment started.",
+        required=False,
+    )
+    parser.add_argument(
+        "-u",
+        "--deploy_user",
+        help="The user who initiated/triggered the deployment.",
+        required=False,
+    )
+    parser.add_argument(
+        "-v", "--verbose", help="Enable verbose output.", action="store_true"
+    )
+    parser.add_argument(
+        "-w",
+        "--webhook",
+        help="The URL of a WebHook instance in Slack.",
+        required=False,
+    )
 
     return parser.parse_args()
+
 
 def main(argv):
 
@@ -54,11 +109,15 @@ def main(argv):
         print(f"[VERBOSE] Webhook URL: {webhook_url}")
 
     if not webhook_url:
-        print("❌ SLACK_WEBHOOK_URL is either not set as an environment variable or was not passed via the '--webhook' parameter.")
+        print(
+            "❌ SLACK_WEBHOOK_URL is either not set as an environment variable or was not passed via the '--webhook' parameter."
+        )
         sys.exit(1)
 
     if not args.report_path:
-        print("❌ The 'REPORT_PATH' variable was not set so not test results notification will be sent. Provide a valid path to a JUnit test results file and try again.")
+        print(
+            "❌ The 'REPORT_PATH' variable was not set so not test results notification will be sent. Provide a valid path to a JUnit test results file and try again."
+        )
         sys.exit(1)
 
     slack = SlackWebhookBot(webhook_url)
@@ -92,14 +151,16 @@ def parse_junit_results(path) -> Dict:
             "failures": failures,
             "errors": errors,
             "skipped": skipped,
-            "pass_rate": pass_rate
+            "pass_rate": pass_rate,
         }
     except ET.ParseError as e:
         print(f"Failure while parsing the test results XML file: {e}")
     except FileNotFoundError:
         print(f"Test results not found at '{path}'")
     except Exception as e:
-        print(f"An unexpected error occurred while parsing the test results XML file: {e}")
+        print(
+            f"An unexpected error occurred while parsing the test results XML file: {e}"
+        )
 
     return {
         "total": 0,
@@ -107,7 +168,7 @@ def parse_junit_results(path) -> Dict:
         "failures": 0,
         "errors": 0,
         "skipped": 0,
-        "pass_rate": 0.0
+        "pass_rate": 0.0,
     }
 
 
