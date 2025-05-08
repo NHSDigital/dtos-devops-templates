@@ -7,5 +7,5 @@ output "app_service_plan_id" {
 }
 
 output "wildcard_ssl_cert_id" {
-  value = var.wildcard_ssl_cert_pfx_blob != null ? azurerm_app_service_certificate.wildcard[0].id : null
+  value = var.wildcard_ssl_cert_pfx_blob_key_vault_secret_name != null ? azurerm_app_service_certificate.wildcard[0].id : null
 }
