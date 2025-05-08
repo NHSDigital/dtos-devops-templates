@@ -123,6 +123,7 @@ steps:
     fi
   displayName: "Check for SlackIntegrator.py"
   name: checkScriptPath
+  condition: succeededOrFailed()
 
 - script: |
     if [ -n "${SLACK_WEBHOOK:-}" ]; then
@@ -134,6 +135,7 @@ steps:
     fi
     echo "URL source: $URL_SOURCE"
   displayName: "Resolve Slack Webhook URL"
+  condition: succeededOrFailed()
 
 - task: PythonScript@0
   displayName: 'Run Python Script (notify Slack)'
