@@ -6,7 +6,7 @@ resource "azurerm_app_service_certificate" "wildcard" {
   location            = var.location
 
   app_service_plan_id = azurerm_service_plan.appserviceplan.id
-  pfx_blob            = data.azurerm_key_vault_secret.pfx_blob.value
+  pfx_blob            = data.azurerm_key_vault_secret.pfx_blob[0].value
 }
 
 data "azurerm_key_vault_secret" "pfx_blob" {
