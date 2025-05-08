@@ -139,7 +139,8 @@ steps:
   displayName: 'Run Python Script (notify Slack)'
   condition: and(
     and(succeededOrFailed(), ne('$(envSlackWebhook)', '')),
-    eq(dependencies.checkScriptPath.outputs['checkScriptPath.hasFile'], 'true'))
+    eq(variables['hasFile'], 'true')
+    )
   env:
     slackWebHook: $(envSlackWebhook)
   inputs:
