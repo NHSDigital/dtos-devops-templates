@@ -11,6 +11,9 @@ parameters:
   type: string
   default: ''
 
+variables:
+  slackWebHook: $[ coalesce(variables['SLACK_WEBHOOK'], parameters.slackWebHook) ]
+
 steps:
 - task: DeleteFiles@1
   displayName: 'Clean Build Directory'
@@ -108,8 +111,8 @@ steps:
     publishRunAttachments: true
 
 - task: PythonScript@0
-  displayName: 'Run Python Script'
-  condition: and(succeededOrFailed(), ne('${{ parameters.slackWebHook }}', ''))
+  displayName: 'Run Python Script (notify Slack)'
+  condition: and(succeededOrFailed(), ne('$(slackWebHook)', ''))
   inputs:
     scriptSource: 'filePath'
     scriptPath: '$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py'
@@ -120,4 +123,4 @@ steps:
       -d $(Build.BuildId)
       -m $(Build.BuildNumber)
       -u $(Build.RequestedFor)'
-      -webhook ${{ parameters.slackWebHook }}
+      -webhook $(slackWebHook)
