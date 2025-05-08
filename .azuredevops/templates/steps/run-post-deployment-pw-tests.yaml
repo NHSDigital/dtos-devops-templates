@@ -109,14 +109,11 @@ steps:
 
 - checkout: dtos-devops-templates
   name: Checkout Scripts folder
-  path: templates
   fetchDepth: 1
-  sparseCheckout:
-    paths:
-    - scripts/
+  sparseCheckoutDirectories: scripts
 
 - script: |
-    SCRIPT_PATH="$(Build.SourcesDirectory)/templates/scripts/integrations/slack/SlackIntegrator.py"
+    SCRIPT_PATH="$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py"
 
     if [ ! -f "$SCRIPT_PATH" ]; then
       echo "Error: SlackIntegrator script file not found at $SCRIPT_PATH"
@@ -155,7 +152,7 @@ steps:
     slackWebHook: $(envSlackWebhook)
   inputs:
     scriptSource: 'filePath'
-    scriptPath: '$(Build.SourcesDirectory)/templates/scripts/integrations/slack/SlackIntegrator.py'
+    scriptPath: '$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py'
     arguments: >
       -env $(ENVIRONMENT)
       --report_path $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
