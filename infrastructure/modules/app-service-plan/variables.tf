@@ -53,6 +53,12 @@ variable "vnet_integration_subnet_id" {
   default     = ""
 }
 
+variable "wildcard_ssl_cert_name" {
+  type        = string
+  description = "Wildcard SSL certificate name as it will appear in the App Service binding, for Custom Domain binding."
+  default     = null
+}
+
 variable "wildcard_ssl_cert_pfx_blob_key_vault_secret_name" {
   type        = string
   description = "Wildcard SSL certificate pfx blob Key Vault secret name, for Custom Domain binding."
