@@ -126,8 +126,10 @@ while [[ $# -gt 0 ]]; do
             echo "Certificate ${cert_name} with thumbprint ${thumbprint_local} already exists in Key Vault ${kv_name}, skipping import..."
         else
             echo "Importing certificate ${cert_name} into Key Vault ${kv_name}..."
-            openssl pkcs12 -export -inkey certbot/config/live/${trimmed_domain}/privkey.pem -in certbot/config/live/${trimmed_domain}/fullchain.pem -out ${trimmed_domain}.pfx -password pass:
+            openssl pkcs12 -export -inkey certbot/config/live/${trimmed_domain}/privkey.pem -in certbot/config/live/${trimmed_domain}/cert.pem -certfile certbot/config/live/${trimmed_domain}/chain.pem -out ${trimmed_domain}.pfx -password pass:
             az keyvault certificate import --vault-name "${kv_name}" --name "${cert_name}" --file "${trimmed_domain}.pfx" --password ""
+            # Also upload the certificate pfx blob since App Services cannot currently reference elliptic curve certificates as Key Vault Certificate objects
+            az keyvault secret set --vault-name "${kv_name}" --name "pfx-${cert_name}" --file "${trimmed_domain}.pfx" --encoding base64 --content-type "application/x-pkcs12"
         fi
     done
     [[ -e "${trimmed_domain}.pfx" ]] && rm "${trimmed_domain}.pfx"

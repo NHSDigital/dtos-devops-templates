@@ -53,9 +53,15 @@ variable "vnet_integration_subnet_id" {
   default     = ""
 }
 
-variable "wildcard_ssl_cert_key_vault_secret_id" {
+variable "wildcard_ssl_cert_name" {
   type        = string
-  description = "Wildcard SSL certificate Key Vault secret id, for App Service Custom Domain binding."
+  description = "Wildcard SSL certificate name as it will appear in the App Service binding, for Custom Domain binding."
+  default     = null
+}
+
+variable "wildcard_ssl_cert_pfx_blob_key_vault_secret_name" {
+  type        = string
+  description = "Wildcard SSL certificate pfx blob Key Vault secret name, for Custom Domain binding."
   default     = null
 }
 
@@ -64,13 +70,6 @@ variable "wildcard_ssl_cert_key_vault_id" {
   description = "Wildcard SSL certificate Key Vault id, needed if the Key Vault is in a different subscription."
   default     = null
 }
-
-variable "wildcard_ssl_cert_name" {
-  type        = string
-  description = "Wildcard SSL certificate name, for Custom Domain binding."
-  default     = null
-}
-
 
 ## autoscale rule ##
 
