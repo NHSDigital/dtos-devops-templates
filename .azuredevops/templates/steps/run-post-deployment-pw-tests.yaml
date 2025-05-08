@@ -108,11 +108,27 @@ steps:
     publishRunAttachments: true
 
 - script: |
+    SCRIPT_PATH="$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py"
+
+    if [ ! -f "$SCRIPT_PATH" ]; then
+      echo "Error: SlackIntegrator script file not found at $SCRIPT_PATH"
+      echo "##vso[task.logissue type=error]Script file not found at $SCRIPT_PATH"
+      echo "Please consider running a checkout on the repository at a given commit ID."
+      exit 1
+    else
+      echo "Script file found: $SCRIPT_PATH"
+    fi
+  displayName: "Check for SlackIntegrator.py"
+
+- script: |
     if [ -n "$(SLACK_WEBHOOK)" ]; then
       echo "##vso[task.setvariable variable=envSlackWebhook]$(SLACK_WEBHOOK)"
+      URL_SOURCE="Environment"
     else
       echo "##vso[task.setvariable variable=envSlackWebhook]${{ parameters.slackWebHook }}"
+      URL_SOURCE="Parameters"
     fi
+    echo "URL source: $URL_SOURCE"
   displayName: "Resolve Slack Webhook URL"
 
 - task: PythonScript@0
