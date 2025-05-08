@@ -53,18 +53,17 @@ variable "vnet_integration_subnet_id" {
   default     = ""
 }
 
-variable "wildcard_ssl_cert_name" {
+variable "wildcard_ssl_cert_pfx_blob_key_vault_secret_name" {
   type        = string
-  description = "Wildcard SSL certificate name, for Custom Domain binding."
+  description = "Wildcard SSL certificate pfx blob Key Vault secret name, for Custom Domain binding."
   default     = null
 }
 
-variable "wildcard_ssl_cert_pfx_blob" {
+variable "wildcard_ssl_cert_key_vault_id" {
   type        = string
-  description = "Wildcard SSL certificate pfx blob, for Custom Domain binding. Referencing an elliptic curve certificate from Key Vault is not working currently."
+  description = "Wildcard SSL certificate Key Vault id, needed if the Key Vault is in a different subscription."
   default     = null
 }
-
 
 ## autoscale rule ##
 
