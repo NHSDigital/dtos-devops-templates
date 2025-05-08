@@ -114,14 +114,18 @@ steps:
       echo "Error: SlackIntegrator script file not found at $SCRIPT_PATH"
       echo "##vso[task.logissue type=error]Script file not found at $SCRIPT_PATH"
       echo "Please consider running a checkout on the repository at a given commit ID."
-      exit 1
+
+      echo "##vso[task.setvariable variable=hasFile;isOutput=true]false"
     else
       echo "Script file found: $SCRIPT_PATH"
+
+      echo "##vso[task.setvariable variable=hasFile;isOutput=true]true"
     fi
   displayName: "Check for SlackIntegrator.py"
+  name: checkScriptPath
 
 - script: |
-    if [ -n "$(SLACK_WEBHOOK)" ]; then
+    if [ -n "${SLACK_WEBHOOK:-}" ]; then
       echo "##vso[task.setvariable variable=envSlackWebhook]$(SLACK_WEBHOOK)"
       URL_SOURCE="Environment"
     else
@@ -133,7 +137,9 @@ steps:
 
 - task: PythonScript@0
   displayName: 'Run Python Script (notify Slack)'
-  condition: and(succeededOrFailed(), ne('$(envSlackWebhook)', ''))
+  condition: and(
+    and(succeededOrFailed(), ne('$(envSlackWebhook)', '')),
+    eq(dependencies.checkScriptPath.outputs['checkScriptPath.hasFile'], 'true'))
   env:
     slackWebHook: $(envSlackWebhook)
   inputs:
