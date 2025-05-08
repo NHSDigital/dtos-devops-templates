@@ -111,6 +111,7 @@ steps:
   displayName: Checkout Scripts folder
   fetchDepth: 1
   sparseCheckoutDirectories: scripts
+  condition: succeededOrFailed()
 
 - script: |
     SCRIPT_PATH="$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py"
