@@ -108,7 +108,7 @@ steps:
     publishRunAttachments: true
 
 - checkout: dtos-devops-templates
-  name: Checkout Scripts folder
+  displayName: Checkout Scripts folder
   fetchDepth: 1
   sparseCheckoutDirectories: scripts
 
