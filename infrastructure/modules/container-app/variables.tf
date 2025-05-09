@@ -24,6 +24,12 @@ variable "app_key_vault_id" {
   default     = null
 }
 
+variable "fetch_secrets_from_app_key_vault" {
+  description = "Fetch secrets from the app key vault and map them to secret environment variables. If true, app_key_vault_id must be provided."
+  type        = bool
+  default     = false
+}
+
 variable "docker_image" {
   description = "Docker image and tag. Format: <registry>/<repository>:<tag>"
   type        = string

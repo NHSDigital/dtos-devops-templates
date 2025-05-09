@@ -6,7 +6,7 @@
 # }
 
 data "azurerm_key_vault_secrets" "app" {
-  count = var.app_key_vault_id != null ? 1 : 0
+  count = var.fetch_secrets_from_app_key_vault ? 1 : 0
 
   key_vault_id = var.app_key_vault_id
 }
