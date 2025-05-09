@@ -221,7 +221,7 @@ steps:
       --env "$(ENVIRONMENT)"
       --report_path "$(Build.ArtifactStagingDirectory)/JUnit/results.xml"
       --build_url $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)
-      --webhook "$(variables['envScript.envSlackWebhook'])"
+      --webhook "$(envScript.envSlackWebhook)"
       -d $(Build.BuildId)
       -m $(Build.BuildNumber)
       -u "$(Build.RequestedFor)"
