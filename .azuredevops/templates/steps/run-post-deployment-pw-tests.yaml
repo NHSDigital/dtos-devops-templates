@@ -107,14 +107,19 @@ steps:
     mergeTestResults: true
     publishRunAttachments: true
 
+# - checkout: dtos-devops-templates
+#   displayName: Checkout Scripts folder
+#   fetchDepth: 1
+#   sparseCheckoutDirectories: scripts
+#   condition: succeededOrFailed()
+
+
 - checkout: dtos-devops-templates
-  displayName: Checkout Scripts folder
-  fetchDepth: 1
-  sparseCheckoutDirectories: scripts
+  displayName: Checkout Templates Repo
   condition: succeededOrFailed()
 
 - script: |
-    SCRIPT_PATH="$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py"
+    SCRIPT_PATH="$(System.DefaultWorkingDirectory)/dtos-devops-templates/scripts/integrations/slack/SlackIntegrator.py"
 
     if [ ! -f "$SCRIPT_PATH" ]; then
       echo "Error: SlackIntegrator script file not found at $SCRIPT_PATH"
@@ -153,7 +158,7 @@ steps:
     slackWebHook: $(envSlackWebhook)
   inputs:
     scriptSource: 'filePath'
-    scriptPath: '$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py'
+    scriptPath: '$(System.DefaultWorkingDirectory)/dtos-devops-templates/scripts/integrations/slack/SlackIntegrator.py'
     arguments: >
       -env $(ENVIRONMENT)
       --report_path $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
