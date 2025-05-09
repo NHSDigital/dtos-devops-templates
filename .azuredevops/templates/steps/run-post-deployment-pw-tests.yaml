@@ -198,6 +198,13 @@ steps:
   displayName: "Notify - Resolve Slack Webhook URL"
   condition: succeededOrFailed()
 
+- script: |
+    echo "hasResults: $(hasResults)"
+    echo "envSlackWebhook: $(envSlackWebhook)"
+    echo "hasFile: $(hasFile)"
+  displayName: "Check Variable States"
+
+
 - task: PythonScript@0
   displayName: 'Notify - Run Python Script'
   condition: and(
