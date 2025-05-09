@@ -16,6 +16,7 @@ steps:
   path: main_repo
 
 - checkout: dtos-devops-templates
+  sparseCheckoutDirectories: scripts
   path: templates
 
 
@@ -75,6 +76,11 @@ steps:
     ENDPOINT_PARTICIPANT_MANAGEMENT_DATA_SERVICE: $(ENDPOINT_PARTICIPANT_MANAGEMENT_DATA_SERVICE)
     ENDPOINT_EXCEPTION_MANAGEMENT_DATA_SERVICE: $(ENDPOINT_EXCEPTION_MANAGEMENT_DATA_SERVICE)
 
+- script: |
+    echo " "
+    echo "Contents of Workspace after tests:"
+    find "$(Pipeline.Workspace)" -type d -not -path '*/.git*' | sort
+  displayName: Display directories
 
 - task: PowerShell@2
   displayName: 'Copy Test Files'
@@ -137,11 +143,8 @@ steps:
     mergeTestResults: true
     publishRunAttachments: true
 
-- checkout: dtos-devops-templates
-  path: templates
-
 - script: |
-    SCRIPT_PATH="$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py"
+    SCRIPT_PATH="$(Pipeline.Workspace)/templates/integrations/slack/SlackIntegrator.py"
 
     if [ ! -f "$SCRIPT_PATH" ]; then
       echo "Error: SlackIntegrator script file not found at $SCRIPT_PATH"
@@ -168,7 +171,6 @@ steps:
     fi
     echo "URL source: $URL_SOURCE"
   displayName: "Notify - Resolve Slack Webhook URL"
-  condition: succeeded()
 
 - task: PythonScript@0
   displayName: 'Notify - Run Python Script'
@@ -180,10 +182,10 @@ steps:
     slackWebHook: $(envSlackWebhook)
   inputs:
     scriptSource: 'filePath'
-    scriptPath: '$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py'
+    scriptPath: '$(Pipeline.Workspace)/templates/integrations/slack/SlackIntegrator.py'
     arguments: >
       -env $(ENVIRONMENT)
-      --report_path $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
+      --report_path $(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
       --build_url $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)
       -d $(Build.BuildId)
       -m $(Build.BuildNumber)
