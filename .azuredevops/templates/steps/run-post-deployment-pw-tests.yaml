@@ -32,11 +32,6 @@ steps:
       **/drop/*
     RemoveSourceFolder: false
 
-- checkout: dtos-devops-templates
-  path: integration_scripts
-
-- checkout: self
-
 - task: NodeTool@0
   displayName: 'Install Node.js'
   inputs:
