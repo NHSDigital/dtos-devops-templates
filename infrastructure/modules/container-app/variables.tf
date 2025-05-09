@@ -13,22 +13,22 @@ variable "resource_group_name" {
   type        = string
 }
 
-# variable "app_key_vault_name" {
-#   description = "Name of the key vault to store app secret. Each secret is mapped to an environment variable."
-#   type        = string
-#   default     = null
-# }
-variable "app_key_vault_id" {
-  description = "ID of the key vault to store app secret. Each secret is mapped to an environment variable."
+variable "app_key_vault_name" {
+  description = "Name of the key vault to store app secrets. Each secret is mapped to an environment variable. The key vault must be already created, including the private endpoint"
   type        = string
   default     = null
 }
+# variable "app_key_vault_id" {
+#   description = "ID of the key vault to store app secret. Each secret is mapped to an environment variable."
+#   type        = string
+#   default     = null
+# }
 
-variable "fetch_secrets_from_app_key_vault" {
-  description = "Fetch secrets from the app key vault and map them to secret environment variables. If true, app_key_vault_id must be provided."
-  type        = bool
-  default     = false
-}
+# variable "fetch_secrets_from_app_key_vault" {
+#   description = "Fetch secrets from the app key vault and map them to secret environment variables. If true, app_key_vault_id must be provided."
+#   type        = bool
+#   default     = false
+# }
 
 variable "docker_image" {
   description = "Docker image and tag. Format: <registry>/<repository>:<tag>"
