@@ -146,7 +146,7 @@ steps:
 
 
 - script: |
-    SCRIPT_PATH="$(Build.SourcesDirectory)/integration_scripts/integrations/slack/SlackIntegrator.py"
+    SCRIPT_PATH="$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py"
 
     if [ ! -f "$SCRIPT_PATH" ]; then
       echo "Error: SlackIntegrator script file not found at $SCRIPT_PATH"
@@ -185,7 +185,7 @@ steps:
     slackWebHook: $(envSlackWebhook)
   inputs:
     scriptSource: 'filePath'
-    scriptPath: '$(Build.SourcesDirectory)/integration_scripts/integrations/slack/SlackIntegrator.py'
+    scriptPath: '$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py'
     arguments: >
       -env $(ENVIRONMENT)
       --report_path $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
