@@ -12,8 +12,13 @@ parameters:
   default: ''
 
 steps:
+- script: |
+    echo "Listing contents of DefaultWorkingDirectory"
+    ls -laR $(System.DefaultWorkingDirectory)
+  displayName: "List contents of System.DefaultWorkingDirectory"
+
 - task: DeleteFiles@1
-  displayName: 'Clean Build Directory'
+  displayName: 'Clean DefaultWorkingDirectory'
   inputs:
     SourceFolder: '$(System.DefaultWorkingDirectory)'
     Contents: |
@@ -107,19 +112,14 @@ steps:
     mergeTestResults: true
     publishRunAttachments: true
 
-# - checkout: dtos-devops-templates
-#   displayName: Checkout Scripts folder
-#   fetchDepth: 1
-#   sparseCheckoutDirectories: scripts
-#   condition: succeededOrFailed()
-
-
 - checkout: dtos-devops-templates
-  displayName: Checkout Templates Repo
+  displayName: Checkout Scripts folder
+  fetchDepth: 1
+  sparseCheckoutDirectories: scripts
   condition: succeededOrFailed()
 
 - script: |
-    SCRIPT_PATH="$(System.DefaultWorkingDirectory)/dtos-devops-templates/scripts/integrations/slack/SlackIntegrator.py"
+    SCRIPT_PATH="$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py"
 
     if [ ! -f "$SCRIPT_PATH" ]; then
       echo "Error: SlackIntegrator script file not found at $SCRIPT_PATH"
@@ -134,7 +134,7 @@ steps:
     fi
   displayName: "Check for SlackIntegrator.py"
   name: checkScriptPath
-  condition: succeededOrFailed()
+  condition: succeeded()
 
 - script: |
     if [ -n "${SLACK_WEBHOOK:-}" ]; then
@@ -146,19 +146,19 @@ steps:
     fi
     echo "URL source: $URL_SOURCE"
   displayName: "Resolve Slack Webhook URL"
-  condition: succeededOrFailed()
+  condition: succeeded()
 
 - task: PythonScript@0
   displayName: 'Run Python Script (notify Slack)'
   condition: and(
-    and(succeededOrFailed(), ne('$(envSlackWebhook)', '')),
+    and(succeeded(), ne('$(envSlackWebhook)', '')),
     eq(variables['hasFile'], 'true')
     )
   env:
     slackWebHook: $(envSlackWebhook)
   inputs:
     scriptSource: 'filePath'
-    scriptPath: '$(System.DefaultWorkingDirectory)/dtos-devops-templates/scripts/integrations/slack/SlackIntegrator.py'
+    scriptPath: '$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py'
     arguments: >
       -env $(ENVIRONMENT)
       --report_path $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
