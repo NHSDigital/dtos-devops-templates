@@ -12,6 +12,7 @@ parameters:
   default: ''
 
 steps:
+
 - script: |
     echo "SourceDirectory = $(Build.SourcesDirectory)"
     echo "WorkingDirectory = $(System.DefaultWorkingDirectory)"
@@ -30,6 +31,12 @@ steps:
       **/TestResults/*
       **/drop/*
     RemoveSourceFolder: false
+
+- checkout: dtos-devops-templates
+  displayName: Notify - Checkout Scripts folder
+  fetchDepth: 1
+  sparseCheckoutDirectories: integration_scripts
+  condition: succeeded()
 
 - task: NodeTool@0
   displayName: 'Install Node.js'
@@ -142,11 +149,7 @@ steps:
     mergeTestResults: true
     publishRunAttachments: true
 
-- checkout: dtos-devops-templates
-  displayName: Notify - Checkout Scripts folder
-  fetchDepth: 1
-  sparseCheckoutDirectories: integration_scripts
-  condition: succeeded()
+
 
 - script: |
     SCRIPT_PATH="$(Build.SourcesDirectory)/integration_scripts/integrations/slack/SlackIntegrator.py"
