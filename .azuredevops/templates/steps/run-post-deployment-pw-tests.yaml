@@ -31,6 +31,11 @@ steps:
     versionSpec: '22.x'
 
 - script: |
+    echo "Listing directories in $(Build.SourcesDirectory)"
+    find "$(Build.SourcesDirectory)" -type d | sort
+  displayName: Display directories within SourcesDirectory
+
+- script: |
     npm install
   displayName: 'Install npm dependencies'
   workingDirectory: '$(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}'
