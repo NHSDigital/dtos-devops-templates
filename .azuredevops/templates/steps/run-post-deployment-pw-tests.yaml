@@ -23,6 +23,7 @@ steps:
       **/drop/*
     RemoveSourceFolder: false
 
+
 - script: |
     echo "SourceDirectory = $(Build.SourcesDirectory)"
     echo "WorkingDirectory = $(System.DefaultWorkingDirectory)"
@@ -39,10 +40,12 @@ steps:
   inputs:
     versionSpec: '22.x'
 
+
 - script: |
     npm install
   displayName: 'Install npm dependencies'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/source/${{ parameters.testProjectDirectory }}'
+
 
 - script: |
     echo "Current working directory:"
@@ -52,7 +55,7 @@ steps:
     echo "Running tests..."
     npm test
   displayName: 'Run Tests'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/source/${{ parameters.testProjectDirectory }}'
   env:
     CONTAINER_NAME: $(CONTAINER_NAME)
     Is_CloudEnvironment: $(Is_CloudEnvironment)
@@ -61,12 +64,13 @@ steps:
     ENDPOINT_PARTICIPANT_MANAGEMENT_DATA_SERVICE: $(ENDPOINT_PARTICIPANT_MANAGEMENT_DATA_SERVICE)
     ENDPOINT_EXCEPTION_MANAGEMENT_DATA_SERVICE: $(ENDPOINT_EXCEPTION_MANAGEMENT_DATA_SERVICE)
 
+
 - task: PowerShell@2
   displayName: 'Copy Test Files'
   inputs:
     targetType: 'inline'
     script: |
-      $sourcePath = "$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
+      $sourcePath = "$(System.DefaultWorkingDirectory)/source/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
       $targetPath = "$(Build.ArtifactStagingDirectory)/TestFiles"
 
       Write-Host "Source path: $sourcePath"
@@ -90,6 +94,7 @@ steps:
       Write-Host "Files copied to target directory:"
       Get-ChildItem -Path $targetPath -Recurse | ForEach-Object { Write-Host $_.FullName }
 
+
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Test Files'
   inputs:
@@ -106,22 +111,23 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Playwright Test Reports'
   inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/source/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
     ArtifactName: 'PlaywrightHTMLReport'
     publishLocation: 'Container'
+
 
 - task: PublishTestResults@2
   displayName: 'Publish JUnit Test Results'
   condition: succeeded()
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
+    testResultsFiles: $(System.DefaultWorkingDirectory)/source/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
     failTaskOnFailedTests: true
     mergeTestResults: true
     publishRunAttachments: true
 
 - script: |
-    SCRIPT_PATH="$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py"
+    SCRIPT_PATH="$(Build.SourcesDirectory)/templates/scripts/integrations/slack/SlackIntegrator.py"
 
     if [ ! -f "$SCRIPT_PATH" ]; then
       echo "Error: SlackIntegrator script file not found at $SCRIPT_PATH"
@@ -136,7 +142,7 @@ steps:
     fi
   displayName: "Notify - Check for SlackIntegrator.py"
   name: checkScriptPath
-  condition: succeeded()
+  condition: succeededOrFailed()
 
 - script: |
     if [ -n "${SLACK_WEBHOOK:-}" ]; then
@@ -160,7 +166,7 @@ steps:
     slackWebHook: $(envSlackWebhook)
   inputs:
     scriptSource: 'filePath'
-    scriptPath: '$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py'
+    scriptPath: '$(Build.SourcesDirectory)/templates/scripts/integrations/slack/SlackIntegrator.py'
     arguments: >
       -env $(ENVIRONMENT)
       --report_path $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
