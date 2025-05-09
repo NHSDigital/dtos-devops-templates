@@ -203,6 +203,7 @@ steps:
     echo "envSlackWebhook: $(envSlackWebhook)"
     echo "hasFile: $(hasFile)"
   displayName: "Check Variable States"
+  condition: succeededOrFailed()
 
 
 - task: PythonScript@0
