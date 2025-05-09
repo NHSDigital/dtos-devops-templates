@@ -6,7 +6,7 @@ module "container_app_identity" {
 }
 
 module "key_vault_reader_role" {
-  count = var.app_key_vault_name != null ? 1 : 0
+  count = var.app_key_vault_id != null ? 1 : 0
 
   source = "../rbac-assignment"
 
@@ -28,7 +28,7 @@ resource "azurerm_container_app" "main" {
   }
 
   dynamic "secret" {
-    for_each = var.app_key_vault_name != null ? data.azurerm_key_vault_secrets.app[0].secrets : []
+    for_each = var.app_key_vault_id != null ? data.azurerm_key_vault_secrets.app[0].secrets : []
 
     content {
       # KV secrets are uppercase and hyphen separated
@@ -55,7 +55,7 @@ resource "azurerm_container_app" "main" {
       }
 
       dynamic "env" {
-        for_each = var.app_key_vault_name != null ? data.azurerm_key_vault_secrets.app[0].secrets : []
+        for_each = var.app_key_vault_id != null ? data.azurerm_key_vault_secrets.app[0].secrets : []
         content {
           # Env vars are uppercase and underscore separated
           name = upper(replace(env.value.name, "-", "_"))

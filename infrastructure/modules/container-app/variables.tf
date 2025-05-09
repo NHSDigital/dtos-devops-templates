@@ -13,8 +13,13 @@ variable "resource_group_name" {
   type        = string
 }
 
-variable "app_key_vault_name" {
-  description = "Name of the key vault to store app secret. Each secret is mapped to an environment variable."
+# variable "app_key_vault_name" {
+#   description = "Name of the key vault to store app secret. Each secret is mapped to an environment variable."
+#   type        = string
+#   default     = null
+# }
+variable "app_key_vault_id" {
+  description = "ID of the key vault to store app secret. Each secret is mapped to an environment variable."
   type        = string
   default     = null
 }
