@@ -150,8 +150,10 @@ steps:
     if [ -f "$SOURCE_PATH" ]; then
       cp "$SOURCE_PATH" "$TARGET_PATH/"
       echo "File copied successfully."
+      echo "##vso[task.setvariable variable=hasResults;isOutput=true]true
     else
       echo "Warning: Source file not found: $SOURCE_PATH"
+      echo "##vso[task.setvariable variable=hasResults;isOutput=true]false
     fi
   displayName: "Copy JUnit Results to Artifact Staging"
   condition: succeededOrFailed()
@@ -199,8 +201,9 @@ steps:
 - task: PythonScript@0
   displayName: 'Notify - Run Python Script'
   condition: and(
-    and(succeeded(), ne('$(envSlackWebhook)', '')),
-    eq(variables['hasFile'], 'true')
+    eq(variables['hasResults'], 'true'),
+    eq(variables['hasFile'], 'true'),
+    ne('$(envSlackWebhook)', '')
     )
   env:
     slackWebHook: $(envSlackWebhook)
@@ -213,5 +216,5 @@ steps:
       --build_url $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)
       -d $(Build.BuildId)
       -m $(Build.BuildNumber)
-      -u $(Build.RequestedFor)'
+      -u $(Build.RequestedFor)
       -webhook $(slackWebHook)
