@@ -32,8 +32,6 @@ steps:
     echo " "
     echo "Current working directory:"
     pwd
-    echo "Contents of the directory:"
-    ls -la
 
     echo "Contents of SourceDirectory ($(Build.SourcesDirectory)):"
     ls -la "$(Build.SourcesDirectory)" || echo "Directory not found."
@@ -48,7 +46,7 @@ steps:
 
     echo " "
     echo "Contents of Workspace ($(Pipeline.Workspace)):"
-    ls -la "$(Pipeline.Workspace)" || echo "Directory not found."
+    ls -laR "$(Pipeline.Workspace)" || echo "Directory not found."
   displayName: Display directories
 
 
