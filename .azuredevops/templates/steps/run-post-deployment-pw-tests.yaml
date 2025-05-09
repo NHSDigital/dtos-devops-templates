@@ -111,7 +111,7 @@ steps:
       # Verify files were copied
       Write-Host "Files copied to target directory:"
       Get-ChildItem -Path $targetPath -Recurse | ForEach-Object { Write-Host $_.FullName }
-
+  condition: succeededOrFailed()
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Test Files'
@@ -119,7 +119,7 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'TestFiles'
     publishLocation: 'Container'
-
+  condition: succeededOrFailed()
 
 - script: |
     export AZURE_IDENTITY_DISABLE_MANAGED_IDENTITY=true
@@ -132,17 +132,17 @@ steps:
     PathtoPublish: '$(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
     ArtifactName: 'PlaywrightHTMLReport'
     publishLocation: 'Container'
-
+  condition: succeededOrFailed
 
 - task: PublishTestResults@2
   displayName: 'Publish JUnit Test Results'
-  condition: succeeded()
   inputs:
     testResultsFormat: 'JUnit'
     testResultsFiles: $(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
     failTaskOnFailedTests: true
     mergeTestResults: true
     publishRunAttachments: true
+  condition: succeededOrFailed()
 
 - script: |
     SCRIPT_PATH="$(Pipeline.Workspace)/templates/integrations/slack/SlackIntegrator.py"
@@ -172,6 +172,7 @@ steps:
     fi
     echo "URL source: $URL_SOURCE"
   displayName: "Notify - Resolve Slack Webhook URL"
+  condition: succeededOrFailed()
 
 - task: PythonScript@0
   displayName: 'Notify - Run Python Script'
