@@ -144,13 +144,28 @@ steps:
     publishRunAttachments: true
   condition: succeededOrFailed()
 
-- task: CopyFiles@2
+- script: |
+    echo "Copying JUnit results.xml to artifact staging directory..."
+
+    SOURCE_PATH="$(Pipeline.Workspace)/main-repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml"
+    TARGET_PATH="$(Build.ArtifactStagingDirectory)/JUnit"
+
+    echo "Source path: $SOURCE_PATH"
+    echo "Target path: $TARGET_PATH"
+
+    # Ensure target directory exists
+    mkdir -p "$TARGET_PATH"
+
+    # Check if source file exists
+    if [ -f "$SOURCE_PATH" ]; then
+      cp "$SOURCE_PATH" "$TARGET_PATH/"
+      echo "File copied successfully."
+    else
+      echo "Warning: Source file not found: $SOURCE_PATH"
+    fi
   displayName: "Copy JUnit Results to Artifact Staging"
-  inputs:
-    SourceFolder: '$(Pipeline.Workspace)/main-repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
-    Contents: 'results.xml'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/JUnit'
   condition: succeededOrFailed()
+
 
 - script: |
     SCRIPT_PATH="$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py"
