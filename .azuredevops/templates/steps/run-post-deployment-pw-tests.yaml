@@ -12,10 +12,17 @@ parameters:
   default: ''
 
 steps:
+- checkout: self
+  path: main_repo
+
+- checkout: dtos-devops-templates
+  path: templates
+
+
 - task: DeleteFiles@1
   displayName: 'Clean DefaultWorkingDirectory'
   inputs:
-    SourceFolder: '$(System.DefaultWorkingDirectory)'
+    SourceFolder: '$(Pipeline.Workspace)'
     Contents: |
       **/bin/*
       **/obj/*
@@ -48,7 +55,7 @@ steps:
 - script: |
     npm install
   displayName: 'Install npm dependencies'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
+  workingDirectory: '$(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}'
 
 
 - script: |
@@ -59,7 +66,7 @@ steps:
     echo "Running tests..."
     npm test
   displayName: 'Run Tests'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
+  workingDirectory: '$(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}'
   env:
     CONTAINER_NAME: $(CONTAINER_NAME)
     Is_CloudEnvironment: $(Is_CloudEnvironment)
@@ -74,7 +81,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $sourcePath = "$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
+      $sourcePath = "$(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
       $targetPath = "$(Build.ArtifactStagingDirectory)/TestFiles"
 
       Write-Host "Source path: $sourcePath"
@@ -115,7 +122,7 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Playwright Test Reports'
   inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
+    PathtoPublish: '$(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
     ArtifactName: 'PlaywrightHTMLReport'
     publishLocation: 'Container'
 
@@ -125,7 +132,7 @@ steps:
   condition: succeeded()
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
+    testResultsFiles: $(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
     failTaskOnFailedTests: true
     mergeTestResults: true
     publishRunAttachments: true
@@ -134,7 +141,7 @@ steps:
   path: templates
 
 - script: |
-    SCRIPT_PATH="$(Build.SourcesDirectory)/templates/scripts/integrations/slack/SlackIntegrator.py"
+    SCRIPT_PATH="$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py"
 
     if [ ! -f "$SCRIPT_PATH" ]; then
       echo "Error: SlackIntegrator script file not found at $SCRIPT_PATH"
@@ -173,7 +180,7 @@ steps:
     slackWebHook: $(envSlackWebhook)
   inputs:
     scriptSource: 'filePath'
-    scriptPath: '$(Build.SourcesDirectory)/templates/scripts/integrations/slack/SlackIntegrator.py'
+    scriptPath: '$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py'
     arguments: >
       -env $(ENVIRONMENT)
       --report_path $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
