@@ -6,6 +6,8 @@ module "container_app_identity" {
 }
 
 module "key_vault_reader_role" {
+  count = var.app_key_vault_name != null ? 1 : 0
+
   source = "../rbac-assignment"
 
   scope                = data.azurerm_key_vault.app[0].id
@@ -15,8 +17,6 @@ module "key_vault_reader_role" {
 
 
 resource "azurerm_container_app" "main" {
-  depends_on                   = [module.key_vault_reader_role]
-
   name                         = var.name
   container_app_environment_id = var.container_app_environment_id
   resource_group_name          = var.resource_group_name
