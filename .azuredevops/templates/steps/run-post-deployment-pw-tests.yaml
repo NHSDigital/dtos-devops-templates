@@ -33,20 +33,9 @@ steps:
     echo "Current working directory:"
     pwd
 
-    echo "Contents of SourceDirectory ($(Build.SourcesDirectory)):"
-    ls -la "$(Build.SourcesDirectory)" || echo "Directory not found."
-
-    echo " "
-    echo "Contents of WorkingDirectory ($(System.DefaultWorkingDirectory)):"
-    ls -la "$(System.DefaultWorkingDirectory)" || echo "Directory not found."
-
-    echo " "
-    echo "Contents of Repository LocalPath ($(Build.Repository.LocalPath)):"
-    ls -la "$(Build.Repository.LocalPath)" || echo "Directory not found."
-
     echo " "
     echo "Contents of Workspace ($(Pipeline.Workspace)):"
-    ls -laR "$(Pipeline.Workspace)" || echo "Directory not found."
+    find "$(Pipeline.Workspace)" -type d -not -path '*/.git*' | sed 's|[^/]*/|  |g' | sort
   displayName: Display directories
 
 
