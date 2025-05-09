@@ -12,26 +12,27 @@ parameters:
   default: ''
 
 steps:
+- script: |
+    echo "SourceDirectory = $(Build.SourcesDirectory)"
+    echo "WorkingDirectory = $(System.DefaultWorkingDirectory)"
+    echo " "
+    echo "Listing directories in $(Build.SourcesDirectory)"
+    find "$(Build.SourcesDirectory)" -type d | sort
+  displayName: Display directories within SourcesDirectory
+
+
 - task: DeleteFiles@1
   displayName: 'Clean DefaultWorkingDirectory'
   inputs:
     SourceFolder: '$(System.DefaultWorkingDirectory)'
     Contents: |
-      **/bin/*
-      **/obj/*
-      **/TestResults/*
-      **/drop/*
+      **/*
     RemoveSourceFolder: false
 
 - task: NodeTool@0
   displayName: 'Install Node.js'
   inputs:
     versionSpec: '22.x'
-
-- script: |
-    echo "Listing directories in $(Build.SourcesDirectory)"
-    find "$(Build.SourcesDirectory)" -type d | sort
-  displayName: Display directories within SourcesDirectory
 
 - script: |
     npm install
