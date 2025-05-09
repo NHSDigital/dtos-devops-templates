@@ -12,7 +12,7 @@ module "key_vault_reader_role" {
 
   scope                = var.app_key_vault_id
   role_definition_name = "Key Vault Secrets User"
-  principal_id         = module.container_app_identity.id
+  principal_id         = module.container_app_identity.principal_id
 }
 
 
