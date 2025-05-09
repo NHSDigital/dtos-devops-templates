@@ -132,7 +132,7 @@ steps:
     PathtoPublish: '$(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
     ArtifactName: 'PlaywrightHTMLReport'
     publishLocation: 'Container'
-  condition: succeededOrFailed
+  condition: succeededOrFailed()
 
 - task: PublishTestResults@2
   displayName: 'Publish JUnit Test Results'
