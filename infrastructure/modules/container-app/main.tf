@@ -10,7 +10,7 @@ module "key_vault_reader_role" {
 
   source = "../rbac-assignment"
 
-  scope                = data.azurerm_key_vault.app[0].id
+  scope                = var.app_key_vault_id
   role_definition_name = "Key Vault Secrets User"
   principal_id         = module.container_app_identity.id
 }
