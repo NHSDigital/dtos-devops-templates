@@ -23,6 +23,8 @@ steps:
       **/drop/*
     RemoveSourceFolder: false
 
+- checkout: self
+
 - task: NodeTool@0
   displayName: 'Install Node.js'
   inputs:
