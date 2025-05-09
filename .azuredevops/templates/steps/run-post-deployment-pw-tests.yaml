@@ -34,7 +34,14 @@ steps:
 
 - checkout: dtos-devops-templates
   displayName: Notify - Checkout DevOps Templates
-  path: integration_scripts
+
+- script: |
+    echo "SourceDirectory = $(Build.SourcesDirectory)"
+    echo "WorkingDirectory = $(System.DefaultWorkingDirectory)"
+    echo " "
+    echo "Listing directories in SourcesDirectory:"
+    find "$(Build.SourcesDirectory)" -type d | sort
+  displayName: Display directories within SourcesDirectory
 
 - task: NodeTool@0
   displayName: 'Install Node.js'
