@@ -202,8 +202,8 @@ steps:
 
 - script: |
     echo "hasResults: $(resFileScript.hasResults)"
-    echo "envSlackWebhook: $(envScript.envSlackWebhook)"
     echo "hasFile: $(checkScriptPath.hasFile)"
+    echo "envSlackWebhook: $(envScript.envSlackWebhook)"
   displayName: "Check Variable States"
   condition: succeededOrFailed()
 
@@ -214,8 +214,6 @@ steps:
     eq(variables['checkScriptPath.hasFile'], 'true'),
     ne(variables['envScript.envSlackWebhook'], '')
     )
-  env:
-    slackWebHook: $(envScript.envSlackWebhook)
   inputs:
     scriptSource: 'filePath'
     scriptPath: '$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py'
@@ -223,7 +221,7 @@ steps:
       --env "$(ENVIRONMENT)"
       --report_path "$(Build.ArtifactStagingDirectory)/JUnit/results.xml"
       --build_url $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)
-      --webhook "$(slackWebHook)"
+      --webhook "$(variables['envScript.envSlackWebhook'])"
       -d $(Build.BuildId)
       -m $(Build.BuildNumber)
       -u "$(Build.RequestedFor)"
