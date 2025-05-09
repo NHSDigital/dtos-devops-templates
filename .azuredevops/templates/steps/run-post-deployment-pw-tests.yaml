@@ -150,13 +150,14 @@ steps:
     if [ -f "$SOURCE_PATH" ]; then
       cp "$SOURCE_PATH" "$TARGET_PATH/"
       echo "File copied successfully."
-      echo "##vso[task.setvariable variable=hasResults;isOutput=true]true
+      echo "##vso[task.setvariable variable=hasResults;isOutput=true]true"
     else
       echo "Warning: Source file not found: $SOURCE_PATH"
-      echo "##vso[task.setvariable variable=hasResults;isOutput=true]false
+      echo "##vso[task.setvariable variable=hasResults;isOutput=true]false"
     fi
   displayName: "Copy JUnit Results to Artifact Staging"
   condition: succeededOrFailed()
+  name: resFileScript
 
 - task: PublishTestResults@2
   displayName: 'Publish JUnit Test Results'
@@ -188,30 +189,30 @@ steps:
 
 - script: |
     if [ -n "${SLACK_WEBHOOK:-}" ]; then
-      echo "##vso[task.setvariable variable=envSlackWebhook]$(SLACK_WEBHOOK)"
+      echo "##vso[task.setvariable variable=envSlackWebhook;isOutput=true]$(SLACK_WEBHOOK)"
       URL_SOURCE="Environment"
     else
-      echo "##vso[task.setvariable variable=envSlackWebhook]${{ parameters.slackWebHook }}"
+      echo "##vso[task.setvariable variable=envSlackWebhook;isOutput=true]${{ parameters.slackWebHook }}"
       URL_SOURCE="Parameters"
     fi
     echo "URL source: $URL_SOURCE"
   displayName: "Notify - Resolve Slack Webhook URL"
   condition: succeededOrFailed()
+  name: envScript
 
 - script: |
-    echo "hasResults: $(hasResults)"
-    echo "envSlackWebhook: $(envSlackWebhook)"
-    echo "hasFile: $(hasFile)"
+    echo "hasResults: $(resFileScript.hasResults)"
+    echo "envSlackWebhook: $(envScript.envSlackWebhook)"
+    echo "hasFile: $(checkScriptPath.hasFile)"
   displayName: "Check Variable States"
   condition: succeededOrFailed()
-
 
 - task: PythonScript@0
   displayName: 'Notify - Run Python Script'
   condition: and(
-    eq(variables['hasResults'], 'true'),
-    eq(variables['hasFile'], 'true'),
-    ne('$(envSlackWebhook)', '')
+    eq(variables['resFileScript.hasResults'], 'true'),
+    eq(variables['checkScriptPath.hasFile'], 'true'),
+    ne('$(envScript.envSlackWebhook)', '')
     )
   env:
     slackWebHook: $(envSlackWebhook)
