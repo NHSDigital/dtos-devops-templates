@@ -144,6 +144,14 @@ steps:
     publishRunAttachments: true
   condition: succeededOrFailed()
 
+- task: CopyFiles@2
+  displayName: "Copy JUnit Results to Artifact Staging"
+  inputs:
+    SourceFolder: '$(Pipeline.Workspace)/main-repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
+    Contents: 'results.xml'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/JUnit'
+  condition: succeededOrFailed()
+
 - script: |
     SCRIPT_PATH="$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py"
 
@@ -187,7 +195,7 @@ steps:
     scriptPath: '$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py'
     arguments: >
       -env $(ENVIRONMENT)
-      --report_path $(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
+      --report_path $(Build.ArtifactStagingDirectory)/JUnit/results.xml
       --build_url $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)
       -d $(Build.BuildId)
       -m $(Build.BuildNumber)
