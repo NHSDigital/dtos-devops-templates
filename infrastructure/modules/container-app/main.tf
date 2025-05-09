@@ -1,3 +1,21 @@
+module "container_app_identity" {
+  source              = "../managed-identity"
+  resource_group_name = var.resource_group_name
+  location            = data.azurerm_resource_group.main.location
+  uai_name            = "${var.name}-identity"
+}
+
+# Allow the container app to read secrets from keyvaults in the resource groups
+module "key_vault_reader_role" {
+  count = var.fetch_secrets_from_app_key_vault ? 1 : 0
+
+  source = "../rbac-assignment"
+
+  scope                = data.azurerm_resource_group.main.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = module.container_app_identity.principal_id
+}
+
 resource "azurerm_container_app" "main" {
   name                         = var.name
   container_app_environment_id = var.container_app_environment_id
@@ -5,17 +23,18 @@ resource "azurerm_container_app" "main" {
   revision_mode                = "Single"
 
   identity {
-    type = "SystemAssigned"
+    type         = "UserAssigned"
+    identity_ids = [module.container_app_identity.id]
   }
 
   dynamic "secret" {
-    for_each = var.app_key_vault_name != null ? data.azurerm_key_vault_secrets.app[0].secrets : []
+    for_each = var.fetch_secrets_from_app_key_vault ? data.azurerm_key_vault_secrets.app[0].secrets : []
 
     content {
       # KV secrets are uppercase and hyphen separated
       # app container secrets are lowercase and hyphen separated
-      name = lower(secret.value.name)
-      identity = "System"
+      name                = lower(secret.value.name)
+      identity            = module.container_app_identity.id
       key_vault_secret_id = secret.value.id
     }
   }
@@ -36,7 +55,7 @@ resource "azurerm_container_app" "main" {
       }
 
       dynamic "env" {
-        for_each = var.app_key_vault_name != null ? data.azurerm_key_vault_secrets.app[0].secrets : []
+        for_each = var.fetch_secrets_from_app_key_vault ? data.azurerm_key_vault_secrets.app[0].secrets : []
         content {
           # Env vars are uppercase and underscore separated
           name = upper(replace(env.value.name, "-", "_"))
@@ -62,20 +81,4 @@ resource "azurerm_container_app" "main" {
       }
     }
   }
-}
-
-# resource "azurerm_role_assignment" "key_vault_reader" {
-#   count                = var.app_key_vault_name != null ? 1 : 0
-
-#   scope                = data.azurerm_key_vault.app[0].id
-#   role_definition_name = "Key Vault Secrets User"
-#   principal_id         = azurerm_container_app.main.identity[0].principal_id
-# }
-
-module "key_vault_reader_role" {
-  source = "../rbac-assignment"
-
-  scope                = data.azurerm_key_vault.app[0].id
-  role_definition_name = "Key Vault Secrets User"
-  principal_id         = azurerm_container_app.main.identity[0].principal_id
 }

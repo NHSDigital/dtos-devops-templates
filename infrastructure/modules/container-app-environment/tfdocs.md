@@ -16,6 +16,12 @@ Description: Name of the container app environment.
 
 Type: `string`
 
+### <a name="input_private_dns_zone_rg_name"></a> [private\_dns\_zone\_rg\_name](#input\_private\_dns\_zone\_rg\_name)
+
+Description: Name of the hub resource group where the private DNS zone is located.
+
+Type: `string`
+
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
 Description: Name of the resource group to create the container app environment in.
@@ -28,17 +34,43 @@ Description: ID of the subnet for the container app environment. Must be at leas
 
 Type: `string`
 
+## Optional Inputs
+
+The following input variables are optional (have default values):
+
+### <a name="input_zone_redundancy_enabled"></a> [zone\_redundancy\_enabled](#input\_zone\_redundancy\_enabled)
+
+Description: Enable availability zone redundancy for the container app environment. Should be set to true in production.
+
+Type: `bool`
+
+Default: `false`
+## Modules
+
+The following Modules are called:
+
+### <a name="module_apex-record"></a> [apex-record](#module\_apex-record)
+
+Source: ../private-dns-a-record
+
+Version:
+
+### <a name="module_wildcard-record"></a> [wildcard-record](#module\_wildcard-record)
+
+Source: ../private-dns-a-record
+
+Version:
 ## Outputs
 
 The following outputs are exported:
 
 ### <a name="output_default_domain"></a> [default\_domain](#output\_default\_domain)
 
-Description: n/a
+Description: Default internal DNS domain. Should be registered in the private DNS zone.
 
 ### <a name="output_id"></a> [id](#output\_id)
 
-Description: n/a
+Description: Container app environment ID
 ## Resources
 
 The following resources are used by this module:

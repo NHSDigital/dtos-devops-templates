@@ -17,3 +17,22 @@ variable "vnet_integration_subnet_id" {
   type        = string
   description = "ID of the subnet for the container app environment. Must be at least /23"
 }
+
+variable "private_dns_zone_rg_name" {
+  type = string
+  description = "Name of the hub resource group where the private DNS zone is located."
+}
+
+variable "zone_redundancy_enabled" {
+  type        = bool
+  description = "Enable availability zone redundancy for the container app environment. Should be set to true in production."
+  default     = false
+}
+
+locals {
+  dns_record = replace(
+    azurerm_container_app_environment.main.default_domain,
+    ".azurecontainerapps.io",
+    ""
+  )
+}
