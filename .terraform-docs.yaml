@@ -1,0 +1,22 @@
+formatter: markdown document
+
+recursive:
+  enabled: true
+  # path: infrastructure
+  include-main: false
+
+output:
+  mode: replace
+  file: tfdocs.md
+  template: "{{ .Content }}\n"
+
+content: |-
+  # Module documentation
+
+  {{ .Inputs }}
+  {{ .Modules }}
+  {{ .Outputs }}
+  {{ .Resources }}
+
+settings:
+  hide-empty: true

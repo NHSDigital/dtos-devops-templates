@@ -87,7 +87,7 @@ variable "rbac_roles" {
 
 variable "soft_delete_retention" {
   type        = number
-  description = "Name of the  Key Vault which is created."
+  description = "Number of days to retain a deleted vault"
   default     = "7"
 }
 

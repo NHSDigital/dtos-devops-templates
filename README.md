@@ -1,130 +1,60 @@
-# Repository Template
+# DTOS Devops template
 
-[![CI/CD Pull Request](https://github.com/nhs-england-tools/repository-template/actions/workflows/cicd-1-pull-request.yaml/badge.svg)](https://github.com/nhs-england-tools/repository-template/actions/workflows/cicd-1-pull-request.yaml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=repository-template&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=repository-template)
+This repository contains terraform modules and Azure devops pipeline steps to deploy DTOS applications.
 
-Start with an overview or a brief description of what the project is about and what it does. For example -
+## Terraform modules
+- [api-management](infrastructure/modules/api-management/README.md)
+- [app-insights](infrastructure/modules/app-insights/README.md)
+- [app-service-plan](infrastructure/modules/app-service-plan/README.md)
+- [application-gateway](infrastructure/modules/application-gateway/README.md)
+- [baseline](infrastructure/modules/baseline/README.md)
+- [container-app](infrastructure/modules/container-app/README.md)
+- [container-app-environment](infrastructure/modules/container-app-environment/README.md)
+- [container-registry](infrastructure/modules/container-registry/README.md)
+- [diagnostic-settings](infrastructure/modules/diagnostic-settings/README.md)
+- [dns-a-record](infrastructure/modules/dns-a-record/README.md)
+- [event-grid-subscription](infrastructure/modules/event-grid-subscription/README.md)
+- [event-grid-topic](infrastructure/modules/event-grid-topic/README.md)
+- [event-hub](infrastructure/modules/event-hub/README.md)
+- [firewall](infrastructure/modules/firewall/README.md)
+- [firewall-policy](infrastructure/modules/firewall-policy/README.md)
+- [firewall-rule-collection-group](infrastructure/modules/firewall-rule-collection-group/README.md)
+- [function-app](infrastructure/modules/function-app/README.md)
+- [function-app-slots](infrastructure/modules/function-app-slots/README.md)
+- [key-vault](infrastructure/modules/key-vault/README.md)
+- [lets-encrypt-certificates](infrastructure/modules/lets-encrypt-certificates/README.md)
+- [linux-web-app](infrastructure/modules/linux-web-app/README.md)
+- [linux-web-app-slots](infrastructure/modules/linux-web-app-slots/README.md)
+- [log-analytics-data-export-rule](infrastructure/modules/log-analytics-data-export-rule/README.md)
+- [log-analytics-workspace](infrastructure/modules/log-analytics-workspace/README.md)
+- [managed-identity](infrastructure/modules/managed-identity/README.md)
+- [monitor-action-group](infrastructure/modules/monitor-action-group/README.md)
+- [network-security-group](infrastructure/modules/network-security-group/README.md)
+- [postgresql-flexible](infrastructure/modules/postgresql-flexible/README.md)
+- [private-dns-a-record](infrastructure/modules/private-dns-a-record/README.md)
+- [private-dns-zone](infrastructure/modules/private-dns-zone/README.md)
+- [private-dns-zone-resolver](infrastructure/modules/private-dns-zone-resolver/README.md)
+- [private-endpoint](infrastructure/modules/private-endpoint/README.md)
+- [private-link-scoped-service](infrastructure/modules/private-link-scoped-service/README.md)
+- [public-ip](infrastructure/modules/public-ip/README.md)
+- [rbac-assignment](infrastructure/modules/rbac-assignment/README.md)
+- [route-table](infrastructure/modules/route-table/README.md)
+- [service-bus](infrastructure/modules/service-bus/README.md)
+- [shared-config](infrastructure/modules/shared-config/README.md)
+- [sql-server](infrastructure/modules/sql-server/README.md)
+- [storage](infrastructure/modules/storage/README.md)
+- [subnet](infrastructure/modules/subnet/README.md)
+- [virtual-desktop](infrastructure/modules/virtual-desktop/README.md)
+- [vnet](infrastructure/modules/vnet/README.md)
+- [vnet-peering](infrastructure/modules/vnet-peering/README.md)
 
-Welcome to our repository template designed to streamline your project setup! This robust template provides a reliable starting point for your new projects, covering an essential tech stack and encouraging best practices in documenting.
-
-This repository template aims to foster a user-friendly development environment by ensuring that every included file is concise and adequately self-documented. By adhering to this standard, we can promote increased clarity and maintainability throughout your project's lifecycle. Bundled within this template are resources that pave the way for seamless repository creation. Currently supported technologies are:
-
-- Terraform
-- Docker
-
-Make use of this repository template to expedite your project setup and enhance your productivity right from the get-go. Enjoy the advantage of having a well-structured, self-documented project that reduces overhead and increases focus on what truly matters - coding!
-
-## Table of Contents
-
-- [Repository Template](#repository-template)
-  - [Table of Contents](#table-of-contents)
-  - [Setup](#setup)
-    - [Prerequisites](#prerequisites)
-    - [Configuration](#configuration)
-  - [Usage](#usage)
-    - [Testing](#testing)
-  - [Design](#design)
-    - [Diagrams](#diagrams)
-    - [Modularity](#modularity)
-  - [Contributing](#contributing)
-  - [Contacts](#contacts)
-  - [Licence](#licence)
-
-## Setup
-
-By including preferably a one-liner or if necessary a set of clear CLI instructions we improve user experience. This should be a frictionless installation process that works on various operating systems (macOS, Linux, Windows WSL) and handles all the dependencies.
-
-Clone the repository
-
-```shell
-git clone https://github.com/nhs-england-tools/repository-template.git
-cd nhs-england-tools/repository-template
-```
-
-### Prerequisites
-
-The following software packages, or their equivalents, are expected to be installed and configured:
-
-- [Docker](https://www.docker.com/) container runtime or a compatible tool, e.g. [Podman](https://podman.io/),
-- [asdf](https://asdf-vm.com/) version manager,
-- [GNU make](https://www.gnu.org/software/make/) 3.82 or later,
-
-> [!NOTE]<br>
-> The version of GNU make available by default on macOS is earlier than 3.82. You will need to upgrade it or certain `make` tasks will fail. On macOS, you will need [Homebrew](https://brew.sh/) installed, then to install `make`, like so:
->
-> ```shell
-> brew install make
-> ```
->
-> You will then see instructions to fix your [`$PATH`](https://github.com/nhs-england-tools/dotfiles/blob/main/dot_path.tmpl) variable to make the newly installed version available. If you are using [dotfiles](https://github.com/nhs-england-tools/dotfiles), this is all done for you.
-
-- [GNU sed](https://www.gnu.org/software/sed/) and [GNU grep](https://www.gnu.org/software/grep/) are required for the scripted command-line output processing,
-- [GNU coreutils](https://www.gnu.org/software/coreutils/) and [GNU binutils](https://www.gnu.org/software/binutils/) may be required to build dependencies like Python, which may need to be compiled during installation,
-
-> [!NOTE]<br>
-> For macOS users, installation of the GNU toolchain has been scripted and automated as part of the `dotfiles` project. Please see this [script](https://github.com/nhs-england-tools/dotfiles/blob/main/assets/20-install-base-packages.macos.sh) for details.
-
-- [Python](https://www.python.org/) required to run Git hooks,
-- [`jq`](https://jqlang.github.io/jq/) a lightweight and flexible command-line JSON processor.
-
-### Configuration
-
-Installation and configuration of the toolchain dependencies
+## Update terraform documentation
+After working on terraform modules, always update the terraform documentation by running:
 
 ```shell
-make config
+make terraform-docs
 ```
 
-## Usage
+For each module, add a description to the README. Add basic usage to the README. If the code is more involved, add example code to the `examples/` directory instead.
 
-After a successful installation, provide an informative example of how this project can be used. Additional code snippets, screenshots and demos work well in this space. You may also link to the other documentation resources, e.g. the [User Guide](./docs/user-guide.md) to demonstrate more use cases and to show more features.
-
-### Testing
-
-There are `make` tasks for you to configure to run your tests.  Run `make test` to see how they work.  You should be able to use the same entry points for local development as in your CI pipeline.
-
-## Design
-
-### Diagrams
-
-The [C4 model](https://c4model.com/) is a simple and intuitive way to create software architecture diagrams that are clear, consistent, scalable and most importantly collaborative. This should result in documenting all the system interfaces, external dependencies and integration points.
-
-![Repository Template](./docs/diagrams/Repository_Template_GitHub_Generic.png)
-
-The source for diagrams should be in Git for change control and review purposes. Recommendations are [draw.io](https://app.diagrams.net/) (example above in [docs](.docs/diagrams/) folder) and [Mermaids](https://github.com/mermaid-js/mermaid). Here is an example Mermaids sequence diagram:
-
-```mermaid
-sequenceDiagram
-    User->>+Service: GET /users?params=...
-    Service->>Service: auth request
-    Service->>Database: get all users
-    Database-->>Service: list of users
-    Service->>Service: filter users
-    Service-->>-User: list[User]
-```
-
-### Modularity
-
-Most of the projects are built with customisability and extendability in mind. At a minimum, this can be achieved by implementing service level configuration options and settings. The intention of this section is to show how this can be used. If the system processes data, you could mention here for example how the input is prepared for testing - anonymised, synthetic or live data.
-
-## Contributing
-
-Describe or link templates on how to raise an issue, feature request or make a contribution to the codebase. Reference the other documentation files, like
-
-- Environment setup for contribution, i.e. `CONTRIBUTING.md`
-- Coding standards, branching, linting, practices for development and testing
-- Release process, versioning, changelog
-- Backlog, board, roadmap, ways of working
-- High-level requirements, guiding principles, decision records, etc.
-
-## Contacts
-
-Provide a way to contact the owners of this project. It can be a team, an individual or information on the means of getting in touch via active communication channels, e.g. opening a GitHub discussion, raising an issue, etc.
-
-## Licence
-
-> The [LICENCE.md](./LICENCE.md) file will need to be updated with the correct year and owner
-
-Unless stated otherwise, the codebase is released under the MIT License. This covers both the codebase and any sample code in the documentation.
-
-Any HTML or Markdown documentation is [© Crown Copyright](https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/) and available under the terms of the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
+Make sure to link all modules from this README.
