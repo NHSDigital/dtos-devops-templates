@@ -81,6 +81,7 @@ steps:
     echo "Contents of Workspace after tests:"
     find "$(Pipeline.Workspace)" -type d -not -path '*/.git*' | sort
   displayName: Display directories
+  condition: succededOrFailed()
 
 - task: PowerShell@2
   displayName: 'Copy Test Files'
