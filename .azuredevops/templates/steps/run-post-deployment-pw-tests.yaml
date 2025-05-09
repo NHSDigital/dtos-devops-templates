@@ -16,7 +16,7 @@ steps:
     echo "SourceDirectory = $(Build.SourcesDirectory)"
     echo "WorkingDirectory = $(System.DefaultWorkingDirectory)"
     echo " "
-    echo "Listing directories in $(Build.SourcesDirectory)"
+    echo "Listing directories in SourcesDirectory:"
     find "$(Build.SourcesDirectory)" -type d | sort
   displayName: Display directories within SourcesDirectory
 
@@ -26,8 +26,14 @@ steps:
   inputs:
     SourceFolder: '$(System.DefaultWorkingDirectory)'
     Contents: |
-      **/*
+      **/bin/*
+      **/obj/*
+      **/TestResults/*
+      **/drop/*
     RemoveSourceFolder: false
+
+- checkout: self
+  path: 'source'
 
 - task: NodeTool@0
   displayName: 'Install Node.js'
@@ -37,7 +43,7 @@ steps:
 - script: |
     npm install
   displayName: 'Install npm dependencies'
-  workingDirectory: '$(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}'
+  workingDirectory: '$(Build.SourcesDirectory)/source/${{ parameters.testProjectDirectory }}'
 
 - script: |
     echo "Current working directory:"
@@ -47,7 +53,7 @@ steps:
     echo "Running tests..."
     npm test
   displayName: 'Run Tests'
-  workingDirectory: '$(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}'
+  workingDirectory: '$(Build.SourcesDirectory)/source/${{ parameters.testProjectDirectory }}'
   env:
     CONTAINER_NAME: $(CONTAINER_NAME)
     Is_CloudEnvironment: $(Is_CloudEnvironment)
@@ -61,7 +67,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $sourcePath = "$(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
+      $sourcePath = "$(Build.SourcesDirectory)/source/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
       $targetPath = "$(Build.ArtifactStagingDirectory)/TestFiles"
 
       Write-Host "Source path: $sourcePath"
@@ -126,7 +132,7 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Playwright Test Reports'
   inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
+    PathtoPublish: '$(Build.SourcesDirectory)/source/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
     ArtifactName: 'PlaywrightHTMLReport'
     publishLocation: 'Container'
 
@@ -135,7 +141,7 @@ steps:
   condition: succeeded()
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: $(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
+    testResultsFiles: $(Build.SourcesDirectory)/source/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
     failTaskOnFailedTests: true
     mergeTestResults: true
     publishRunAttachments: true
