@@ -48,7 +48,7 @@ steps:
 - script: |
     npm install
   displayName: 'Install npm dependencies'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/source/${{ parameters.testProjectDirectory }}'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
 
 
 - script: |
@@ -59,7 +59,7 @@ steps:
     echo "Running tests..."
     npm test
   displayName: 'Run Tests'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/source/${{ parameters.testProjectDirectory }}'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
   env:
     CONTAINER_NAME: $(CONTAINER_NAME)
     Is_CloudEnvironment: $(Is_CloudEnvironment)
@@ -74,7 +74,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $sourcePath = "$(System.DefaultWorkingDirectory)/source/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
+      $sourcePath = "$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
       $targetPath = "$(Build.ArtifactStagingDirectory)/TestFiles"
 
       Write-Host "Source path: $sourcePath"
@@ -115,7 +115,7 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Playwright Test Reports'
   inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/source/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
     ArtifactName: 'PlaywrightHTMLReport'
     publishLocation: 'Container'
 
@@ -125,10 +125,14 @@ steps:
   condition: succeeded()
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: $(System.DefaultWorkingDirectory)/source/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
+    testResultsFiles: $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
     failTaskOnFailedTests: true
     mergeTestResults: true
     publishRunAttachments: true
+
+- checkout: dtos-devops-templates
+  sparseCheckoutDirectories: scripts
+  path: templates/scripts
 
 - script: |
     SCRIPT_PATH="$(Build.SourcesDirectory)/templates/scripts/integrations/slack/SlackIntegrator.py"
