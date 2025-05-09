@@ -130,9 +130,9 @@ steps:
     mergeTestResults: true
     publishRunAttachments: true
 
-- checkout: dtos-devops-templates
-  sparseCheckoutDirectories: scripts
-  path: templates/scripts
+# - checkout: dtos-devops-templates
+#   sparseCheckoutDirectories: scripts
+#   path: templates/scripts
 
 - script: |
     SCRIPT_PATH="$(Build.SourcesDirectory)/templates/scripts/integrations/slack/SlackIntegrator.py"
