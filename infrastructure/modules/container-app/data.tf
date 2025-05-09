@@ -10,3 +10,7 @@ data "azurerm_key_vault_secrets" "app" {
 
   key_vault_id = data.azurerm_key_vault.app[0].id
 }
+
+data "azurerm_resource_group" "main" {
+  name = var.resource_group_name
+}
