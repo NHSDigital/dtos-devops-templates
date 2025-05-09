@@ -12,15 +12,6 @@ parameters:
   default: ''
 
 steps:
-
-- script: |
-    echo "SourceDirectory = $(Build.SourcesDirectory)"
-    echo "WorkingDirectory = $(System.DefaultWorkingDirectory)"
-    echo " "
-    echo "Listing directories in SourcesDirectory:"
-    find "$(Build.SourcesDirectory)" -type d | sort
-  displayName: Display directories within SourcesDirectory
-
 - task: DeleteFiles@1
   displayName: 'Clean DefaultWorkingDirectory'
   inputs:
@@ -31,6 +22,17 @@ steps:
       **/TestResults/*
       **/drop/*
     RemoveSourceFolder: false
+
+- script: |
+    echo "SourceDirectory = $(Build.SourcesDirectory)"
+    echo "WorkingDirectory = $(System.DefaultWorkingDirectory)"
+    echo " "
+    echo "Current working directory:"
+    pwd
+    echo "Contents of the directory:"
+    ls -la
+  displayName: Display directories
+
 
 - task: NodeTool@0
   displayName: 'Install Node.js'
@@ -95,36 +97,11 @@ steps:
     ArtifactName: 'TestFiles'
     publishLocation: 'Container'
 
+
 - script: |
     export AZURE_IDENTITY_DISABLE_MANAGED_IDENTITY=true
   displayName: 'Export Identity Config'
 
-# - task: NodeTool@0
-#   displayName: 'Install Node.js'
-#   inputs:
-#     versionSpec: '22.x'
-
-# - script: |
-#     npm install
-#   displayName: 'Install npm dependencies'
-#   workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
-
-# - script: |
-#     echo "Current working directory:"
-#     pwd
-#     echo "Contents of the directory:"
-#     ls -la
-#     echo "Running tests..."
-#     npm test
-#   displayName: 'Run Tests'
-#   workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
-#   env:
-#     CONTAINER_NAME: $(CONTAINER_NAME)
-#     Is_CloudEnvironment: $(Is_CloudEnvironment)
-#     CAASFOLDER_STORAGE_CONNECTION_STRING: $(CAASFOLDER_STORAGE_CONNECTION_STRING)
-#     ENDPOINT_COHORT_DISTRIBUTION_DATA_SERVICE: $(ENDPOINT_COHORT_DISTRIBUTION_DATA_SERVICE)
-#     ENDPOINT_PARTICIPANT_MANAGEMENT_DATA_SERVICE: $(ENDPOINT_PARTICIPANT_MANAGEMENT_DATA_SERVICE)
-#     ENDPOINT_EXCEPTION_MANAGEMENT_DATA_SERVICE: $(ENDPOINT_EXCEPTION_MANAGEMENT_DATA_SERVICE)
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Playwright Test Reports'
@@ -142,8 +119,6 @@ steps:
     failTaskOnFailedTests: true
     mergeTestResults: true
     publishRunAttachments: true
-
-
 
 - script: |
     SCRIPT_PATH="$(Build.SourcesDirectory)/scripts/integrations/slack/SlackIntegrator.py"
