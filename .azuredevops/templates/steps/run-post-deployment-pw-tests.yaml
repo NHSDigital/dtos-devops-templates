@@ -212,18 +212,18 @@ steps:
   condition: and(
     eq(variables['resFileScript.hasResults'], 'true'),
     eq(variables['checkScriptPath.hasFile'], 'true'),
-    ne('$(envScript.envSlackWebhook)', '')
+    ne(variables['envScript.envSlackWebhook'], '')
     )
   env:
-    slackWebHook: $(envSlackWebhook)
+    slackWebHook: $(envScript.envSlackWebhook)
   inputs:
     scriptSource: 'filePath'
     scriptPath: '$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py'
     arguments: >
-      -env $(ENVIRONMENT)
-      --report_path $(Build.ArtifactStagingDirectory)/JUnit/results.xml
+      --env "$(ENVIRONMENT)"
+      --report_path "$(Build.ArtifactStagingDirectory)/JUnit/results.xml"
       --build_url $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)
+      --webhook "$(slackWebHook)"
       -d $(Build.BuildId)
       -m $(Build.BuildNumber)
-      -u $(Build.RequestedFor)
-      -webhook $(slackWebHook)
+      -u "$(Build.RequestedFor)"
