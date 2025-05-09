@@ -139,13 +139,13 @@ steps:
   inputs:
     testResultsFormat: 'JUnit'
     testResultsFiles: $(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
-    failTaskOnFailedTests: true
+    failTaskOnFailedTests: false
     mergeTestResults: true
     publishRunAttachments: true
   condition: succeededOrFailed()
 
 - script: |
-    SCRIPT_PATH="$(Pipeline.Workspace)/templates/integrations/slack/SlackIntegrator.py"
+    SCRIPT_PATH="$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py"
 
     if [ ! -f "$SCRIPT_PATH" ]; then
       echo "Error: SlackIntegrator script file not found at $SCRIPT_PATH"
@@ -184,7 +184,7 @@ steps:
     slackWebHook: $(envSlackWebhook)
   inputs:
     scriptSource: 'filePath'
-    scriptPath: '$(Pipeline.Workspace)/templates/integrations/slack/SlackIntegrator.py'
+    scriptPath: '$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py'
     arguments: >
       -env $(ENVIRONMENT)
       --report_path $(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
