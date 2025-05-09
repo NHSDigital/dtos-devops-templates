@@ -33,7 +33,7 @@ steps:
 - script: |
     npm install
   displayName: 'Install npm dependencies'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
+  workingDirectory: '$(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}'
 
 - script: |
     echo "Current working directory:"
@@ -43,7 +43,7 @@ steps:
     echo "Running tests..."
     npm test
   displayName: 'Run Tests'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
+  workingDirectory: '$(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}'
   env:
     CONTAINER_NAME: $(CONTAINER_NAME)
     Is_CloudEnvironment: $(Is_CloudEnvironment)
@@ -57,7 +57,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $sourcePath = "$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
+      $sourcePath = "$(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
       $targetPath = "$(Build.ArtifactStagingDirectory)/TestFiles"
 
       Write-Host "Source path: $sourcePath"
@@ -122,7 +122,7 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Playwright Test Reports'
   inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
+    PathtoPublish: '$(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
     ArtifactName: 'PlaywrightHTMLReport'
     publishLocation: 'Container'
 
@@ -131,7 +131,7 @@ steps:
   condition: succeeded()
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: $(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
+    testResultsFiles: $(Build.SourcesDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
     failTaskOnFailedTests: true
     mergeTestResults: true
     publishRunAttachments: true
