@@ -27,11 +27,28 @@ steps:
 - script: |
     echo "SourceDirectory = $(Build.SourcesDirectory)"
     echo "WorkingDirectory = $(System.DefaultWorkingDirectory)"
+    echo "Repository LocalPath = $(Build.Repository.LocalPath)"
+    echo "Workspace = $(Pipeline.Workspace)"
     echo " "
     echo "Current working directory:"
     pwd
     echo "Contents of the directory:"
     ls -la
+
+    echo "Contents of SourceDirectory ($(Build.SourcesDirectory)):"
+    ls -la "$(Build.SourcesDirectory)" || echo "Directory not found."
+
+    echo " "
+    echo "Contents of WorkingDirectory ($(System.DefaultWorkingDirectory)):"
+    ls -la "$(System.DefaultWorkingDirectory)" || echo "Directory not found."
+
+    echo " "
+    echo "Contents of Repository LocalPath ($(Build.Repository.LocalPath)):"
+    ls -la "$(Build.Repository.LocalPath)" || echo "Directory not found."
+
+    echo " "
+    echo "Contents of Workspace ($(Pipeline.Workspace)):"
+    ls -la "$(Pipeline.Workspace)" || echo "Directory not found."
   displayName: Display directories
 
 
