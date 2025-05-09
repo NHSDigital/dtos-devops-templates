@@ -35,7 +35,7 @@ steps:
 
     echo " "
     echo "Contents of Workspace ($(Pipeline.Workspace)):"
-    find "$(Pipeline.Workspace)" -type d -not -path '*/.git*' | sed 's|[^/]*/|  |g' | sort
+    find "$(Pipeline.Workspace)" -type d -not -path '*/.git*' | sort
   displayName: Display directories
 
 
