@@ -34,16 +34,3 @@ data "azurerm_key_vault_certificate" "letsencrypt" {
     null_resource.letsencrypt_cert
   ]
 }
-
-# references to the created certificate pfx blobs, for outputs
-data "azurerm_key_vault_secret" "pfx_blob" {
-  for_each = local.letsencrypt_certs_map
-
-  name = "pfx-${replace(replace(each.value.cert_subject, "*.", "wildcard-"), ".", "-")}"
-
-  key_vault_id = var.key_vaults[each.value.region].key_vault_id
-
-  depends_on = [
-    null_resource.letsencrypt_cert
-  ]
-}
