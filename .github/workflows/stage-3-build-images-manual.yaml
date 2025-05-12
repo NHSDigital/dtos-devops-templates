@@ -224,49 +224,6 @@ jobs:
           path: ./${{ env.VULNERABILITIES_SUMMARY_LOGFILE }}
           retention-days: 21
 
-  tag-all-repositories:
-    name: "Append short commit hash to images"
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    # This job will only run if the manual workflow is executed on the 'main' branch
-    # and a commit hash is available.
-    if: github.ref == 'refs/heads/main' && needs.build-and-push.outputs.short_commit_hash != ''
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          # Only need latest for this job if it runs
-          fetch-depth: 1
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Checkout dtos-devops-templates repository
-        uses: actions/checkout@v4
-        with:
-          repository: NHSDigital/dtos-devops-templates
-          path: templates
-          ref: main
-
-      - name: Az CLI login
-        if: github.ref == 'refs/heads/main'
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Azure Container Registry login
-        if: github.ref == 'refs/heads/main'
-        run: az acr login --name ${{ secrets.ACR_NAME }}
-
-      - name: Tag all repositories with new short commit hash
-        env:
-          ACR_NAME: ${{ secrets.ACR_NAME }}
-          SHORT_COMMIT_HASH: ${{ needs.build-and-push.outputs.short_commit_hash }}
-          ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
-        run: bash ./templates/scripts/deployments/append-commit-hash.sh
-
   aggregate-json:
     runs-on: ubuntu-latest
     needs: build-and-push
