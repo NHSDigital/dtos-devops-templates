@@ -10,9 +10,6 @@ parameters:
 - name: slackWebHook
   type: string
   default: ''
-- name: runDummyTests
-  type: boolean
-  default: false
 
 steps:
 - checkout: self
@@ -67,15 +64,7 @@ steps:
     ls -la
     echo "Running tests..."
 
-    if [ "${{ parameters.runDummyTests }}" == "true" ]; then
-      TEST_COMMAND="npm test:dummy"
-      echo "##vso[task.logissue type=info] Running dummy tests..."
-    else
-      TEST_COMMAND="npm test"
-      echo "##vso[task.logissue type=info] Running smoke tests..."
-    fi
-
-    $TEST_COMMAND
+    npm test
 
     EXIT_CODE=$?
 
