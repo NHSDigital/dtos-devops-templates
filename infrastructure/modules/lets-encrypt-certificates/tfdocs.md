@@ -62,6 +62,10 @@ Type: `string`
 
 The following outputs are exported:
 
+### <a name="output_key_vault_certificate_pfx_blobs"></a> [key\_vault\_certificate\_pfx\_blobs](#output\_key\_vault\_certificate\_pfx\_blobs)
+
+Description: n/a
+
 ### <a name="output_key_vault_certificates"></a> [key\_vault\_certificates](#output\_key\_vault\_certificates)
 
 Description: key is "${cert\_key}-${region}"
@@ -73,3 +77,4 @@ The following resources are used by this module:
 - [null_resource.letsencrypt_cert](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) (resource)
 - [azurerm_dns_zone.lookup](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/dns_zone) (data source)
 - [azurerm_key_vault_certificate.letsencrypt](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_certificate) (data source)
+- [azurerm_key_vault_secret.pfx_blob](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) (data source)
