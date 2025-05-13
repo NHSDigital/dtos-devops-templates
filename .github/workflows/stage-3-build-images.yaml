@@ -52,8 +52,8 @@ on:
         description: Excluded containers in a comma separated list
         required: true
         type: string
-      build_all_services: # New input for manual "build all"
-        description: Manual build for ALL services defined in compose files
+      build_all_containers: # New input for manual "build all"
+        description: Manual build for ALL containers defined in compose files
         required: false
         type: boolean
         default: false
@@ -89,7 +89,7 @@ jobs:
           EXCLUDED_CONTAINERS_CSV: ${{ (github.event_name == 'workflow_call' && inputs.excluded_containers_csv_list) || github.event.inputs.excluded_containers_csv_list }}
           SOURCE_CODE_PATH: ${{ (github.event_name == 'workflow_call' && inputs.function_app_source_code_path) || github.event.inputs.function_app_source_code_path }}
           # Pass manual flag to script; defaults to 'false' if not a workflow_dispatch or if input not set
-          MANUAL_BUILD_ALL: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.build_all_services) || 'false' }}
+          BUILD_ALL_CONTAINERS: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.build_all_containers) || 'false' }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash ./templates/scripts/deployments/get-docker-names.sh
 

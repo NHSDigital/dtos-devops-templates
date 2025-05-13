@@ -41,9 +41,9 @@ echo -e "\nChanged source code folder(s):"
 printf "  - %s\n" "${source_changes[@]}"
 echo
 
-# If MANUAL_BUILD_ALL is true
-if [[ "${MANUAL_BUILD_ALL,,}" == "true" ]]; then
-    echo "MANUAL_BUILD_ALL is true. Change detection based on specific folders will be skipped; all services will be included."
+# If BUILD_ALL_CONTAINERS is true
+if [[ "${BUILD_ALL_CONTAINERS,,}" == "true" ]]; then
+    echo "BUILD_ALL_CONTAINERS is true. Change detection based on specific folders will be skipped; all services will be included."
     source_changes=()
 fi
 
@@ -104,8 +104,8 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
     echo
 
     # STEP 2 - Now check the source code changes against the map created in STEP 1 to determine which containers to build
-    if [[ "${MANUAL_BUILD_ALL,,}" == "true" ]]; then
-        echo "MANUAL_BUILD_ALL: Adding all services from '${compose_file}'."
+    if [[ "${BUILD_ALL_CONTAINERS,,}" == "true" ]]; then
+        echo "BUILD_ALL_CONTAINERS: Adding all services from '${compose_file}'."
         for key in "${!docker_services_map[@]}"; do
             changed_services+=("${docker_services_map[$key]}")
         done
