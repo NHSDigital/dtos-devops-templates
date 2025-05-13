@@ -29,6 +29,35 @@ on:
         required: true
         type: string
 
+  workflow_dispatch: # Added for manual triggers
+    inputs:
+      environment_tag:
+        description: Environment of the deployment
+        required: true
+        type: string
+        default: development
+      docker_compose_file:
+        description: The path of the compose.yaml file needed to build docker images
+        required: true
+        type: string
+      function_app_source_code_path:
+        description: The source path of the function app source code for the docker builds
+        required: true
+        type: string
+      project_name:
+        description: The name of the project
+        required: true
+        type: string
+      excluded_containers_csv_list:
+        description: Excluded containers in a comma separated list
+        required: true
+        type: string
+      build_all_services: # New input for manual "build all"
+        description: Manual build for ALL services defined in compose files
+        required: false
+        type: boolean
+        default: false
+
 jobs:
   get-functions:
     runs-on: ubuntu-latest
@@ -55,9 +84,13 @@ jobs:
       - name: Determine which Docker container(s) to build
         id: get-function-names
         env:
-          COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file }}
-          EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
-          SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
+          # Conditionally source inputs based on trigger type
+          COMPOSE_FILES_CSV: ${{ (github.event_name == 'workflow_call' && inputs.docker_compose_file) || github.event.inputs.docker_compose_file }}
+          EXCLUDED_CONTAINERS_CSV: ${{ (github.event_name == 'workflow_call' && inputs.excluded_containers_csv_list) || github.event.inputs.excluded_containers_csv_list }}
+          SOURCE_CODE_PATH: ${{ (github.event_name == 'workflow_call' && inputs.function_app_source_code_path) || github.event.inputs.function_app_source_code_path }}
+          # Pass manual flag to script; defaults to 'false' if not a workflow_dispatch or if input not set
+          MANUAL_BUILD_ALL: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.build_all_services) || 'false' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash ./templates/scripts/deployments/get-docker-names.sh
 
   build-and-push:
@@ -103,7 +136,8 @@ jobs:
       - name: Create Tags
         env:
           GH_TOKEN: ${{ github.token }}
-          ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
+          # Conditionally source environment_tag
+          ENVIRONMENT_TAG: ${{ (github.event_name == 'workflow_call' && inputs.environment_tag) || github.event.inputs.environment_tag }}
         continue-on-error: false
         run: |
           echo "The branch is: ${GITHUB_REF}"
@@ -130,8 +164,9 @@ jobs:
         working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
-          COMPOSE_FILE: ${{ inputs.docker_compose_file }}
-          PROJECT_NAME: ${{ inputs.project_name }}
+          # Conditionally source inputs
+          COMPOSE_FILE: ${{ (github.event_name == 'workflow_call' && inputs.docker_compose_file) || github.event.inputs.docker_compose_file }}
+          PROJECT_NAME: ${{ (github.event_name == 'workflow_call' && inputs.project_name) || github.event.inputs.project_name }}
         run: |
           function=${{ matrix.function }}
           echo PROJECT_NAME: ${PROJECT_NAME}
@@ -275,7 +310,8 @@ jobs:
         env:
           ACR_NAME: ${{ secrets.ACR_NAME }}
           SHORT_COMMIT_HASH: ${{ needs.build-and-push.outputs.short_commit_hash }}
-          ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
+          # Conditionally source environment_tag
+          ENVIRONMENT_TAG: ${{ (github.event_name == 'workflow_call' && inputs.environment_tag) || github.event.inputs.environment_tag }}
         run: bash ./templates/scripts/deployments/append-commit-hash.sh
 
   aggregate-json:

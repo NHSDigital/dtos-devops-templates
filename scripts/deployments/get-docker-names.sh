@@ -41,6 +41,12 @@ echo -e "\nChanged source code folder(s):"
 printf "  - %s\n" "${source_changes[@]}"
 echo
 
+# If MANUAL_BUILD_ALL is true
+if [[ "${MANUAL_BUILD_ALL,,}" == "true" ]]; then
+    echo "MANUAL_BUILD_ALL is true. Change detection based on specific folders will be skipped; all services will be included."
+    source_changes=()
+fi
+
 [[ -n "${EXCLUDED_CONTAINERS_CSV}" ]] && EXCLUSION_FILTER="select($(echo "${EXCLUDED_CONTAINERS_CSV}" | awk -v ORS='' '{split($0, arr, ","); for (i in arr) printf ".container_name != \"%s\" and ", arr[i]} END {print "1"}')) |"
 
 IFS_OLD=$IFS
@@ -98,7 +104,12 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
     echo
 
     # STEP 2 - Now check the source code changes against the map created in STEP 1 to determine which containers to build
-    if [[ ${#source_changes[@]} -eq 0 ]]; then
+    if [[ "${MANUAL_BUILD_ALL,,}" == "true" ]]; then
+        echo "MANUAL_BUILD_ALL: Adding all services from '${compose_file}'."
+        for key in "${!docker_services_map[@]}"; do
+            changed_services+=("${docker_services_map[$key]}")
+        done
+    elif [[ ${#source_changes[@]} -eq 0 ]]; then
         echo "No files changed."
 
     elif [[ "${source_changes[*],,}" =~ shared ]]; then
