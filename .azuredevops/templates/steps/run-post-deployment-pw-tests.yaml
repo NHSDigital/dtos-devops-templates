@@ -7,12 +7,24 @@ parameters:
   type: string
 - name: testfileDirectory
   type: string
+- name: slackWebHook
+  type: string
+  default: ''
 
 steps:
+- checkout: self
+  path: main_repo
+  displayName: 'Checkout Main Repo'
+
+- checkout: dtos-devops-templates
+  sparseCheckoutDirectories: scripts
+  path: templates
+  displayName: 'Checkout Templates Repo'
+
 - task: DeleteFiles@1
-  displayName: 'Clean Build Directory'
+  displayName: 'Clean DefaultWorkingDirectory'
   inputs:
-    SourceFolder: '$(System.DefaultWorkingDirectory)'
+    SourceFolder: '$(Pipeline.Workspace)'
     Contents: |
       **/bin/*
       **/obj/*
@@ -20,12 +32,71 @@ steps:
       **/drop/*
     RemoveSourceFolder: false
 
+- script: |
+    echo "SourceDirectory = $(Build.SourcesDirectory)"
+    echo "WorkingDirectory = $(System.DefaultWorkingDirectory)"
+    echo "Repository LocalPath = $(Build.Repository.LocalPath)"
+    echo "Workspace = $(Pipeline.Workspace)"
+    echo " "
+    echo "Current working directory:"
+    pwd
+  displayName: 'Display Build Variables'
+
+
+- task: NodeTool@0
+  displayName: 'Install Node.js'
+  inputs:
+    versionSpec: '22.x'
+
+
+- script: |
+    npm install
+  displayName: 'Install npm dependencies'
+  workingDirectory: '$(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}'
+
+
+- script: |
+    set +e
+
+    echo "Current working directory:"
+    pwd
+    echo "Contents of the directory:"
+    ls -la
+    echo "Running tests..."
+
+    npm test
+
+    EXIT_CODE=$?
+
+    if [ $EXIT_CODE -eq 1 ]; then
+      echo "##vso[task.logissue type=warning] Failure detected while running tests. Exit code was $EXIT_CODE."
+    fi
+
+    exit $EXIT_CODE
+  displayName: 'Run Tests'
+  workingDirectory: '$(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}'
+  continueOnError: true
+  env:
+    CONTAINER_NAME: $(CONTAINER_NAME)
+    Is_CloudEnvironment: $(Is_CloudEnvironment)
+    CAASFOLDER_STORAGE_CONNECTION_STRING: $(CAASFOLDER_STORAGE_CONNECTION_STRING)
+    ENDPOINT_COHORT_DISTRIBUTION_DATA_SERVICE: $(ENDPOINT_COHORT_DISTRIBUTION_DATA_SERVICE)
+    ENDPOINT_PARTICIPANT_MANAGEMENT_DATA_SERVICE: $(ENDPOINT_PARTICIPANT_MANAGEMENT_DATA_SERVICE)
+    ENDPOINT_EXCEPTION_MANAGEMENT_DATA_SERVICE: $(ENDPOINT_EXCEPTION_MANAGEMENT_DATA_SERVICE)
+
+- script: |
+    echo " "
+    echo "Workspace contents after tests:"
+    find "$(Pipeline.Workspace)" -type d -not -path '*/.git*' | sort
+  displayName: 'Display Directories after Tests'
+  condition: succeededOrFailed()
+
 - task: PowerShell@2
   displayName: 'Copy Test Files'
   inputs:
     targetType: 'inline'
     script: |
-      $sourcePath = "$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
+      $sourcePath = "$(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/${{parameters.testfileDirectory}}"
       $targetPath = "$(Build.ArtifactStagingDirectory)/TestFiles"
 
       Write-Host "Source path: $sourcePath"
@@ -48,6 +119,7 @@ steps:
       # Verify files were copied
       Write-Host "Files copied to target directory:"
       Get-ChildItem -Path $targetPath -Recurse | ForEach-Object { Write-Host $_.FullName }
+  condition: succeededOrFailed()
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Test Files'
@@ -55,51 +127,110 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'TestFiles'
     publishLocation: 'Container'
+  condition: succeededOrFailed()
 
 - script: |
     export AZURE_IDENTITY_DISABLE_MANAGED_IDENTITY=true
   displayName: 'Export Identity Config'
 
-- task: NodeTool@0
-  displayName: 'Install Node.js'
-  inputs:
-    versionSpec: '22.x'
-
-- script: |
-    npm install
-  displayName: 'Install npm dependencies'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
-
-- script: |
-    echo "Current working directory:"
-    pwd
-    echo "Contents of the directory:"
-    ls -la
-    echo "Running tests..."
-    npm test
-  displayName: 'Run Tests'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}'
-  env:
-    CONTAINER_NAME: $(CONTAINER_NAME)
-    Is_CloudEnvironment: $(Is_CloudEnvironment)
-    CAASFOLDER_STORAGE_CONNECTION_STRING: $(CAASFOLDER_STORAGE_CONNECTION_STRING)
-    ENDPOINT_COHORT_DISTRIBUTION_DATA_SERVICE: $(ENDPOINT_COHORT_DISTRIBUTION_DATA_SERVICE)
-    ENDPOINT_PARTICIPANT_MANAGEMENT_DATA_SERVICE: $(ENDPOINT_PARTICIPANT_MANAGEMENT_DATA_SERVICE)
-    ENDPOINT_EXCEPTION_MANAGEMENT_DATA_SERVICE: $(ENDPOINT_EXCEPTION_MANAGEMENT_DATA_SERVICE)
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Playwright Test Reports'
   inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
+    PathtoPublish: '$(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report'
     ArtifactName: 'PlaywrightHTMLReport'
     publishLocation: 'Container'
+  condition: succeededOrFailed()
+
+- script: |
+    echo "Copying JUnit results.xml to artifact staging directory..."
+
+    SOURCE_PATH="$(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml"
+    TARGET_PATH="$(Build.ArtifactStagingDirectory)/JUnit"
+
+    echo "Source path: $SOURCE_PATH"
+    echo "Target path: $TARGET_PATH"
+
+    # Ensure target directory exists
+    mkdir -p "$TARGET_PATH"
+
+    # Check if source file exists
+    if [ -f "$SOURCE_PATH" ]; then
+      cp "$SOURCE_PATH" "$TARGET_PATH/"
+      echo "File copied successfully."
+      echo "##vso[task.setvariable variable=hasResults;isOutput=true]true"
+    else
+      echo "Warning: Source file not found: $SOURCE_PATH"
+      echo "##vso[task.setvariable variable=hasResults;isOutput=true]false"
+    fi
+  displayName: 'Copy JUnit Results to Artifact Staging'
+  condition: succeededOrFailed()
+  name: resFileScript
 
 - task: PublishTestResults@2
   displayName: 'Publish JUnit Test Results'
-  condition: succeededOrFailed()
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: '$(System.DefaultWorkingDirectory)/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml'
-    failTaskOnFailedTests: true
+    testResultsFiles: $(Pipeline.Workspace)/main_repo/${{ parameters.testProjectDirectory }}/src/config/playwright-report/results.xml
+    failTaskOnFailedTests: false
     mergeTestResults: true
     publishRunAttachments: true
+  condition: succeededOrFailed()
+
+- script: |
+    SCRIPT_PATH="$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py"
+
+    if [ ! -f "$SCRIPT_PATH" ]; then
+      echo "Error: SlackIntegrator script file not found at $SCRIPT_PATH"
+      echo "##vso[task.logissue type=error]Script file not found at $SCRIPT_PATH"
+      echo "Please consider running a checkout on the repository at a given commit ID."
+
+      echo "##vso[task.setvariable variable=hasFile;isOutput=true]false"
+    else
+      echo "Script file found: $SCRIPT_PATH"
+
+      echo "##vso[task.setvariable variable=hasFile;isOutput=true]true"
+    fi
+  displayName: 'Notify - Check for SlackIntegrator.py'
+  name: checkScriptPath
+  condition: succeededOrFailed()
+
+- script: |
+    if [ -n "${SLACK_WEBHOOK:-}" ]; then
+      echo "##vso[task.setvariable variable=envSlackWebhook;isOutput=true]$(SLACK_WEBHOOK)"
+      URL_SOURCE="Environment"
+    else
+      echo "##vso[task.setvariable variable=envSlackWebhook;isOutput=true]${{ parameters.slackWebHook }}"
+      URL_SOURCE="Parameters"
+    fi
+    echo "URL source: $URL_SOURCE"
+  displayName: 'Notify - Resolve Slack Webhook URL'
+  condition: succeededOrFailed()
+  name: envScript
+
+- script: |
+    echo "hasResults: $(resFileScript.hasResults)"
+    echo "hasFile: $(checkScriptPath.hasFile)"
+    echo "envSlackWebhook: $(envScript.envSlackWebhook)"
+  displayName: 'Notify - Variable Values'
+  condition: succeededOrFailed()
+
+- task: PythonScript@0
+  displayName: 'Notify - Run Script'
+  condition: and(
+    eq(variables['resFileScript.hasResults'], 'true'),
+    eq(variables['checkScriptPath.hasFile'], 'true'),
+    ne(variables['envScript.envSlackWebhook'], '')
+    )
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: '$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py'
+    arguments: >
+      --env "$(TARGET_ENVIRONMENT)"
+      --reports "$(Build.ArtifactStagingDirectory)/JUnit/results.xml"
+      --url $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)
+      --webhook "$(envScript.envSlackWebhook)"
+      --id $(Build.BuildId)
+      --user "$(Build.RequestedFor)"
+      --pipeline "$(Build.Repository.Name) Build Pipelines"
+      --branch "$(Build.SourceBranchName)"
