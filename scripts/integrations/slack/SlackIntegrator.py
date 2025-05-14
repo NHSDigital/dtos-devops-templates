@@ -123,7 +123,7 @@ def main(argv):
 
     if not args.reports:
         print(
-            "❌ 'REPORT_PATH' was not specified. Please use the '-r' or '--report' parameters to provide a valid path to a JUnit test results file."
+            "❌ 'REPORT_PATH' was not specified. Please use the '-r' or '--reports' parameters to provide a valid path to a JUnit test results file."
         )
         sys.exit(1)
 
