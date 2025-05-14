@@ -246,17 +246,17 @@ Type: `string`
 
 Default: `null`
 
-### <a name="input_wildcard_ssl_cert_key_vault_secret_id"></a> [wildcard\_ssl\_cert\_key\_vault\_secret\_id](#input\_wildcard\_ssl\_cert\_key\_vault\_secret\_id)
+### <a name="input_wildcard_ssl_cert_name"></a> [wildcard\_ssl\_cert\_name](#input\_wildcard\_ssl\_cert\_name)
 
-Description: Wildcard SSL certificate Key Vault secret id, for App Service Custom Domain binding.
+Description: Wildcard SSL certificate name as it will appear in the App Service binding, for Custom Domain binding.
 
 Type: `string`
 
 Default: `null`
 
-### <a name="input_wildcard_ssl_cert_name"></a> [wildcard\_ssl\_cert\_name](#input\_wildcard\_ssl\_cert\_name)
+### <a name="input_wildcard_ssl_cert_pfx_blob_key_vault_secret_name"></a> [wildcard\_ssl\_cert\_pfx\_blob\_key\_vault\_secret\_name](#input\_wildcard\_ssl\_cert\_pfx\_blob\_key\_vault\_secret\_name)
 
-Description: Wildcard SSL certificate name, for Custom Domain binding.
+Description: Wildcard SSL certificate pfx blob Key Vault secret name, for Custom Domain binding.
 
 Type: `string`
 
@@ -293,3 +293,4 @@ The following resources are used by this module:
 - [azurerm_app_service_virtual_network_swift_connection.appservice_vnet_swift_connection](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_virtual_network_swift_connection) (resource)
 - [azurerm_monitor_autoscale_setting.asp_autoscale](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_autoscale_setting) (resource)
 - [azurerm_service_plan.appserviceplan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/service_plan) (resource)
+- [azurerm_key_vault_secret.pfx_blob](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) (data source)

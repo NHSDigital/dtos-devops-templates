@@ -15,7 +15,6 @@ class SlackWebhookBot:
             "Content-Type": "application/json",
         }
 
-
     def send_report_message(self, args: Namespace, test_results) -> bool:
         try:
 
@@ -43,7 +42,6 @@ class SlackWebhookBot:
         except Exception as e:
             logger.error(f"Error reading or sending file content: {e}")
             return False
-
 
     def send(self, message) -> bool:
         success = False

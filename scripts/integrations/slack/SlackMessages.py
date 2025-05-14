@@ -34,7 +34,6 @@ def clean_url(url) -> str:
 def url_link_text(url):
     return f"<{url}|here>" if url else "(no URL)"
 
-
 def slack_message_style1_heading(pipeline_source, success: bool | None = None):
     pipeline_source = pipeline_source or "Build Pipelines"
     success_text = " 😎 " if success is True else " 😭 " if success is False else ""
@@ -46,7 +45,6 @@ def slack_message_style1_heading(pipeline_source, success: bool | None = None):
                 "text": f"{success_text}*{pipeline_source}*",
             },
         }]
-
 
 def slack_message_style1_subheading(test_results, build_url):
     total_circles = 5

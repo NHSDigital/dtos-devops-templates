@@ -75,7 +75,7 @@ resource "azurerm_linux_web_app" "this" {
 resource "azurerm_dns_txt_record" "validation" {
   for_each = toset(var.custom_domains)
 
-  provider = azurerm.hub # Terraform Managed Identity will need DNS Contributor RBAC role on the DNS Zone
+  provider = azurerm.dns # Terraform Managed Identity will need DNS Contributor RBAC role on the DNS Zone
 
   name                = "asuid.${split(".", each.key)[0]}"
   zone_name           = replace(each.key, "${split(".", each.key)[0]}.", "")
