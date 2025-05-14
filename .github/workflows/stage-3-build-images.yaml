@@ -5,6 +5,7 @@ on:
     branches:
       - main
 
+  # only an automatic release
   workflow_call:
     inputs:
       environment_tag:
