@@ -1,12 +1,10 @@
-data "azurerm_key_vault" "app" {
-  count = var.app_key_vault_name != null ? 1 : 0
+data "azurerm_key_vault_secrets" "app" {
+  count      = var.fetch_secrets_from_app_key_vault ? 1 : 0
+  depends_on = [module.key_vault_reader_role]
 
-  name                = var.app_key_vault_name
-  resource_group_name = var.resource_group_name
+  key_vault_id = var.app_key_vault_id
 }
 
-data "azurerm_key_vault_secrets" "app" {
-  count = var.app_key_vault_name != null ? 1 : 0
-
-  key_vault_id = data.azurerm_key_vault.app[0].id
+data "azurerm_resource_group" "main" {
+  name = var.resource_group_name
 }

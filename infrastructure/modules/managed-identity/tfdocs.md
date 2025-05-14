@@ -45,6 +45,10 @@ Description: n/a
 ### <a name="output_name"></a> [name](#output\_name)
 
 Description: n/a
+
+### <a name="output_principal_id"></a> [principal\_id](#output\_principal\_id)
+
+Description: n/a
 ## Resources
 
 The following resources are used by this module:
