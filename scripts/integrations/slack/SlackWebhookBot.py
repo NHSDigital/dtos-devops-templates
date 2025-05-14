@@ -18,11 +18,10 @@ class SlackWebhookBot:
     def send_report_message(self, args: Namespace, test_results) -> bool:
         try:
 
-            header_b1 = slack_message_header_block_1(args.pipeline)
-            header_b2 = slack_message_header_block_2(test_results, args.url)
+            header_b1 = slack_message_style1_heading(args.pipeline)
+            header_b2 = slack_message_style1_subheading(test_results, args.url)
             header_b1.extend(header_b2)
-
-            body = slack_message_content_style_1(
+            body = slack_message_style1_content(
                 test_results,
                 args.env,
                 args.date,
@@ -32,31 +31,33 @@ class SlackWebhookBot:
             )
 
             border_color = (
-                "#2eb886"
-                if test_results["pass_rate"] == 100
-                else "#e01e5a" if test_results["failures"] > 0 else "#ecb22e"
+                "#2eb886" if test_results["pass_rate"] == 100 else
+                "#e01e5a" if test_results["failures"] > 0 else
+                "#ecb22e"
             )
 
-            return self.send(header_b1, body, None, border_color)
+            message = slack_message(header_b1, body, None, border_color)
+
+            return self.send(message)
         except Exception as e:
             logger.error(f"Error reading or sending file content: {e}")
             return False
 
-    def send(self, header, body, context, outline_color) -> bool:
+    def send(self, message) -> bool:
         success = False
         try:
             r = requests.post(
                 self.webhook_url,
                 headers=self.headers,
-                json=slack_message(header, body, context, outline_color),
+                json=message,
                 timeout=self.timeout,
             )
             if r.status_code == 200:
                 success = True
-                logger.info("Message sent successfully to Slack.")
+                logger.info("Message sent successfully to Slack endpoint.")
             else:
                 logger.error(
-                    f"Failed to send message to Slack. Status code: {r.status_code}, response: {r.text}"
+                    f"Failed to send message to Slack endpoint. Status code: {r.status_code}, response: {r.text}"
                 )
         except requests.Timeout:
             logger.error(
@@ -65,7 +66,7 @@ class SlackWebhookBot:
         except requests.RequestException as e:
             logger.error(f"Error occurred while communicating with Slack: {e}.")
         else:
-            success = True
-            logger.info("Successfully sent message to Slack.")
+            success = False
+            logger.info("Another error occurred while sending the message to Slack endpoint.")
 
         return success

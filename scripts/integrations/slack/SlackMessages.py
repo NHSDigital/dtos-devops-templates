@@ -2,25 +2,26 @@ from typing import Dict
 from datetime import datetime
 
 def slack_message(header, body, context, outline_color) -> Dict:
-    blocks = []
+    attachmentBlocks = []
+    headerBlocks =[]
 
     if header:
-        headers = header if isinstance(header, list) else [{"type": "section", "text": {"type": "mrkdwn", "text": header}}]
+        headerBlocks = header if isinstance(header, list) else [{"type": "section", "text": {"type": "mrkdwn", "text": header}}]
 
     if body:
         bodies = body if isinstance(body, list) else [{"type": "section", "text": {"type": "mrkdwn", "text": body}}]
-        blocks.extend(bodies)
+        attachmentBlocks.extend(bodies)
 
-    headers.append({"type": "section", "text": {"text": "   ", "type": "plain_text"}})
+    headerBlocks.append({"type": "section", "text": {"text": "   ", "type": "plain_text"}})
 
     if context:
         contexts = context if isinstance(context, list) else [{"type": "section", "text": {"type": "mrkdwn", "text": context}}]
-        blocks.extend(contexts)
+        attachmentBlocks.extend(contexts)
 
     return {
         "username": "PipelinesBot",
-        "blocks": headers,
-        "attachments": [{"color": f"{outline_color}", "blocks": blocks}],
+        "blocks": headerBlocks,
+        "attachments": [{"color": f"{outline_color}", "blocks": attachmentBlocks}],
     }
 
 
@@ -33,7 +34,7 @@ def clean_url(url) -> str:
 def url_link_text(url):
     return f"<{url}|here>" if url else "(no URL)"
 
-def slack_message_header_block_1(pipeline_source, success: bool | None = None):
+def slack_message_style1_heading(pipeline_source, success: bool | None = None):
     pipeline_source = pipeline_source or "Build Pipelines"
     success_text = " 😎 " if success is True else " 😭 " if success is False else ""
 
@@ -45,7 +46,7 @@ def slack_message_header_block_1(pipeline_source, success: bool | None = None):
             },
         }]
 
-def slack_message_header_block_2(test_results, build_url):
+def slack_message_style1_subheading(test_results, build_url):
     total_circles = 5
     pass_rate = test_results.get("pass_rate", 0)
     total_tests = test_results.get("total", 0)
@@ -74,7 +75,7 @@ def slack_message_header_block_2(test_results, build_url):
     ]
 
 
-def slack_message_content_style_1(
+def slack_message_style1_content(
     test_results,
     environment,
     deploy_date: str,
@@ -82,6 +83,9 @@ def slack_message_content_style_1(
     deploy_id: str,
     branch_id: str
 ):
+    '''
+    Creates a default Build Completed with Test Results style
+    '''
 
     user = deploy_user or "(user)"
     id = f" (#{deploy_id})" if deploy_id else ""
