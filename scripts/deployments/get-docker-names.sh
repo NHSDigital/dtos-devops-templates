@@ -1,6 +1,13 @@
 #!/bin/bash
 
-set -eo pipefail
+# Exit immediately if a command exits with a non-zero status.
+set -e
+# Treat unset variables as an error when substituting.
+set -u
+# Pipestatus: if any command in a pipeline fails, the return status is that of the failed command.
+set -o pipefail
+# Print each command to stderr before executing.
+set -x
 
 remove_from_array() {
     local item_to_remove="$1"
@@ -40,12 +47,6 @@ fi
 echo -e "\nChanged source code folder(s):"
 printf "  - %s\n" "${source_changes[@]}"
 echo
-
-# If BUILD_ALL_CONTAINERS is true
-if [[ "${BUILD_ALL_CONTAINERS,,}" == "true" ]]; then
-    echo "BUILD_ALL_CONTAINERS is true. Change detection based on specific folders will be skipped; all services will be included."
-    source_changes=()
-fi
 
 [[ -n "${EXCLUDED_CONTAINERS_CSV}" ]] && EXCLUSION_FILTER="select($(echo "${EXCLUDED_CONTAINERS_CSV}" | awk -v ORS='' '{split($0, arr, ","); for (i in arr) printf ".container_name != \"%s\" and ", arr[i]} END {print "1"}')) |"
 
@@ -104,12 +105,7 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
     echo
 
     # STEP 2 - Now check the source code changes against the map created in STEP 1 to determine which containers to build
-    if [[ "${BUILD_ALL_CONTAINERS,,}" == "true" ]]; then
-        echo "BUILD_ALL_CONTAINERS: Adding all services from '${compose_file}'."
-        for key in "${!docker_services_map[@]}"; do
-            changed_services+=("${docker_services_map[$key]}")
-        done
-    elif [[ ${#source_changes[@]} -eq 0 ]]; then
+    if [[ ${#source_changes[@]} -eq 0 ]]; then
         echo "No files changed."
 
     elif [[ "${source_changes[*],,}" =~ shared ]]; then
