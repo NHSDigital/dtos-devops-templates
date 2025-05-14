@@ -28,7 +28,7 @@ A Terraform module to obtain publicly trusted SSL certificates from the Let's En
 
 ## Example Usage
 
-```terraform
+```hcl
 module "lets_encrypt_certificates" {
   source = "../../dtos-devops-templates/infrastructure/modules/lets-encrypt-certificates"
 
@@ -57,7 +57,7 @@ module "lets_encrypt_certificates" {
 
 Note the compound key `${naming_key}-${region}`:
 
-```terraform
+```hcl
 key_vault_certificates = {
   "nationalscreening_wildcard-uksouth" = {
     "id"                    = "redacted"
