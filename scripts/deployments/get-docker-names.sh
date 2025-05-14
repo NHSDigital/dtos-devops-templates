@@ -1,6 +1,13 @@
 #!/bin/bash
 
-set -eo pipefail
+# Exit immediately if a command exits with a non-zero status.
+set -e
+# Treat unset variables as an error when substituting.
+set -u
+# Pipestatus: if any command in a pipeline fails, the return status is that of the failed command.
+set -o pipefail
+# Print each command to stderr before executing.
+set -x
 
 remove_from_array() {
     local item_to_remove="$1"
