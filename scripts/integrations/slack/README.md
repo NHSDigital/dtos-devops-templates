@@ -124,8 +124,8 @@ Since the Slack webhook is the most important value required, the pipeline ensur
 
 ```yaml
 - script: |
-    if [ -n "${SLACK_WEBHOOK:-}" ]; then
-      echo "##vso[task.setvariable variable=envSlackWebhook;isOutput=true]$(SLACK_WEBHOOK)"
+    if [ -n "${SLACK_WEBHOOK_URL:-}" ]; then
+      echo "##vso[task.setvariable variable=envSlackWebhook;isOutput=true]$(SLACK_WEBHOOK_URL)"
     else
       echo "##vso[task.setvariable variable=envSlackWebhook;isOutput=true]${{ parameters.slackWebHook }}"
     fi
@@ -164,7 +164,7 @@ If `user` or `branch` are not provided, then the script will substitute `(None)`
 Example usage:
 
 ```bash
-python SlackIntegrator.py --env dev --reports /path_to_Junit_results/results.xml --webhook <url>
+python SlackIntegrator.py --env dev --reports /path_to_Junit_results/results.xml -w URL_VALUE
 
 ```
 
