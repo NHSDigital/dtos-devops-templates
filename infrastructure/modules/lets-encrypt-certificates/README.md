@@ -1,6 +1,6 @@
 # lets-encrypt-certificates
 
-> ⚠️ **Note:** This module is now deprecated - replaced by module 'acme-certificate'.
+> ⚠️ **Note:** This module is now deprecated - replaced by module [acme-certificate](../acme-certificate/README.md).
 
 A Terraform module to obtain publicly trusted SSL certificates from the Let's Encrypt Certificate Authority. This module addresses the lack of a native, integrated certificate management solution in Azure, equivalent to AWS Certificate Manager.
 
@@ -29,7 +29,6 @@ A Terraform module to obtain publicly trusted SSL certificates from the Let's En
   This will result in the parent shell being authenticated with Azure (for the null resource), and Terraform will use those same session credentials exported via environment variables.
 
 ## Example Usage
-
 ```hcl
 module "lets_encrypt_certificates" {
   source = "../../dtos-devops-templates/infrastructure/modules/lets-encrypt-certificates"

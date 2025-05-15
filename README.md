@@ -3,6 +3,7 @@
 This repository contains terraform modules and Azure devops pipeline steps to deploy DTOS applications.
 
 ## Terraform modules
+- [acme-certificate](infrastructure/modules/acme-certificate/README.md)
 - [api-management](infrastructure/modules/api-management/README.md)
 - [app-insights](infrastructure/modules/app-insights/README.md)
 - [app-service-plan](infrastructure/modules/app-service-plan/README.md)
