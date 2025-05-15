@@ -160,13 +160,3 @@ The `SlackIntegrator.py` script accepts several arguments to control notificatio
 
 If `user` or `branch` are not provided, then the script will substitute `(None)` into the output message.
 
-
-Example usage:
-
-```bash
-python SlackIntegrator.py \
-  --env dev \
-  --reports /path_to_Junit_results/results.xml \
-  --webhook <WEBHOOK_PLACEHOLDER>
-```
-
