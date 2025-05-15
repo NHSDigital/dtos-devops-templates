@@ -32,7 +32,8 @@ resource "azurerm_application_gateway" "this" {
   }
 
   ssl_policy {
-    min_protocol_version = var.min_tls_ver
+    policy_type = "Predefined"
+    policy_name = var.ssl_policy_name
   }
 
   dynamic "frontend_port" {

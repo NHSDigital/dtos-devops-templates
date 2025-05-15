@@ -61,10 +61,10 @@ locals {
         parman_www_prd = lower("parman-www-prd-htst-${var.env}-${var.location_map[var.location]}-${var.application}")
       }
       ssl_certificate_name = {
-        nationalscreening_private = "lets-encrypt-nationalscreening-wildcard-private"
-        nationalscreening_public  = "lets-encrypt-nationalscreening-wildcard-public"
-        screening_private         = "lets-encrypt-screening-wildcard-private"
-        screening_public          = "lets-encrypt-screening-wildcard-public"
+        nationalscreening_wildcard_private = "lets-encrypt-nationalscreening-wildcard-private"
+        nationalscreening_wildcard         = "lets-encrypt-nationalscreening-wildcard-public"
+        screening_wildcard_private         = "lets-encrypt-screening-wildcard-private"
+        screening_wildcard                 = "lets-encrypt-screening-wildcard-public"
       }
       http_listener_name = {
         apim_gateway_public   = lower("apim-gateway-pub-listener-${var.env}-${var.location_map[var.location]}-${var.application}")

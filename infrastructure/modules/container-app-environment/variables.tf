@@ -19,7 +19,7 @@ variable "vnet_integration_subnet_id" {
 }
 
 variable "private_dns_zone_rg_name" {
-  type = string
+  type        = string
   description = "Name of the hub resource group where the private DNS zone is located."
 }
 

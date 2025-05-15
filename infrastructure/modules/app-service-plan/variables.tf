@@ -65,6 +65,12 @@ variable "wildcard_ssl_cert_pfx_blob_key_vault_secret_name" {
   default     = null
 }
 
+variable "wildcard_ssl_cert_pfx_password" {
+  type        = string
+  description = "Wildcard SSL certificate pfx password, for Custom Domain binding."
+  default     = null
+}
+
 variable "wildcard_ssl_cert_key_vault_id" {
   type        = string
   description = "Wildcard SSL certificate Key Vault id, needed if the Key Vault is in a different subscription."
