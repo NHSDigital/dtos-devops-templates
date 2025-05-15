@@ -164,7 +164,7 @@ If `user` or `branch` are not provided, then the script will substitute `(None)`
 Example usage:
 
 ```bash
-python SlackIntegrator.py --env dev --reports /path_to_Junit_results/results.xml --webhook <slack_webhook_url>
+python SlackIntegrator.py --env dev --reports /path_to_Junit_results/results.xml --webhook <url>
 
 ```
 
