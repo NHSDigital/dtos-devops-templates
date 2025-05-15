@@ -30,4 +30,9 @@ steps:
       workingDirectory: $(TF_DIRECTORY)
       inlineScript: |
         ${{ parameters.tfApplyScript }}
+        # The ACME provider uses the lego library (Let's Encrypt for Go), which expects the following env vars
+        export AZURE_CLIENT_ID=$ARM_CLIENT_ID
+        export AZURE_CLIENT_SECRET=$ARM_CLIENT_SECRET
+        export AZURE_SUBSCRIPTION_ID=$ARM_SUBSCRIPTION_ID
+        export AZURE_TENANT_ID=$ARM_TENANT_ID
         terraform apply -auto-approve -input=false $(TF_PLAN_ARTIFACT)/$(ENVIRONMENT).tfplan
