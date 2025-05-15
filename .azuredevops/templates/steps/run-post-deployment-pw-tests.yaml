@@ -196,8 +196,8 @@ steps:
   condition: succeededOrFailed()
 
 - script: |
-    if [ -n "${SLACK_WEBHOOK:-}" ]; then
-      echo "##vso[task.setvariable variable=envSlackWebhook;isOutput=true]$(SLACK_WEBHOOK)"
+    if [ -n "${SLACK_WEBHOOK_URL:-}" ]; then
+      echo "##vso[task.setvariable variable=envSlackWebhook;isOutput=true]$(SLACK_WEBHOOK_URL)"
       URL_SOURCE="Environment"
     else
       echo "##vso[task.setvariable variable=envSlackWebhook;isOutput=true]${{ parameters.slackWebHook }}"
