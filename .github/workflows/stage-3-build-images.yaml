@@ -43,7 +43,7 @@ jobs:
       id-token: write
     outputs:
       FUNC_NAMES: ${{ steps.get-function-names.outputs.FUNC_NAMES }}
-      DOCKER_COMPOSE_DIR: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }} # ?????
+      DOCKER_COMPOSE_DIR: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -63,9 +63,9 @@ jobs:
           COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file }}
           EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
           SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
-          MANUAL_BUILD_ALL: ${{ inputs.build_all_services || 'false' }} # <<< MINIMAL CHANGE #3: Pass the new input to the script
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For `gh` CLI in script
-        run: bash ./templates/scripts/deployments/get-docker-names.sh # Adjust path if checkout path `templates` is different
+          MANUAL_BUILD_ALL: ${{ inputs.build_all_services || 'false' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash ./templates/scripts/deployments/get-docker-names.sh
 
   build-and-push:
     runs-on: ubuntu-latest
@@ -134,7 +134,7 @@ jobs:
           echo "ENVIRONMENT_TAG=${ENVIRONMENT_TAG}" >> ${GITHUB_ENV}
 
       - name: Build and Push Image
-        working-directory: ${{ needs.get-functions.outputs.DOCKER_COMPOSE_DIR }} # <<< MINIMAL CHANGE #4: Correctly use job output
+        working-directory: ${{ needs.get-functions.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
           COMPOSE_FILE: ${{ inputs.docker_compose_file }}
