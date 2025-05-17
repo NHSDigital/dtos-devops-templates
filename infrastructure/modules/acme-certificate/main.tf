@@ -13,7 +13,7 @@ resource "azurerm_dns_cname_record" "challenge_redirect" {
   zone_name           = var.certificate.dns_cname_zone_name
   resource_group_name = coalesce(var.certificate.dns_challenge_zone_rg_name, var.public_dns_zone_resource_group_name)
   ttl                 = 300
-  record              = "_acme-challenge.${split(".", var.certificate.common_name)[0]}.${var.certificate.dns_challenge_zone_name}"
+  record              = "_acme-challenge.${split(".", replace(var.certificate.common_name, "*.", ""))[0]}.${var.certificate.dns_challenge_zone_name}"
 }
 
 # A Private DNS zone that overlaps the public namespace also needs the challenge CNAME record to pass Lego azuredns checks. Private DNS is regional.
