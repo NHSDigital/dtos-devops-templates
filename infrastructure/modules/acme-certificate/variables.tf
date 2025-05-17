@@ -1,4 +1,5 @@
 variable "acme_registration_account_key_pem" {
+  # https://registry.terraform.io/providers/vancluever/acme/latest/docs/resources/registration
   description = "Account key for the ACME registration, created once in the root module."
   type        = string
 }
