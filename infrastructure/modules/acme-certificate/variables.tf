@@ -26,6 +26,12 @@ variable "key_vaults" {
   type        = map(string)
 }
 
+variable "private_dns_zones" {
+  description = "Private DNS Zones, keyed by region, to determine local resource group name. Optionally used to satisfy Lego azuredns checks for CNAME redirections of DNS-01 challenges."
+  type        = map(any)
+  default     = null
+}
+
 variable "public_dns_zone_resource_group_name" {
   type = string
 }

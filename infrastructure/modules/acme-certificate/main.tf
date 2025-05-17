@@ -28,7 +28,7 @@ resource "azurerm_private_dns_cname_record" "challenge_redirect_private" {
 
   name                = "_acme-challenge.${replace(var.certificate.common_name, ".${var.certificate.dns_private_cname_zone_name}", "")}"
   zone_name           = var.certificate.dns_private_cname_zone_name
-  resource_group_name = azurerm_resource_group.private_dns_rg[var.certificate.region].name
+  resource_group_name = var.private_dns_zones[var.certificate.region].name
   ttl                 = 300
   record              = azurerm_dns_cname_record.challenge_redirect[0].record
 }
