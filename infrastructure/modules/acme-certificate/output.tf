@@ -12,5 +12,5 @@ output "key_vault_certificate" {
       versionless_secret_id = v.versionless_secret_id
     }
   }
-  sensitive = true 
+  sensitive = true
 }
