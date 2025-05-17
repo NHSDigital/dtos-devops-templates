@@ -1,3 +1,8 @@
+variable "acme_registration_account_key_pem" {
+  description = "Account key for the ACME registration, created once in the root module."
+  type        = string
+}
+
 variable "certificate" {
   # https://registry.terraform.io/providers/vancluever/acme/latest/docs/resources/certificate
   description = "Details of ACME certificate to be requested."
@@ -14,11 +19,6 @@ variable "certificate" {
 
 variable "certificate_name" {
   type = string
-}
-
-variable "email" {
-  description = "Contact email address for certificate expiry notifications."
-  type        = string
 }
 
 variable "key_vaults" {

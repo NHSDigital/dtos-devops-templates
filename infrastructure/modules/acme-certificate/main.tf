@@ -1,7 +1,3 @@
-resource "acme_registration" "this" {
-  email_address = var.email
-}
-
 resource "random_password" "pfx" {
   length  = 30
   special = true
@@ -34,7 +30,7 @@ resource "azurerm_private_dns_cname_record" "challenge_redirect_private" {
 }
 
 resource "acme_certificate" "this" {
-  account_key_pem           = acme_registration.this.account_key_pem
+  account_key_pem           = var.acme_registration_account_key_pem
   common_name               = var.certificate.common_name
   subject_alternative_names = var.certificate.subject_alternative_names
   key_type                  = var.certificate.key_type
