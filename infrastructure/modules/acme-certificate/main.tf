@@ -22,13 +22,13 @@ resource "azurerm_dns_cname_record" "challenge_redirect" {
 
 # A Private DNS zone that overlaps the public namespace also needs the challenge CNAME record to pass Lego azuredns checks. Private DNS is regional.
 resource "azurerm_private_dns_cname_record" "challenge_redirect_private" {
-  count = var.certificate.dns_private_cname_zone_name != null ? 1 : 0
+  for_each = var.certificate.dns_private_cname_zone_name != null ? var.private_dns_zones : {}
 
   provider = azurerm.dns_private # Terraform Managed Identity will need DNS Contributor RBAC role on the DNS Zone
 
   name                = "_acme-challenge.${replace(var.certificate.common_name, ".${var.certificate.dns_private_cname_zone_name}", "")}"
   zone_name           = var.certificate.dns_private_cname_zone_name
-  resource_group_name = var.private_dns_zones[var.certificate.region].name
+  resource_group_name = each.value.name
   ttl                 = 300
   record              = azurerm_dns_cname_record.challenge_redirect[0].record
 }
