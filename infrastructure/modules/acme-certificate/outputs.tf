@@ -1,0 +1,19 @@
+output "key_vault_certificates" {
+  value = {
+    for k, v in azurerm_key_vault_certificate.acme : k => {
+      name                  = v.name
+      naming_key            = var.certificate_name
+      subject               = var.certificate.common_name
+      location              = k
+      pfx_blob_secret_name  = azurerm_key_vault_secret.acme[k].name
+      id                    = v.id
+      versionless_id        = v.versionless_id
+      versionless_secret_id = v.versionless_secret_id
+    }
+  }
+}
+
+output "pfx_password" {
+  value     = random_password.pfx.result
+  sensitive = true
+}
