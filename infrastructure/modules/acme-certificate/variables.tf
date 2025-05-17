@@ -18,7 +18,7 @@ variable "certificate" {
   })
 }
 
-variable "certificate_name" {
+variable "certificate_naming_key" {
   type = string
 }
 
