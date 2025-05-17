@@ -45,7 +45,7 @@ resource "acme_certificate" "this" {
     config = { # https://go-acme.github.io/lego/dns/azuredns/
       # AZURE_AUTH_METHOD     = "cli"
       AZURE_SUBSCRIPTION_ID = var.subscription_id_dns_public
-      AZURE_RESOURCE_GROUP  = coalesce(var.certificate.zone_rg_name, var.public_dns_zone_resource_group_name)
+      AZURE_RESOURCE_GROUP  = lookup(var.certificate, "zone_rg_name", var.public_dns_zone_resource_group_name)
       AZURE_ZONE_NAME       = var.certificate.dns_challenge_zone_name
     }
   }
