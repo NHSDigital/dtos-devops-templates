@@ -1,4 +1,4 @@
-output "key_vault_certificates" {
+output "key_vault_certificate" {
   value = {
     for k, v in azurerm_key_vault_certificate.acme : k => {
       name                  = v.name
