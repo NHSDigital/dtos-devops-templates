@@ -7,5 +7,10 @@ terraform {
         azurerm.dns_private
       ]
     }
+
+    acme = {
+      source  = "vancluever/acme"
+      version = "~> 2.0"
+    }
   }
 }
