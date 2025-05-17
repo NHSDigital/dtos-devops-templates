@@ -9,7 +9,7 @@ resource "azurerm_dns_cname_record" "challenge_redirect" {
 
   provider = azurerm.dns_public # Terraform Managed Identity will need DNS Contributor RBAC role on the DNS Zone
 
-  name                = "_acme-challenge.${replace(var.certificate.common_name, ".${var.certificate.dns_cname_zone_name}", "")}"
+  name                = "_acme-challenge.${replace(replace(var.certificate.common_name, "*.", ""), ".${var.certificate.dns_cname_zone_name}", "")}"
   zone_name           = var.certificate.dns_cname_zone_name
   resource_group_name = coalesce(var.certificate.dns_challenge_zone_rg_name, var.public_dns_zone_resource_group_name)
   ttl                 = 300
@@ -22,7 +22,7 @@ resource "azurerm_private_dns_cname_record" "challenge_redirect_private" {
 
   provider = azurerm.dns_private # Terraform Managed Identity will need DNS Contributor RBAC role on the DNS Zone
 
-  name                = "_acme-challenge.${replace(var.certificate.common_name, ".${var.certificate.dns_private_cname_zone_name}", "")}"
+  name                = "_acme-challenge.${replace(replace(var.certificate.common_name, "*.", ""), ".${var.certificate.dns_private_cname_zone_name}", "")}"
   zone_name           = var.certificate.dns_private_cname_zone_name
   resource_group_name = each.value.name
   ttl                 = 300
