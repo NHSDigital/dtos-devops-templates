@@ -72,7 +72,7 @@ resource "azurerm_key_vault_certificate" "acme" {
 resource "azurerm_key_vault_secret" "acme" {
   for_each = var.key_vaults
 
-  name         = "pfx-${replace(replace(cert_values.common_name, "*.", "wildcard-"), ".", "-")}"
+  name         = "pfx-${replace(replace(var.certificate.common_name, "*.", "wildcard-"), ".", "-")}"
   key_vault_id = var.key_vaults[each.value.region].key_vault_id
   value        = acme_certificate.this[each.value.naming_key].certificate_p12
   content_type = "application/x-pkcs12"
