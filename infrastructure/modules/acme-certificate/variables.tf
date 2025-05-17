@@ -23,7 +23,7 @@ variable "email" {
 
 variable "key_vaults" {
   description = "Key Vaults to store the certificates in, keyed by region."
-  type        = map(tring)
+  type        = map(string)
 }
 
 variable "public_dns_zone_resource_group_name" {
