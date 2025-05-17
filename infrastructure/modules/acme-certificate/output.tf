@@ -5,17 +5,12 @@ output "key_vault_certificate" {
       naming_key            = var.certificate_name
       subject               = var.certificate.common_name
       location              = k
+      pfx_blob_secret_name  = azurerm_key_vault_secret.acme[k].name
+      pfx_password          = random_password.pfx.result
       id                    = v.id
       versionless_id        = v.versionless_id
       versionless_secret_id = v.versionless_secret_id
-      
-      # directly referencing the secret name causes the entire output to be classed as sensitive
-      pfx_blob_secret_name  = "pfx-${replace(replace(var.certificate.common_name, "*.", "wildcard-"), ".", "-")}"
     }
   }
-}
-
-output "pfx_password" {
-  value     = random_password.pfx.result
-  sensitive = true
+  sensitive = true 
 }
