@@ -199,13 +199,13 @@ Type: `number`
 
 Default: `null`
 
-### <a name="input_min_tls_ver"></a> [min\_tls\_ver](#input\_min\_tls\_ver)
+### <a name="input_ssl_policy_name"></a> [ssl\_policy\_name](#input\_ssl\_policy\_name)
 
-Description: Minimum allowed version of TLS
+Description: n/a
 
 Type: `string`
 
-Default: `"TLSv1_2"`
+Default: `"AppGwSslPolicy20220101"`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 

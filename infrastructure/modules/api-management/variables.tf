@@ -45,8 +45,48 @@ variable "certificate_details" {
   default = []
 }
 
-variable "developer_portal_hostname_configuration" {
-  description = "Developer Portal hostname configurations."
+variable "custom_domains_developer_portal" {
+  description = "List of Custom Domains configurations for the Developer Portal endpoint."
+  type = list(object({
+    host_name                    = string
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+  default  = []
+  nullable = false
+}
+
+variable "custom_domains_gateway" {
+  description = "List of Custom Domains configurations for the Gateway endpoint."
+  type = list(object({
+    host_name                    = string
+    default_ssl_binding          = optional(bool, false)
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+  default  = []
+  nullable = false
+}
+
+variable "custom_domains_management" {
+  description = "List of Custom Domains configurationd for the Management endpoint."
+  type = list(object({
+    host_name                    = string
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+  default  = []
+  nullable = false
+}
+
+variable "custom_domains_scm" {
+  description = "List of Custom Domains configurations for the SCM endpoint."
   type = list(object({
     host_name                    = string
     key_vault_id                 = optional(string)
@@ -89,19 +129,6 @@ variable "log_analytics_workspace_id" {
   description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
 }
 
-variable "management_hostname_configuration" {
-  description = "List of management hostname configurations."
-  type = list(object({
-    host_name                    = string
-    key_vault_id                 = optional(string)
-    certificate                  = optional(string)
-    certificate_password         = optional(string)
-    negotiate_client_certificate = optional(bool, false)
-  }))
-  default  = []
-  nullable = false
-}
-
 variable "metric_enabled" {
   type        = bool
   description = "to enable retention for diagnostic settings metric"
@@ -126,20 +153,6 @@ variable "monitor_diagnostic_setting_apim_metrics" {
   default     = null
 }
 
-variable "proxy_hostname_configuration" {
-  description = "List of proxy hostname configurations."
-  type = list(object({
-    host_name                    = string
-    default_ssl_binding          = optional(bool, false)
-    key_vault_id                 = optional(string)
-    certificate                  = optional(string)
-    certificate_password         = optional(string)
-    negotiate_client_certificate = optional(bool, false)
-  }))
-  default  = []
-  nullable = false
-}
-
 variable "public_ip_address_id" {
   description = "The ID of the public IP address to associate with the API Management service."
   type        = string
@@ -158,19 +171,6 @@ variable "publisher_email" {
 variable "publisher_name" {
   description = "The name of the publisher of the API Management service."
   type        = string
-}
-
-variable "scm_hostname_configuration" {
-  description = "List of SCM hostname configurations."
-  type = list(object({
-    host_name                    = string
-    key_vault_id                 = optional(string)
-    certificate                  = optional(string)
-    certificate_password         = optional(string)
-    negotiate_client_certificate = optional(bool, false)
-  }))
-  default  = []
-  nullable = false
 }
 
 variable "sign_in_enabled" {
@@ -251,9 +251,9 @@ variable "zones" {
 }
 
 
-/*_________________________________________________
-  API Management AAD Identity Provider variables.
-_________________________________________________*/
+/* --------------------------------------------------------------------------------------------------
+  API Management Entra ID Identity Provider variables
+-------------------------------------------------------------------------------------------------- */
 
 variable "allowed_tenants" {
   description = "A list of allowed tenants for the API Management AAD Identity Provider."

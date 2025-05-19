@@ -13,7 +13,6 @@ resource "azurerm_api_management" "apim" {
 
   virtual_network_type = var.virtual_network_type
 
-
   dynamic "virtual_network_configuration" {
     for_each = toset(var.virtual_network_configuration)
     content {
@@ -48,61 +47,6 @@ resource "azurerm_api_management" "apim" {
     }
   }
 
-  dynamic "hostname_configuration" {
-    for_each = length(concat(
-      var.management_hostname_configuration,
-      var.developer_portal_hostname_configuration,
-      var.proxy_hostname_configuration,
-    )) == 0 ? [] : ["enabled"]
-
-    content {
-      dynamic "management" {
-        for_each = var.management_hostname_configuration
-        content {
-          host_name                    = management.value.host_name
-          key_vault_id                 = management.value.key_vault_id
-          certificate                  = management.value.certificate
-          certificate_password         = management.value.certificate_password
-          negotiate_client_certificate = management.value.negotiate_client_certificate
-        }
-      }
-
-      dynamic "developer_portal" {
-        for_each = var.developer_portal_hostname_configuration
-        content {
-          host_name                    = developer_portal.value.host_name
-          key_vault_id                 = developer_portal.value.key_vault_id
-          certificate                  = developer_portal.value.certificate
-          certificate_password         = developer_portal.value.certificate_password
-          negotiate_client_certificate = developer_portal.value.negotiate_client_certificate
-        }
-      }
-
-      dynamic "proxy" {
-        for_each = var.proxy_hostname_configuration
-        content {
-          host_name                    = proxy.value.host_name
-          default_ssl_binding          = proxy.value.default_ssl_binding
-          key_vault_id                 = proxy.value.key_vault_id
-          certificate                  = proxy.value.certificate
-          certificate_password         = proxy.value.certificate_password
-          negotiate_client_certificate = proxy.value.negotiate_client_certificate
-        }
-      }
-
-      dynamic "scm" {
-        for_each = var.scm_hostname_configuration
-        content {
-          host_name                    = scm.value.host_name
-          key_vault_id                 = scm.value.key_vault_id
-          certificate                  = scm.value.certificate
-          certificate_password         = scm.value.certificate_password
-          negotiate_client_certificate = scm.value.negotiate_client_certificate
-        }
-      }
-    }
-  }
-
   dynamic "sign_in" {
     for_each = var.sign_in_enabled ? ["enabled"] : []
     content {
@@ -134,12 +78,62 @@ resource "azurerm_api_management" "apim" {
   tags = var.tags
 }
 
+# Moved hostname_configuration from main resource into this dedicated resource to overcome inconsistent ordering issues that resulted in changes on every plan
+resource "azurerm_api_management_custom_domain" "apim" {
+  count = length(concat(
+    var.custom_domains_management,
+    var.custom_domains_developer_portal,
+    var.custom_domains_gateway,
+    var.custom_domains_scm
+  )) == 0 ? 0 : 1
 
+  api_management_id = azurerm_api_management.apim.id
 
+  dynamic "management" {
+    for_each = var.custom_domains_management
+    content {
+      host_name                    = management.value.host_name
+      key_vault_id                 = management.value.key_vault_id
+      certificate                  = management.value.certificate
+      certificate_password         = management.value.certificate_password
+      negotiate_client_certificate = management.value.negotiate_client_certificate
+    }
+  }
 
-/*_________________________________________________
-  Manages an API Management AAD Identity Provider.
-_________________________________________________*/
+  dynamic "developer_portal" {
+    for_each = var.custom_domains_developer_portal
+    content {
+      host_name                    = developer_portal.value.host_name
+      key_vault_id                 = developer_portal.value.key_vault_id
+      certificate                  = developer_portal.value.certificate
+      certificate_password         = developer_portal.value.certificate_password
+      negotiate_client_certificate = developer_portal.value.negotiate_client_certificate
+    }
+  }
+
+  dynamic "gateway" {
+    for_each = var.custom_domains_gateway
+    content {
+      host_name                    = gateway.value.host_name
+      default_ssl_binding          = gateway.value.default_ssl_binding
+      key_vault_id                 = gateway.value.key_vault_id
+      certificate                  = gateway.value.certificate
+      certificate_password         = gateway.value.certificate_password
+      negotiate_client_certificate = gateway.value.negotiate_client_certificate
+    }
+  }
+
+  dynamic "scm" {
+    for_each = var.custom_domains_scm
+    content {
+      host_name                    = scm.value.host_name
+      key_vault_id                 = scm.value.key_vault_id
+      certificate                  = scm.value.certificate
+      certificate_password         = scm.value.certificate_password
+      negotiate_client_certificate = scm.value.negotiate_client_certificate
+    }
+  }
+}
 
 resource "azurerm_api_management_identity_provider_aad" "apim" {
   api_management_name = azurerm_api_management.apim.name
@@ -151,11 +145,6 @@ resource "azurerm_api_management_identity_provider_aad" "apim" {
   client_library  = var.client_library
 }
 
-
-/* --------------------------------------------------------------------------------------------------
-  Diagnostic Settings
--------------------------------------------------------------------------------------------------- */
-
 module "diagnostic-settings" {
   source = "../diagnostic-settings"
 
@@ -166,5 +155,3 @@ module "diagnostic-settings" {
   metric                     = var.monitor_diagnostic_setting_apim_metrics
   metric_enabled             = var.metric_enabled
 }
-
-

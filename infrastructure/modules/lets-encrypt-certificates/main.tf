@@ -1,3 +1,5 @@
+# This module is now deprecated - replaced by module 'acme-certificate'.
+
 # This INI file is used by the Azure DNS plugin for certbot to allow automation of the DNS TXT record challenges
 resource "local_file" "certbot_ini_file" {
   filename        = ".terraform/certbot_dns.ini"

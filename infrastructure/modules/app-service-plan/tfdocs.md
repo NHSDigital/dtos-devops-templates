@@ -261,6 +261,14 @@ Description: Wildcard SSL certificate pfx blob Key Vault secret name, for Custom
 Type: `string`
 
 Default: `null`
+
+### <a name="input_wildcard_ssl_cert_pfx_password"></a> [wildcard\_ssl\_cert\_pfx\_password](#input\_wildcard\_ssl\_cert\_pfx\_password)
+
+Description: Wildcard SSL certificate pfx password, for Custom Domain binding.
+
+Type: `string`
+
+Default: `null`
 ## Modules
 
 The following Modules are called:

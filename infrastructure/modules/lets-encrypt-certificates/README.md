@@ -1,5 +1,7 @@
 # lets-encrypt-certificates
 
+> ⚠️ **Note:** This module is now deprecated - replaced by module 'acme-certificate'.
+
 A Terraform module to obtain publicly trusted SSL certificates from the Let's Encrypt Certificate Authority. This module addresses the lack of a native, integrated certificate management solution in Azure, equivalent to AWS Certificate Manager.
 
 ## Features

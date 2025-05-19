@@ -29,6 +29,10 @@ resource "azurerm_virtual_desktop_host_pool" "this" {
   }
 
   tags = var.tags
+
+  lifecycle {
+    ignore_changes = [load_balancer_type] # will vary throughout the day as scaling plan operates
+  }
 }
 
 resource "azurerm_virtual_desktop_host_pool_registration_info" "registrationinfo" {

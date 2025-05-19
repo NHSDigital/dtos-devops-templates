@@ -99,11 +99,6 @@ variable "probe" {
   }))
 }
 
-variable "min_tls_ver" {
-  description = "Minimum allowed version of TLS"
-  default     = "TLSv1_2"
-}
-
 variable "names" {
   description = "A map containing configuration object names for the Application Gateway."
   type        = any
@@ -137,6 +132,12 @@ variable "ssl_certificate" {
     key_vault_secret_id = optional(string)
     password            = optional(string)
   }))
+}
+
+variable "ssl_policy_name" {
+  # https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-ssl-policy-overview
+  type    = string
+  default = "AppGwSslPolicy20220101"
 }
 
 variable "tags" {
