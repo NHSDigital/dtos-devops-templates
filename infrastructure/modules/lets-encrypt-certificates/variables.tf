@@ -1,3 +1,5 @@
+# This module is now deprecated - replaced by module 'acme-certificate'.
+
 variable "certificates" {
   description = "Map of certificates names with their subject names (DNS names)."
   type        = map(string)
