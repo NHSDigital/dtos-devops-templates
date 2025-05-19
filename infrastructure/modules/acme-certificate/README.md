@@ -26,7 +26,7 @@ acme_certificates = {
   screening_www_private = {
     common_name             = "www.private.non-live.screening.nhs.uk"           # No Azure DNS zone for 'private', so we need a CNAME redirect
     dns_cname_zone_name     = "non-live.screening.nhs.uk"                       # CNAME: _acme-challenge.www.private -> _acme-challenge.www.acme.non-live.screening.nhs.uk
-    dns_challenge_zone_name = "acme.non-live.screening.nhs.uk"                  # TXT: _acme-challenge.acme.www.non-live.screening.nhs.uk
+    dns_challenge_zone_name = "acme.non-live.screening.nhs.uk"                  # TXT: _acme-challenge.www.acme.non-live.screening.nhs.uk
   }
   nationalscreening_wildcard_private = {
     common_name                 = "*.private.non-live.nationalscreening.nhs.uk" # In this example we also have a private DNS zone of the same name
