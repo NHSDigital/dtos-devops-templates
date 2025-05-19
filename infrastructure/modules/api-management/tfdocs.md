@@ -120,9 +120,64 @@ Type: `string`
 
 Default: `"MSAL-2"`
 
-### <a name="input_developer_portal_hostname_configuration"></a> [developer\_portal\_hostname\_configuration](#input\_developer\_portal\_hostname\_configuration)
+### <a name="input_custom_domains_developer_portal"></a> [custom\_domains\_developer\_portal](#input\_custom\_domains\_developer\_portal)
 
-Description: Developer Portal hostname configurations.
+Description: List of Custom Domains configurations for the Developer Portal endpoint.
+
+Type:
+
+```hcl
+list(object({
+    host_name                    = string
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+```
+
+Default: `[]`
+
+### <a name="input_custom_domains_gateway"></a> [custom\_domains\_gateway](#input\_custom\_domains\_gateway)
+
+Description: List of Custom Domains configurations for the Gateway endpoint.
+
+Type:
+
+```hcl
+list(object({
+    host_name                    = string
+    default_ssl_binding          = optional(bool, false)
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+```
+
+Default: `[]`
+
+### <a name="input_custom_domains_management"></a> [custom\_domains\_management](#input\_custom\_domains\_management)
+
+Description: List of Custom Domains configurationd for the Management endpoint.
+
+Type:
+
+```hcl
+list(object({
+    host_name                    = string
+    key_vault_id                 = optional(string)
+    certificate                  = optional(string)
+    certificate_password         = optional(string)
+    negotiate_client_certificate = optional(bool, false)
+  }))
+```
+
+Default: `[]`
+
+### <a name="input_custom_domains_scm"></a> [custom\_domains\_scm](#input\_custom\_domains\_scm)
+
+Description: List of Custom Domains configurations for the SCM endpoint.
 
 Type:
 
@@ -162,24 +217,6 @@ Type: `string`
 
 Default: `"SystemAssigned"`
 
-### <a name="input_management_hostname_configuration"></a> [management\_hostname\_configuration](#input\_management\_hostname\_configuration)
-
-Description: List of management hostname configurations.
-
-Type:
-
-```hcl
-list(object({
-    host_name                    = string
-    key_vault_id                 = optional(string)
-    certificate                  = optional(string)
-    certificate_password         = optional(string)
-    negotiate_client_certificate = optional(bool, false)
-  }))
-```
-
-Default: `[]`
-
 ### <a name="input_metric_enabled"></a> [metric\_enabled](#input\_metric\_enabled)
 
 Description: to enable retention for diagnostic settings metric
@@ -212,25 +249,6 @@ Type: `list(string)`
 
 Default: `null`
 
-### <a name="input_proxy_hostname_configuration"></a> [proxy\_hostname\_configuration](#input\_proxy\_hostname\_configuration)
-
-Description: List of proxy hostname configurations.
-
-Type:
-
-```hcl
-list(object({
-    host_name                    = string
-    default_ssl_binding          = optional(bool, false)
-    key_vault_id                 = optional(string)
-    certificate                  = optional(string)
-    certificate_password         = optional(string)
-    negotiate_client_certificate = optional(bool, false)
-  }))
-```
-
-Default: `[]`
-
 ### <a name="input_public_ip_address_id"></a> [public\_ip\_address\_id](#input\_public\_ip\_address\_id)
 
 Description: The ID of the public IP address to associate with the API Management service.
@@ -238,24 +256,6 @@ Description: The ID of the public IP address to associate with the API Managemen
 Type: `string`
 
 Default: `null`
-
-### <a name="input_scm_hostname_configuration"></a> [scm\_hostname\_configuration](#input\_scm\_hostname\_configuration)
-
-Description: List of SCM hostname configurations.
-
-Type:
-
-```hcl
-list(object({
-    host_name                    = string
-    key_vault_id                 = optional(string)
-    certificate                  = optional(string)
-    certificate_password         = optional(string)
-    negotiate_client_certificate = optional(bool, false)
-  }))
-```
-
-Default: `[]`
 
 ### <a name="input_sign_in_enabled"></a> [sign\_in\_enabled](#input\_sign\_in\_enabled)
 
@@ -349,4 +349,5 @@ Description: The system-assigned identity of the API Management service.
 The following resources are used by this module:
 
 - [azurerm_api_management.apim](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management) (resource)
+- [azurerm_api_management_custom_domain.apim](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_custom_domain) (resource)
 - [azurerm_api_management_identity_provider_aad.apim](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_identity_provider_aad) (resource)

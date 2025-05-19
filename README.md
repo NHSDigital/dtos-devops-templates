@@ -52,6 +52,7 @@ This repository contains terraform modules and Azure devops pipeline steps to de
 After working on terraform modules, always update the terraform documentation by running:
 
 ```shell
+brew install terraform-docs
 make terraform-docs
 ```
 
