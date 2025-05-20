@@ -99,7 +99,7 @@ resource "azurerm_application_gateway" "this" {
     content {
       data                = ssl_certificate.value.data
       key_vault_secret_id = ssl_certificate.value.key_vault_secret_id
-      name                = var.names.ssl_certificate_name[ssl_certificate.key]
+      name                = ssl_certificate.key
       password            = ssl_certificate.value.password
     }
   }
@@ -143,7 +143,7 @@ resource "azurerm_application_gateway" "this" {
       frontend_port_name             = var.names.frontend_port_name[http_listener.value.frontend_port_key]
       protocol                       = http_listener.value.protocol
       require_sni                    = http_listener.value.require_sni
-      ssl_certificate_name           = http_listener.value.ssl_certificate_key != null ? var.names.ssl_certificate_name[http_listener.value.ssl_certificate_key] : null
+      ssl_certificate_name           = http_listener.value.ssl_certificate_key
       ssl_profile_name               = http_listener.value.ssl_profile_name
     }
   }

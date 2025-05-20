@@ -18,24 +18,25 @@ A Terraform module to obtain publicly trusted SSL certificates from the Let's En
 
 **example.tfvars**
 ```hcl
-acme_certificates = {
-  screening_wildcard = {
-    common_name             = "*.non-live.screening.nhs.uk"
-    dns_challenge_zone_name = "non-live.screening.nhs.uk"
+acme_certificates = {                                  # RESULT
+  simple = {
+    common_name             = "*.example.com"          # Wildcards are stripped
+    dns_challenge_zone_name = "example.com"            # TXT _acme-challenge.example.com
   }
-  screening_www_private = {
-    common_name             = "www.private.non-live.screening.nhs.uk"           # No Azure DNS zone for 'private', so we need a CNAME redirect
-    dns_cname_zone_name     = "non-live.screening.nhs.uk"                       # CNAME: _acme-challenge.www.private -> _acme-challenge.www.acme.non-live.screening.nhs.uk
-    dns_challenge_zone_name = "acme.non-live.screening.nhs.uk"                  # TXT: _acme-challenge.www.acme.non-live.screening.nhs.uk
+  redirected = {
+    common_name             = "www.foo.example.com"    # No Azure DNS zone for 'foo', use a CNAME to redirect DNS-01 challenge
+    dns_cname_zone_name     = "example.com"            # CNAME _acme-challenge.www.foo resolving to the below record
+    dns_challenge_zone_name = "acme.example.com"       # TXT _acme-challenge.www.acme.example.com
   }
-  nationalscreening_wildcard_private = {
-    common_name                 = "*.private.non-live.nationalscreening.nhs.uk" # In this example we also have a private DNS zone of the same name
-    dns_cname_zone_name         = "non-live.nationalscreening.nhs.uk"           # CNAME: _acme-challenge.private -> _acme-challenge.acme.non-live.nationalscreening.nhs.uk
-    dns_private_cname_zone_name = "private.non-live.nationalscreening.nhs.uk"   # Same CNAME added into existing private zone, to satisfy Lego's checks
-    dns_challenge_zone_name     = "acme.non-live.nationalscreening.nhs.uk"      # TXT: _acme-challenge.acme.non-live.nationalscreening.nhs.uk
+  redirected_split_horizon = {
+    common_name                 = "*.bar.example.com"  # In this example we also have a private DNS zone bar.example.com
+    dns_cname_zone_name         = "example.com"        # CNAME _acme-challenge.bar resolving to the below record
+    dns_challenge_zone_name     = "acme.example.com"   # TXT _acme-challenge.acme.example.com
+    dns_private_cname_zone_name = "bar.example.com"    # CNAME _acme-challenge resolving to the above record (satisfying Lego checks)
   }
 }
 ```
+> 💡 **Note:** `dns_cname_zone_name` and `dns_private_cname_zone_name` must always be parent domains of `common_name`, while `dns_challenge_zone_name` may be any public zone you control.
 
 **certificate.tf**
 ```hcl
@@ -62,6 +63,30 @@ module "acme_certificate" {
   public_dns_zone_resource_group_name = var.dns_zone_rg_name_public
   subscription_id_dns_public          = var.TARGET_SUBSCRIPTION_ID
 }
+```
+
+To reference a resulting Key Vault Certificate:
+```hcl
+module.acme_certificate["simple"].key_vault_certificate["uksouth"].versionless_secret_id
+```
+
+To reference a resulting `.pfx` certificate file:
+```hcl
+module.acme_certificate["simple"].key_vault_certificate["uksouth"].pfx_blob_secret_name
+module.acme.certificate["simple"].key_vault_certificate["uksouth"].pfx_password
+```
+
+## Testing
+
+Remember to use the ACME staging API in your terraform providers block until the code works to your satisfaction.
+
+Remove your test certificates from your Terraform state before switching accounts or before switching between API endpoints. By default the provider will try to revoke certificates with ACME on destroy, and if you accidentally delete or replace the account first this will result in a continual:
+
+> _Error: acme: error: 400 :: POST :: https://acme-staging-v02.api.letsencrypt.org/acme/new-acct :: urn:ietf:params:acme:error:accountDoesNotExist :: No account exists with the provided key_
+
+which can only be resolved by manually pruning the certificates from the state file:
+```bash
+terraform state rm "module.acme_certificate[\"example\"].acme_certificate.this"
 ```
 
 ## Terraform documentation
