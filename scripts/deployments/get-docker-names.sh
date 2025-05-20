@@ -127,6 +127,7 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
                     changed_services+=("${docker_services_map[$function_path]}")
                     echo "  - ${folder} matches service '${docker_services_map[$function_path]}'"
                     matched="true"
+
                     remove_from_array "${folder}" source_changes
                     remove_from_array "${folder}" non_matched_changes # In case it's in this array from a previous compose file iteration
                     continue
