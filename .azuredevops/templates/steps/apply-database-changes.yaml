@@ -32,6 +32,10 @@ steps:
         export MI_ID_SQL="$(MANAGED_IDENTITY_ID_SQL)"
         export SQL_IDENTITY_CLIENT_ID="$managedIdentityClientIdSQL"
         export SQL_CONNECTION_STRING='$(DTOS_DATABASE_CONNECTION_STRING)'
+        export SUBNET_ID_SQL="$(SUBNET_ID_SQL)"
+        # Get subnet name from the subnet ID:
+        SUBNET_NAME_SQL=$(echo "$SUBNET_ID_SQL" | awk -F'/' '{print $NF}')
+        export SUBNET_NAME_SQL="$(SUBNET_NAME_SQL)"
 
         # Create a temporary file to store the substituted YAML
         temp_yaml=$(mktemp)
@@ -44,5 +48,4 @@ steps:
             --resource-group $(RESOURCE_GROUP_NAME_SQL) \
             --subscription $subscriptionId \
             --file "${temp_yaml}" \
-            --subnet $(SUBNET_ID_SQL) \
             --verbose

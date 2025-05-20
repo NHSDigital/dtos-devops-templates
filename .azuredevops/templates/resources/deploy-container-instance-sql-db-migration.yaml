@@ -25,4 +25,7 @@ properties:
       identity: '${MI_ID_ACR}'
   osType: Linux
   restartPolicy: Never
+  subnetIds:
+    - id: ${SUBNET_ID_SQL}
+      name: '${SUBNET_NAME_SQL}'
 type: Microsoft.ContainerInstance/containerGroups
