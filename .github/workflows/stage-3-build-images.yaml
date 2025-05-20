@@ -5,19 +5,20 @@ on:
     branches:
       - main
 
+
   workflow_call:
     inputs:
       environment_tag:
-        description: Environment of the deployment
+        description: The environment name of this deployment
         required: true
         type: string
         default: development
       docker_compose_file:
-        description: The path of the compose.yaml file needed to build docker images
+        description: A path to the Docker 'compose.yaml' file needed to build Docker images
         required: true
         type: string
       function_app_source_code_path:
-        description: The source path of the function app source code for the docker builds
+        description: A source path to the Function App source code used for Docker builds
         required: true
         type: string
       project_name:
@@ -25,9 +26,20 @@ on:
         required: true
         type: string
       excluded_containers_csv_list:
-        description: Excluded containers in a comma separated list
+        description: A collection of containers to exclude, in a comma-separated list
         required: true
         type: string
+
+env:
+  COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file }}
+  ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
+  EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
+  GITHUB_REF: ${{ github.ref }}
+  GITHUB_SHA: ${{ github.sha }}
+  GITHUB_EVENT_NAME: ${{ github.event_name }}
+  GITHUB_REPO_OWNER: ${{ github.repository_owner }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
 
 jobs:
   get-functions:
@@ -38,29 +50,32 @@ jobs:
       id-token: write
     outputs:
       FUNC_NAMES: ${{ steps.get-function-names.outputs.FUNC_NAMES }}
+      SKIPPED_NAMES: ${{ steps.get-function-names.outputs.SKIPPED_NAMES }}
+      DOCKER_COMPOSE_DIR: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
     steps:
       - uses: actions/checkout@v4
         with:
           # to allow git diff between HEAD and the previous commit to main branch
           fetch-depth: 2
-          token: ${{ secrets.GITHUB_TOKEN }}
+          #token: ${{ secrets.GITHUB_TOKEN }}
+          token: $GITHUB_TOKEN
 
-      - name: Checkout dtos-devops-templates repository
+      - name: Checkout DevOps Templates
         uses: actions/checkout@v4
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
           ref: main
 
-      - name: Determine which Docker container(s) to build
+      - name: Determine Docker Container(s) to Build
         id: get-function-names
-        env:
-          COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file }}
-          EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
-          SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
+        # env:
+        #   COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file }}
+        #   EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
+        #   SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
         run: bash ./templates/scripts/deployments/get-docker-names.sh
 
-  build-and-push:
+  build-and-push-containers:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -77,33 +92,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: $GITHUB_TOKEN
           fetch-depth: 1
           submodules: 'true'
 
-      - name: Checkout dtos-devops-templates repository
+      - name: Checkout DevOps Templates
         uses: actions/checkout@v4
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
           ref: main
 
-      - name: Az CLI login
-        if: github.ref == 'refs/heads/main'
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # - name: Az CLI login
+      #   if: github.ref == 'refs/heads/main'
+      #   uses: azure/login@v2
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Azure Container Registry login
-        if: github.ref == 'refs/heads/main'
-        run: az acr login --name ${{ secrets.ACR_NAME }}
+      # - name: Azure Container Registry login
+      #   if: github.ref == 'refs/heads/main'
+      #   run: az acr login --name ${{ secrets.ACR_NAME }}
 
-      - name: Create Tags
-        env:
-          GH_TOKEN: ${{ github.token }}
-          ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
+      - name: Create Image Tags
+        # env:
+        #   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        #   ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
         continue-on-error: false
         run: |
           echo "The branch is: ${GITHUB_REF}"
@@ -113,20 +128,20 @@ jobs:
           else
             PULLS_JSON=$(gh api /repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls)
             ORIGINATING_BRANCH=$(echo ${PULLS_JSON} | jq -r '.[].head.ref' | python3 -c "import sys, urllib.parse; print(urllib.parse.quote_plus(sys.stdin.read().strip()))")
-            echo "ORIGINATING_BRANCH: ${ORIGINATING_BRANCH}"
             PR_NUM_TAG=$(echo ${PULLS_JSON} | jq -r '.[].number')
+
+            echo "ORIGINATING_BRANCH: ${ORIGINATING_BRANCH}"
           fi
+
+          SHORT_COMMIT_HASH=$(git rev-parse --short ${GITHUB_SHA})
 
           echo "PR_NUM_TAG: pr${PR_NUM_TAG}"
           echo "PR_NUM_TAG=pr${PR_NUM_TAG}" >> ${GITHUB_ENV}
-
-          SHORT_COMMIT_HASH=$(git rev-parse --short ${GITHUB_SHA})
           echo "Commit hash tag: ${SHORT_COMMIT_HASH}"
           echo "COMMIT_HASH_TAG=${SHORT_COMMIT_HASH}" >> ${GITHUB_ENV}
-
           echo "ENVIRONMENT_TAG=${ENVIRONMENT_TAG}" >> ${GITHUB_ENV}
 
-      - name: Build and Push Image
+      - name: Build and Push Images
         working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
@@ -141,49 +156,68 @@ jobs:
             exit 0
           fi
 
-          # Build the image
+          # Build the image (ACR)
+          # docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${function}
+          # repo_name="${{ secrets.ACR_NAME }}.azurecr.io/${PROJECT_NAME}-${function}"
+
+          export PACKAGE_NAME="${PROJECT_NAME}-${function}"
+          export PACKAGE_REPO="ghcr.io/${GITHUB_REPO_OWNER}/${PACKAGE_NAME}"
+
+          # Build the Image (GitHub Packages)
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${function}
 
-          repo_name="${{ secrets.ACR_NAME }}.azurecr.io/${PROJECT_NAME}-${function}"
-
-          # Tag the image
-          docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${COMMIT_HASH_TAG}"
-          docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${PR_NUM_TAG}"
-          docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${ENVIRONMENT_TAG}"
+          # Tag the images
+          docker tag ${PACKAGE_NAME}:latest "$PACKAGE_REPO:${COMMIT_HASH_TAG}"
+          docker tag ${PACKAGE_NAME}:latest "$PACKAGE_REPO:${PR_NUM_TAG}"
+          docker tag ${PACKAGE_NAME}:latest "$PACKAGE_REPO:${ENVIRONMENT_TAG}"
 
           # If this variable is set, the create-sbom-report.sh script will scan this docker image instead.
-          export CHECK_DOCKER_IMAGE=${PROJECT_NAME}-${function}:latest
+          export CHECK_DOCKER_IMAGE=${PACKAGE_NAME}:latest
           export FORCE_USE_DOCKER=true
-
           export PR_NUM_TAG=${PR_NUM_TAG}
+
           echo "PR_NUM_TAG=${PR_NUM_TAG}" >> ${GITHUB_ENV}
 
           # Push the image to the repository
           if [ "${GITHUB_REF}" == 'refs/heads/main' ]; then
-            docker push "${repo_name}:${COMMIT_HASH_TAG}"
+            docker push "${PACKAGE_REPO}:${COMMIT_HASH_TAG}"
             if [ "${PR_NUM_TAG}" != 'pr' ]; then
-              docker push "${repo_name}:${PR_NUM_TAG}"
+              docker push "${PACKAGE_REPO}:${PR_NUM_TAG}"
             fi
-            docker push "${repo_name}:${ENVIRONMENT_TAG}"
+            docker push "${PACKAGE_REPO}:${ENVIRONMENT_TAG}"
           fi
 
-          export SBOM_REPOSITORY_REPORT="sbom-${function}-repository-report"
+      - name: Generate SBOM Report
+        working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
+        continue-on-error: false
+        env:
+          COMPOSE_FILE: ${{ inputs.docker_compose_file }}
+          PROJECT_NAME: ${{ inputs.project_name }}
+        run: |
+          export SBOM_REPOSITORY_REPORT="sbom-${{ matrix.function }}-repository-report"
           echo "SBOM_REPOSITORY_REPORT=$SBOM_REPOSITORY_REPORT" >> $GITHUB_ENV
           bash -x ${GITHUB_WORKSPACE}/templates/scripts/reports/create-sbom-report.sh
 
-          export VULNERABILITIES_REPOSITORY_REPORT="vulnerabilities-${function}-repository-report"
+      - name: Generate Vulnerabilities Report
+        working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
+        continue-on-error: false
+        env:
+          COMPOSE_FILE: ${{ inputs.docker_compose_file }}
+          PROJECT_NAME: ${{ inputs.project_name }}
+        run: |
+          export VULNERABILITIES_REPOSITORY_REPORT="vulnerabilities-${{ matrix.function }}-repository-report"
           echo "VULNERABILITIES_REPOSITORY_REPORT=$VULNERABILITIES_REPOSITORY_REPORT" >> $GITHUB_ENV
           bash -x ${GITHUB_WORKSPACE}/templates/scripts/reports/scan-vulnerabilities.sh
 
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
 
-          SCAN_RESULTS=$(grype "${PROJECT_NAME}-${function}:latest" --scope all-layers)
+          SCAN_RESULTS=$(grype "${PACKAGE_NAME}:latest" --scope all-layers)
           # ANSI color codes
           RED="\033[0;31m"
           RESET="\033[0m"
 
           # Define your log file
-          VULNERABILITIES_SUMMARY_LOGFILE="${PROJECT_NAME}-${function}-vulnerabilities-summary.txt"
+          VULNERABILITIES_SUMMARY_LOGFILE="${PACKAGE_NAME}-vulnerabilities-summary.txt"
           echo "VULNERABILITIES_SUMMARY_LOGFILE=$VULNERABILITIES_SUMMARY_LOGFILE" >> $GITHUB_ENV
 
           # Clear existing log file (or create if it doesn't exist)
@@ -192,46 +226,48 @@ jobs:
           for SEVERITY in CRITICAL HIGH MEDIUM; do
             {
               echo ""
-              echo "${PROJECT_NAME}-${function}: vulnerabilities"
+              echo "${PACKAGE_NAME}: vulnerabilities"
               echo -e "=== ${RED}${SEVERITY}${RESET} Vulnerabilities list ==="
+
               # If grep finds nothing, we print a fallback message
               echo "$SCAN_RESULTS" | grep -i "$SEVERITY" || echo "No $SEVERITY vulnerabilities found."
             } | tee -a "$VULNERABILITIES_SUMMARY_LOGFILE"
           done
 
-          # Remove the image
-          docker rmi "${repo_name}:${COMMIT_HASH_TAG}"
-          docker rmi "${repo_name}:${PR_NUM_TAG}"
-          docker rmi "${repo_name}:${ENVIRONMENT_TAG}"
-          docker rmi ${PROJECT_NAME}-${function}:latest
+          - name: Remove Docker Images
+        run: |
+          docker rmi "${PACKAGE_REPO}:${COMMIT_HASH_TAG}"
+          docker rmi "${PACKAGE_REPO}:${PR_NUM_TAG}"
+          docker rmi "${PACKAGE_REPO}:${ENVIRONMENT_TAG}"
+          docker rmi ${PACKAGE_NAME}:latest
 
-      - name: Compress SBOM report
+      - name: Compress SBOM Report
         shell: bash
         run: |
           echo SBOM_REPOSITORY_REPORT: ${SBOM_REPOSITORY_REPORT}
           zip "${SBOM_REPOSITORY_REPORT}.json.zip" "${SBOM_REPOSITORY_REPORT}.json"
 
-      - name: Upload SBOM report as an artefact
+      - name: Upload SBOM Report Artefact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.SBOM_REPOSITORY_REPORT }}.json.zip
           path: ./${{ env.SBOM_REPOSITORY_REPORT }}.json.zip
           retention-days: 21
 
-      - name: Compress vulnerabilities report
+      - name: Compress Vulnerabilities Report
         shell: bash
         run: |
           echo VULNERABILITIES_REPOSITORY_REPORT: ${VULNERABILITIES_REPOSITORY_REPORT}
           zip ${VULNERABILITIES_REPOSITORY_REPORT}.json.zip ${VULNERABILITIES_REPOSITORY_REPORT}.json
 
-      - name: Upload vulnerabilities report as an artefact
+      - name: Upload Vulnerabilities Report Artefact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.VULNERABILITIES_REPOSITORY_REPORT }}.json.zip
           path: ./${{ env.VULNERABILITIES_REPOSITORY_REPORT }}.json.zip
           retention-days: 21
 
-      - name: Upload vulnerabilities summary report as an artefact
+      - name: Upload Vulnerabilities Summary Report Artefact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.VULNERABILITIES_SUMMARY_LOGFILE }}
@@ -239,9 +275,9 @@ jobs:
           retention-days: 21
 
   tag-all-repositories:
-    name: "Append short commit hash to images"
+    name: "Append Short Commit Hash to all Images"
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: build-and-push-containers
     if: github.ref == 'refs/heads/main'
     permissions:
       id-token: write
@@ -250,60 +286,69 @@ jobs:
         with:
           # to allow git diff between HEAD and the previous commit to main branch
           fetch-depth: 2
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${GITHUB_TOKEN}
 
-      - name: Checkout dtos-devops-templates repository
+      - name: Checkout DevOps Templates
         uses: actions/checkout@v4
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
           ref: main
 
-      - name: Az CLI login
-        if: github.ref == 'refs/heads/main'
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # - name: Az CLI login
+      #   if: github.ref == 'refs/heads/main'
+      #   uses: azure/login@v2
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Azure Container Registry login
-        if: github.ref == 'refs/heads/main'
-        run: az acr login --name ${{ secrets.ACR_NAME }}
+      # - name: Azure Container Registry login
+      #   if: github.ref == 'refs/heads/main'
+      #   run: az acr login --name ${{ secrets.ACR_NAME }}
 
-      - name: Tag all repositories with new short commit hash
+      - name: Tag Repositories with Commit Hash
         env:
-          ACR_NAME: ${{ secrets.ACR_NAME }}
-          SHORT_COMMIT_HASH: ${{ needs.build-and-push.outputs.short_commit_hash }}
-          ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
+          #ACR_NAME: ${{ secrets.ACR_NAME }}
+          SHORT_COMMIT_HASH: ${{ needs.build-and-push-containers.outputs.short_commit_hash }}
+          # ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
+          # GITHUB_USER: ${{ github.repository_owner }}
+          # GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash ./templates/scripts/deployments/append-commit-hash.sh
+
+      # - name: Trigger Azure DevOps Pipeline
+      #   run: |
+      #     az devops configure --defaults organization=https://dev.azure.com/{???} project=YOUR_PROJECT
+      #     az pipelines run --name "XXXXX" --branch main --variables commitSha=${{ github.sha }}
+      #   env:
+      #     AZURE_DEVOPS_EXT_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
 
   aggregate-json:
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: build-and-push-containers
     steps:
-      - name: Download SBOM JSON artifacts
+      - name: Download SBOM Artifacts (JSON)
         uses: actions/download-artifact@v4
         with:
           path: ./downloaded-artifacts
 
-      - name: Combine sbom report JSON files
+      - name: Combine SBOM Reports
         run: |
-          zip sbom-repository-report-${{ needs.build-and-push.outputs.PR_NUM_TAG }}.zip downloaded-artifacts/**/sbom*.json.zip
+          zip sbom-repository-report-${{ needs.build-and-push-containers.outputs.PR_NUM_TAG }}.zip downloaded-artifacts/**/sbom*.json.zip
 
-      - name: Combine vulnerabilities report JSON files
+      - name: Combine Vulnerabilities Reports
         run: |
-          zip vulnerabilities-repository-report-${{ needs.build-and-push.outputs.PR_NUM_TAG }}.zip downloaded-artifacts/**/vulnerabilities*.json.zip
-          zip vulnerabilities-repository-report-${{ needs.build-and-push.outputs.PR_NUM_TAG }}.zip downloaded-artifacts/**/*vulnerabilities-summary*.txt
+          zip vulnerabilities-repository-report-${{ needs.build-and-push-containers.outputs.PR_NUM_TAG }}.zip downloaded-artifacts/**/vulnerabilities*.json.zip
+          zip vulnerabilities-repository-report-${{ needs.build-and-push-containers.outputs.PR_NUM_TAG }}.zip downloaded-artifacts/**/*vulnerabilities-summary*.txt
 
-      - name: Upload sbom zip file
+      - name: Upload SBOM Zip File
         uses: actions/upload-artifact@v4
         with:
-          name: aggregated-sbom-repository-report-${{ needs.build-and-push.outputs.PR_NUM_TAG }}.zip
-          path: sbom-repository-report-${{ needs.build-and-push.outputs.PR_NUM_TAG }}.zip
+          name: aggregated-sbom-repository-report-${{ needs.build-and-push-containers.outputs.PR_NUM_TAG }}.zip
+          path: sbom-repository-report-${{ needs.build-and-push-containers.outputs.PR_NUM_TAG }}.zip
 
-      - name: Upload repository zip file
+      - name: Upload Vulnerabilities Zip File
         uses: actions/upload-artifact@v4
         with:
-          name: aggregated-vulnerabilities-repository-report-${{ needs.build-and-push.outputs.PR_NUM_TAG }}.zip
-          path: vulnerabilities-repository-report-${{ needs.build-and-push.outputs.PR_NUM_TAG }}.zip
+          name: aggregated-vulnerabilities-repository-report-${{ needs.build-and-push-containers.outputs.PR_NUM_TAG }}.zip
+          path: vulnerabilities-repository-report-${{ needs.build-and-push-containers.outputs.PR_NUM_TAG }}.zip

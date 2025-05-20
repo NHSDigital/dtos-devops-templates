@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Environment Variables:
+# - COMPOSE_FILES_CSV,
+# - CHANGED_FOLDERS_CSV
+# - SOURCE_CODE_PATH
+# - GITHUB_REF
+# - EXCLUDED_CONTAINERS_CSV
+
+
 set -eo pipefail
 
 remove_from_array() {
@@ -64,10 +72,10 @@ done
 echo
 
 changed_services=()
+unchanged_services=()
 non_matched_changes=()
 
 for compose_file in ${COMPOSE_FILES_CSV}; do
-
     echo -e "Parsing Docker compose file '${compose_file}'...\n"
     declare -A docker_services_map=()
 
@@ -81,15 +89,19 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
         if [[ -z "${dockerfile}" ]] || [[ -z "${context}" ]]; then
             continue
         fi
+
         context_filtered=$(echo "${context}" | sed 's#^\./src/##' | sed 's#^\./##' | sed 's#/$##')
         dockerfile_filtered=$(echo "${dockerfile}" | sed 's#^\./##' | sed 's#\/Dockerfile##' | sed 's#Dockerfile##')
+
         if [[ -n "${context_filtered}" ]] && [[ -n "${dockerfile_filtered}" ]]; then
             function_path="${context_filtered}/${dockerfile_filtered}"
         else
             function_path="${context_filtered}${dockerfile_filtered}"
         fi
+
         docker_services_map[${function_path}]=${service}
     done
+
     printf "%-50s %-50s\n" "Service" "Path"
     printf "%-50s %-50s\n" "-------" "----"
     for key in "${!docker_services_map[@]}"; do
@@ -100,14 +112,13 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
     # STEP 2 - Now check the source code changes against the map created in STEP 1 to determine which containers to build
     if [[ ${#source_changes[@]} -eq 0 ]]; then
         echo "No files changed."
-
     elif [[ "${source_changes[*],,}" =~ shared ]]; then
-        echo "Shared folder changed, building all images."
+        echo "'Shared' folder changed, building all images."
         for key in "${!docker_services_map[@]}"; do
             changed_services+=("${docker_services_map[$key]}")
         done
     else
-        echo "Checking changed folders..."
+        echo "Checking for changed folders..."
         for folder in "${source_changes[@]}"; do
             matched="false"
             for function_path in "${!docker_services_map[@]}"; do
@@ -119,6 +130,8 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
                     remove_from_array "${folder}" source_changes
                     remove_from_array "${folder}" non_matched_changes # In case it's in this array from a previous compose file iteration
                     continue
+                else
+                  unchanged_services+=("${docker_services_map[$function_path]}")
                 fi
             done
             # Collect changed folders that were not matched to services
@@ -145,11 +158,17 @@ EOF
 fi
 
 changed_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${changed_services[@]}")"
+unchanged_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${unchanged_services[@]}")"
 
 IFS=$IFS_OLD
 echo "List of services to build:"
 echo "${changed_services_json}"
 echo "FUNC_NAMES=${changed_services_json}" >> "${GITHUB_OUTPUT}"
+echo
+echo "List of skipped services:"
+echo "${unchanged_services_json}"
+echo "SKIPPED_NAMES=${unchanged_services_json}" >> "${GITHUB_OUTPUT}"
+echo
 
 # Assumes all compose files are together in the same folder
 echo "DOCKER_COMPOSE_DIR=$(dirname "${compose_file}")" >> "${GITHUB_OUTPUT}"
