@@ -32,10 +32,10 @@ steps:
         export MI_ID_SQL="$(MANAGED_IDENTITY_ID_SQL)"
         export SQL_IDENTITY_CLIENT_ID="$managedIdentityClientIdSQL"
         export SQL_CONNECTION_STRING='$(DTOS_DATABASE_CONNECTION_STRING)'
-        export SUBNET_ID_SQL="$(SUBNET_ID_SQL)"
+        export SUBNET_ID_SQL="$(SUBNET_ID_ACI)"
         # Get subnet name from the subnet ID:
-        SUBNET_NAME_SQL=$(echo "$SUBNET_ID_SQL" | awk -F'/' '{print $NF}')
-        export SUBNET_NAME_SQL="$(SUBNET_NAME_SQL)"
+        SUBNET_NAME_ACI=$(echo "$SUBNET_ID_ACI" | awk -F'/' '{print $NF}')
+        export SUBNET_NAME_ACI="$SUBNET_NAME_ACI"
 
         # Create a temporary file to store the substituted YAML
         temp_yaml=$(mktemp)
