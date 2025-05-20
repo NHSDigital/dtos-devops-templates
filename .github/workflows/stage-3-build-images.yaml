@@ -29,6 +29,11 @@ on:
         description: A collection of containers to exclude, in a comma-separated list
         required: true
         type: string
+      commit_sha:
+          description: Enter the Git commit SHA to use for DevOps Templates. Blank to use 'main'.
+          required: false
+          type: string
+          default: main
 
 env:
   COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file || '' }}
@@ -65,7 +70,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: ${{ inputs.commit_sha }}
 
       - name: Determine Container Images to Build
         id: get-function-names
@@ -97,7 +102,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: ${{ inputs.commit_sha }}
 
       - name: Create Image Tags
         id: create-tags
@@ -209,7 +214,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: ${{ inputs.commit_sha }}
 
       - name: Add Commit Hash
         run: bash ./templates/scripts/deployments/append-commit-hash.sh
