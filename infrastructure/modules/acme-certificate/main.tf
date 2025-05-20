@@ -3,6 +3,22 @@ resource "random_password" "pfx" {
   special = true
 }
 
+locals {
+  common_name_no_wildcard = replace(var.certificate.common_name, "*.", "")
+
+  cname_relative_hostname = (
+    var.certificate.dns_cname_zone_name != null
+      ? trim(replace(local.common_name_no_wildcard, var.certificate.dns_cname_zone_name, ""), ".")
+      : null
+  )
+
+  private_cname_relative_hostname = (
+    var.certificate.dns_private_cname_zone_name != null
+      ? trim(replace(local.common_name_no_wildcard, var.certificate.dns_private_cname_zone_name, ""), ".")
+      : null
+  )
+}
+
 # Terraform Managed Identity will need DNS Contributor RBAC role on the DNS Zones being altered.
 # Create CNAME record for any redirected DNS-01 challenges. Lego azuredns provider will validate this before allowing a redirected AZURE_ZONE_NAME.
 resource "azurerm_dns_cname_record" "challenge_redirect" {
@@ -10,32 +26,38 @@ resource "azurerm_dns_cname_record" "challenge_redirect" {
 
   provider = azurerm.dns_public
 
-  name                = trim("_acme-challenge.${trim(replace(var.certificate.common_name, ".${var.certificate.dns_cname_zone_name}", ""), "*.")}", ".")
+  # Relative hostname can be "" so compact() removes empty strings to avoid extra dots in join().
+  name                = join(".", compact(["_acme-challenge", local.cname_relative_hostname]))
   zone_name           = var.certificate.dns_cname_zone_name
   resource_group_name = coalesce(var.certificate.dns_challenge_zone_rg_name, var.public_dns_zone_resource_group_name)
   ttl                 = 60
-  record              = "${trim("_acme-challenge.${replace(split(".", var.certificate.common_name)[0], "*", "")}", ".")}.${var.certificate.dns_challenge_zone_name}"
+  record              = join(".", compact(["_acme-challenge", local.cname_relative_hostname, var.certificate.dns_challenge_zone_name]))
+
+  tags = var.tags
 }
 
 # A Private DNS zone that overlaps the public namespace also needs the challenge CNAME record to pass Lego azuredns checks. Private DNS is regional.
 resource "azurerm_private_dns_cname_record" "challenge_redirect_private" {
-  for_each = var.certificate.dns_private_cname_zone_name != null ? var.private_dns_zone_resource_groups : {}
+  for_each = (var.certificate.dns_private_cname_zone_name != null && var.certificate.dns_cname_zone_name != null) ? var.private_dns_zone_resource_groups : {}
 
   provider = azurerm.dns_private
 
-  name                = trim("_acme-challenge.${trim(replace(var.certificate.common_name, ".${var.certificate.dns_private_cname_zone_name}", ""), "*.")}", ".")
+  name                = join(".", compact(["_acme-challenge", local.private_cname_relative_hostname]))
   zone_name           = var.certificate.dns_private_cname_zone_name
   resource_group_name = each.value.name
   ttl                 = 60
   record              = azurerm_dns_cname_record.challenge_redirect[0].record
+
+  tags = var.tags
 }
 
 resource "acme_certificate" "this" {
-  account_key_pem           = var.acme_registration_account_key_pem
-  common_name               = var.certificate.common_name
-  subject_alternative_names = var.certificate.subject_alternative_names
-  key_type                  = var.certificate.key_type
-  certificate_p12_password  = random_password.pfx.result
+  account_key_pem               = var.acme_registration_account_key_pem
+  common_name                   = var.certificate.common_name
+  subject_alternative_names     = var.certificate.subject_alternative_names
+  key_type                      = var.certificate.key_type
+  certificate_p12_password      = random_password.pfx.result
+  revoke_certificate_on_destroy = var.certificate.revoke_certificate_on_destroy
 
   dns_challenge {
     provider = "azuredns"
@@ -63,6 +85,8 @@ resource "azurerm_key_vault_certificate" "acme" {
     contents = acme_certificate.this.certificate_p12
     password = random_password.pfx.result
   }
+
+  tags = var.tags
 }
 
 # Workaround while App Service cannot import elliptic curve Key Vault Certificate objects
@@ -73,4 +97,6 @@ resource "azurerm_key_vault_secret" "acme" {
   key_vault_id = each.value.key_vault_id
   value        = acme_certificate.this.certificate_p12
   content_type = "application/x-pkcs12"
+
+  tags = var.tags
 }
