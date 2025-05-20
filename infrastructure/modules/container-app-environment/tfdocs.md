@@ -18,7 +18,7 @@ Type: `string`
 
 ### <a name="input_private_dns_zone_rg_name"></a> [private\_dns\_zone\_rg\_name](#input\_private\_dns\_zone\_rg\_name)
 
-Description: Name of the hub resource group where the private DNS zone is located.
+Description: Name of the hub resource group where the private DNS zone is located. This is only required is adding custom DNS records.
 
 Type: `string`
 
