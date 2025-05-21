@@ -27,3 +27,12 @@ resource "azurerm_servicebus_topic" "this" {
   status                                  = each.value.status
 }
 
+resource "azurerm_servicebus_namespace_authorization_rule" "this" {
+  name                = "access-rule"
+  namespace_name      = azurerm_servicebus_namespace.this.name
+  resource_group_name = var.resource_group_name
+  listen              = true
+  send                = true
+  manage              = false
+}
+
