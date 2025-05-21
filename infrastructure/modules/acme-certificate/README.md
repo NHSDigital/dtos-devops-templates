@@ -1,13 +1,13 @@
 # acme-certificate
 
-A Terraform module to obtain publicly trusted SSL certificates from the Let's Encrypt Certificate Authority using the ACME protocol (Automatic Certificate Management Environment). This module provides an Azure-friendly certificate issuance workflow, addressing the lack of a native equivalent to AWS Certificate Manager.
+A Terraform module to obtain a publicly trusted SSL certificate from the Let's Encrypt Certificate Authority using the ACME protocol (Automatic Certificate Management Environment). This module provides an Azure-friendly certificate issuance workflow, addressing the lack of a native equivalent to AWS Certificate Manager.
 
 
 ## Features
 - Uses the [vancluever/acme](https://registry.terraform.io/providers/vancluever/acme/latest/docs) provider for true stateful certificate management in Terraform, backed by [Lego](https://github.com/go-acme/lego) as the ACME implementation.
 - Seamless certificate renewal within 30 days of expiry.
 - Automates [DNS-01 challenges](https://letsencrypt.org/docs/challenge-types/) via the [Lego azuredns](https://go-acme.github.io/lego/dns/azuredns/) provider.
-- Handles Lego's requirement for authoritative NS records on the leaf zone. e.g. if you need a certificate for `www.private.mydomain.com` but don't have a `private.mydomain.com` zone, you can use CNAME redirection.
+- Handles Lego's requirement for authoritative NS records on the leaf zone. e.g. if you need a certificate for `www.private.example.com` but only have a zone for `example.com`, you can use CNAME redirection (see examples below).
 - CNAME redirection of DNS challenge records, including optional creation of corresponding CNAMEs in Azure Private DNS zones to satisfy Lego's local checks (wildcards supported).
 - Stores certificates in Azure Key Vault as Certificate objects.
 - Also stores the certificate as a `.pfx` file in a base64-encoded Key Vault Secret with a strong randomised password, for compatibility with consumers that cannot use Certificate objects.
@@ -26,22 +26,22 @@ acme_certificates = {                                  # RESULT
   redirected = {
     common_name             = "www.foo.example.com"    # No Azure DNS zone for 'foo', use a CNAME to redirect DNS-01 challenge
     dns_cname_zone_name     = "example.com"            # CNAME _acme-challenge.www.foo resolving to the below record
-    dns_challenge_zone_name = "acme.example.com"       # TXT _acme-challenge.www.acme.example.com
+    dns_challenge_zone_name = "acme.example.com"       # TXT _acme-challenge.www.foo.acme.example.com
   }
   redirected_split_horizon = {
     common_name                 = "*.bar.example.com"  # In this example we also have a private DNS zone bar.example.com
     dns_cname_zone_name         = "example.com"        # CNAME _acme-challenge.bar resolving to the below record
-    dns_challenge_zone_name     = "acme.example.com"   # TXT _acme-challenge.acme.example.com
+    dns_challenge_zone_name     = "acme.example.com"   # TXT _acme-challenge.bar.acme.example.com
     dns_private_cname_zone_name = "bar.example.com"    # CNAME _acme-challenge resolving to the above record (satisfying Lego checks)
   }
 }
 ```
-> 💡 **Note:** `dns_cname_zone_name` and `dns_private_cname_zone_name` must always be parent domains of `common_name`, while `dns_challenge_zone_name` may be any public zone you control.
+> ⚠️ `dns_cname_zone_name` and `dns_private_cname_zone_name` must match part of `common_name`, while `dns_challenge_zone_name` can be any public zone you control.
 
 **certificate.tf**
 ```hcl
 resource "acme_registration" "hub" {
-  email_address = var.LETS_ENCRYPT_CONTACT_EMAIL
+  email_address = var.acme_contact_email
 }
 
 module "acme_certificate" {
@@ -61,7 +61,7 @@ module "acme_certificate" {
   key_vaults                          = module.key_vault
   private_dns_zone_resource_groups    = azurerm_resource_group.private_dns_rg
   public_dns_zone_resource_group_name = var.dns_zone_rg_name_public
-  subscription_id_dns_public          = var.TARGET_SUBSCRIPTION_ID
+  subscription_id_dns_public          = var.subscription_id_target
 }
 ```
 
