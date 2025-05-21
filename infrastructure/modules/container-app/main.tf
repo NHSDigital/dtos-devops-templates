@@ -29,7 +29,7 @@ resource "azurerm_container_app" "main" {
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [module.container_app_identity.id]
+    identity_ids = local.all_identity_ids
   }
 
   dynamic "secret" {
