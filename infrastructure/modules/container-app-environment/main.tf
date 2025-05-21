@@ -9,6 +9,8 @@ resource "azurerm_container_app_environment" "main" {
 }
 
 module "apex-record" {
+  count = var.private_dns_zone_rg_name != null ? 1 : 0
+
   source = "../private-dns-a-record"
   providers = {
     azurerm = azurerm.dns
@@ -22,6 +24,8 @@ module "apex-record" {
 }
 
 module "wildcard-record" {
+  count = var.private_dns_zone_rg_name != null ? 1 : 0
+
   source = "../private-dns-a-record"
   providers = {
     azurerm = azurerm.dns
