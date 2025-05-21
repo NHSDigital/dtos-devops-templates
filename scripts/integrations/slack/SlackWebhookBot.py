@@ -32,8 +32,8 @@ class SlackWebhookBot:
 
             border_color = (
                 "#2eb886" if test_results["pass_rate"] == 100 else
-                "#e01e5a" if test_results["failures"] > 0 else
-                "#ecb22e"
+                "#d9d904" if test_results["pass_rate"] > 0 else
+                "#e01e5a"
             )
 
             message = slack_message(header_b1, body, None, border_color)
