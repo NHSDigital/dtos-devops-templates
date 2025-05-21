@@ -16,6 +16,11 @@ module "key_vault_reader_role" {
   principal_id         = module.container_app_identity.principal_id
 }
 
+# Merge the identity created above with any passed in via a variables list:
+locals {
+  all_identity_ids = concat(var.user_assigned_identity_ids, [module.container_app_identity.id])
+}
+
 resource "azurerm_container_app" "main" {
   name                         = var.name
   container_app_environment_id = var.container_app_environment_id

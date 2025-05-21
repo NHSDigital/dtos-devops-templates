@@ -61,8 +61,14 @@ variable "http_port" {
 
 variable "memory" {
   description = "Memory allocated to the app (GiB). Also dictates the CPU allocation: CPU(%)=MEMORY(Gi)/2. Maximum: 4Gi"
-  default     = "0.5"
   type        = number
+  default     = "0.5"
+}
+
+variable "user_assigned_identity_ids" {
+  description = "List of user assigned identity IDs to assign to the container app."
+  type        = list(string)
+  default     = []
 }
 
 locals {
