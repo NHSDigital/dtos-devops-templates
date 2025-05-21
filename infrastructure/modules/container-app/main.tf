@@ -18,7 +18,7 @@ module "key_vault_reader_role" {
 
 # Merge the identity created above with any passed in via a variables list:
 locals {
-  all_identity_ids = concat(var.user_assigned_identity_ids, [module.container_app_identity.id])
+  all_identity_ids = concat([var.acr_mi_id], [module.container_app_identity.id])
 }
 
 resource "azurerm_container_app" "main" {
@@ -41,6 +41,15 @@ resource "azurerm_container_app" "main" {
       name                = lower(secret.value.name)
       identity            = module.container_app_identity.id
       key_vault_secret_id = secret.value.id
+    }
+  }
+
+  dynamic "registry" {
+    for_each = var.acr_server != null ? [1] : []
+
+    content {
+      server   = var.acr_server
+      identity = var.acr_mi_id
     }
   }
 
