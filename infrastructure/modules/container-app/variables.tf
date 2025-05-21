@@ -77,6 +77,12 @@ variable "memory" {
   default     = "0.5"
 }
 
+variable "user_assigned_identity_ids" {
+  description = "List of user assigned identity IDs to assign to the container app."
+  type        = list(string)
+  default     = []
+}
+
 locals {
   memory = "${var.memory}Gi"
   cpu    = var.memory / 2
