@@ -37,6 +37,11 @@ on:
           description: A comma-separated list of directories which are considered 'changed'
           required: false
           type: string
+      devops_templates_path:
+          description: The default path to checkout the DevOps Templates repository.
+          required: false
+          type: string
+          default: templates
 
 env:
   CHANGED_FOLDERS_CSV: ${{ inputs.changed_folders || '' }}
@@ -73,7 +78,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: NHSDigital/dtos-devops-templates
-          path: templates
+          path: ${{ inputs.devops_templates_path }}
           ref: ${{ inputs.commit_sha }}
 
       - name: Determine Container Images to Build
@@ -105,7 +110,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: NHSDigital/dtos-devops-templates
-          path: templates
+          path: ${{ inputs.devops_templates_path }}
           ref: ${{ inputs.commit_sha }}
 
       - name: Create Image Tags
@@ -217,7 +222,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: NHSDigital/dtos-devops-templates
-          path: templates
+          path: ${{ inputs.devops_templates_path }}
           ref: ${{ inputs.commit_sha }}
 
       - name: Add Commit Hash
