@@ -33,6 +33,7 @@ if [[ -z "${CHANGED_FOLDERS_CSV}" ]]; then
         echo "❌ Error: SOURCE_CODE_PATH has not been defined."
         exit 1
     fi
+
     if [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF}" == "refs/heads/main" ]]; then
         # Merge to main - compare merged code with main immediately prior to the merge (HEAD^), needs 'fetch-depth: 2' parameter for actions/checkout@v4
         mapfile -t source_changes < <(git diff --name-only HEAD^ -- "${SOURCE_CODE_PATH}" | sed -r 's#(^.*/).*$#\1#' | sort -u)
@@ -42,7 +43,7 @@ if [[ -z "${CHANGED_FOLDERS_CSV}" ]]; then
         mapfile -t source_changes < <(git diff --name-only origin/main..HEAD -- "${SOURCE_CODE_PATH}" | sed -r 's#(^.*/).*$#\1#' | sort -u)
     fi
 else
-    IFS=',' read -r -a source_changes <<< "${CHANGED_FOLDERS_CSV}"
+  IFS=',' read -r -a source_changes <<< "${CHANGED_FOLDERS_CSV}"
 fi
 
 echo -e "\nChanged source code folder(s):"
@@ -85,10 +86,21 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
         # We need to filter these since there are various ways these can be defined (leading ./ or trailing / for instance)
         context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" "${compose_file}")
         dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" "${compose_file}")
+        image=$(yq eval ".services[] | select(.container_name == \"$service\") | .image" "${compose_file}")
 
-        if [[ -z "${dockerfile}" ]] || [[ -z "${context}" ]]; then
-            continue
+        # include `image` only services
+        if [[ -z "${dockerfile}" || -z "${context}" ]]; then
+            if [[ -n "${image}"]]; then
+              echo "Service '$service' is image-only (no build context). Including it."
+              docker_services_map[$service]=$service
+              continue
+            fi
         fi
+
+        # include services only if they have a `build` or a `context` defined
+        # if [[ -z "${dockerfile}" ]] || [[ -z "${context}" ]]; then
+        #     continue
+        # fi
 
         context_filtered=$(echo "${context}" | sed 's#^\./src/##' | sed 's#^\./##' | sed 's#/$##')
         dockerfile_filtered=$(echo "${dockerfile}" | sed 's#^\./##' | sed 's#\/Dockerfile##' | sed 's#Dockerfile##')
@@ -162,6 +174,7 @@ changed_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${changed_
 unchanged_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${unchanged_services[@]}")"
 
 IFS=$IFS_OLD
+
 echo "List of services to build:"
 echo "${changed_services_json}"
 echo "FUNC_NAMES=${changed_services_json}" >> "${GITHUB_OUTPUT}"

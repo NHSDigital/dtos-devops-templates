@@ -5,7 +5,6 @@ on:
     branches:
       - main
 
-
   workflow_call:
     inputs:
       environment_tag:
@@ -34,8 +33,13 @@ on:
           required: false
           type: string
           default: main
+      changed_folders:
+          description: A comma-separated list of directories which are considered 'changed'
+          required: false
+          type: string
 
 env:
+  CHANGED_FOLDERS_CSV: ${{ inputs.changed_folders || '' }}
   COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file || '' }}
   ENVIRONMENT_TAG: ${{ inputs.environment_tag || 'development' }}
   EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list || '' }}
