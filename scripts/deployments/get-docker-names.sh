@@ -7,7 +7,6 @@
 # - GITHUB_REF
 # - EXCLUDED_CONTAINERS_CSV
 
-
 set -eo pipefail
 
 remove_from_array() {
@@ -90,7 +89,7 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
 
         # include `image` only services
         if [[ -z "${dockerfile}" || -z "${context}" ]]; then
-            if [[ -n "${image}"]]; then
+            if [[ -n "${image}" ]]; then
               echo "Service '$service' is image-only (no build context). Including it."
               docker_services_map[$service]=$service
               continue

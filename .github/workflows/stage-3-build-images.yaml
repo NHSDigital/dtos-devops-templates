@@ -13,7 +13,7 @@ on:
         type: string
         default: development
       docker_compose_file:
-        description: A path to the Docker 'compose.yaml' file needed to build Docker images
+        description: A path to a single Docker 'compose.yaml' file needed to build Docker images
         required: true
         type: string
       function_app_source_code_path:
