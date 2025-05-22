@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="5" failures="0" errors="0" skipped="0" time="3.21">
+  <testsuite name="SampleTestSuite" tests="5" failures="0" errors="0" skipped="0" timestamp="2024-04-30T15:30:00" time="3.21">
+    <testcase classname="SampleTests" name="test_pass_1" time="0.5"/>
+    <testcase classname="SampleTests" name="test_pass_2" time="0.6"/>
+    <testcase classname="SampleTests" name="test_failure_1" time="0.4"/>
+    <testcase classname="SampleTests" name="test_error_1" time="0.3">
+    <testcase classname="SampleTests" name="test_skipped_1" time="0.2"/>
+    </testcase>
+  </testsuite>
+</testsuites>
