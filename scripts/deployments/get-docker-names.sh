@@ -9,6 +9,12 @@
 
 set -eo pipefail
 
+echo "📂 Current working directory:"
+pwd
+
+echo -e "\n📁 Docker (YAML) files found in the structure:"
+find . -type f \( -iname "docker-compose*.yml" -o -iname "docker-compose*.yaml" -o -iname "*.yml" -o -iname "*.yaml" \) | sort
+
 remove_from_array() {
     local item_to_remove="$1"
     local -n target_array="$2"  # Use nameref to modify the array directly
