@@ -77,6 +77,12 @@ variable "wildcard_ssl_cert_key_vault_id" {
   default     = null
 }
 
+variable "zone_balancing_enabled" {
+  type        = string
+  description = "Balance the App Service Plan across Availability Zones in the region. Changing this forces the resource to be recreated."
+  default     = null
+}
+
 ## autoscale rule ##
 
 variable "metric" {
