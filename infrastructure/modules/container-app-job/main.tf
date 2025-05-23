@@ -4,9 +4,9 @@ locals {
 }
 
 resource "azurerm_container_app_job" "this" {
-  name                         = var.name
-  location                     = data.azurerm_resource_group.main.location
-  resource_group_name          = var.resource_group_name
+  name                = var.name
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = var.resource_group_name
 
   container_app_environment_id = var.container_app_environment_id
   replica_timeout_in_seconds   = var.replica_timeout_in_seconds
@@ -33,24 +33,12 @@ resource "azurerm_container_app_job" "this" {
       memory = local.memory
 
       # Optional: Command to execute in the container.
-      dynamic "command" {
-        for_each = var.container_command != null ? [var.container_command] : []
-        content {
-          command = command.value
-        }
-      }
-
-      # Optional: Arguments to pass to the command.
-      dynamic "args" {
-        for_each = var.container_args != null ? [var.container_args] : []
-        content {
-          args = args.value
-        }
-      }
+      command = var.container_command
+      args    = var.container_args
 
       # Optional: Environment variables for the container.
       dynamic "env" {
-        for_each = var.environment_variables != null ? [var.environment_variables] : []
+        for_each = var.environment_variables
         content {
           name  = env.key
           value = env.value

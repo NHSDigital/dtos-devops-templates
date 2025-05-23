@@ -52,7 +52,7 @@ resource "azurerm_container_app" "main" {
       memory = local.memory
 
       dynamic "env" {
-        for_each = var.environment_variables != null ? [var.environment_variables] : []
+        for_each = var.environment_variables
         content {
           name  = env.key
           value = env.value
