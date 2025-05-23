@@ -88,6 +88,10 @@ jobs:
           path: ${{ inputs.devops_templates_path }}
           ref: ${{ inputs.commit_sha }}
 
+      - name: Print directories
+        run: |
+          run: find . -type d | sort
+
       - name: Determine Container Images to Build
         id: get-function-names
         working-directory: ${{ env.COMPOSE_WORK_DIR }}
