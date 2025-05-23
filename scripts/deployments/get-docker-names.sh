@@ -92,7 +92,7 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
         context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" "${compose_file}")
         dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" "${compose_file}")
 
-        include services only if they have a `build` or a `context` defined
+        # include services only if they have a `build` or a `context` defined
         if [[ -z "${dockerfile}" ]] || [[ -z "${context}" ]]; then
             continue
         fi
