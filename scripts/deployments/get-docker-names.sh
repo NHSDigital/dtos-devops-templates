@@ -91,21 +91,11 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
         # We need to filter these since there are various ways these can be defined (leading ./ or trailing / for instance)
         context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" "${compose_file}")
         dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" "${compose_file}")
-        image=$(yq eval ".services[] | select(.container_name == \"$service\") | .image" "${compose_file}")
 
-        # include `image` only services
-        if [[ -z "${dockerfile}" || -z "${context}" ]]; then
-            if [[ -n "${image}" ]]; then
-              echo "Service '$service' is image-only (no build context). Including it."
-              docker_services_map[$service]=$service
-              continue
-            fi
+        include services only if they have a `build` or a `context` defined
+        if [[ -z "${dockerfile}" ]] || [[ -z "${context}" ]]; then
+            continue
         fi
-
-        # include services only if they have a `build` or a `context` defined
-        # if [[ -z "${dockerfile}" ]] || [[ -z "${context}" ]]; then
-        #     continue
-        # fi
 
         context_filtered=$(echo "${context}" | sed 's#^\./src/##' | sed 's#^\./##' | sed 's#/$##')
         dockerfile_filtered=$(echo "${dockerfile}" | sed 's#^\./##' | sed 's#\/Dockerfile##' | sed 's#Dockerfile##')
