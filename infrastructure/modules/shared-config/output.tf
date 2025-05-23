@@ -126,6 +126,7 @@ locals {
     linux-web-app                       = lower("${var.env}-${var.location_map[var.location]}")
     internal-load-balancer              = lower("ILB-${var.env}-${var.location_map[var.location]}-${var.application}")
     key-vault                           = upper("KV-${var.application}-${var.env}-${var.location_map[var.location]}")
+    app-key-vault                       = lower("kv-app-${var.application}-${var.env}-${var.location_map[var.location]}")
     kubernetes-service                  = lower("AKS-${var.env}-${var.location_map[var.location]}-${var.application}")
     load-balancer                       = lower("LB-${var.env}-${var.location_map[var.location]}-${var.application}")
     local-network-gateway               = lower("LNG-${var.env}-${var.location_map[var.location]}-${var.application}")
@@ -163,6 +164,7 @@ locals {
     virtual-machine                     = lower("${var.env}-${var.application}")
     win-virtual-machine                 = lower("${var.env}-${var.application}")
     virtual-network                     = upper("VNET-${var.env}-${var.location_map[var.location]}-${var.application}")
+    virtual-network-lowercase           = upper("VNET-${var.env}-${var.location_map[var.location]}-${var.application}")
     vnet-gateway                        = lower("GWY-${var.env}-${var.location_map[var.location]}-${var.application}")
   }
 }

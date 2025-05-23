@@ -94,7 +94,15 @@ variable "application" {
   description = "Unique identifier for the deployment"
 }
 
+variable "application_full_name" {
+  description = "Unique user friendly name for the deployment"
+  default     = var.application
+  nullable    = false
+}
+
 variable "tags" {
   type        = map(string)
   description = "Default tags for the deployment"
+  default     = {}
+  nullable    = false
 }
