@@ -27,13 +27,13 @@ variable "container_app_environment_id" {
 
 variable "container_args" {
   description = "The arguments to pass to the container command. Optional."
-  type        = string
+  type        = list(string)
   default     = null
 }
 
 variable "container_command" {
-  description = "The command to execute in the container. Optional."
-  type        = string
+  description = "The commands to execute in the container. Optional."
+  type        = list(string)
   default     = null
 }
 
