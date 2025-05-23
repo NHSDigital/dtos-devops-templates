@@ -45,15 +45,15 @@ resource "azurerm_container_app_job" "this" {
         }
       }
     }
+  }
 
-    # Optional: Configure private registry access using Managed Identity
-    dynamic "registry" {
-      for_each = var.acr_login_server != null && var.acr_managed_identity_id != null ? [1] : []
+  # Optional: Configure private registry access using Managed Identity
+  dynamic "registry" {
+    for_each = var.acr_login_server != null && var.acr_managed_identity_id != null ? [1] : []
 
-      content {
-        server   = var.acr_login_server
-        identity = var.acr_managed_identity_id
-      }
+    content {
+      server   = var.acr_login_server
+      identity = var.acr_managed_identity_id
     }
   }
 }
