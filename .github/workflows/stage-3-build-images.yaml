@@ -66,8 +66,8 @@ jobs:
       id-token: write
     outputs:
       FUNC_NAMES: ${{ steps.get-function-names.outputs.FUNC_NAMES }}
-      SKIPPED_NAMES: ${{ steps.get-function-names.outputs.SKIPPED_NAMES }}
-      DOCKER_COMPOSE_DIR: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
+      FUNC_SKIPPED_NAMES: ${{ steps.get-function-names.outputs.SKIPPED_NAMES }}
+      FUNC_DOCKER_COMPOSE_DIR: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -84,6 +84,7 @@ jobs:
 
       - name: Determine Container Images to Build
         id: get-function-names
+        working-directory: .docker
         run: bash "${{ env.DEVOPS_TEMPLATES_PATH }}/scripts/deployments/get-docker-names.sh"
 
   build-and-push-containers:
@@ -143,7 +144,7 @@ jobs:
 
       - name: Build Images
         id: build-images
-        working-directory: ${{ needs.function-diffs.outputs.DOCKER_COMPOSE_DIR }}
+        working-directory: ${{ needs.function-diffs.outputs.FUNC_DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
           COMPOSE_FILE: ${{ inputs.docker_compose_file || ''}}
@@ -252,7 +253,7 @@ jobs:
     steps:
       - name: Generate SBOM Report
         id: sbom-report
-        working-directory: ${{ needs.function-diffs.outputs.DOCKER_COMPOSE_DIR }}
+        working-directory: ${{ needs.function-diffs.outputs.FUNC_DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
           COMPOSE_FILE: ${{ inputs.docker_compose_file || '' }}
@@ -263,7 +264,7 @@ jobs:
 
       - name: Generate Vulnerabilities Report
         id: vuln-report
-        working-directory: ${{ needs.function-diffs.outputs.DOCKER_COMPOSE_DIR }}
+        working-directory: ${{ needs.function-diffs.outputs.FUNC_DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
           COMPOSE_FILE: ${{ inputs.docker_compose_file || ''}}

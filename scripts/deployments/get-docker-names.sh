@@ -9,10 +9,10 @@
 
 set -eo pipefail
 
-echo "📂 Current working directory:"
+echo "Current working directory:"
 pwd
 
-echo -e "\n📁 Docker (YAML) files found in the structure:"
+echo -e "\nDocker (YAML) files found in the structure:"
 find . -type f \( -iname "docker-compose*.yml" -o -iname "docker-compose*.yaml" -o -iname "*.yml" -o -iname "*.yaml" \) | sort
 
 remove_from_array() {
