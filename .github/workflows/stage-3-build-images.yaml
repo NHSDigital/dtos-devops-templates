@@ -90,7 +90,7 @@ jobs:
 
       - name: Print directories
         run: |
-          run: find . -type d | sort
+          find . -type d | sort
 
       - name: Determine Container Images to Build
         id: get-function-names
