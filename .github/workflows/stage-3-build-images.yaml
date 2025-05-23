@@ -84,7 +84,7 @@ jobs:
 
       - name: Determine Container Images to Build
         id: get-function-names
-        working-directory: .docker
+        working-directory: tmp-docker
         run: bash "${{ env.DEVOPS_TEMPLATES_PATH }}/scripts/deployments/get-docker-names.sh"
 
   build-and-push-containers:
