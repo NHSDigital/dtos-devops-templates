@@ -13,7 +13,7 @@ on:
         type: string
         default: development
       docker_compose_file:
-        description: A path to a single Docker 'compose.yaml' file needed to build Docker images
+        description: A path to the Docker 'compose.yaml' file needed to build Docker images
         required: true
         type: string
       function_app_source_code_path:
@@ -33,13 +33,8 @@ on:
           required: false
           type: string
           default: main
-      changed_folders:
-          description: A comma-separated list of directories which are considered 'changed'
-          required: false
-          type: string
 
 env:
-  CHANGED_FOLDERS_CSV: ${{ inputs.changed_folders || '' }}
   COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file || '' }}
   ENVIRONMENT_TAG: ${{ inputs.environment_tag || 'development' }}
   EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list || '' }}
@@ -60,8 +55,8 @@ jobs:
       id-token: write
     outputs:
       FUNC_NAMES: ${{ steps.get-function-names.outputs.FUNC_NAMES }}
-      FUNC_SKIPPED_NAMES: ${{ steps.get-function-names.outputs.SKIPPED_NAMES }}
-      FUNC_DOCKER_COMPOSE_DIR: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
+      SKIPPED_NAMES: ${{ steps.get-function-names.outputs.SKIPPED_NAMES }}
+      DOCKER_COMPOSE_DIR: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -78,7 +73,7 @@ jobs:
 
       - name: Determine Container Images to Build
         id: get-function-names
-        run: bash templates/scripts/deployments/get-docker-names.sh
+        run: bash ./templates/scripts/deployments/get-docker-names.sh
 
   build-and-push-containers:
     runs-on: ubuntu-latest
@@ -89,6 +84,9 @@ jobs:
       packages: write
     outputs:
       PR_NUM_TAG: ${{ steps.create-tags.outputs.PR_NUM_TAG }}
+      COMMIT_HASH_TAG: ${{ steps.create-tags.outputs.COMMIT_HASH_TAG }}
+      REGISTRY_PACKAGE: ${{ steps.build-images.outputs.REGISTRY_PACKAGE }}
+      PACKAGE_NAME: ${{ steps.build-images.outputs.PACKAGE_NAME }}
     needs: function-diffs
     strategy:
       matrix:
@@ -137,7 +135,7 @@ jobs:
 
       - name: Build Images
         id: build-images
-        working-directory: ${{ needs.function-diffs.outputs.FUNC_DOCKER_COMPOSE_DIR }}
+        working-directory: ${{ needs.function-diffs.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
           COMPOSE_FILE: ${{ inputs.docker_compose_file || ''}}
@@ -161,8 +159,8 @@ jobs:
           export CHECK_DOCKER_IMAGE=${PACKAGE_NAME}:latest
           export FORCE_USE_DOCKER=true
 
-          echo "REGISTRY_PACKAGE=$REGISTRY_PACKAGE" >> $GITHUB_ENV
-          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+          echo "REGISTRY_PACKAGE=$REGISTRY_PACKAGE" >> $GITHUB_OUTPUT
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_OUTPUT
 
           # Build the Image (GitHub Packages)
           docker compose -f ${COMPOSE_FILE//,/ -f } -p $PROJECT_NAME build --no-cache --pull ${function}
@@ -189,7 +187,6 @@ jobs:
           fi
           # docker push "${REGISTRY_PACKAGE}:$ENVIRONMENT_TAG"
 
-
       - name: Remove Docker Images
         run: |
           docker rmi "${REGISTRY_PACKAGE}:${COMMIT_HASH_TAG}" || true
@@ -200,12 +197,15 @@ jobs:
   tag-all-repositories:
     name: "Append Short Commit Hash to Images"
     runs-on: ubuntu-latest
-    needs: build-and-push-containers
+    needs: [build-and-push-containers]
     if: github.ref == 'refs/heads/main'
     permissions:
       id-token: write
       packages: write
-
+    env:
+      SHORT_COMMIT_HASH: ${{ needs.build-and-push-containers.outputs.COMMIT_HASH_TAG }}
+      REGISTRY_PACKAGE: ${{ needs.build-and-push-containers.outputs.REGISTRY_PACKAGE }}
+      REGISTRY_OWNER: ${{ env.REGISTRY_OWNER }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -220,8 +220,15 @@ jobs:
           path: templates
           ref: ${{ inputs.commit_sha }}
 
+      - name: Log into the Container registry
+        uses: docker/login-action@6d4b68b490aef8836e8fb5e50ee7b3bdfa5894f0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Add Commit Hash
-        run: bash "templates/scripts/deployments/append-commit-hash.sh"
+        run: bash ./templates/scripts/deployments/append-commit-hash.sh
 
       # Q: do we need the PAT token? Consider alternative approach.
       # Q: do we need to use the CLI? Possibly REST API. Possibly a GitHub action?
@@ -243,29 +250,28 @@ jobs:
       contents: read
       pull-requests: read
       packages: write
+    env:
+      COMPOSE_FILE: ${{ inputs.docker_compose_file || '' }}
+      PACKAGE_NAME: ${{ needs.build-and-push-containers.outputs.PACKAGE_NAME }}
+      REGISTRY_PACKAGE: ${{ needs.build-and-push-containers.outputs.REGISTRY_PACKAGE }}
     steps:
       - name: Generate SBOM Report
         id: sbom-report
-        working-directory: ${{ needs.function-diffs.outputs.FUNC_DOCKER_COMPOSE_DIR }}
+        working-directory: ${{ needs.function-diffs.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
-        env:
-          COMPOSE_FILE: ${{ inputs.docker_compose_file || '' }}
         run: |
           export SBOM_REPOSITORY_REPORT="sbom-${{ matrix.function }}-repository-report"
           echo "SBOM_REPOSITORY_REPORT=$SBOM_REPOSITORY_REPORT" >> $GITHUB_OUTPUT
-          bash -x "templates/scripts/reports/create-sbom-report.sh"
+          bash -x ${GITHUB_WORKSPACE}/templates/scripts/reports/create-sbom-report.sh
 
       - name: Generate Vulnerabilities Report
         id: vuln-report
-        working-directory: ${{ needs.function-diffs.outputs.FUNC_DOCKER_COMPOSE_DIR }}
+        working-directory: ${{ needs.function-diffs.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
-        env:
-          COMPOSE_FILE: ${{ inputs.docker_compose_file || ''}}
-          PACKAGE_NAME: ${{ env.PACKAGE_NAME }}
         run: |
           export VULNERABILITIES_REPOSITORY_REPORT="vulnerabilities-${{ matrix.function }}-repository-report"
           echo "VULNERABILITIES_REPOSITORY_REPORT=$VULNERABILITIES_REPOSITORY_REPORT" >> $GITHUB_OUTPUT
-          bash -x "templates/scripts/reports/scan-vulnerabilities.sh"
+          bash -x ${GITHUB_WORKSPACE}/templates/scripts/reports/scan-vulnerabilities.sh
 
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
 
@@ -327,7 +333,7 @@ jobs:
 
   aggregate-json:
     runs-on: ubuntu-latest
-    needs: build-and-push-containers
+    needs: [build-and-push-containers, generate-reports]
     steps:
       - name: Download SBOM Artifacts (JSON)
         uses: actions/download-artifact@v4

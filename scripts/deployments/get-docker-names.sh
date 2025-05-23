@@ -7,13 +7,8 @@
 # - GITHUB_REF
 # - EXCLUDED_CONTAINERS_CSV
 
+
 set -eo pipefail
-
-echo "Current working directory:"
-pwd
-
-echo -e "\nDocker (YAML) files found in the structure:"
-find . -type f \( -iname "docker-compose*.yml" -o -iname "docker-compose*.yaml" -o -iname "*.yml" -o -iname "*.yaml" \) | sort
 
 remove_from_array() {
     local item_to_remove="$1"
@@ -38,7 +33,6 @@ if [[ -z "${CHANGED_FOLDERS_CSV}" ]]; then
         echo "❌ Error: SOURCE_CODE_PATH has not been defined."
         exit 1
     fi
-
     if [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF}" == "refs/heads/main" ]]; then
         # Merge to main - compare merged code with main immediately prior to the merge (HEAD^), needs 'fetch-depth: 2' parameter for actions/checkout@v4
         mapfile -t source_changes < <(git diff --name-only HEAD^ -- "${SOURCE_CODE_PATH}" | sed -r 's#(^.*/).*$#\1#' | sort -u)
@@ -48,7 +42,7 @@ if [[ -z "${CHANGED_FOLDERS_CSV}" ]]; then
         mapfile -t source_changes < <(git diff --name-only origin/main..HEAD -- "${SOURCE_CODE_PATH}" | sed -r 's#(^.*/).*$#\1#' | sort -u)
     fi
 else
-  IFS=',' read -r -a source_changes <<< "${CHANGED_FOLDERS_CSV}"
+    IFS=',' read -r -a source_changes <<< "${CHANGED_FOLDERS_CSV}"
 fi
 
 echo -e "\nChanged source code folder(s):"
@@ -92,7 +86,6 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
         context=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.context" "${compose_file}")
         dockerfile=$(yq eval ".services[] | select(.container_name == \"$service\") | .build.dockerfile" "${compose_file}")
 
-        # include services only if they have a `build` or a `context` defined
         if [[ -z "${dockerfile}" ]] || [[ -z "${context}" ]]; then
             continue
         fi
@@ -134,7 +127,6 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
                     changed_services+=("${docker_services_map[$function_path]}")
                     echo "  - ${folder} matches service '${docker_services_map[$function_path]}'"
                     matched="true"
-
                     remove_from_array "${folder}" source_changes
                     remove_from_array "${folder}" non_matched_changes # In case it's in this array from a previous compose file iteration
                     continue
@@ -169,7 +161,6 @@ changed_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${changed_
 unchanged_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${unchanged_services[@]}")"
 
 IFS=$IFS_OLD
-
 echo "List of services to build:"
 echo "${changed_services_json}"
 echo "FUNC_NAMES=${changed_services_json}" >> "${GITHUB_OUTPUT}"
