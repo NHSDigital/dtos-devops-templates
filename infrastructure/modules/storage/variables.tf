@@ -44,7 +44,7 @@ variable "blob_properties_versioning_enabled" {
 }
 
 variable "containers" {
-  description = "Definition of Containers configuration"
+  description = "Definition of Storage Containers configuration"
   type = map(object({
     container_name        = string
     container_access_type = string
@@ -96,6 +96,12 @@ variable "public_network_access_enabled" {
   type        = bool
   description = "Controls whether data in the account may be accessed from public networks."
   default     = false
+}
+
+variable "queues" {
+  description = "List of Storage Queues to create."
+  type        = list(string)
+  default     = []
 }
 
 variable "rbac_roles" {

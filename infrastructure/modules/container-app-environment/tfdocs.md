@@ -42,7 +42,7 @@ Default: `"UK South"`
 
 ### <a name="input_private_dns_zone_rg_name"></a> [private\_dns\_zone\_rg\_name](#input\_private\_dns\_zone\_rg\_name)
 
-Description: Name of the hub resource group where the private DNS zone is located. This is only required if adding custom DNS records, for instance when hosting container apps with an HTTP ingress..
+Description: Name of the hub resource group where the private DNS zone is located. This is only required if adding custom DNS records, for instance when hosting container apps with an HTTP ingress.
 
 Type: `string`
 

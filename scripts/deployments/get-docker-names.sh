@@ -141,7 +141,7 @@ done
 
 if [ ${#non_matched_changes[@]} -ne 0 ]; then
     # Remove duplicates (non-matched items across several compose files)
-    unique_changes=("$(printf "%s\n" "${non_matched_changes[@]}" | sort -u)")
+    mapfile -t unique_changes < <(printf "%s\n" "${non_matched_changes[@]}" | sort -u)
 
     warning_message=$(
         cat <<EOF

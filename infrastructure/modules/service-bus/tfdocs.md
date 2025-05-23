@@ -132,7 +132,15 @@ The following outputs are exported:
 
 Description: n/a
 
+### <a name="output_namespace_name"></a> [namespace\_name](#output\_namespace\_name)
+
+Description: n/a
+
 ### <a name="output_servicebus_connection_string"></a> [servicebus\_connection\_string](#output\_servicebus\_connection\_string)
+
+Description: n/a
+
+### <a name="output_topic_ids"></a> [topic\_ids](#output\_topic\_ids)
 
 Description: n/a
 ## Resources
