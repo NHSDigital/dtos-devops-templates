@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Pipestatus: if any command in a pipeline fails, the return status is that of the failed command.
+set -o pipefail
+# Print each command to stderr before executing.
+set -x
+
 echo "Attempting to tag all repositories in ACR $ACR_NAME with short commit hash: $SHORT_COMMIT_HASH"
 echo "Source tag for import will be: $ENVIRONMENT_TAG"
 
