@@ -8,14 +8,14 @@ variable "resource_group_name" {
   type        = string
 }
 
-variable "acr_managed_identity_id" {
-  description = "Managed identity ID for the container registry. Required if using a private registry."
+variable "acr_login_server" {
+  description = "Container registry server. Required if using a private registry."
   type        = string
   default     = null
 }
 
-variable "acr_login_server" {
-  description = "Container registry server. Required if using a private registry."
+variable "acr_managed_identity_id" {
+  description = "Managed identity ID for the container registry. Required if using a private registry."
   type        = string
   default     = null
 }
@@ -48,6 +48,12 @@ variable "environment_variables" {
   default     = {}
 }
 
+variable "job_parallelism" {
+  description = "The number of replicas that can run in parallel."
+  type        = number
+  default     = 1
+}
+
 variable "memory" {
   description = "Memory allocated to the app (GiB). Also dictates the CPU allocation: CPU(%)=MEMORY(Gi)/2. Maximum: 4Gi"
   type        = number
@@ -70,12 +76,6 @@ variable "replica_retry_limit" {
   description = "The number of retries allowed for a replica in case of failure."
   type        = number
   default     = 3
-}
-
-variable "job_parallelism" {
-  description = "The number of replicas that can run in parallel."
-  type        = number
-  default     = 1
 }
 
 variable "user_assigned_identity_ids" {

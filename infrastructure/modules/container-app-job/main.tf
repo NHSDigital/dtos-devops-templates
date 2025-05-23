@@ -68,5 +68,4 @@ resource "azurerm_container_app_job" "this" {
       }
     }
   }
-
 }
