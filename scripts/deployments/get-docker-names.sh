@@ -2,8 +2,8 @@
 
 set -eo pipefail
 
-echo "Check the value of BUILD_ALL_CONTAINERS param:"
-echo ${BUILD_ALL_CONTAINERS}
+echo "Check the value of MANUAL_BUILD_ALL param:"
+echo ${MANUAL_BUILD_ALL}
 echo "Check the compose CSVs:"
 echo ${COMPOSE_FILES_CSV}
 
