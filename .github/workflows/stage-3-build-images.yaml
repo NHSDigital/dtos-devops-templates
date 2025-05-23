@@ -135,7 +135,7 @@ jobs:
 
       - name: Build Images
         id: build-images
-        working-directory: ${{ needs.function-diffs.outputs.DOCKER_COMPOSE_DIR }}
+        #working-directory: ${{ needs.function-diffs.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
           COMPOSE_FILE: ${{ inputs.docker_compose_file || ''}}
