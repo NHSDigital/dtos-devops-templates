@@ -42,10 +42,16 @@ on:
           required: false
           type: string
           default: templates
+      compose_work_dir:
+          description: Working directory to parse Docker files
+          required: false
+          type: string
+          default: ./
 
 env:
   CHANGED_FOLDERS_CSV: ${{ inputs.changed_folders || '' }}
   COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file || '' }}
+  COMPOSE_WORK_DIR: ${{ inputs.compose_work_dir || '' }}
   DEVOPS_TEMPLATES_PATH: ${{ inputs.devops_templates_path }}
   ENVIRONMENT_TAG: ${{ inputs.environment_tag || 'development' }}
   EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list || '' }}
@@ -84,7 +90,7 @@ jobs:
 
       - name: Determine Container Images to Build
         id: get-function-names
-        working-directory: tmp-docker
+        working-directory: ${{ env.COMPOSE_WORK_DIR }}
         run: bash "${{ env.DEVOPS_TEMPLATES_PATH }}/scripts/deployments/get-docker-names.sh"
 
   build-and-push-containers:
