@@ -57,7 +57,7 @@ module "private_endpoint_service_bus" {
 
   private_service_connection = {
     name                           = "${each.value.topic_name}-private-endpoint-connection"
-    private_connection_resource_id = azurerm_eventgrid_topic[each.key].id
+    private_connection_resource_id = azurerm_servicebus_topic.this[each.key].id
     subresource_names              = ["topic"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
   }
