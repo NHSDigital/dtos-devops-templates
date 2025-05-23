@@ -48,7 +48,7 @@ env:
   PROJECT_NAME: ${{ inputs.project_name }}
   REGISTRY: ghcr.io
   REGISTRY_OWNER: ${{ github.repository_owner }}
-  REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path || '' }}
 
 jobs:
@@ -67,7 +67,7 @@ jobs:
         with:
           # to allow git diff between HEAD and the previous commit to main branch
           fetch-depth: 2
-          token: ${{ env.REGISTRY_TOKEN }}
+          token: ${{ env.GH_TOKEN }}
 
       - name: Checkout DevOps Templates
         uses: actions/checkout@v4
@@ -97,7 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ env.REGISTRY_TOKEN }}
+          token: ${{ env.GH_TOKEN }}
           fetch-depth: 1
           submodules: 'true'
 
@@ -211,7 +211,7 @@ jobs:
         with:
           # to allow git diff between HEAD and the previous commit to main branch
           fetch-depth: 2
-          token: ${{ env.REGISTRY_TOKEN }}
+          token: ${{ env.GH_TOKEN }}
 
       - name: Checkout DevOps Templates
         uses: actions/checkout@v4

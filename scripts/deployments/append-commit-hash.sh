@@ -2,7 +2,7 @@
 
 # Environment Variables:
 #==========================
-# REPO_NAME, SHORT_COMMIT_HASH, ENVIRONMENT_TAG, GITHUB_TOKEN, GITHUB_REPO_OWNER, PACKAGE_REPO
+# REPO_NAME, SHORT_COMMIT_HASH, ENVIRONMENT_TAG, GH_TOKEN, GITHUB_REPO_OWNER, PACKAGE_REPO
 
 echo "Tagging all repositories in '${REGISTRY_OWNER}/${PROJECT_NAME}' with a hash/tag: ${COMMIT_HASH_TAG}"
 echo "Source tag for import is: $ENVIRONMENT_TAG"
@@ -12,7 +12,7 @@ echo "Source tag for import is: $ENVIRONMENT_TAG"
 api_query="gh api /repos/${REGISTRY_OWNER}/${PROJECT_NAME}/packages?package_type=container"
 
 repo_list=$(curl -s \
-  -H "Authorization: Bearer ${REGISTRY_TOKEN} " \
+  -H "Authorization: Bearer ${GH_TOKEN} " \
   -H "Accept: application/vnd.github+json" "$api_query" | \
   jq -r '.[].name')
 
@@ -36,7 +36,7 @@ for repo_name in $repo_list; do
 
   #target_tag_check_output=$(az acr manifest list-metadata --registry "$ACR_NAME" --name "$repo_name" --query "[?tags.contains(@, '${SHORT_COMMIT_HASH}')]" --output tsv)
   target_tag_check_output=$(curl -s \
-    -H "Authorization: Bearer ${REGISTRY_TOKEN}" \
+    -H "Authorization: Bearer ${GH_TOKEN}" \
     -H "Accept: application/vnd.github+json" \
     "gh api /repos/${REGISTRY_OWNER}/${PROJECT_NAME}/packages/container/versions" | \
     jq -r --arg tag "${COMMIT_HASH_TAG}" '.[] | select(.metadata.container.tags[]? == $tag) | .name')
