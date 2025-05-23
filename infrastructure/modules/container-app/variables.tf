@@ -19,13 +19,13 @@ variable "app_key_vault_id" {
   default     = null
 }
 
-variable "acr_mi_id" {
+variable "acr_managed_identity_id" {
   description = "Managed identity ID for the container registry. Required if using a private registry."
   type        = string
   default     = null
 }
 
-variable "acr_server" {
+variable "acr_login_server" {
   description = "Container registry server. Required if using a private registry."
   type        = string
   default     = null
