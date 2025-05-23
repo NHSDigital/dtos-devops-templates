@@ -45,18 +45,18 @@ module "private_endpoint_service_bus" {
 
   source = "../private-endpoint"
 
-  name                = "${each.value.topic_name}-azure-eventgrid-private-endpoint"
+  name                = "${coalesce(each.value.topic_name, each.key)}-azure-eventgrid-private-endpoint"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
   private_dns_zone_group = {
-    name                 = "${each.value.topic_name}-private-endpoint-zone-group"
+    name                 = "${coalesce(each.value.topic_name, each.key)}-private-endpoint-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids
   }
 
   private_service_connection = {
-    name                           = "${each.value.topic_name}-private-endpoint-connection"
+    name                           = "${coalesce(each.value.topic_name, each.key)}-private-endpoint-connection"
     private_connection_resource_id = azurerm_servicebus_topic.this[each.key].id
     subresource_names              = ["topic"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
