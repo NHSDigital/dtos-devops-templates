@@ -205,7 +205,7 @@ jobs:
     env:
       SHORT_COMMIT_HASH: ${{ needs.build-and-push-containers.outputs.COMMIT_HASH_TAG }}
       REGISTRY_PACKAGE: ${{ needs.build-and-push-containers.outputs.REGISTRY_PACKAGE }}
-      REGISTRY_OWNER: ${{ env.REGISTRY_OWNER }}
+      REGISTRY_OWNER: ${{ github.repository_owner }}
     steps:
       - uses: actions/checkout@v4
         with:
