@@ -2,6 +2,8 @@
 
 set -eo pipefail
 
+echo "Check the value of BUILD_ALL_CONTAINERS param: ${BUILD_ALL_CONTAINERS}"
+
 remove_from_array() {
     local item_to_remove="$1"
     local -n target_array="$2"  # Use nameref to modify the array directly
@@ -104,8 +106,6 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
     echo
 
     # STEP 2 - Now check the source code changes against the map created in STEP 1 to determine which containers to build
-    echo "Check the value of BUILD_ALL_CONTAINERS param: "${BUILD_ALL_CONTAINERS}"
-
     if [[ "${BUILD_ALL_CONTAINERS,,}" == "true" ]]; then
         echo "BUILD_ALL_CONTAINERS: Adding all services from '${compose_file}'."
         for key in "${!docker_services_map[@]}"; do
