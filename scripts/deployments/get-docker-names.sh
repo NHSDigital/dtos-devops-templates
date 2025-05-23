@@ -2,7 +2,10 @@
 
 set -eo pipefail
 
-echo "Check the value of BUILD_ALL_CONTAINERS param: ${BUILD_ALL_CONTAINERS}"
+echo "Check the value of BUILD_ALL_CONTAINERS param:"
+echo ${BUILD_ALL_CONTAINERS}
+echo "Check the compose CSVs:"
+echo ${COMPOSE_FILES_CSV}
 
 remove_from_array() {
     local item_to_remove="$1"
