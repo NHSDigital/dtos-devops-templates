@@ -37,22 +37,10 @@ on:
           description: A comma-separated list of directories which are considered 'changed'
           required: false
           type: string
-      devops_templates_path:
-          description: The default path to checkout the DevOps Templates repository.
-          required: false
-          type: string
-          default: templates
-      compose_work_dir:
-          description: Working directory to parse Docker files
-          required: false
-          type: string
-          default: ./
 
 env:
   CHANGED_FOLDERS_CSV: ${{ inputs.changed_folders || '' }}
   COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file || '' }}
-  COMPOSE_WORK_DIR: ${{ inputs.compose_work_dir || '' }}
-  DEVOPS_TEMPLATES_PATH: ${{ inputs.devops_templates_path }}
   ENVIRONMENT_TAG: ${{ inputs.environment_tag || 'development' }}
   EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list || '' }}
   GITHUB_SHA: ${{ github.sha }}
@@ -85,17 +73,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: NHSDigital/dtos-devops-templates
-          path: ${{ inputs.devops_templates_path }}
+          path: templates
           ref: ${{ inputs.commit_sha }}
-
-      - name: Print directories
-        run: |
-          find . -type d | sort
 
       - name: Determine Container Images to Build
         id: get-function-names
-        working-directory: ${{ env.COMPOSE_WORK_DIR }}
-        run: bash "${{ env.DEVOPS_TEMPLATES_PATH }}/scripts/deployments/get-docker-names.sh"
+        run: bash templates/scripts/deployments/get-docker-names.sh
 
   build-and-push-containers:
     runs-on: ubuntu-latest
@@ -122,7 +105,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: NHSDigital/dtos-devops-templates
-          path: ${{ inputs.devops_templates_path }}
+          path: templates
           ref: ${{ inputs.commit_sha }}
 
       - name: Create Image Tags
@@ -234,11 +217,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: NHSDigital/dtos-devops-templates
-          path: ${{ inputs.devops_templates_path }}
+          path: templates
           ref: ${{ inputs.commit_sha }}
 
       - name: Add Commit Hash
-        run: bash "${{ env.DEVOPS_TEMPLATES_PATH }}/scripts/deployments/append-commit-hash.sh"
+        run: bash "templates/scripts/deployments/append-commit-hash.sh"
 
       # Q: do we need the PAT token? Consider alternative approach.
       # Q: do we need to use the CLI? Possibly REST API. Possibly a GitHub action?
@@ -270,7 +253,7 @@ jobs:
         run: |
           export SBOM_REPOSITORY_REPORT="sbom-${{ matrix.function }}-repository-report"
           echo "SBOM_REPOSITORY_REPORT=$SBOM_REPOSITORY_REPORT" >> $GITHUB_OUTPUT
-          bash -x "${{ env.DEVOPS_TEMPLATES_PATH }}/scripts/reports/create-sbom-report.sh"
+          bash -x "templates/scripts/reports/create-sbom-report.sh"
 
       - name: Generate Vulnerabilities Report
         id: vuln-report
@@ -282,7 +265,7 @@ jobs:
         run: |
           export VULNERABILITIES_REPOSITORY_REPORT="vulnerabilities-${{ matrix.function }}-repository-report"
           echo "VULNERABILITIES_REPOSITORY_REPORT=$VULNERABILITIES_REPOSITORY_REPORT" >> $GITHUB_OUTPUT
-          bash -x "${{ env.DEVOPS_TEMPLATES_PATH }}/scripts/reports/scan-vulnerabilities.sh"
+          bash -x "templates/scripts/reports/scan-vulnerabilities.sh"
 
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
 
