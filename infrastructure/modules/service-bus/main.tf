@@ -27,3 +27,37 @@ resource "azurerm_servicebus_topic" "this" {
   status                                  = each.value.status
 }
 
+resource "azurerm_servicebus_namespace_authorization_rule" "this" {
+  name                = "access-rule"
+  namespace_id        = azurerm_servicebus_namespace.this.id
+
+  listen              = true
+  send                = true
+  manage              = false
+}
+
+
+module "private_endpoint_service_bus_namespace" {
+  count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
+
+  source = "../private-endpoint"
+
+  name                = "${var.servicebus_namespace_name}-servicebus-private-endpoint"
+  resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
+  location            = var.location
+  subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
+
+  private_dns_zone_group = {
+    name                 = "${var.servicebus_namespace_name}-private-endpoint-zone-group"
+    private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids
+  }
+
+  private_service_connection = {
+    name                           = "${var.servicebus_namespace_name}-private-endpoint-connection"
+    private_connection_resource_id = azurerm_servicebus_namespace.this.id
+    subresource_names              = ["namespace"]
+    is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
+  }
+
+  tags = var.tags
+}
