@@ -90,6 +90,18 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
         fi
         docker_services_map[${function_path}]=${service}
     done
+
+    # STEP 1b - Add support to collect image-only services (with no build context)
+    for service in $(yq eval ".services[] | ${EXCLUSION_FILTER} .container_name" "${compose_file}"); do
+        has_build=$(yq eval ".services[] | select(.container_name == \"$service\") | has(\"build\")" "${compose_file}")
+        has_image=$(yq eval ".services[] | select(.container_name == \"$service\") | has(\"image\")" "${compose_file}")
+
+        if [[ "$has_build" != "true" && "$has_image" == "true" ]]; then
+            echo "Detected image-based service: ${service} (no build context)"
+            changed_services+=("${service}")
+        fi
+    done
+
     printf "%-50s %-50s\n" "Service" "Path"
     printf "%-50s %-50s\n" "-------" "----"
     for key in "${!docker_services_map[@]}"; do
