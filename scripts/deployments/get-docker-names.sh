@@ -136,7 +136,7 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
             matched="false"
             for function_path in "${!docker_services_map[@]}"; do
                 # The changed folder may be a deeper path than the Function path, so it must be matched this way around
-                if [[ "${folder}" =~ ${function_path} ]]; then
+                if [[ "${folder,,}" =~ ${function_path,,} ]]; then
                     changed_services+=("${docker_services_map[$function_path]}")
                     echo "  - ${folder} matches service '${docker_services_map[$function_path]}'"
                     matched="true"
