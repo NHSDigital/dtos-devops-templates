@@ -244,7 +244,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REGISTRY: ghcr.io/${{ github.repository_owner }}
         run: |
-          packages=$(gh api /repos/{owner}/{repo}/packages?package_type=container --jq '.[].name')
+          packages=$(gh api "/repos/{owner}/{repo}/packages?package_type=container&per_page=100" --jq '.[].name')
           for package in ${packages}; do
             docker buildx imagetools create "${REGISTRY}/${package}:${ENVIRONMENT_TAG}" --tag "${REGISTRY}/${package}:${SHORT_COMMIT_HASH}"
           done
