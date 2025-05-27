@@ -106,7 +106,7 @@ jobs:
           REGISTRY: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
         run: |
           set -x
-          [[ "${GITHUB_REF}" == refs/heads/main ]] && PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
+          [[ "${GITHUB_REF}" == "refs/heads/main" ]] && PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
           {
             echo "pr_num_tag=pr${PR_NUMBER}"
             echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})"
