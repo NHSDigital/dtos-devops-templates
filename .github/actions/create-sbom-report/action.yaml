@@ -1,4 +1,5 @@
 name: Software Bill of Materials Report
+description: Generates and uploads an SBOM report for the specified Docker image.
 
 inputs:
   build_datetime:
@@ -16,13 +17,14 @@ inputs:
 
 runs:
   using: composite
-  env: 
-    BUILD_DATETIME: ${{ inputs.build_datetime }}
-    SBOM_REPOSITORY_REPORT: sbom/sbom-${{ inputs.image_name }}-repository-report
-    CHECK_DOCKER_IMAGE: ${{ inputs.project_name }}-${{ inputs.image_name }}:latest
-    FORCE_USE_DOCKER: true
   steps:
     - name: Create SBOM report
+      shell: bash
+      env:
+        BUILD_DATETIME: ${{ inputs.build_datetime }}
+        SBOM_REPOSITORY_REPORT: sbom/sbom-${{ inputs.image_name }}-repository-report
+        CHECK_DOCKER_IMAGE: ${{ inputs.project_name }}-${{ inputs.image_name }}:latest
+        FORCE_USE_DOCKER: true
       run: |
         mkdir sbom
         echo "sbom_repository_report=${SBOM_REPOSITORY_REPORT}" >> ${GITHUB_OUTPUT}
