@@ -103,16 +103,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          REGISTRY_REPOSITORY_PATH: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io/{1}-{2}', secrets.ACR_NAME, inputs.project_name, matrix.function) || format('ghcr.io/{0}/{1}-{2}', github.repository_owner, inputs.project_name, matrix.function) }}
+          REGISTRY: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
         run: |
           set -x
           if [[ "${GITHUB_REF}" == refs/heads/main ]]; then
-            PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls | jq -r 'sort_by(.updated_at) | reverse | .[0].number')
+            PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
           fi
           {
             echo "pr_num_tag=pr${PR_NUMBER}"
             echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})"
-            echo "registry_repository_path=${REGISTRY_REPOSITORY_PATH}"
+            echo "registry_repository_path=${REGISTRY}/${PROJECT_NAME}-${{ matrix.function }}"
           } >> "${GITHUB_OUTPUT}"
 
       - name: Build Docker image
