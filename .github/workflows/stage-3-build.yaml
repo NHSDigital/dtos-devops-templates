@@ -28,6 +28,10 @@ on:
         description: Excluded containers in a comma separated list
         required: true
         type: string
+      changed_folders:
+        description: A comma-separated list of folders deemed to have "changed"
+        required: false
+        type: string
 
 env:
   ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
@@ -63,6 +67,7 @@ jobs:
           COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file_csv_list }}
           EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
           SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
+          CHANGED_FOLDERS_CSV: ${{ inputs.changed_folders }}
         run: bash ./templates/scripts/deployments/get-docker-names.sh
 
   build-and-push:
