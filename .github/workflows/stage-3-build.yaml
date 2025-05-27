@@ -59,7 +59,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: fix/function-app-acr-is-optional
 
       - name: Determine which Docker container(s) to build
         id: get-function-names
@@ -91,14 +91,14 @@ jobs:
           fetch-depth: 1
           submodules: true
 
-      - name: Checkout dtos-devops-templates repository
+      - name: Checkout dtos-devops-templates
         uses: actions/checkout@v4
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: fix/function-app-acr-is-optional
 
-      - name: Set Image Tags
+      - name: Create image tags
         id: tags
         env:
           GH_TOKEN: ${{ github.token }}
@@ -197,7 +197,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: fix/function-app-acr-is-optional
 
       - name: AzureCLI login
         if: env.USE_AZURECR == 'true'
