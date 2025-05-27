@@ -134,7 +134,7 @@ jobs:
           echo "ENVIRONMENT_TAG=${ENVIRONMENT_TAG}" >> ${GITHUB_ENV}
 
       - name: Build and Push Image
-        working-directory: ${{ needs.get-functions.outputs.DOCKER_COMPOSE_DIR }}
+        working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
           COMPOSE_FILE: ${{ inputs.docker_compose_file }}
