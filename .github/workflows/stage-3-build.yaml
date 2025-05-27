@@ -130,8 +130,8 @@ jobs:
         env:
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
           PR_NUM_TAG: ${{ steps.pr_ref.outputs.pr_num_tag }}
-          COMMIT_HASH_TAG: ${{ steps.tags.short_commit_hash }}
-          REPO_PATH: ${{ steps.tags.registry_repository_path }}
+          COMMIT_HASH_TAG: ${{ steps.tags.outputs.short_commit_hash }}
+          REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
         run: |
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
           docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${COMMIT_HASH_TAG}"
@@ -157,8 +157,8 @@ jobs:
         env:
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
           PR_NUM_TAG: ${{ steps.pr_ref.outputs.pr_num_tag }}
-          COMMIT_HASH_TAG: ${{ steps.tags.short_commit_hash }}
-          REPO_PATH: ${{ steps.tags.registry_repository_path }}
+          COMMIT_HASH_TAG: ${{ steps.tags.outputs.short_commit_hash }}
+          REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
           GH_TOKEN: ${{ github.token }}
         run: |
           docker push "${REPO_PATH}:${COMMIT_HASH_TAG}"
