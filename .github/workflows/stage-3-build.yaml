@@ -110,7 +110,7 @@ jobs:
           {
             echo "pr_num_tag=pr${PR_NUMBER}"
             echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})"
-            echo "registry_repository_path=${REGISTRY}/${PROJECT_NAME}-${{ matrix.function }}"
+            echo "registry_repository_path=${REGISTRY,,}/${PROJECT_NAME,,}-${{ matrix.function }}"
           } >> "${GITHUB_OUTPUT}"
 
       - name: Build Docker image
@@ -246,7 +246,7 @@ jobs:
         run: |
           packages=$(gh api "/repos/{owner}/{repo}/packages?package_type=container&per_page=100" --jq '.[].name')
           for package in ${packages}; do
-            docker buildx imagetools create "${REGISTRY}/${package}:${ENVIRONMENT_TAG}" --tag "${REGISTRY}/${package}:${SHORT_COMMIT_HASH}"
+            docker buildx imagetools create "${REGISTRY,,}/${package}:${ENVIRONMENT_TAG}" --tag "${REGISTRY,,}/${package}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
           done
 
   aggregate-reports:
