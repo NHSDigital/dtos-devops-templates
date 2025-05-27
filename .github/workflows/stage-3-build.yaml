@@ -170,13 +170,13 @@ jobs:
 
       - name: Software Bill of Materials (SBOM)
         id: sbom
-        uses: ./github/actions/create-sbom-report
+        uses: ./.github/actions/create-sbom-report
         with:
           project_name: ${{ inputs.project_name }}
           image_name: ${{ inputs.project_name }}-${{ matrix.function }}
 
       - name: Vulnerability scan
-        uses: ./github/actions/scan-vulnerabilities
+        uses: ./.github/actions/scan-vulnerabilities
         with:
           sbom_repository_report: ${{ steps.sbom.outputs.sbom_repository_report }}
           project_name: ${{ inputs.project_name }}
