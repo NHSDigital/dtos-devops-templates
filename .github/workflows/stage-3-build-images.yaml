@@ -28,6 +28,11 @@ on:
         description: Excluded containers in a comma separated list
         required: true
         type: string
+      build_all_images:
+        description: Build all images (true) or only changed ones (false)
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   get-functions:
@@ -38,10 +43,10 @@ jobs:
       id-token: write
     outputs:
       FUNC_NAMES: ${{ steps.get-function-names.outputs.FUNC_NAMES }}
+      DOCKER_COMPOSE_DIR: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
     steps:
       - uses: actions/checkout@v4
         with:
-          # to allow git diff between HEAD and the previous commit to main branch
           fetch-depth: 2
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -58,6 +63,8 @@ jobs:
           COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file }}
           EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
           SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
+          MANUAL_BUILD_ALL: ${{ inputs.build_all_images || false }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash ./templates/scripts/deployments/get-docker-names.sh
 
   build-and-push:
@@ -127,7 +134,7 @@ jobs:
           echo "ENVIRONMENT_TAG=${ENVIRONMENT_TAG}" >> ${GITHUB_ENV}
 
       - name: Build and Push Image
-        working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
+        working-directory: ${{ needs.get-functions.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
           COMPOSE_FILE: ${{ inputs.docker_compose_file }}
