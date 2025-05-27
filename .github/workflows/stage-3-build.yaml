@@ -177,7 +177,7 @@ jobs:
           image_name: ${{ inputs.project_name }}-${{ matrix.function }}
 
   tag-all-repositories:
-    name: Append short commit hash to all images
+    name: Add merge commit tag to all images
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build-and-push
