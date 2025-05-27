@@ -66,6 +66,7 @@ jobs:
         run: bash ./templates/scripts/deployments/get-docker-names.sh
 
   build-and-push:
+    if: needs.get-functions.outputs.FUNC_NAMES != '[]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -76,7 +77,6 @@ jobs:
     strategy:
       matrix:
         function: ${{ fromJSON(needs.get-functions.outputs.FUNC_NAMES) }}
-    if: needs.get-functions.outputs.FUNC_NAMES != '[]'
     outputs:
       pr_num_tag: ${{ steps.tags.outputs.pr_num_tag }}
       short_commit_hash: ${{ steps.tags.outputs.short_commit_hash }}
@@ -93,43 +93,29 @@ jobs:
           path: templates
           ref: main
 
-      - name: Determine PR number
-        id: pr_ref
+      - name: Set Image Tags
+        id: tags
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          REGISTRY_REPOSITORY_PATH: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io/{1}-{2}', secrets.ACR_NAME, inputs.project_name, matrix.function) || format('ghcr.io/{0}/{1}-{2}', github.repository_owner, inputs.project_name, matrix.function) }}
         run: |
+          set -x
           if [[ "${GITHUB_REF}" == refs/heads/main ]]; then
-            pulls_json=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls)
-            PR_NUMBER=$(echo "$pulls_json" | jq -r 'sort_by(.updated_at) | reverse | .[0].number')
-            echo "originating_branch: $(echo "$pulls_json" | jq -r 'sort_by(.updated_at) | reverse | .[0].head.ref')"
+            PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls | jq -r 'sort_by(.updated_at) | reverse | .[0].number')
           fi
-          echo "pr_num_tag: ${PR_NUMBER}"
-          echo pr_num_tag=${PR_NUMBER} >> ${GITHUB_OUTPUT}
-
-      - name: Construct Image Tag Components
-        id: tags
-        env:
-          IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          ACR_NAME: ${{ secrets.ACR_NAME }}
-          CONTAINER: ${{ matrix.function }}
-        run: |
-          [[ "${USE_AZURECR}" == "true" ]] \
-            && REGISTRY_REPOSITORY_PATH="${ACR_NAME}.azurecr.io/${PROJECT_NAME}-${CONTAINER}" \
-            || REGISTRY_REPOSITORY_PATH="ghcr.io/${{ github.repository_owner }}/${PROJECT_NAME}-${CONTAINER}"
-          short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})
-          echo "short_commit_hash: ${short_commit_hash}"
-          echo "short_commit_hash=${short_commit_hash}" >> ${GITHUB_OUTPUT}
-          echo "registry_repository_path: ${REGISTRY_REPOSITORY_PATH}"
-          echo "registry_repository_path=${REGISTRY_REPOSITORY_PATH}" >> ${GITHUB_OUTPUT}
+          {
+            echo "pr_num_tag=pr${PR_NUMBER}"
+            echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})"
+            echo "registry_repository_path=${REGISTRY_REPOSITORY_PATH}"
+          } >> "${GITHUB_OUTPUT}"
 
       - name: Build Docker image
         working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
-          PR_NUM_TAG: ${{ steps.pr_ref.outputs.pr_num_tag }}
+          PR_NUM_TAG: ${{ steps.tags.outputs.pr_num_tag }}
           COMMIT_HASH_TAG: ${{ steps.tags.outputs.short_commit_hash }}
           REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
         run: |
@@ -146,9 +132,17 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Azure Container Registry login
+      - name: azurecr.io login
         if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true'
         run: az acr login --name ${{ secrets.ACR_NAME }}
+
+      - name: ghcr.io login
+        if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'false'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
 
       - name: Push Docker image
         if: github.ref == 'refs/heads/main'
@@ -156,7 +150,7 @@ jobs:
         continue-on-error: false
         env:
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
-          PR_NUM_TAG: ${{ steps.pr_ref.outputs.pr_num_tag }}
+          PR_NUM_TAG: ${{ steps.tags.outputs.pr_num_tag }}
           COMMIT_HASH_TAG: ${{ steps.tags.outputs.short_commit_hash }}
           REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
           GH_TOKEN: ${{ github.token }}
@@ -210,9 +204,17 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Azure Container Registry login
+      - name: azurecr.io login
         if: env.USE_AZURECR == 'true'
         run: az acr login --name ${{ secrets.ACR_NAME }}
+
+      - name: ghcr.io login
+        if: env.USE_AZURECR == 'false'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
 
       - name: Tag all azurecr.io Docker images
         if: env.USE_AZURECR == 'true'
@@ -240,7 +242,7 @@ jobs:
     env:
       PR_NUM_TAG: ${{ needs.build-and-push.outputs.pr_num_tag }}
     steps:
-      - name: Download all artifacts
+      - name: Get all artifacts
         uses: actions/download-artifact@v4
         with:
           path: reports-${{ env.PR_NUM_TAG }}
