@@ -1,3 +1,4 @@
+import math
 from typing import Dict
 from datetime import datetime
 
@@ -52,7 +53,7 @@ def slack_message_style1_subheading(test_results, build_url):
     total_tests = test_results.get("total", 0)
 
     try:
-        green_circles = round((pass_rate / 100) * total_circles)
+        green_circles = math.floor((pass_rate / 100) * total_circles)
     except (TypeError, ZeroDivisionError):
         green_circles = 0
 
