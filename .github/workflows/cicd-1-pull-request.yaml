@@ -101,7 +101,7 @@ jobs:
       environment_tag: test
       project_name: test-docker
       function_app_source_code_path: src
-      docker_compose_file_csv_list: compose.yaml
+      docker_compose_file_csv_list: scripts/docker/examples/sample-docker-compose.yaml
       excluded_containers_csv_list: db,app
     secrets: inherit
   acceptance-stage: # Recommended maximum execution time is 10 minutes
