@@ -112,10 +112,10 @@ jobs:
         env:
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          REGISTRY_REPOSITORY_PATH: ${{ 
-            env.USE_AZURECR == 'true' && 
-            format('{0}.azurecr.io/{1}-{2}', secrets.ACR_NAME, inputs.project_name, matrix.function) || 
-            format('ghcr.io/{0}/{1}-{2}', github.repository_owner, inputs.project_name, matrix.function) 
+          REGISTRY_REPOSITORY_PATH: ${{
+            env.USE_AZURECR == 'true' &&
+            format('{0}.azurecr.io/{1}-{2}', secrets.ACR_NAME, inputs.project_name, matrix.function) ||
+            format('ghcr.io/{0}/{1}-{2}', github.repository_owner, inputs.project_name, matrix.function)
           }}
         run: |
           short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})
