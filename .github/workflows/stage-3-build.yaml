@@ -79,7 +79,7 @@ jobs:
     if: needs.get-functions.outputs.FUNC_NAMES != '[]'
     outputs:
       pr_num_tag: ${{ steps.tags.outputs.pr_num_tag }}
-      short_commit_hash: ${{ steps.tags.short_commit_hash }}
+      short_commit_hash: ${{ steps.tags.outputs.short_commit_hash }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -112,8 +112,12 @@ jobs:
         env:
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          REGISTRY_REPOSITORY_PATH: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io/{1}-{2}', secrets.ACR_NAME, inputs.project_name, matrix.function) || format('ghcr.io/{0}/{1}-{2}', github.repository_owner, inputs.project_name, matrix.function) }}
+          ACR_NAME: ${{ secrets.ACR_NAME }}
+          CONTAINER: ${{ matrix.function }}
         run: |
+          [[ "${USE_AZURECR}" == "true" ]] \
+            && REGISTRY_REPOSITORY_PATH="${ACR_NAME}.azurecr.io/${PROJECT_NAME}-${CONTAINER}" \
+            || REGISTRY_REPOSITORY_PATH="ghcr.io/${{ github.repository_owner }}/${PROJECT_NAME}-${CONTAINER}"
           short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})
           echo "short_commit_hash: ${short_commit_hash}"
           echo "short_commit_hash=${short_commit_hash}" >> ${GITHUB_OUTPUT}
