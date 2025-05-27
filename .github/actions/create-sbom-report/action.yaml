@@ -1,0 +1,36 @@
+name: Software Bill of Materials Report
+
+inputs:
+  build_datetime:
+    description: Build datetime, set by the CI/CD pipeline workflow
+    required: true
+  build_timestamp:
+    description: Build timestamp, set by the CI/CD pipeline workflow
+    required: true
+  project_name:
+    description: Project Name
+    required: true
+  image_name:
+    description: Docker Image to be scanned
+    required: true
+
+runs:
+  using: composite
+  env: 
+    BUILD_DATETIME: ${{ inputs.build_datetime }}
+    SBOM_REPOSITORY_REPORT: sbom/sbom-${{ inputs.image_name }}-repository-report
+    CHECK_DOCKER_IMAGE: ${{ inputs.project_name }}-${{ inputs.image_name }}:latest
+    FORCE_USE_DOCKER: true
+  steps:
+    - name: Create SBOM report
+      run: |
+        mkdir sbom
+        echo "sbom_repository_report=${SBOM_REPOSITORY_REPORT}" >> ${GITHUB_OUTPUT}
+        ${GITHUB_WORKSPACE}/templates/scripts/reports/create-sbom-report.sh
+
+    - name: Upload SBOM report as an artefact
+      uses: actions/upload-artifact@v4
+      with:
+        name: sbom-${{ inputs.image_name }}-repository-report.json
+        path: ${{ env.SBOM_REPOSITORY_REPORT }}.json
+        retention-days: 21
