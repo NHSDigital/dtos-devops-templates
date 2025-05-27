@@ -9,6 +9,27 @@ The Slack integration is designed to notify outcome teams of post-deployment tes
 * **Modularity** The notification script is designed as a reusable component, allowing for easy updates to message formats without modifying the core pipeline logic.
 * **Error Handling** The scripts handle basic scenarios such as lack of required parameters like the webhook URL, or if test result parsing fails.
 
+## Message Styles for Test Results
+
+This integration script generates the following style of notification messages:
+
+**Full Pass Rate**
+All tests have passed based on test results.
+
+![Tests are successful](./assets/Message_Success.jpg)
+
+
+**Partial Pass Rate**
+_Some_ tests failed or raised warnings. Please click the build link to navigate to the build details.
+
+![Tests are partial](./Message_Partial.jpg)
+
+
+
+**Failure**
+_All_ tests failed or raised warnings. Please click the build link to navigate to the build details.
+
+![Tests failed](./Message_Failed.jpg)
 
 ## Set Up the Slack App
 
@@ -44,19 +65,19 @@ settings:
   org_deploy_enabled: false
   socket_mode_enabled: false
   token_rotation_enabled: false
-
 ```
+
 5. In the _Review summary & create your app_, click **Create**.
 5. You will now be navigated to the application configuration.
-![alt text](image.png)
+![App Credentials](./assets/Setup-1.png)
 5. Record all the entires for `App ID`, `Client ID`, `Client Secret`, `Signing Secret`, `Verification Token` etc.
 5. Navigate to **Incoming Webhooks** and enable the toggle **Activate Incoming Webhooks**.
-![alt text](image-1.png)
+![Activate Webhooks](./assets/Setup-2.png)
 5. Scroll down the page to create a webhook endpoint.
 5. Click on **Add new webhook**
 5. In the next screen, Slack requires permission to generate a webhook inside a selected channel. So, select the appropriate channel you wish the app to post notifications to and click **Allow**.
 5. You'll now see the generated URL for the application to post to the specified channel
-![alt text](image-2.png)
+![Webhook URLs](./assets/Setup-3.png)
 5. Copy this webhook URL. This URL will be used by the Azure Pipelines and Python script.
 
 
@@ -65,6 +86,7 @@ settings:
 ## Azure Pipelines
 
 ### General Flow
+
 ```
           START
             |
@@ -111,10 +133,10 @@ The parent pipeline triggers the child pipeline and passes parameters, such as t
     testfileDirectory: 'src/tests/e2e/testFiles'
     slackWebHook: $(SLACK_WEBHOOK_URL)
 ```
+
 | Parameter | Meaning | Source |
 |-|-|-|
 | SLACK_WEBHOOK_URL | This is a unique URL provided by Slack for an installed Slack App's Webhook. | Specified either in the Azure Pipeline's Variable Groups, or set as an environment variable. _Recommend to store this value in the pipeline variable groups._
-
 
 ### Child Pipeline
 

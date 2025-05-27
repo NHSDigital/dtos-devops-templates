@@ -119,6 +119,6 @@ def slack_message_style1_content(
                 {"type": "mrkdwn", "text": f"*Failures:*\n {safe_get('failures')}"},
                 {"type": "mrkdwn", "text": f"*Errors:*\n {safe_get('errors')}"},
                 {"type": "mrkdwn", "text": f"*Skipped:*\n {safe_get('skipped')}"},
-            ],
-        }
+            ]
+        },
     ]
