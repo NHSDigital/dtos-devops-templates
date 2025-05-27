@@ -1,69 +1,252 @@
-name: "Build stage"
+name: Docker Image CI
 
 on:
+  push:
+    branches:
+      - main
+
   workflow_call:
     inputs:
-      build_datetime:
-        description: "Build datetime, set by the CI/CD pipeline workflow"
+      environment_tag:
+        description: Environment of the deployment
         required: true
         type: string
-      build_timestamp:
-        description: "Build timestamp, set by the CI/CD pipeline workflow"
+        default: development
+      docker_compose_file_csv_list:
+        description: The path of the compose.yaml file needed to build docker images
         required: true
         type: string
-      build_epoch:
-        description: "Build epoch, set by the CI/CD pipeline workflow"
+      function_app_source_code_path:
+        description: The source path of the function app source code for the docker builds
         required: true
         type: string
-      nodejs_version:
-        description: "Node.js version, set by the CI/CD pipeline workflow"
+      project_name:
+        description: The name of the project
         required: true
         type: string
-      python_version:
-        description: "Python version, set by the CI/CD pipeline workflow"
-        required: true
-        type: string
-      terraform_version:
-        description: "Terraform version, set by the CI/CD pipeline workflow"
-        required: true
-        type: string
-      version:
-        description: "Version of the software, set by the CI/CD pipeline workflow"
+      excluded_containers_csv_list:
+        description: Excluded containers in a comma separated list
         required: true
         type: string
 
+env:
+  ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
+  COMPOSE_FILE: ${{ inputs.docker_compose_file_csv_list }}
+  PROJECT_NAME: ${{ inputs.project_name }}
+  USE_AZURECR: ${{ secrets.ACR_NAME != '' }}
+
 jobs:
-  artefact-1:
-    name: "Artefact 1"
+  get-functions:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    permissions:
+      contents: read
+      pull-requests: read
+      id-token: write
+    outputs:
+      FUNC_NAMES: ${{ steps.get-function-names.outputs.FUNC_NAMES }}
     steps:
-      - name: "Checkout code"
+      - uses: actions/checkout@v4
+        with:
+          # to allow git diff between HEAD and the previous commit to main branch
+          fetch-depth: 2
+
+      - name: Checkout dtos-devops-templates repository
         uses: actions/checkout@v4
-      - name: "Build artefact 1"
-        run: |
-          echo "Building artefact 1 ..."
-      - name: "Check artefact 1"
-        run: |
-          echo "Checking artefact 1 ..."
-      - name: "Upload artefact 1"
-        run: |
-          echo "Uploading artefact 1 ..."
-          # TODO: Use either action/cache or action/upload-artifact
-  artefact-2:
-    name: "Artefact 2"
+        with:
+          repository: NHSDigital/dtos-devops-templates
+          path: templates
+          ref: main
+
+      - name: Determine which Docker container(s) to build
+        id: get-function-names
+        env:
+          COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file_csv_list }}
+          EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
+          SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
+        run: bash ./templates/scripts/deployments/get-docker-names.sh
+
+  build-and-push:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: read
+      packages: write
+    needs: get-functions
+    strategy:
+      matrix:
+        function: ${{ fromJSON(needs.get-functions.outputs.FUNC_NAMES) }}
+    if: needs.get-functions.outputs.FUNC_NAMES != '[]'
+    outputs:
+      pr_num_tag: ${{ steps.tags.outputs.pr_num_tag }}
+      short_commit_hash: ${{ steps.tags.short_commit_hash }}
     steps:
-      - name: "Checkout code"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: true
+
+      - name: Checkout dtos-devops-templates repository
         uses: actions/checkout@v4
-      - name: "Build artefact 2"
+        with:
+          repository: NHSDigital/dtos-devops-templates
+          path: templates
+          ref: main
+
+      - name: Determine PR number
+        id: pr_ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          echo "Building artefact 2 ..."
-      - name: "Check artefact 2"
+          if [[ "${GITHUB_REF}" == refs/heads/main ]]; then
+            pulls_json=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls)
+            PR_NUMBER=$(echo "$pulls_json" | jq -r 'sort_by(.updated_at) | reverse | .[0].number')
+            echo "originating_branch: $(echo "$pulls_json" | jq -r 'sort_by(.updated_at) | reverse | .[0].head.ref')"
+          fi
+          echo "pr_num_tag: ${PR_NUMBER}"
+          echo pr_num_tag=${PR_NUMBER} >> ${GITHUB_OUTPUT}
+
+      - name: Construct Image Tag Components
+        id: tags
+        env:
+          IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REGISTRY_REPOSITORY_PATH: ${{ 
+            env.USE_AZURECR == 'true' && 
+            format('{0}.azurecr.io/{1}-{2}', secrets.ACR_NAME, inputs.project_name, matrix.function) || 
+            format('ghcr.io/{0}/{1}-{2}', github.repository_owner, inputs.project_name, matrix.function) 
+          }}
         run: |
-          echo "Checking artefact 2 ..."
-      - name: "Upload artefact 2"
+          short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})
+          echo "short_commit_hash: ${short_commit_hash}"
+          echo "short_commit_hash=${short_commit_hash}" >> ${GITHUB_OUTPUT}
+          echo "registry_repository_path: ${REGISTRY_REPOSITORY_PATH}"
+          echo "registry_repository_path=${REGISTRY_REPOSITORY_PATH}" >> ${GITHUB_OUTPUT}
+
+      - name: Build Docker image
+        working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
+        continue-on-error: false
+        env:
+          IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
+          PR_NUM_TAG: ${{ steps.pr_ref.outputs.pr_num_tag }}
+          COMMIT_HASH_TAG: ${{ steps.tags.short_commit_hash }}
+          REPO_PATH: ${{ steps.tags.registry_repository_path }}
         run: |
-          echo "Uploading artefact 2 ..."
-          # TODO: Use either action/cache or action/upload-artifact
+          docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
+          docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${COMMIT_HASH_TAG}"
+          docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${PR_NUM_TAG}"
+          docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${ENVIRONMENT_TAG}"
+
+      - name: Az CLI login
+        if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Azure Container Registry login
+        if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true'
+        run: az acr login --name ${{ secrets.ACR_NAME }}
+
+      - name: Push Docker image
+        if: github.ref == 'refs/heads/main'
+        working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
+        continue-on-error: false
+        env:
+          IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
+          PR_NUM_TAG: ${{ steps.pr_ref.outputs.pr_num_tag }}
+          COMMIT_HASH_TAG: ${{ steps.tags.short_commit_hash }}
+          REPO_PATH: ${{ steps.tags.registry_repository_path }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          docker push "${REPO_PATH}:${COMMIT_HASH_TAG}"
+          docker push "${REPO_PATH}:${PR_NUM_TAG}"
+          docker push "${REPO_PATH}:${ENVIRONMENT_TAG}"
+
+      - name: Software Bill of Materials (SBOM)
+        id: sbom
+        uses: .github/actions/create-sbom-report
+        with:
+          project_name: ${{ inputs.project_name }}
+          image_name: ${{ inputs.project_name }}-${{ matrix.function }}
+
+      - name: Vulnerability scan
+        uses: .github/actions/scan-vulnerabilities
+        with:
+          sbom_repository_report: ${{ steps.sbom.outputs.sbom_repository_report }}
+          project_name: ${{ inputs.project_name }}
+          image_name: ${{ inputs.project_name }}-${{ matrix.function }}
+
+  tag-all-repositories:
+    name: Append short commit hash to all images
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    env:
+      SHORT_COMMIT_HASH: ${{ needs.build-and-push.outputs.short_commit_hash }}
+    permissions:
+      id-token: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # to allow git diff between HEAD and the previous commit to main branch
+          fetch-depth: 2
+
+      - name: Checkout dtos-devops-templates repository
+        uses: actions/checkout@v4
+        with:
+          repository: NHSDigital/dtos-devops-templates
+          path: templates
+          ref: main
+
+      - name: Az CLI login
+        if: env.USE_AZURECR == 'true'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Azure Container Registry login
+        if: env.USE_AZURECR == 'true'
+        run: az acr login --name ${{ secrets.ACR_NAME }}
+
+      - name: Tag all azurecr.io Docker images
+        if: env.USE_AZURECR == 'true'
+        run: |
+          az acr login --name ${{ secrets.ACR_NAME }}
+          repositories=$(az acr repository list --name ${ACR_NAME} --output tsv)
+          for repository in ${repositories}; do
+            az acr import --name ${ACR_NAME} --source "${ACR_NAME}.azurecr.io/${repository}:${ENVIRONMENT_TAG}" --image "${repository}:${SHORT_COMMIT_HASH}" --force
+          done
+
+      - name: Tag all ghcr.io Docker images
+        if: env.USE_AZURECR == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REGISTRY: ghcr.io/${{ github.repository_owner }}
+        run: |
+          packages=$(gh api /repos/{owner}/{repo}/packages?package_type=container --jq '.[].name')
+          for package in ${packages}; do
+            docker buildx imagetools create "${REGISTRY}/${package}:${ENVIRONMENT_TAG}" --tag "${REGISTRY}/${package}:${SHORT_COMMIT_HASH}"
+          done
+
+  aggregate-reports:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    env:
+      PR_NUM_TAG: ${{ needs.build-and-push.outputs.pr_num_tag }}
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: reports-${{ env.PR_NUM_TAG }}
+
+      - name: Aggregate reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ env.PR_NUM_TAG }}
+          path: reports-${{ env.PR_NUM_TAG }}
