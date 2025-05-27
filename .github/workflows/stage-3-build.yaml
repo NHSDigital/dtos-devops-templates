@@ -127,7 +127,7 @@ jobs:
           docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${PR_NUM_TAG}"
           docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${ENVIRONMENT_TAG}"
 
-      - name: Az CLI login
+      - name: AzureCLI login
         if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true'
         uses: azure/login@v2
         with:
@@ -199,7 +199,7 @@ jobs:
           path: templates
           ref: main
 
-      - name: Az CLI login
+      - name: AzureCLI login
         if: env.USE_AZURECR == 'true'
         uses: azure/login@v2
         with:
@@ -222,11 +222,21 @@ jobs:
       - name: Tag all azurecr.io Docker images
         if: env.USE_AZURECR == 'true'
         run: |
+          wait_for_completion() {
+            # acr tasks are backgrounded for parallelism
+            local -n arr=$1
+            for pid in "${arr[@]}"; do
+              wait ${pid}
+            done
+          }
+          pids=()
           az acr login --name ${{ secrets.ACR_NAME }}
           repositories=$(az acr repository list --name ${ACR_NAME} --output tsv)
           for repository in ${repositories}; do
-            az acr import --name ${ACR_NAME} --source "${ACR_NAME}.azurecr.io/${repository}:${ENVIRONMENT_TAG}" --image "${repository}:${SHORT_COMMIT_HASH}" --force
+            az acr import --name ${ACR_NAME} --source "${ACR_NAME}.azurecr.io/${repository}:${ENVIRONMENT_TAG}" --image "${repository}:${SHORT_COMMIT_HASH}" --force &
+            pids+=($!)
           done
+          wait_for_completion pids
 
       - name: Tag all ghcr.io Docker images
         if: env.USE_AZURECR == 'false'
