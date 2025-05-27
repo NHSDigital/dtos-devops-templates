@@ -90,7 +90,7 @@ variable "tags" {
 }
 
 variable "private_endpoint_properties" {
-  description = "Consolidated properties for the Event Grid Private Endpoint."
+  description = "Consolidated properties for the Service Bus Private Endpoint."
   type = object({
     private_dns_zone_ids                 = optional(list(string), [])
     private_endpoint_enabled             = optional(bool, false)
