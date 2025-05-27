@@ -36,34 +36,6 @@ resource "azurerm_servicebus_namespace_authorization_rule" "this" {
   manage              = false
 }
 
-/* --------------------------------------------------------------------------------------------------
-  Private Endpoint Configuration
--------------------------------------------------------------------------------------------------- */
-
-# module "private_endpoint_service_bus" {
-#   for_each = var.private_endpoint_properties.private_endpoint_enabled ? var.servicebus_topic_map : {}
-
-#   source = "../private-endpoint"
-
-#   name                = "${coalesce(each.value.topic_name, each.key)}-azure-eventgrid-private-endpoint"
-#   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
-#   location            = var.location
-#   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
-
-#   private_dns_zone_group = {
-#     name                 = "${coalesce(each.value.topic_name, each.key)}-private-endpoint-zone-group"
-#     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids
-#   }
-
-#   private_service_connection = {
-#     name                           = "${coalesce(each.value.topic_name, each.key)}-private-endpoint-connection"
-#     private_connection_resource_id = azurerm_servicebus_namespace.this.id
-#     subresource_names              = ["topic"]
-#     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
-#   }
-
-#   tags = var.tags
-# }
 
 module "private_endpoint_service_bus_namespace" {
   count = var.private_endpoint_properties.private_endpoint_enabled ? 1 : 0
