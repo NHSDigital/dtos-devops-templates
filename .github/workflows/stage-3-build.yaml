@@ -110,7 +110,7 @@ jobs:
           {
             echo "pr_num_tag=pr${PR_NUMBER}"
             echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})"
-            echo "registry_repository_path=${REGISTRY}/${PROJECT_NAME}-${{ matrix.function }}"
+            echo "registry_repository_path=${REGISTRY,,}/${PROJECT_NAME,,}-${{ matrix.function }}"
           } >> "${GITHUB_OUTPUT}"
 
       - name: Build Docker image
@@ -123,13 +123,9 @@ jobs:
           REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
         run: |
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
-
-          IMAGE_NAME_LOWER=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
-          REPO_PATH_LOWER=$(echo "$REPO_PATH" | tr '[:upper:]' '[:lower:]')
-
-          docker tag ${IMAGE_NAME_LOWER}:latest "${REPO_PATH_LOWER}:${COMMIT_HASH_TAG}"
-          docker tag ${IMAGE_NAME_LOWER}:latest "${REPO_PATH_LOWER}:${PR_NUM_TAG}"
-          docker tag ${IMAGE_NAME_LOWER}:latest "${REPO_PATH_LOWER}:${ENVIRONMENT_TAG}"
+          docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${COMMIT_HASH_TAG}"
+          docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${PR_NUM_TAG}"
+          docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
         if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true'
@@ -162,11 +158,9 @@ jobs:
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          REPO_PATH_LOWER=$(echo "$REPO_PATH" | tr '[:upper:]' '[:lower:]')
-
-          docker push "${REPO_PATH_LOWER}:${COMMIT_HASH_TAG}"
-          docker push "${REPO_PATH_LOWER}:${PR_NUM_TAG}"
-          docker push "${REPO_PATH_LOWER}:${ENVIRONMENT_TAG}"
+          docker push "${REPO_PATH}:${COMMIT_HASH_TAG}"
+          docker push "${REPO_PATH}:${PR_NUM_TAG}"
+          docker push "${REPO_PATH}:${ENVIRONMENT_TAG}"
 
       - name: Software Bill of Materials (SBOM)
         id: sbom
@@ -250,11 +244,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REGISTRY: ghcr.io/${{ github.repository_owner }}
         run: |
-          REGISTRY_LOWER=$(echo "$REGISTRY" | tr '[:upper:]' '[:lower:]')
-
           packages=$(gh api "/repos/{owner}/{repo}/packages?package_type=container&per_page=100" --jq '.[].name')
           for package in ${packages}; do
-            docker buildx imagetools create "${REGISTRY_LOWER}/${package}:${ENVIRONMENT_TAG}" --tag "${REGISTRY_LOWER}/${package}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
+            docker buildx imagetools create "${REGISTRY,,}/${package}:${ENVIRONMENT_TAG}" --tag "${REGISTRY,,}/${package}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
           done
 
   aggregate-reports:
