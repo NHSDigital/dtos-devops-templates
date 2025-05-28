@@ -76,11 +76,14 @@ jobs:
         id: tags
         env:
           GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           set -x
-          [[ "${GITHUB_REF}" == "refs/heads/main" ]] && PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
-          echo "pr_num_tag=pr${PR_NUMBER}" >> "${GITHUB_OUTPUT}"
+
+          PR=$(gh pr list --state merged --limit 1 --search "$GITHUB_SHA" --json number -q '.[0].number' || true)
+          echo "pr_number=$PR" >> "$GITHUB_OUTPUT"
+
+          [[ "${GITHUB_REF}" == "refs/heads/main" ]] && PR=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
+          echo "pr_num_tag=pr${PR}" >> "${GITHUB_OUTPUT}"
           echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})" >> "${GITHUB_OUTPUT}"
 
   build-and-push:
