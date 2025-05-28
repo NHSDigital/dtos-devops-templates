@@ -156,7 +156,7 @@ jobs:
       - name: List top-level folders
         run: |
           echo "Folders in the current directory:"
-          find . -maxdepth 1 -type d ! -name '.' | sort
+          find . -type d ! -name '.' | sort
 
       - name: Software Bill of Materials (SBOM)
         id: sbom
