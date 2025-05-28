@@ -34,10 +34,10 @@ on:
         type: string
 
 env:
-  ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
   COMPOSE_FILE: ${{ inputs.docker_compose_file_csv_list }}
   PROJECT_NAME: ${{ inputs.project_name }}
   USE_AZURECR: ${{ secrets.ACR_NAME != '' }}
+  ACR_NAME: ${{ secrets.ACR_NAME }}
 
 jobs:
   get-functions:
@@ -80,6 +80,7 @@ jobs:
       packages: write
     needs: get-functions
     strategy:
+      fail-fast: false
       matrix:
         function: ${{ fromJSON(needs.get-functions.outputs.FUNC_NAMES) }}
     outputs:
@@ -118,14 +119,11 @@ jobs:
         continue-on-error: false
         env:
           PR_NUM_TAG: ${{ steps.tags.outputs.pr_num_tag }}
-          COMMIT_HASH_TAG: ${{ steps.tags.outputs.short_commit_hash }}
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
           REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
         run: |
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
-          docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${COMMIT_HASH_TAG}"
           docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${PR_NUM_TAG}"
-          docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
         if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true'
@@ -153,14 +151,10 @@ jobs:
         continue-on-error: false
         env:
           PR_NUM_TAG: ${{ steps.tags.outputs.pr_num_tag }}
-          COMMIT_HASH_TAG: ${{ steps.tags.outputs.short_commit_hash }}
           REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
-          IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          docker push "${REPO_PATH}:${COMMIT_HASH_TAG}"
           docker push "${REPO_PATH}:${PR_NUM_TAG}"
-          docker push "${REPO_PATH}:${ENVIRONMENT_TAG}"
 
       - name: Software Bill of Materials (SBOM)
         id: sbom
@@ -182,6 +176,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     env:
+      PR_NUM_TAG: ${{ needs.build-and-push.outputs.pr_num_tag }}
       SHORT_COMMIT_HASH: ${{ needs.build-and-push.outputs.short_commit_hash }}
     permissions:
       id-token: write
@@ -233,7 +228,8 @@ jobs:
           az acr login --name ${{ secrets.ACR_NAME }}
           repositories=$(az acr repository list --name ${ACR_NAME} --output tsv)
           for repository in ${repositories}; do
-            az acr import --name ${ACR_NAME} --source "${ACR_NAME}.azurecr.io/${repository}:${ENVIRONMENT_TAG}" --image "${repository}:${SHORT_COMMIT_HASH}" --force &
+            echo "Adding tag ${repository}:${SHORT_COMMIT_HASH}..."
+            az acr import --name ${ACR_NAME} --source "${ACR_NAME}.azurecr.io/${repository}:${PR_NUM_TAG}" --image "${repository}:${SHORT_COMMIT_HASH}" --force &
             pids+=($!)
           done
           wait_for_completion pids
@@ -246,7 +242,8 @@ jobs:
         run: |
           packages=$(gh api "/repos/{owner}/{repo}/packages?package_type=container&per_page=100" --jq '.[].name')
           for package in ${packages}; do
-            docker buildx imagetools create "${REGISTRY,,}/${package}:${ENVIRONMENT_TAG}" --tag "${REGISTRY,,}/${package}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
+            echo "Adding tag ${repository}:${SHORT_COMMIT_HASH}..."
+            docker buildx imagetools create "${REGISTRY,,}/${package}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${package}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
           done
 
   aggregate-reports:
