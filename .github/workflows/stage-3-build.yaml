@@ -151,11 +151,6 @@ jobs:
           [[ "${USE_AZURECR}" == "true" ]] && az acr login --name "${ACR_NAME}"
           docker push "${REPO_PATH}:${PR_NUM_TAG}"
 
-      - name: List top-level folders (YAML and Dockerfile)
-        run: |
-          echo "Folders in the current directory:"
-           find . \( -iname "*.yaml" -o -iname "*.yml" -o -name "Dockerfile" \) -type f -exec dirname {} \; | sort -u
-
       - name: Software Bill of Materials (SBOM)
         id: sbom
         uses: ./templates/.github/actions/create-sbom-report
