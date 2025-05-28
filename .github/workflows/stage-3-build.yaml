@@ -237,7 +237,7 @@ jobs:
         run: |
           packages=$(gh api "/repos/{owner}/{repo}/packages?package_type=container&per_page=100" --jq '.[].name')
           for package in ${packages}; do
-            echo "Adding tag ${repository}:${SHORT_COMMIT_HASH}..."
+            echo "Adding tag ${package}:${SHORT_COMMIT_HASH}..."
             docker buildx imagetools create "${REGISTRY,,}/${package}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${package}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
           done
 
