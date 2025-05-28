@@ -1,10 +1,6 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches:
-      - main
-
   workflow_call:
     inputs:
       environment_tag:
@@ -68,7 +64,7 @@ jobs:
           EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
           SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
           CHANGED_FOLDERS_CSV: ${{ inputs.changed_folders }}
-        run: bash ./templates/scripts/deployments/get-docker-names.sh
+        run: ./templates/scripts/deployments/get-docker-names.sh
 
   build-and-push:
     if: needs.get-functions.outputs.FUNC_NAMES != '[]'
@@ -120,7 +116,7 @@ jobs:
         env:
           PR_NUM_TAG: ${{ steps.tags.outputs.pr_num_tag }}
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
-          REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
+          REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}     
         run: |
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
           docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${PR_NUM_TAG}"
@@ -160,13 +156,13 @@ jobs:
 
       - name: Software Bill of Materials (SBOM)
         id: sbom
-        uses: ./.github/actions/create-sbom-report
+        uses: ./templates/.github/actions/create-sbom-report
         with:
           project_name: ${{ inputs.project_name }}
           image_name: ${{ inputs.project_name }}-${{ matrix.function }}
 
       - name: Vulnerability scan
-        uses: ./.github/actions/scan-vulnerabilities
+        uses: ./templates/.github/actions/scan-vulnerabilities
         with:
           sbom_repository_report: ${{ steps.sbom.outputs.sbom_repository_report }}
           project_name: ${{ inputs.project_name }}
