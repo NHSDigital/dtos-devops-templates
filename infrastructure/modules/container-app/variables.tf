@@ -3,6 +3,12 @@ variable "name" {
   type        = string
 }
 
+variable "location" {
+  type        = string
+  description = "The location/region where the container app is created."
+  default     = "UK South"
+}
+
 variable "container_app_environment_id" {
   description = "ID of the container app environment."
   type        = string

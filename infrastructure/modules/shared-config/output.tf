@@ -159,6 +159,7 @@ locals {
     virtual-machine                     = lower("${var.env}-${var.application}")
     win-virtual-machine                 = lower("${var.env}-${var.application}")
     virtual-network                     = upper("VNET-${var.env}-${var.location_map[var.location]}-${var.application}")
+    virtual-network-lowercase           = lower("vnet-${var.env}-${var.location_map[var.location]}-${var.application}")
     vnet-gateway                        = lower("GWY-${var.env}-${var.location_map[var.location]}-${var.application}")
   }
 }

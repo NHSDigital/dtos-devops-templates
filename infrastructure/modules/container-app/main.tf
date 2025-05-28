@@ -1,7 +1,7 @@
 module "container_app_identity" {
   source              = "../managed-identity"
   resource_group_name = var.resource_group_name
-  location            = data.azurerm_resource_group.main.location
+  location            = var.location
   uai_name            = "${var.name}-identity"
 }
 
@@ -11,7 +11,7 @@ module "key_vault_reader_role" {
 
   source = "../rbac-assignment"
 
-  scope                = data.azurerm_resource_group.main.id
+  scope                = var.app_key_vault_id
   role_definition_name = "Key Vault Secrets User"
   principal_id         = module.container_app_identity.principal_id
 }
