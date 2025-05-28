@@ -5,9 +5,8 @@ on:
     inputs:
       environment_tag:
         description: Environment of the deployment
-        required: true
+        required: false
         type: string
-        default: development
       docker_compose_file_csv_list:
         description: The path of the compose.yaml file needed to build docker images
         required: true
@@ -30,10 +29,11 @@ on:
         type: string
 
 env:
+  ACR_NAME: ${{ secrets.ACR_NAME }}
   COMPOSE_FILE: ${{ inputs.docker_compose_file_csv_list }}
+  ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
   PROJECT_NAME: ${{ inputs.project_name }}
   USE_AZURECR: ${{ secrets.ACR_NAME != '' }}
-  ACR_NAME: ${{ secrets.ACR_NAME }}
 
 jobs:
   get-functions:
@@ -60,10 +60,10 @@ jobs:
       - name: Determine which Docker container(s) to build
         id: get-function-names
         env:
+          CHANGED_FOLDERS_CSV: ${{ inputs.changed_folders }}
           COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file_csv_list }}
           EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
           SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
-          CHANGED_FOLDERS_CSV: ${{ inputs.changed_folders }}
         run: bash ./templates/scripts/deployments/get-docker-names.sh
 
   build-and-push:
@@ -116,7 +116,6 @@ jobs:
         env:
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
           PR_NUM_TAG: ${{ steps.tags.outputs.pr_num_tag }}
-          IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
           REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
         run: |
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
@@ -143,26 +142,24 @@ jobs:
         working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
-          IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
+          GH_TOKEN: ${{ github.token }}
           PR_NUM_TAG: ${{ steps.tags.outputs.pr_num_tag }}
           REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
-          GH_TOKEN: ${{ github.token }}
         run: |
           [[ "${USE_AZURECR}" == "true" ]] && az acr login --name "${ACR_NAME}"
+          [[ -n "${ENVIRONMENT_TAG}" ]] && docker push "${REPO_PATH}:${ENVIRONMENT_TAG}"
           docker push "${REPO_PATH}:${PR_NUM_TAG}"
 
       - name: Software Bill of Materials (SBOM)
         id: sbom
         uses: ./templates/.github/actions/create-sbom-report
         with:
-          project_name: ${{ inputs.project_name }}
           image_name: ${{ inputs.project_name }}-${{ matrix.function }}
 
       - name: Vulnerability scan
         uses: ./templates/.github/actions/scan-vulnerabilities
         with:
           sbom_repository_report: ${{ steps.sbom.outputs.sbom_repository_report }}
-          project_name: ${{ inputs.project_name }}
           image_name: ${{ inputs.project_name }}-${{ matrix.function }}
 
   tag-all-repositories:

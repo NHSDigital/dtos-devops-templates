@@ -8,9 +8,6 @@ inputs:
   build_timestamp:
     description: Build timestamp, set by the CI/CD pipeline workflow
     required: true
-  project_name:
-    description: Project Name
-    required: true
   image_name:
     description: Docker Image to be scanned
     required: true
@@ -26,7 +23,7 @@ runs:
       shell: bash
       env:
         BUILD_DATETIME: ${{ inputs.build_datetime }}
-        CHECK_DOCKER_IMAGE: ${{ inputs.project_name }}-${{ inputs.image_name }}:latest
+        CHECK_DOCKER_IMAGE: ${{ inputs.image_name }}:latest
         FORCE_USE_DOCKER: true
         VULNERABILITIES_REPOSITORY_REPORT: ${{ inputs.image_name }}-vulnerabilities-repository-report
         VULNERABILITIES_SUMMARY_LOGFILE: ${{ inputs.image_name }}-vulnerabilities-summary.txt
