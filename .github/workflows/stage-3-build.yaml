@@ -91,11 +91,10 @@ jobs:
             PR_NUMBER=$(gh pr list --state merged --search "$GITHUB_SHA" --json number -q '.[0].number' 2>/dev/null || true)
           fi
 
-          echo "Resolved PR number: $PR_NUMBER"
-          echo "pr_num_tag=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-
           set -x
           [[ "${GITHUB_REF}" == "refs/heads/main" ]] && PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
+
+          echo "Resolved PR number: ${PR_NUMBER}"
           echo "pr_num_tag=pr${PR_NUMBER}" >> "${GITHUB_OUTPUT}"
           echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})" >> "${GITHUB_OUTPUT}"
 
@@ -135,11 +134,16 @@ jobs:
           PR_NUM_TAG: ${{ needs.containers-to-build.outputs.pr_num_tag }}
           REGISTRY: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
         run: |
-          echo "repository_path=${REGISTRY,,}/${IMAGE_NAME}" >> "${GITHUB_OUTPUT}"
+          repository_path="${REGISTRY,,}/${IMAGE_NAME}"
+          echo "repository_path=${repository_path}" >> "${GITHUB_OUTPUT}"
+          echo repository_path=${repository_path}
 
+          echo Docker Compose...
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
+
+          echo Docker Tag...
           docker tag ${IMAGE_NAME}:latest "${repository_path}:${PR_NUM_TAG}"
-          [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${IMAGE_NAME}:latest "${ENVIRONMENT_TAG}"
+          [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${IMAGE_NAME}:latest" "${repository_path}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
         if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true'
@@ -250,7 +254,7 @@ jobs:
           packages=$(gh api "/repos/{owner}/{repo}/packages?package_type=container&per_page=100" --jq '.[].name')
           for package in ${packages}; do
             echo "Adding tag ${package}:${SHORT_COMMIT_HASH}..."
-            docker buildx imagetools create "${REGISTRY,,}/${package}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${package}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
+            docker buildx imagetools create "${REGISTRY,,}/${package,,}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${package,,}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
           done
 
   aggregate-reports:
