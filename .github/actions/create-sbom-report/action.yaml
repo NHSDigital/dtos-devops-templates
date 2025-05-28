@@ -34,7 +34,9 @@ runs:
 
     - name: Upload SBOM report as an artefact
       uses: actions/upload-artifact@v4
+      env:
+        IMAGE_NAME: ${{ inputs.image_name }}
       with:
-        name: sbom-${{ inputs.image_name }}-repository-report.json
-        path: ${{ env.SBOM_REPOSITORY_REPORT }}
+        name: sbom-${IMAGE_NAME}-repository-report
+        path: sbom
         retention-days: 21
