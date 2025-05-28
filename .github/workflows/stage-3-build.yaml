@@ -258,15 +258,21 @@ jobs:
         run: |
           echo Running docker buildx imagetools on remote repo
 
-          packages=$(gh api "/repos/{owner}/{repo}/packages?package_type=container&per_page=100" --jq '.[].name')
+          if gh api "/repos/${{ github.repository }}/packages" --jq 'length' > /dev/null 2>&1; then
+            packages=$(gh api "/repos/${{ github.repository }}/packages?package_type=container&per_page=100" --jq '.[].name')
 
-          package_count=$(echo "$packages" | wc -w)
-          echo "Total packages found: $package_count"
+            package_count=$(echo "$packages" | wc -w)
+            echo "Total packages found: $package_count"
 
-          for package in ${packages}; do
-            echo "Adding tag ${package}:${SHORT_COMMIT_HASH}..."
-            docker buildx imagetools create "${REGISTRY,,}/${package,,}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${package,,}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
-          done
+            for package in ${packages}; do
+              echo "Adding tag ${package}:${SHORT_COMMIT_HASH}..."
+              docker buildx imagetools create "${REGISTRY,,}/${package,,}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${package,,}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
+            done
+          else
+            echo "No packages found or insufficient permissions"
+          fi
+
+
 
   aggregate-reports:
     name: Aggregate reports
