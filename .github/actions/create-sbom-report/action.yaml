@@ -12,10 +12,15 @@ inputs:
     description: Docker Image to be scanned
     required: true
 
+outputs:
+  sbom_repository_report:
+    value: ${{ steps.report.outputs.sbom_repository_report }}
+
 runs:
   using: composite
   steps:
     - name: Create SBOM report
+      id: report
       shell: bash
       env:
         BUILD_DATETIME: ${{ inputs.build_datetime }}
