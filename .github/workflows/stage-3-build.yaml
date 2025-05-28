@@ -170,7 +170,7 @@ jobs:
 
   tag-all-repositories:
     name: Merge commit tag all images
-    if: github.ref == 'refs/heads/main' || env.IS_TEST_DEPLOY == 'true'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build-and-push
     env:
