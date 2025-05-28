@@ -11,6 +11,7 @@ This repository contains terraform modules and Azure devops pipeline steps to de
 - [baseline](infrastructure/modules/baseline/README.md)
 - [container-app](infrastructure/modules/container-app/README.md)
 - [container-app-environment](infrastructure/modules/container-app-environment/README.md)
+- [container-app-job](infrastructure/modules/container-app-job/README.md)
 - [container-registry](infrastructure/modules/container-registry/README.md)
 - [diagnostic-settings](infrastructure/modules/diagnostic-settings/README.md)
 - [dns-a-record](infrastructure/modules/dns-a-record/README.md)

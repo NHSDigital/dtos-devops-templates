@@ -32,6 +32,22 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
+### <a name="input_acr_login_server"></a> [acr\_login\_server](#input\_acr\_login\_server)
+
+Description: Container registry server. Required if using a private registry.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_acr_managed_identity_id"></a> [acr\_managed\_identity\_id](#input\_acr\_managed\_identity\_id)
+
+Description: Managed identity ID for the container registry. Required if using a private registry.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_app_key_vault_id"></a> [app\_key\_vault\_id](#input\_app\_key\_vault\_id)
 
 Description: ID of the key vault to store app secrets. Each secret is mapped to an environment variable. Required when fetch\_secrets\_from\_app\_key\_vault is true.
@@ -89,6 +105,14 @@ Description: Minimum number of running containers (replicas). Replicas can scale
 Type: `number`
 
 Default: `1`
+
+### <a name="input_user_assigned_identity_ids"></a> [user\_assigned\_identity\_ids](#input\_user\_assigned\_identity\_ids)
+
+Description: List of user assigned identity IDs to assign to the container app.
+
+Type: `list(string)`
+
+Default: `[]`
 ## Modules
 
 The following Modules are called:
