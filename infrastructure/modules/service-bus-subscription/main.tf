@@ -1,11 +1,9 @@
 resource "azurerm_servicebus_subscription" "this" {
   name                 = var.subscription_name
   topic_id             = var.topic_id
-  resource_group_name  = var.resource_group_name
   max_delivery_count   = var.max_delivery_count
   lock_duration        = "PT5M"  # ISO 8601 duration
 
-  tags = var.tags
 }
 
 resource "azurerm_role_assignment" "sb_role" {

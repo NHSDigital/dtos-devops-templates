@@ -28,16 +28,6 @@ variable "namespace_name" {
   }
 }
 
-variable "resource_group_name" {
-  description = "The name of the resource group containing the Service Bus namespace."
-  type        = string
-
-  validation {
-    condition     = length(var.resource_group_name) > 0
-    error_message = "resource_group_name must not be empty."
-  }
-}
-
 variable "max_delivery_count" {
   description = "The maximum delivery count of a message before it is dead-lettered."
   type        = number
@@ -47,12 +37,6 @@ variable "max_delivery_count" {
     condition     = var.max_delivery_count > 0 && var.max_delivery_count <= 100
     error_message = "max_delivery_count must be between 1 and 100."
   }
-}
-
-variable "tags" {
-  description = "A map of tags to assign to the subscription."
-  type        = map(string)
-  default     = {}
 }
 
 variable "service_bus_namespace_id" {
