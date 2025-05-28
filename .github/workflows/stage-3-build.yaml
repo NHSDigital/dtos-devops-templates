@@ -38,6 +38,7 @@ env:
   ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
   PROJECT_NAME: ${{ inputs.project_name }}
   USE_AZURECR: ${{ secrets.ACR_NAME != '' }}
+  IS_TEST_DEPLOY: true
 
 jobs:
   containers-to-build:
@@ -69,6 +70,30 @@ jobs:
           EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
           SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
         run: bash ./templates/scripts/deployments/get-docker-names.sh
+
+      - name: Fetch tag metadata
+        id: tags
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+
+          if [ -z "$PR_NUMBER" ]; then
+            echo "Looking up PR number for commit: $GITHUB_SHA"
+            PR_NUMBER=$(gh pr list --state open --search "$GITHUB_SHA" --json number -q '.[0].number' 2>/dev/null || true)
+          fi
+
+          if [ -z "$PR_NUMBER" ]; then
+            PR_NUMBER=$(gh pr list --state merged --search "$GITHUB_SHA" --json number -q '.[0].number' 2>/dev/null || true)
+          fi
+
+          echo "Resolved PR number: $PR_NUMBER"
+          echo "pr_num_tag=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+
+          set -x
+          [[ "${GITHUB_REF}" == "refs/heads/main" ]] && PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
+          echo "pr_num_tag=pr${PR_NUMBER}" >> "${GITHUB_OUTPUT}"
+          echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})" >> "${GITHUB_OUTPUT}"
 
   build-and-push:
     if: needs.containers-to-build.outputs.containers != '[]'
@@ -137,7 +162,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: ghcr.io login
-        if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'false'
+        if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'false' || env.IS_TEST_DEPLOY == 'true'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -145,7 +170,7 @@ jobs:
           password: ${{ github.token }}
 
       - name: Push Docker image
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' || env.IS_TEST_DEPLOY == 'true'
         working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
