@@ -258,8 +258,9 @@ jobs:
         run: |
           echo Running docker buildx imagetools on remote repo
 
-          if gh api "/repos/${{ github.repository }}/packages" --jq 'length' > /dev/null 2>&1; then
-            packages=$(gh api "/repos/${{ github.repository }}/packages?package_type=container&per_page=100" --jq '.[].name')
+          repo="${GITHUB_REPOSITORY,,}"
+          if gh api "/repos/${repo}/packages" --jq 'length' > /dev/null 2>&1; then
+            packages=$(gh api "/repos/${repo}/packages?package_type=container&per_page=100" --jq '.[].name')
 
             package_count=$(echo "$packages" | wc -w)
             echo "Total packages found: $package_count"
@@ -271,8 +272,6 @@ jobs:
           else
             echo "No packages found or insufficient permissions"
           fi
-
-
 
   aggregate-reports:
     name: Aggregate reports
