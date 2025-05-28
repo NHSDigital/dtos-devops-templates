@@ -6,3 +6,7 @@ output "servicebus_connection_string" {
 output "namespace_id" {
   value = azurerm_servicebus_namespace.this.id
 }
+
+output "topic_id" {
+  value = azurerm_servicebus_topic.this.id
+}
