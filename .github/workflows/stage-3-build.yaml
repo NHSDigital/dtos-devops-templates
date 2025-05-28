@@ -64,7 +64,7 @@ jobs:
           EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
           SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
           CHANGED_FOLDERS_CSV: ${{ inputs.changed_folders }}
-        run: ./templates/scripts/deployments/get-docker-names.sh
+        run: bash ./templates/scripts/deployments/get-docker-names.sh
 
   build-and-push:
     if: needs.get-functions.outputs.FUNC_NAMES != '[]'
@@ -116,7 +116,7 @@ jobs:
         env:
           PR_NUM_TAG: ${{ steps.tags.outputs.pr_num_tag }}
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
-          REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}     
+          REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
         run: |
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
           docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${PR_NUM_TAG}"
