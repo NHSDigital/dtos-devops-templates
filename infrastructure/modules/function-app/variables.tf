@@ -1,6 +1,7 @@
 variable "acr_login_server" {
   type        = string
   description = "The login server for the Azure Container Registry."
+  default     = null
 }
 
 variable "acr_mi_client_id" {
