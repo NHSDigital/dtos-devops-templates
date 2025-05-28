@@ -140,7 +140,6 @@ jobs:
         working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
-          GH_TOKEN: ${{ github.token }}
           PR_NUM_TAG: ${{ needs.containers-to-build.outputs.pr_num_tag }}
           REPO_PATH: ${{ steps.build.outputs.registry_repository_path }}
         run: |
