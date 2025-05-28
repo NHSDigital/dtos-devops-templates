@@ -156,7 +156,7 @@ jobs:
       - name: List top-level folders (YAML and Dockerfile)
         run: |
           echo "Folders in the current directory:"
-          find . \( -type f \( -iname "*.yaml" -o -iname "*.yml" -o -name "Dockerfile" \) \) \ -exec dirname {} \; | sort -u
+           find . \( -iname "*.yaml" -o -iname "*.yml" -o -name "Dockerfile" \) -type f -exec dirname {} \; | sort -u
 
       - name: Software Bill of Materials (SBOM)
         id: sbom
