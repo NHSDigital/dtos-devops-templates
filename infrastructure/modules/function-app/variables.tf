@@ -1,7 +1,6 @@
 variable "acr_login_server" {
   type        = string
   description = "The login server for the Azure Container Registry."
-  default     = null
 }
 
 variable "acr_mi_client_id" {
@@ -48,7 +47,7 @@ variable "assigned_identity_ids" {
 
 variable "cont_registry_use_mi" {
   description = "Should connections for Azure Container Registry use Managed Identity."
-  default     = null
+  default     = false
 }
 
 variable "cors_allowed_origins" {
