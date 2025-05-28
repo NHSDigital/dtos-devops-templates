@@ -21,8 +21,8 @@ resource "azurerm_linux_function_app" "function_app" {
   # }
 
   identity {
-    type         = "SystemAssigned, UserAssigned"
-    identity_ids = var.assigned_identity_ids
+    type         = var.assigned_identity_ids != null && length(var.assigned_identity_ids) > 0 ? "SystemAssigned, UserAssigned" : "SystemAssigned"
+    identity_ids = var.assigned_identity_ids != null && length(var.assigned_identity_ids) > 0 ? var.assigned_identity_ids : null
   }
 
   site_config {

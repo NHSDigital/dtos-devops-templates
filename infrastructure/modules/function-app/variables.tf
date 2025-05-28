@@ -42,6 +42,7 @@ variable "asp_id" {
 variable "assigned_identity_ids" {
   type        = list(string)
   description = "The list of User Assigned Identity IDs to assign to the Function App."
+  default     = null
 }
 
 variable "cont_registry_use_mi" {
