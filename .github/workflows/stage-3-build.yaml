@@ -111,7 +111,7 @@ jobs:
         continue-on-error: false
         env:
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
-          PR_NUM_TAG: ${{ steps.tags.outputs.pr_num_tag }}
+          PR_NUM_TAG: ${{ needs.containers-to-build.outputs.pr_num_tag }}
           REGISTRY: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
         run: |
           repo_path="${REGISTRY,,}/${PROJECT_NAME,,}-${{ matrix.function }}"
