@@ -107,6 +107,8 @@ jobs:
       contents: read
       pull-requests: read
       packages: write
+    outputs:
+      test_deployment: ${{ steps.docker_image.outputs.is_test_deploy }}
     needs: containers-to-build
     strategy:
       fail-fast: false
@@ -133,7 +135,10 @@ jobs:
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
           PR_NUM_TAG: ${{ needs.containers-to-build.outputs.pr_num_tag }}
           REGISTRY: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
+          TEST_DEPLOY: ${{ env.IS_TEST_DEPLOY }}
         run: |
+          echo "is_test_deploy=${TEST_DEPLOY}" >> "${GITHUB_OUTPUT}"
+
           repository_path="${REGISTRY,,}/${IMAGE_NAME}"
           echo "repository_path=${repository_path}" >> "${GITHUB_OUTPUT}"
           echo repository_path=${repository_path}
@@ -187,7 +192,7 @@ jobs:
 
   tag-all-repositories:
     name: Merge commit tag all images
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || needs.build-and-push.outputs.test_deployment
     runs-on: ubuntu-latest
     needs: [build-and-push, containers-to-build]
     env:
