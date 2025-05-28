@@ -138,8 +138,8 @@ jobs:
           echo "repository_path=${REGISTRY,,}/${IMAGE_NAME}" >> "${GITHUB_OUTPUT}"
 
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
-          docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${PR_NUM_TAG}"
-          [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${IMAGE_NAME}:latest "$${ENVIRONMENT_TAG}"
+          docker tag ${IMAGE_NAME}:latest "${repository_path}:${PR_NUM_TAG}"
+          [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${IMAGE_NAME}:latest "${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
         if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true'
