@@ -200,6 +200,7 @@ jobs:
       SHORT_COMMIT_HASH: ${{ needs.containers-to-build.outputs.short_commit_hash }}
     permissions:
       id-token: write
+      contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
@@ -256,16 +257,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REGISTRY: ghcr.io/${{ github.repository_owner }}
         run: |
-          echo Running docker buildx imagetools on remote repo
+          echo Running 'docker buildx imagetools' on remote repositories...
 
           repo="${GITHUB_REPOSITORY,,}"
-          if gh api "/repos/${repo}/packages" --jq 'length' > /dev/null 2>&1; then
-            packages=$(gh api "/repos/${repo}/packages?package_type=container&per_page=100" --jq '.[].name')
+          if gh api "/repos/${repo}/packages?package_type=container" --jq 'length' > /dev/null 2>&1; then
+            packages_json=$(gh api "/repos/${repo}/packages?package_type=container&per_page=100" --jq '[.[].name]')
 
-            package_count=$(echo "$packages" | wc -w)
+            package_count=$(echo "$packages" | grep -c '^')
             echo "Total packages found: $package_count"
 
-            for package in ${packages}; do
+            for package in "${packages[@]}"; do
               echo "Adding tag ${package}:${SHORT_COMMIT_HASH}..."
               docker buildx imagetools create "${REGISTRY,,}/${package,,}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${package,,}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
             done
