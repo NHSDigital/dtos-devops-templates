@@ -7,6 +7,6 @@ output "namespace_id" {
   value = azurerm_servicebus_namespace.this.id
 }
 
-output "topic_id" {
-  value = azurerm_servicebus_topic.this.id
+output "topic_ids" {
+  value = { for k, topic in azurerm_servicebus_topic.this : k => topic.id }
 }
