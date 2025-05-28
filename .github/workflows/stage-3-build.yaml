@@ -44,8 +44,6 @@ jobs:
       id-token: write
     outputs:
       containers: ${{ steps.get-function-names.outputs.FUNC_NAMES }}
-      pr_num_tag: ${{ steps.tags.outputs.pr_num_tag }}
-      short_commit_hash: ${{ steps.tags.outputs.short_commit_hash }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -68,29 +66,6 @@ jobs:
           SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
         run: bash ./templates/scripts/deployments/get-docker-names.sh
 
-      - name: Fetch tag metadata
-        id: tags
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          PR_NUMBER="${{ github.event.pull_request.number }}"
-          if [ -z "$PR_NUMBER" ]; then
-            echo "Looking up PR number for commit: $GITHUB_SHA"
-            PR_NUMBER=$(gh pr list --state open --search "$GITHUB_SHA" --json number -q '.[0].number' 2>/dev/null || true)
-          fi
-
-          if [ -z "$PR_NUMBER" ]; then
-            PR_NUMBER=$(gh pr list --state merged --search "$GITHUB_SHA" --json number -q '.[0].number' 2>/dev/null || true)
-          fi
-
-          echo "Resolved PR number: $PR_NUMBER"
-          echo "pr_num_tag=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-
-          set -x
-          [[ "${GITHUB_REF}" == "refs/heads/main" ]] && PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
-          echo "pr_num_tag=pr${PR_NUMBER}" >> "${GITHUB_OUTPUT}"
-          echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})" >> "${GITHUB_OUTPUT}"
-
   build-and-push:
     if: needs.containers-to-build.outputs.containers != '[]'
     runs-on: ubuntu-latest
@@ -104,6 +79,9 @@ jobs:
       fail-fast: false
       matrix:
         function: ${{ fromJSON(needs.containers-to-build.outputs.containers) }}
+    outputs:
+      pr_num_tag: ${{ steps.tags.outputs.pr_num_tag }}
+      short_commit_hash: ${{ steps.tags.outputs.short_commit_hash }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -117,19 +95,34 @@ jobs:
           path: templates
           ref: fix/function-app-acr-is-optional
 
+      - name: Fetch tag metadata
+        id: tags
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REGISTRY: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
+        run: |
+          set -x
+          if [[ "${GITHUB_REF}" == refs/pull/*/merge ]]; then
+            pr_number=$(echo "${GITHUB_REF}" | sed 's/refs\/pull\/\([0-9]*\)\/merge/\1/')
+          else
+            pr_number=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
+          fi
+          {
+            echo "pr_num_tag=pr${pr_number}"
+            echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})"
+            echo "registry_repository_path=${REGISTRY,,}/${PROJECT_NAME,,}-${{ matrix.function }}"
+          } >> "${GITHUB_OUTPUT}"
+
       - name: Build Docker image
-        id: build
         working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
-          PR_NUM_TAG: ${{ needs.containers-to-build.outputs.pr_num_tag }}
-          REGISTRY: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
+          PR_NUM_TAG: ${{ steps.tags.outputs.pr_num_tag }}
+          REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
         run: |
-          repo_path="${REGISTRY,,}/${PROJECT_NAME,,}-${{ matrix.function }}"
-          echo "registry_repository_path=${repo_path}" >> "${GITHUB_OUTPUT}"
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
-          docker tag ${IMAGE_NAME}:latest "${repo_path}:${PR_NUM_TAG}"
+          docker tag ${IMAGE_NAME}:latest "${REPO_PATH}:${PR_NUM_TAG}"
 
       - name: AzureCLI login
         if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true'
@@ -152,8 +145,8 @@ jobs:
         working-directory: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
         continue-on-error: false
         env:
-          PR_NUM_TAG: ${{ needs.containers-to-build.outputs.pr_num_tag }}
-          REPO_PATH: ${{ steps.build.outputs.registry_repository_path }}
+          PR_NUM_TAG: ${{ steps.tags.outputs.pr_num_tag }}
+          REPO_PATH: ${{ steps.tags.outputs.registry_repository_path }}
         run: |
           [[ "${USE_AZURECR}" == "true" ]] && az acr login --name "${ACR_NAME}"
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker push "${REPO_PATH}:${ENVIRONMENT_TAG}"
@@ -177,8 +170,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     env:
-      PR_NUM_TAG: ${{ needs.containers-to-build.outputs.pr_num_tag }}
-      SHORT_COMMIT_HASH: ${{ needs.containers-to-build.outputs.short_commit_hash }}
+      PR_NUM_TAG: ${{ needs.build-and-push.outputs.pr_num_tag }}
+      SHORT_COMMIT_HASH: ${{ needs.build-and-push.outputs.short_commit_hash }}
     permissions:
       id-token: write
       packages: write
@@ -252,10 +245,10 @@ jobs:
       - name: Get all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: reports-${{ env.PR_NUM_TAG }}
+          path: reports-${{ needs.build-and-push.outputs.pr_num_tag }}
 
       - name: Aggregate reports
         uses: actions/upload-artifact@v4
         with:
-          name: aggregated-reports-${{ env.PR_NUM_TAG }}
-          path: reports-${{ env.PR_NUM_TAG }}
+          name: aggregated-reports-${{ needs.build-and-push.outputs.pr_num_tag }}
+          path: reports-${{ needs.build-and-push.outputs.pr_num_tag }}
