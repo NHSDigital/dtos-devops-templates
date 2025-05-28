@@ -134,10 +134,10 @@ jobs:
           echo "repository_path=${repository_path}" >> "${GITHUB_OUTPUT}"
           echo repository_path=${repository_path}
 
-          echo Docker Compose...
+          echo Docker compose...
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
 
-          echo Docker Tag...
+          echo Docker tag with PR tag...
           docker tag ${IMAGE_NAME}:latest "${repository_path}:${PR_NUM_TAG}"
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${IMAGE_NAME}:latest" "${repository_path}:${ENVIRONMENT_TAG}"
 
@@ -247,7 +247,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REGISTRY: ghcr.io/${{ github.repository_owner }}
         run: |
+          echo Running docker buildx imagetools on remote repo
+
           packages=$(gh api "/repos/{owner}/{repo}/packages?package_type=container&per_page=100" --jq '.[].name')
+
+          package_count=$(echo "$packages" | wc -w)
+          echo "Total packages found: $package_count"
+
           for package in ${packages}; do
             echo "Adding tag ${package}:${SHORT_COMMIT_HASH}..."
             docker buildx imagetools create "${REGISTRY,,}/${package,,}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${package,,}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
