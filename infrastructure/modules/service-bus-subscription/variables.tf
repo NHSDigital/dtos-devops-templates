@@ -8,14 +8,14 @@ variable "subscription_name" {
   }
 }
 
-variable "topic_name" {
+variable "topic_id" {
   description = "The name of the Service Bus topic."
   type        = string
 
-  validation {
-    condition     = length(var.topic_name) > 0 && length(var.topic_name) <= 50
-    error_message = "topic_name must be between 1 and 50 characters."
-  }
+  # validation {
+  #   condition     = length(var.topic_name) > 0 && length(var.topic_name) <= 50
+  #   error_message = "topic_name must be between 1 and 50 characters."
+  # }
 }
 
 variable "namespace_name" {
