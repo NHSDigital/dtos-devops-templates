@@ -28,7 +28,7 @@ for repo_name in $repo_list; do
   echo "Processing repository: $repo_name"
 
   echo "  Checking for existing target tag: $SHORT_COMMIT_HASH"
-  target_tag_check_output=$(az acr manifest list-metadata --registry "$ACR_NAME" --name "$repo_name" --query "[?tags.contains(@, '${SHORT_COMMIT_HASH}')]" --output tsv)
+  target_tag_check_output=$(az acr manifest list-metadata --registry "$ACR_NAME" --name "$repo_name" --query "[?tags != null && contains(tags, '${SHORT_COMMIT_HASH}')]" --output tsv)
   target_tag_check_status=$?
 
   if [ $target_tag_check_status -eq 0 ] && [ -n "$target_tag_check_output" ]; then
