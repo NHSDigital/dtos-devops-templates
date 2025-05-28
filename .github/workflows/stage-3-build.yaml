@@ -57,7 +57,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: fix/function-app-acr-is-optional
+          ref: feat/DTOSS-9131-deploy-Service-Layer-infra
 
       - name: Determine which Docker container(s) to build
         id: get-function-names
@@ -96,7 +96,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: fix/function-app-acr-is-optional
+          ref: feat/DTOSS-9131-deploy-Service-Layer-infra
 
       - name: Fetch tag metadata
         id: tags
@@ -190,7 +190,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: fix/function-app-acr-is-optional
+          ref: feat/DTOSS-9131-deploy-Service-Layer-infra
 
       - name: AzureCLI login
         if: env.USE_AZURECR == 'true'
@@ -248,10 +248,10 @@ jobs:
       - name: Get all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: reports
+          path: aggregated-reports
 
       - name: Aggregate reports
         uses: actions/upload-artifact@v4
         with:
           name: aggregated-reports-${{ needs.build-and-push.outputs.pr_num_tag }}
-          path: reports
+          path: aggregated-reports
