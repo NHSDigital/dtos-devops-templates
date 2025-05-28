@@ -4,7 +4,3 @@ data "azurerm_key_vault_secrets" "app" {
 
   key_vault_id = var.app_key_vault_id
 }
-
-data "azurerm_resource_group" "main" {
-  name = var.resource_group_name
-}

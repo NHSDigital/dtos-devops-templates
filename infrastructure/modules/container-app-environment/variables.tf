@@ -8,6 +8,12 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "location" {
+  type        = string
+  description = "The location/region where the container app environment is created."
+  default     = "UK South"
+}
+
 variable "log_analytics_workspace_id" {
   type        = string
   description = "ID of the log analytics workspace to send resource logging to via diagnostic settings"
