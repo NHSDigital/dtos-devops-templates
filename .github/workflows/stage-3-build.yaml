@@ -31,37 +31,20 @@ on:
         description: name of an azure repository
         required: false
         type: string
+      azcid:
+        description: nothing
+        required: false
+        type: string
+      aztid:
+        description: nothing
+        required: false
+        type: string
+      azsid:
+        description: nothing
+        required: false
+        type: string
 
-  workflow_dispatch:
-    inputs:
-      environment_tag:
-        description: Environment of the deployment
-        required: false
-        type: string
-      docker_compose_file_csv_list:
-        description: The path of the compose.yaml file needed to build docker images
-        required: true
-        type: string
-      function_app_source_code_path:
-        description: The source path of the function app source code for the docker builds
-        required: true
-        type: string
-      project_name:
-        description: The name of the project
-        required: true
-        type: string
-      excluded_containers_csv_list:
-        description: Excluded containers in a comma separated list
-        required: true
-        type: string
-      changed_folders:
-        description: A comma-separated list of folders deemed to have "changed"
-        required: false
-        type: string
-      acr_name:
-        description: name of an azure repository
-        required: false
-        type: string
+
 
 env:
   ACR_NAME: ${{ inputs.acr_name }}
@@ -70,6 +53,9 @@ env:
   PROJECT_NAME: ${{ inputs.project_name }}
   USE_AZURECR: ${{ inputs.ACR_NAME != '' }}
   IS_TEST_DEPLOY: true
+  azcid: ${{ inputs.azcid }}
+  aztid: ${{ inputs.aztid }}
+  azsid: ${{ inputs.azsid }}
 
 jobs:
   containers-to-build:
@@ -187,9 +173,9 @@ jobs:
         if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true') || env.IS_TEST_DEPLOY == 'true'
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ env.azcid }}
+          tenant-id: ${{ env.aztid }}
+          subscription-id: ${{ env.azsid }}
 
       - name: ghcr.io login
         if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'false') || env.IS_TEST_DEPLOY == 'true'
@@ -253,9 +239,9 @@ jobs:
         if: env.USE_AZURECR == 'true'
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ env.azcid }}
+          tenant-id: ${{ env.aztid }}
+          subscription-id: ${{ env.azsid }}
 
       - name: ghcr.io login
         if: env.USE_AZURECR == 'false' || env.IS_TEST_DEPLOY == 'true'
