@@ -32,6 +32,37 @@ on:
         required: false
         type: string
 
+  workflow_dispatch:
+    inputs:
+      environment_tag:
+        description: Environment of the deployment
+        required: false
+        type: string
+      docker_compose_file_csv_list:
+        description: The path of the compose.yaml file needed to build docker images
+        required: true
+        type: string
+      function_app_source_code_path:
+        description: The source path of the function app source code for the docker builds
+        required: true
+        type: string
+      project_name:
+        description: The name of the project
+        required: true
+        type: string
+      excluded_containers_csv_list:
+        description: Excluded containers in a comma separated list
+        required: true
+        type: string
+      changed_folders:
+        description: A comma-separated list of folders deemed to have "changed"
+        required: false
+        type: string
+      acr_name:
+        description: name of an azure repository
+        required: false
+        type: string
+
 env:
   ACR_NAME: ${{ inputs.acr_name }}
   COMPOSE_FILE: ${{ inputs.docker_compose_file_csv_list }}
