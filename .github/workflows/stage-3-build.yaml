@@ -130,6 +130,7 @@ jobs:
         env:
           IMAGE_NAME: ${{ inputs.project_name }}-${{ matrix.function }}
           PR_NUM_TAG: ${{ needs.containers-to-build.outputs.pr_num_tag }}
+          SHORT_COMMIT_HASH: ${{ needs.containers-to-build.outputs.short_commit_hash }}
           REGISTRY: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
           TEST_DEPLOY: ${{ env.IS_TEST_DEPLOY }}
         run: |
@@ -142,8 +143,9 @@ jobs:
           echo Docker compose...
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
 
-          echo Docker tag with PR tag...
+          echo Docker tag with tags (${PR_NUM_TAG}, ${SHORT_COMMIT_HASH})...
           docker tag ${IMAGE_NAME}:latest "${repository_path}:${PR_NUM_TAG}"
+          docker tag ${IMAGE_NAME}:latest "${repository_path}:${SHORT_COMMIT_HASH}"
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${IMAGE_NAME}:latest" "${repository_path}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
@@ -169,10 +171,12 @@ jobs:
         env:
           PR_NUM_TAG: ${{ needs.containers-to-build.outputs.pr_num_tag }}
           REPO_PATH: ${{ steps.docker_image.outputs.repository_path }}
+          SHORT_COMMIT_HASH: ${{ needs.containers-to-build.outputs.short_commit_hash }}
         run: |
           [[ "${USE_AZURECR}" == "true" ]] && az acr login --name "${ACR_NAME}"
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker push "${REPO_PATH}:${ENVIRONMENT_TAG}"
           docker push "${REPO_PATH}:${PR_NUM_TAG}"
+          docker push "${REPO_PATH}:${SHORT_COMMIT_HASH}"
 
       - name: Software Bill of Materials (SBOM)
         id: sbom
