@@ -40,6 +40,7 @@ Type: `string`
 
 Default: `"UK South"`
 
+<<<<<<< HEAD
 ### <a name="input_private_dns_zone_rg_name"></a> [private\_dns\_zone\_rg\_name](#input\_private\_dns\_zone\_rg\_name)
 
 Description: Name of the hub resource group where the private DNS zone is located. This is only required if adding custom DNS records.
@@ -48,6 +49,8 @@ Type: `string`
 
 Default: `null`
 
+=======
+>>>>>>> 21b774d (Update terraform docs (#181))
 ### <a name="input_zone_redundancy_enabled"></a> [zone\_redundancy\_enabled](#input\_zone\_redundancy\_enabled)
 
 Description: Enable availability zone redundancy for the container app environment. Should be set to true in production.
