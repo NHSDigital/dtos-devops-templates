@@ -12,7 +12,8 @@ module "container-app-environment" {
   source = "../../../dtos-devops-templates/infrastructure/modules/container-app-environment"
 
   name                       = "manage-breast-screening-${var.environment}"
-  resource_group_name        = azurerm_resource_group.this.name
+  resource_group_name        = var.resource_group_name
+  location                   = var.location
   log_analytics_workspace_id = data.terraform_remote_state.audit.outputs.log_analytics_workspace_id
   vnet_integration_subnet_id = module.container_app_subnet.id
 }
@@ -25,7 +26,8 @@ module "container-app-job" {
   source = "../../../dtos-devops-templates/infrastructure/modules/container-app-job"
 
   name                         = "ca-workload-name-${var.environment}"
-  resource_group_name          = azurerm_resource_group.this.name
+  resource_group_name          = var.resource_group_name
+  location                     = var.location
   container_app_environment_id = module.container-app-environment.id
 
   # List of user assigned managed identities to assign to the container app job so it can authenticate against e.g. database, key vault, etc:

@@ -32,6 +32,14 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: The location/region where the container app environment is created.
+
+Type: `string`
+
+Default: `"UK South"`
+
 ### <a name="input_private_dns_zone_rg_name"></a> [private\_dns\_zone\_rg\_name](#input\_private\_dns\_zone\_rg\_name)
 
 Description: Name of the hub resource group where the private DNS zone is located. This is only required if adding custom DNS records.
@@ -78,4 +86,3 @@ Description: Container app environment ID
 The following resources are used by this module:
 
 - [azurerm_container_app_environment.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_environment) (resource)
-- [azurerm_resource_group.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/resource_group) (data source)

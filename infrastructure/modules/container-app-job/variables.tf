@@ -8,6 +8,12 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "location" {
+  type        = string
+  description = "The location/region where the container app environment is created."
+  default     = "UK South"
+}
+
 variable "acr_login_server" {
   description = "Container registry server. Required if using a private registry."
   type        = string

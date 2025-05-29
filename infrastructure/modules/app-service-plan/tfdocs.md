@@ -269,6 +269,14 @@ Description: Wildcard SSL certificate pfx password, for Custom Domain binding.
 Type: `string`
 
 Default: `null`
+
+### <a name="input_zone_balancing_enabled"></a> [zone\_balancing\_enabled](#input\_zone\_balancing\_enabled)
+
+Description: Balance the App Service Plan across Availability Zones in the region. Changing this forces the resource to be recreated.
+
+Type: `string`
+
+Default: `null`
 ## Modules
 
 The following Modules are called:

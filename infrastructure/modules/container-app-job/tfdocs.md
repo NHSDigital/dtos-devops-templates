@@ -80,6 +80,14 @@ Type: `number`
 
 Default: `1`
 
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: The location/region where the container app environment is created.
+
+Type: `string`
+
+Default: `"UK South"`
+
 ### <a name="input_memory"></a> [memory](#input\_memory)
 
 Description: Memory allocated to the app (GiB). Also dictates the CPU allocation: CPU(%)=MEMORY(Gi)/2. Maximum: 4Gi
@@ -126,4 +134,3 @@ Default: `[]`
 The following resources are used by this module:
 
 - [azurerm_container_app_job.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_job) (resource)
-- [azurerm_resource_group.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/resource_group) (data source)

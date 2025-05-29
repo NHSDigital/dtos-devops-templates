@@ -22,12 +22,6 @@ Description: Location for the deployment
 
 Type: `any`
 
-### <a name="input_tags"></a> [tags](#input\_tags)
-
-Description: Default tags for the deployment
-
-Type: `map(string)`
-
 ## Optional Inputs
 
 The following input variables are optional (have default values):
@@ -124,6 +118,14 @@ Default:
   "westus2": "WUS2"
 }
 ```
+
+### <a name="input_tags"></a> [tags](#input\_tags)
+
+Description: Default tags for the deployment
+
+Type: `map(string)`
+
+Default: `{}`
 
 ## Outputs
 
