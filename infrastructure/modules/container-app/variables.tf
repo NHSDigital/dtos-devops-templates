@@ -25,6 +25,17 @@ variable "app_key_vault_id" {
   default     = null
 }
 
+variable "fetch_secrets_from_app_key_vault" {
+  description = <<EOT
+    Fetch secrets from the app key vault and map them to secret environment variables. Requires app_key_vault_id.
+
+    WARNING: The key vault must be created by terraform and populated manually before setting this to true.
+    EOT
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
 variable "acr_managed_identity_id" {
   description = "Managed identity ID for the container registry. Required if using a private registry."
   type        = string
@@ -48,21 +59,10 @@ variable "environment_variables" {
   default     = {}
 }
 
-variable "fetch_secrets_from_app_key_vault" {
-  description = <<EOT
-    Fetch secrets from the app key vault and map them to secret environment variables. Requires app_key_vault_id.
-
-    WARNING: The key vault must be created by terraform and populated manually before setting this to true.
-    EOT
-  type        = bool
-  default     = false
-  nullable    = false
-}
-
-variable "http_port" {
-  description = "HTTP port for the web app. Default is 8080."
+variable "min_replicas" {
+  description = "Minimum number of running containers (replicas). Replicas can scale from 0 to many depending on auto scaling rules (TBD)"
   type        = number
-  default     = 8080
+  default     = 1
 }
 
 variable "is_web_app" {
@@ -71,16 +71,16 @@ variable "is_web_app" {
   default     = false
 }
 
-variable "min_replicas" {
-  description = "Minimum number of running containers (replicas). Replicas can scale from 0 to many depending on auto scaling rules (TBD)"
+variable "http_port" {
+  description = "HTTP port for the web app. Default is 8080."
   type        = number
-  default     = 1
+  default     = 8080
 }
 
 variable "memory" {
   description = "Memory allocated to the app (GiB). Also dictates the CPU allocation: CPU(%)=MEMORY(Gi)/2. Maximum: 4Gi"
-  type        = number
   default     = "0.5"
+  type        = number
 }
 
 variable "user_assigned_identity_ids" {
