@@ -38,6 +38,14 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: The location/region where the container app environment is created.
+
+Type: `string`
+
+Default: `"UK South"`
+
 ### <a name="input_zone_redundancy_enabled"></a> [zone\_redundancy\_enabled](#input\_zone\_redundancy\_enabled)
 
 Description: Enable availability zone redundancy for the container app environment. Should be set to true in production.
@@ -76,4 +84,3 @@ Description: Container app environment ID
 The following resources are used by this module:
 
 - [azurerm_container_app_environment.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_environment) (resource)
-- [azurerm_resource_group.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/resource_group) (data source)

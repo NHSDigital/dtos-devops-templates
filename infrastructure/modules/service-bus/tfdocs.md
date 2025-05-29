@@ -4,6 +4,22 @@
 
 The following input variables are required:
 
+### <a name="input_private_endpoint_properties"></a> [private\_endpoint\_properties](#input\_private\_endpoint\_properties)
+
+Description: Consolidated properties for the Service Bus Private Endpoint.
+
+Type:
+
+```hcl
+object({
+    private_dns_zone_ids                 = optional(list(string), [])
+    private_endpoint_enabled             = optional(bool, false)
+    private_endpoint_subnet_id           = optional(string, "")
+    private_endpoint_resource_group_name = optional(string, "")
+    private_service_connection_is_manual = optional(bool, false)
+  })
+```
+
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
 Description: The name of the resource group in which to create the Event Grid. Changing this forces a new resource to be created.
@@ -99,11 +115,30 @@ Description: A mapping of tags to assign to the resource.
 Type: `map(string)`
 
 Default: `{}`
+## Modules
 
+The following Modules are called:
 
+### <a name="module_private_endpoint_service_bus_namespace"></a> [private\_endpoint\_service\_bus\_namespace](#module\_private\_endpoint\_service\_bus\_namespace)
+
+Source: ../private-endpoint
+
+Version:
+## Outputs
+
+The following outputs are exported:
+
+### <a name="output_namespace_id"></a> [namespace\_id](#output\_namespace\_id)
+
+Description: n/a
+
+### <a name="output_servicebus_connection_string"></a> [servicebus\_connection\_string](#output\_servicebus\_connection\_string)
+
+Description: n/a
 ## Resources
 
 The following resources are used by this module:
 
 - [azurerm_servicebus_namespace.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/servicebus_namespace) (resource)
+- [azurerm_servicebus_namespace_authorization_rule.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/servicebus_namespace_authorization_rule) (resource)
 - [azurerm_servicebus_topic.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/servicebus_topic) (resource)
