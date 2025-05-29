@@ -46,9 +46,10 @@ jobs:
       id-token: write
     outputs:
       containers: ${{ steps.get-function-names.outputs.FUNC_NAMES }}
+      docker_services: ${{ steps.get-function-names.outputs.ALL_SERVICES }}
+      docker_compose_dir: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
       pr_num_tag: ${{ steps.tags.outputs.pr_num_tag }}
       short_commit_hash: ${{ steps.tags.outputs.short_commit_hash }}
-      docker_compose_dir: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -256,23 +257,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REGISTRY: ghcr.io/${{ github.repository_owner }}
+          docker_services: ${{ needs.containers-to-build.outputs.docker_services }}
         run: |
           echo Running 'docker buildx imagetools' on remote repositories...
 
-          repo="${GITHUB_REPOSITORY,,}"
-          if gh api "/repos/${repo}/packages?package_type=container" --jq 'length' > /dev/null 2>&1; then
-            packages_json=$(gh api "/repos/${repo}/packages?package_type=container&per_page=100" --jq '[.[].name]')
-
-            package_count=$(echo "$packages" | grep -c '^')
-            echo "Total packages found: $package_count"
-
-            for package in "${packages[@]}"; do
-              echo "Adding tag ${package}:${SHORT_COMMIT_HASH}..."
-              docker buildx imagetools create "${REGISTRY,,}/${package,,}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${package,,}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $package"
-            done
-          else
-            echo "No packages found or insufficient permissions"
-          fi
+          for service in $docker_services; do
+            echo "Adding tag ${package}:${SHORT_COMMIT_HASH} to ${service}..."
+            docker buildx imagetools create "${REGISTRY,,}/${service,,}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${service,,}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $service"
+          done
 
   aggregate-reports:
     name: Aggregate reports
