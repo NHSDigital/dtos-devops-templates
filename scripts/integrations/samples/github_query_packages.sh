@@ -1,46 +1,41 @@
 #!/bin/bash
-GITHUB_TOKEN="<YOU_PAT_TOKEN>" # if using your own GitHub account, create a "classic" token with "packages:write" permission
+GITHUB_TOKEN="<private github classic token with write packages permission>"
 ORG="NHSDigital"
 REPO_NAME="dtos-service-layer"
 
 echo "=== Testing Repository Level ==="
-repo_response=$(curl -s \
-	-H "Authorization: Bearer $GITHUB_TOKEN" \
+# Capture raw output
+repo_raw_response=$(curl -s \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
     -H "Accept: application/vnd.github.v3+json" \
     "https://api.github.com/repos/nhsdigital/dtos-service-layer/packages?package_type=container")
 
-if echo "$repo_response" | jq -e '. | type == "array"' > /dev/null 2>&1; then
-    echo "$repo_response" | jq '.[] | .name'
+echo "--- Raw Repository Response ---"
+echo "$repo_raw_response"
+echo "-------------------------------"
+
+if echo "$repo_raw_response" | jq -e '. | type == "array"' > /dev/null 2>&1; then
+    echo "$repo_raw_response" | jq '.[] | .name'
 else
-    echo "Repository API response:"
-    echo "$repo_response" | jq '.'
+    echo "Repository API response (jq failed):"
+    echo "$repo_raw_response" | jq '.' # This line might still fail if it's not JSON at all
 fi
 
 echo
-echo "=== Testing Organization Level ==="
-org_response=$(curl -s \
-	-H "Authorization: Bearer $GITHUB_TOKEN" \
+echo "=== Testing Organisation Level ==="
+# Capture raw output
+org_raw_response=$(curl -s \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
     -H "Accept: application/vnd.github.v3+json" \
     "https://api.github.com/orgs/$ORG/packages?package_type=container")
 
-if echo "$org_response" | jq -e '. | type == "array"' > /dev/null 2>&1; then
-    echo "$org_response" | jq --arg repo "$REPO_NAME" '.[] | select(.repository.name == $repo) | .name'
-else
-    echo "Organization API response:"
-    echo "$org_response" | jq '.'
-fi
+echo "--- Raw Organisation Response ---"
+echo "$org_raw_response"
+echo "---------------------------------"
 
-echo
-echo "=== All Org Packages ==="
-all_response=$(curl -s \
-	-H "Authorization: Bearer $GITHUB_TOKEN" \
-	-H "Accept: application/vnd.github.v3+json" \
-	"https://api.github.com/orgs/$ORG/packages?package_type=container" \
-	| jq '.[] | {name: .name, repo: .repository.name}' )
-
-if echo "$all_response" | jq -e '. | type == "array"' > /dev/null 2>&1; then
-    echo "$all_response" | jq --arg repo "$REPO_NAME" '.[] | select(.repository.name == $repo) | .name'
+if echo "$org_raw_response" | jq -e '. | type == "array"' > /dev/null 2>&1; then
+    echo "$org_raw_response" | jq --arg repo "$REPO_NAME" '.[] | select(.repository.name == $repo) | .name'
 else
-    echo "All API response:"
-    echo "$all_response" | jq '.'
+    echo "Organisation API response (jq failed):"
+    echo "$org_raw_response" | jq '.' # This line might still fail if it's not JSON at all
 fi
