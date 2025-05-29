@@ -95,19 +95,8 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
             function_path="${context_filtered}${dockerfile_filtered}"
         fi
         docker_services_map[${function_path}]=${service}
+        all_service_paths_map[${function_path}]=1
     done
-
-    # STEP 1b - Add support to collect image-only services (with no build context)
-    # DON'T THINK WE NEED THIS
-    # for service in $(yq eval ".services[] | ${EXCLUSION_FILTER} .container_name" "${compose_file}"); do
-    #     has_build=$(yq eval ".services[] | select(.container_name == \"$service\") | has(\"build\")" "${compose_file}")
-    #     has_image=$(yq eval ".services[] | select(.container_name == \"$service\") | has(\"image\")" "${compose_file}")
-
-    #     if [[ "$has_build" != "true" && "$has_image" == "true" ]]; then
-    #         echo "Detected image-based service: ${service} (no build context)"
-    #         changed_services+=("${service}")
-    #     fi
-    # done
 
     printf "%-50s %-50s\n" "Service" "Path"
     printf "%-50s %-50s\n" "-------" "----"
@@ -122,10 +111,8 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
         for key in "${!docker_services_map[@]}"; do
             changed_services+=("${docker_services_map[$key]}")
         done
-
     elif [[ ${#source_changes[@]} -eq 0 ]]; then
         echo "No files changed."
-
     elif [[ "${source_changes[*],,}" =~ shared ]]; then
         echo "Shared folder changed, building all images."
         for key in "${!docker_services_map[@]}"; do
@@ -170,11 +157,13 @@ EOF
 fi
 
 changed_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${changed_services[@]}")"
+services_json="$(jq -c -n '$ARGS.positional | unique' --args "${docker_services_map[@]}")"
 
 IFS=$IFS_OLD
 echo "List of services to build:"
 echo "${changed_services_json}"
 echo "FUNC_NAMES=${changed_services_json}" >> "${GITHUB_OUTPUT}"
+echo "ALL_SERVICES=%{services_json}" >> "${GITHUB_OUTPUT}"
 
 # Assumes all compose files are together in the same folder
 echo "DOCKER_COMPOSE_DIR=$(dirname "${compose_file}")" >> "${GITHUB_OUTPUT}"
