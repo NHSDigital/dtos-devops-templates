@@ -60,7 +60,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: fix/function-app-acr-is-optional
+          ref: dev-dtoss-8958
 
       - name: Determine which Docker container(s) to build
         id: get-function-names
@@ -121,7 +121,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: fix/function-app-acr-is-optional
+          ref: dev-dtoss-8958
 
       - name: Build Docker image
         id: docker_image
@@ -209,7 +209,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: fix/function-app-acr-is-optional
+          ref: dev-dtoss-8958
 
       - name: AzureCLI login
         if: env.USE_AZURECR == 'true'
