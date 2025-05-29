@@ -1,6 +1,10 @@
 # container-app
 
-Deploy an [Azure container app job](https://learn.microsoft.com/en-us/azure/container-apps/jobs) to a [Container app environment](https://learn.microsoft.com/en-us/azure/container-apps/environment) in order to run container workloads that do not require ingress or web access. Integrates with the [container-app-environment module](../container-app-environment/).
+Deploy an [Azure container app job](https://learn.microsoft.com/en-us/azure/container-apps/jobs) to a [Container app environment](https://learn.microsoft.com/en-us/azure/container-apps/environment) in order to run container workloads that do not require ingress or web access. The container app job can be triggered manually or via an event source, such as a timer or message queue. The job will not automatically run following deployment or update of the resources and the job can stop upon completion if the application code contains an exit code. It can be run again on demand via the Azure portal, CLI, or API.
+
+Integrates with the [container-app-environment module](../container-app-environment/).
+
+See also the following ADO template step that can be used to trigger a container app job run: [app-container-job-start.yaml](../../../.azuredevops/templates/steps/app-container-job-start.yaml).
 
 ## Terraform documentation
 For the list of inputs, outputs, resources... check the [terraform module documentation](tfdocs.md).
