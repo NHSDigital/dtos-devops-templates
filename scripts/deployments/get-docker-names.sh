@@ -95,7 +95,6 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
             function_path="${context_filtered}${dockerfile_filtered}"
         fi
         docker_services_map[${function_path}]=${service}
-        all_service_paths_map[${function_path}]=1
     done
 
     printf "%-50s %-50s\n" "Service" "Path"
