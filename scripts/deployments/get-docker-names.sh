@@ -90,7 +90,6 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
         fi
         docker_services_map[${function_path}]=${service}
     done
-
     printf "%-50s %-50s\n" "Service" "Path"
     printf "%-50s %-50s\n" "-------" "----"
     for key in "${!docker_services_map[@]}"; do
