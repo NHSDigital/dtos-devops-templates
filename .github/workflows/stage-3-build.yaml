@@ -143,7 +143,7 @@ jobs:
           echo Docker compose...
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
 
-          echo Docker tag with tags (${PR_NUM_TAG}, ${SHORT_COMMIT_HASH})...
+          echo "Docker tag with tags (${PR_NUM_TAG}, ${SHORT_COMMIT_HASH})..."
           docker tag ${IMAGE_NAME}:latest "${repository_path}:${PR_NUM_TAG}"
           docker tag ${IMAGE_NAME}:latest "${repository_path}:${SHORT_COMMIT_HASH}"
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${IMAGE_NAME}:latest" "${repository_path}:${ENVIRONMENT_TAG}"
