@@ -162,7 +162,7 @@ IFS=$IFS_OLD
 echo "List of services to build:"
 echo "${changed_services_json}"
 echo "FUNC_NAMES=${changed_services_json}" >> "${GITHUB_OUTPUT}"
-echo "ALL_SERVICES=%{services_json}" >> "${GITHUB_OUTPUT}"
+echo "ALL_SERVICES=${services_json}" >> "${GITHUB_OUTPUT}"
 
 # Assumes all compose files are together in the same folder
 echo "DOCKER_COMPOSE_DIR=$(dirname "${compose_file}")" >> "${GITHUB_OUTPUT}"
