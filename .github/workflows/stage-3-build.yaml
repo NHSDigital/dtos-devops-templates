@@ -27,13 +27,17 @@ on:
         description: A comma-separated list of folders deemed to have "changed"
         required: false
         type: string
+      acr_name:
+        description: name of an azure repository
+        required: false
+        type: string
 
 env:
-  ACR_NAME: ${{ secrets.ACR_NAME }}
+  ACR_NAME: ${{ inputs.acr_name }}
   COMPOSE_FILE: ${{ inputs.docker_compose_file_csv_list }}
   ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
   PROJECT_NAME: ${{ inputs.project_name }}
-  USE_AZURECR: ${{ secrets.ACR_NAME != '' }}
+  USE_AZURECR: ${{ inputs.ACR_NAME != '' }}
   IS_TEST_DEPLOY: true
 
 jobs:
@@ -146,11 +150,10 @@ jobs:
 
           echo "Docker tag with tags (${PR_NUM_TAG}, ${SHORT_COMMIT_HASH})..."
           docker tag ${IMAGE_NAME}:latest "${repository_path}:${PR_NUM_TAG}"
-          #docker tag ${IMAGE_NAME}:latest "${repository_path}:${SHORT_COMMIT_HASH}"
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${IMAGE_NAME}:latest" "${repository_path}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
-        if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true'
+        if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true') || env.IS_TEST_DEPLOY == 'true'
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -177,7 +180,6 @@ jobs:
           [[ "${USE_AZURECR}" == "true" ]] && az acr login --name "${ACR_NAME}"
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker push "${REPO_PATH}:${ENVIRONMENT_TAG}"
           docker push "${REPO_PATH}:${PR_NUM_TAG}"
-          #docker push "${REPO_PATH}:${SHORT_COMMIT_HASH}"
 
       - name: Software Bill of Materials (SBOM)
         id: sbom
@@ -232,27 +234,40 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
-      - name: Tag all azurecr.io Docker images
+      - name: Tag all Azure Container images
         if: env.USE_AZURECR == 'true'
+        env:
+          REGISTRY: ${{ env.ACR_NAME }}
+          docker_services: ${{ needs.containers-to-build.outputs.docker_services }}
+          PROJECT_NAME: ${{ inputs.project_name }}
         run: |
-          wait_for_completion() {
-            # acr tasks are backgrounded for parallelism
-            local -n arr=$1
-            for pid in "${arr[@]}"; do
-              wait ${pid}
-            done
-          }
-          pids=()
-          az acr login --name "${ACR_NAME}"
-          repositories=$(az acr repository list --name ${ACR_NAME} --output tsv)
-          for repository in ${repositories}; do
-            echo "Adding tag ${repository}:${SHORT_COMMIT_HASH}..."
-            az acr import --name ${ACR_NAME} --source "${ACR_NAME}.azurecr.io/${repository}:${PR_NUM_TAG}" --image "${repository}:${SHORT_COMMIT_HASH}" --force &
-            pids+=($!)
-          done
-          wait_for_completion pids
+          # wait_for_completion() {
+          #   # acr tasks are backgrounded for parallelism
+          #   local -n arr=$1
+          #   for pid in "${arr[@]}"; do
+          #     wait ${pid}
+          #   done
+          # }
+          # pids=()
+          # az acr login --name "${ACR_NAME}"
+          # repositories=$(az acr repository list --name ${ACR_NAME} --output tsv)
+          # for repository in ${repositories}; do
+          #   echo "Adding tag ${repository}:${SHORT_COMMIT_HASH}..."
+          #   az acr import --name ${ACR_NAME} --source "${ACR_NAME}.azurecr.io/${repository}:${PR_NUM_TAG}" --image "${repository}:${SHORT_COMMIT_HASH}" --force &
+          #   pids+=($!)
+          # done
+          # wait_for_completion pids
 
-      - name: Tag all ghcr.io Docker images
+          echo Running 'docker buildx imagetools' on remote repositories...
+
+          services=($(echo "$docker_services" | jq -r '.[]'))
+          for service in "${services[@]}"; do
+            image_name="${PROJECT_NAME}-${service}"
+            echo "Adding tag ${SHORT_COMMIT_HASH} to ${image_name}..."
+            docker buildx imagetools create "${REGISTRY,,}/${image_name,,}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${image_name,,}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $service"
+          done
+
+      - name: Tag all GitHub packages
         if: env.USE_AZURECR == 'false' || env.IS_TEST_DEPLOY == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
