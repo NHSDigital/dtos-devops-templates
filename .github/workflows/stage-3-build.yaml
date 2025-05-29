@@ -150,7 +150,7 @@ jobs:
 
           echo Docker tag with tags (${PR_NUM_TAG}, ${SHORT_COMMIT_HASH})...
           docker tag ${IMAGE_NAME}:latest "${repository_path}:${PR_NUM_TAG}"
-          docker tag ${IMAGE_NAME}:latest "${repository_path}:${SHORT_COMMIT_HASH}"
+          #docker tag ${IMAGE_NAME}:latest "${repository_path}:${SHORT_COMMIT_HASH}"
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${IMAGE_NAME}:latest" "${repository_path}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
@@ -181,7 +181,7 @@ jobs:
           [[ "${USE_AZURECR}" == "true" ]] && az acr login --name "${ACR_NAME}"
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker push "${REPO_PATH}:${ENVIRONMENT_TAG}"
           docker push "${REPO_PATH}:${PR_NUM_TAG}"
-          docker push "${REPO_PATH}:${SHORT_COMMIT_HASH}"
+          #docker push "${REPO_PATH}:${SHORT_COMMIT_HASH}"
 
       - name: Software Bill of Materials (SBOM)
         id: sbom
