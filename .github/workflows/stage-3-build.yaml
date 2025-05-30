@@ -54,7 +54,6 @@ jobs:
       docker_compose_dir: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
       pr_num_tag: ${{ steps.tags.outputs.pr_num_tag }}
       short_commit_hash: ${{ steps.tags.outputs.short_commit_hash }}
-      container_registry: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', env.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -103,6 +102,7 @@ jobs:
           echo "pr_num_tag=pr${PR_NUMBER}" >> "${GITHUB_OUTPUT}"
           echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})" >> "${GITHUB_OUTPUT}"
 
+
   build-and-push:
     name: Docker build and push
     if: needs.containers-to-build.outputs.containers != '[]'
@@ -137,24 +137,24 @@ jobs:
         working-directory: ${{ needs.containers-to-build.outputs.docker_compose_dir }}
         continue-on-error: false
         env:
+          container_registry: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', env.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
           image_name: ${{ inputs.project_name }}-${{ matrix.function }}
           pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
           short_commit_hash: ${{ needs.containers-to-build.outputs.short_commit_hash }}
-          container_registry: ${{ needs.containers-to-build.outputs.container_registry }}
           TEST_DEPLOY: ${{ env.IS_TEST_DEPLOY }}
         run: |
           echo "is_test_deploy=${TEST_DEPLOY}" >> "${GITHUB_OUTPUT}"
 
-          registry_image="${container_registry,,}/${image_name,,}"
-          echo "registry_image=${registry_image}" >> "${GITHUB_OUTPUT}"
-          echo registry_image=${registry_image}
+          reg_image="${container_registry}/${image_name}"
+          echo "registry_image=${reg_image,,}" >> "${GITHUB_OUTPUT}"
+          echo registry_image=${reg_image,,}
 
           echo Docker compose...
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
 
-          echo "Tag image ${registry_image} with ${pr_num_tag}..."
-          docker tag ${image_name}:latest "${registry_image}:${pr_num_tag}"
-          [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${image_name}:latest" "${registry_image}:${ENVIRONMENT_TAG}"
+          echo "Tag image ${reg_image} with ${pr_num_tag}..."
+          docker tag ${image_name}:latest "${reg_image}:${pr_num_tag}"
+          [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${image_name}:latest" "${reg_image}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
         if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true') || env.IS_TEST_DEPLOY == 'true'
@@ -205,7 +205,6 @@ jobs:
     env:
       pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
       short_commit_hash: ${{ needs.containers-to-build.outputs.short_commit_hash }}
-      container_registry: ${{ needs.containers-to-build.outputs.container_registry }}
     permissions:
       id-token: write
       contents: read
@@ -242,6 +241,7 @@ jobs:
       - name: Tag all Registry Container images
         if: env.USE_AZURECR == 'true'
         env:
+          container_registry: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', env.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
           docker_services: ${{ needs.containers-to-build.outputs.docker_services }}
           project_name: ${{ inputs.project_name }}
         run: |
