@@ -37,7 +37,7 @@ env:
   COMPOSE_FILE: ${{ inputs.docker_compose_file_csv_list }}
   ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
   PROJECT_NAME: ${{ inputs.project_name }}
-  USE_AZURECR: true
+  USE_AZURECR: ${{ secrets.ACR_NAME != '' && 'true' || 'false' }}
 
 jobs:
   containers-to-build:
