@@ -1,0 +1,69 @@
+---
+
+parameters:
+  - name: serviceConnection
+    type: string
+  - name: targetSubscriptionId
+    type: string
+  - name: resourceGroupName
+    type: string
+  - name: jobName
+    type: string
+  - name: waitForCompletion
+    type: boolean
+    default: true
+
+steps:
+  - task: AzureCLI@2
+    name: apply_database_changes
+    displayName: Apply database changes
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      addSpnToEnvironment: true
+      failOnStandardError: false
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        # Exit immediately if a command exits with a non-zero status
+        set -eo pipefail
+
+        az account set -s ${{ parameters.targetSubscriptionId }}
+
+        JOB_NAME="${{ parameters.jobName }}"
+        RESOURCE_GROUP_NAME="${{ parameters.resourceGroupName }}"
+
+        POLLING_INTERVAL_SECONDS=5
+        MAX_POLLING_ATTEMPTS=60
+        CURRENT_ATTEMPT=0
+
+        echo "##[section]Starting Container App Job: ${JOB_NAME} in Resource Group: ${RESOURCE_GROUP_NAME}"
+
+        # Start the container app job and capture the execution name
+        JOB_EXECUTION_NAME=$(az containerapp job start --name ${JOB_NAME} --resource-group ${RESOURCE_GROUP_NAME} --query name -o tsv)
+
+        # If we need to wait for job completion, poll for job execution status and only exit step once completed
+        if [[ "${{ parameters.waitForCompletion }}" == "True" ]]; then
+          while true; do
+            JOB_STATUS=$(az containerapp job execution show --name ${JOB_NAME} --job-execution-name ${JOB_EXECUTION_NAME} --resource-group ${RESOURCE_GROUP_NAME} --query properties.status -o tsv)
+
+            echo "Job execution status after $((CURRENT_ATTEMPT * POLLING_INTERVAL_SECONDS)) seconds: $JOB_STATUS"
+
+            if [[ "$JOB_STATUS" == "Succeeded" ]]; then
+              break
+            elif [[ "$JOB_STATUS" == "Failed" ]]; then
+              echo "##[error]Job failed."
+              exit 1
+            elif [[ "$JOB_STATUS" == "Cancelled" ]]; then
+              echo "##[warning]Job was cancelled."
+              exit 1
+            fi
+            sleep $POLLING_INTERVAL_SECONDS
+
+            # Increment the current attempt counter to ensure we don't exceed the maximum polling attempts
+            CURRENT_ATTEMPT=$((CURRENT_ATTEMPT + 1))
+            if [[ $CURRENT_ATTEMPT -ge $MAX_POLLING_ATTEMPTS ]]; then
+              echo "##[error]Max polling attempts of $MAX_POLLING_ATTEMPTS reached. Exiting."
+              exit 1
+            fi
+          done
+        fi

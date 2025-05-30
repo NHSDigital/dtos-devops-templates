@@ -36,6 +36,18 @@ variable "fetch_secrets_from_app_key_vault" {
   nullable    = false
 }
 
+variable "acr_managed_identity_id" {
+  description = "Managed identity ID for the container registry. Required if using a private registry."
+  type        = string
+  default     = null
+}
+
+variable "acr_login_server" {
+  description = "Container registry server. Required if using a private registry."
+  type        = string
+  default     = null
+}
+
 variable "docker_image" {
   description = "Docker image and tag. Format: <registry>/<repository>:<tag>"
   type        = string
@@ -69,6 +81,12 @@ variable "memory" {
   description = "Memory allocated to the app (GiB). Also dictates the CPU allocation: CPU(%)=MEMORY(Gi)/2. Maximum: 4Gi"
   default     = "0.5"
   type        = number
+}
+
+variable "user_assigned_identity_ids" {
+  description = "List of user assigned identity IDs to assign to the container app."
+  type        = list(string)
+  default     = []
 }
 
 locals {
