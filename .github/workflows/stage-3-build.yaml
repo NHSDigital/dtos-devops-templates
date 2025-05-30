@@ -144,7 +144,7 @@ jobs:
           echo Docker compose...
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
 
-          echo "Docker tag with tags (${PR_NUM_TAG}, ${SHORT_COMMIT_HASH})..."
+          echo "Docker tag with (${PR_NUM_TAG})..."
           docker tag ${IMAGE_NAME}:latest "${repository_path}:${PR_NUM_TAG}"
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${IMAGE_NAME}:latest" "${repository_path}:${ENVIRONMENT_TAG}"
 
@@ -255,6 +255,10 @@ jobs:
           # wait_for_completion pids
 
           echo Running 'docker buildx imagetools' on remote repositories...
+
+          if [[ ${USE_AZURECR} == 'true' ]; then
+            az acr login --name "${ACR_NAME}"
+          fi
 
           services=($(echo "$docker_services" | jq -r '.[]'))
           for service in "${services[@]}"; do
