@@ -139,15 +139,17 @@ jobs:
           pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
           short_commit_hash: ${{ needs.containers-to-build.outputs.short_commit_hash }}
         run: |
-          reg_image="${container_registry}/${image_name}"
-          echo "registry_image=${reg_image,,}" >> "${GITHUB_OUTPUT}"
+          reg_image="${container_registry,,}/${image_name,,}"
+          echo "registry_image=${reg_image}" >> "${GITHUB_OUTPUT}"
 
           echo Docker compose...
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
 
-          echo "Tag image ${image_name} with ${pr_num_tag}..."
-          docker tag ${image_name}:latest "${reg_image}:${pr_num_tag}"
-          [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${image_name}:latest" "${reg_image}:${ENVIRONMENT_TAG}"
+          image_lc=${image_name,,}
+
+          echo "Tag image ${image_lc} with ${pr_num_tag}..."
+          docker tag ${image_lc}:latest "${reg_image}:${pr_num_tag}"
+          [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${image_lc}:latest" "${reg_image}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
         if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true') || true
