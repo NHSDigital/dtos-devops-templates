@@ -233,9 +233,10 @@ jobs:
       - name: Tag all Azure Container images
         if: env.USE_AZURECR == 'true'
         env:
-          REGISTRY: ${{ env.ACR_NAME }}
           docker_services: ${{ needs.containers-to-build.outputs.docker_services }}
-          PROJECT_NAME: ${{ inputs.project_name }}
+          registry: ${{ env.ACR_NAME }}
+          project_name: ${{ inputs.project_name }}
+          use_azurecr: ${{ env.USE_AZURECR }}
         run: |
           # wait_for_completion() {
           #   # acr tasks are backgrounded for parallelism
@@ -256,15 +257,15 @@ jobs:
 
           echo Running 'docker buildx imagetools' on remote repositories...
 
-          if [[ ${USE_AZURECR} == 'true' ]; then
-            az acr login --name "${ACR_NAME}"
+          if [[ ${use_azurecr} == 'true' ]; then
+            az acr login --name "${registry}"
           fi
 
           services=($(echo "$docker_services" | jq -r '.[]'))
           for service in "${services[@]}"; do
-            image_name="${PROJECT_NAME}-${service}"
+            image_name="${project_name}-${service}"
             echo "Adding tag ${SHORT_COMMIT_HASH} to ${image_name}..."
-            docker buildx imagetools create "${REGISTRY,,}/${image_name,,}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${image_name,,}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $service"
+            docker buildx imagetools create "${registry,,}/${image_name,,}:${PR_NUM_TAG}" --tag "${registry,,}/${image_name,,}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $service"
           done
 
       - name: Tag all GitHub packages
