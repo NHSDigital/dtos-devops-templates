@@ -54,7 +54,6 @@ jobs:
       docker_compose_dir: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
       pr_num_tag: ${{ steps.tags.outputs.pr_num_tag }}
       short_commit_hash: ${{ steps.tags.outputs.short_commit_hash }}
-      container_registry: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', env.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -138,6 +137,7 @@ jobs:
         working-directory: ${{ needs.containers-to-build.outputs.docker_compose_dir }}
         continue-on-error: false
         env:
+          container_registry: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', env.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
           image_name: ${{ inputs.project_name }}-${{ matrix.function }}
           pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
           short_commit_hash: ${{ needs.containers-to-build.outputs.short_commit_hash }}
@@ -205,7 +205,6 @@ jobs:
     env:
       pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
       short_commit_hash: ${{ needs.containers-to-build.outputs.short_commit_hash }}
-      container_registry: ${{ needs.containers-to-build.outputs.container_registry }}
     permissions:
       id-token: write
       contents: read
@@ -242,6 +241,7 @@ jobs:
       - name: Tag all Registry Container images
         if: env.USE_AZURECR == 'true'
         env:
+          container_registry: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', env.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
           docker_services: ${{ needs.containers-to-build.outputs.docker_services }}
           project_name: ${{ inputs.project_name }}
         run: |
