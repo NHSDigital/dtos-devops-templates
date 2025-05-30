@@ -9,9 +9,9 @@ A Terraform module to obtain a publicly trusted SSL certificate from the Let's E
 - Automates [DNS-01 challenges](https://letsencrypt.org/docs/challenge-types/) via the [Lego azuredns](https://go-acme.github.io/lego/dns/azuredns/) provider.
 - Handles Lego's requirement for authoritative NS records on the leaf zone. e.g. if you need a certificate for `www.private.example.com` but only have a zone for `example.com`, you can use CNAME redirection (see examples below).
 - CNAME redirection of DNS challenge records, including optional creation of corresponding CNAMEs in Azure Private DNS zones to satisfy Lego's local checks (wildcards supported).
-- Stores certificates in Azure Key Vault as Certificate objects.
+- Stores the issued certificate in Azure Key Vault as a Certificate object.
 - Also stores the certificate as a `.pfx` file in a base64-encoded Key Vault Secret with a strong randomised password, for compatibility with consumers that cannot use Certificate objects.
-- Supports multiple subscriptions (e.g. hub/spoke models).
+- Supports multiple subscriptions (e.g. hub/spoke solution designs).
 - Supports multiple Azure regions.
 
 ## Example Usage

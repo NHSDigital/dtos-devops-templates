@@ -10,12 +10,6 @@ Description: The login server for the Azure Container Registry.
 
 Type: `string`
 
-### <a name="input_acr_mi_client_id"></a> [acr\_mi\_client\_id](#input\_acr\_mi\_client\_id)
-
-Description: The Managed Identity Id for the Azure Container Registry.
-
-Type: `any`
-
 ### <a name="input_ai_connstring"></a> [ai\_connstring](#input\_ai\_connstring)
 
 Description: The App Insights connection string.
@@ -39,18 +33,6 @@ Type: `number`
 Description: The ID of the AppServicePlan.
 
 Type: `string`
-
-### <a name="input_assigned_identity_ids"></a> [assigned\_identity\_ids](#input\_assigned\_identity\_ids)
-
-Description: The list of User Assigned Identity IDs to assign to the Function App.
-
-Type: `list(string)`
-
-### <a name="input_cont_registry_use_mi"></a> [cont\_registry\_use\_mi](#input\_cont\_registry\_use\_mi)
-
-Description: Should connections for Azure Container Registry use Managed Identity.
-
-Type: `any`
 
 ### <a name="input_function_app_name"></a> [function\_app\_name](#input\_function\_app\_name)
 
@@ -145,6 +127,14 @@ Type: `bool`
 
 The following input variables are optional (have default values):
 
+### <a name="input_acr_mi_client_id"></a> [acr\_mi\_client\_id](#input\_acr\_mi\_client\_id)
+
+Description: The Managed Identity Id for the Azure Container Registry.
+
+Type: `any`
+
+Default: `null`
+
 ### <a name="input_always_on"></a> [always\_on](#input\_always\_on)
 
 Description: Should the Function App be always on. Override standard default.
@@ -160,6 +150,22 @@ Description: Map of values for the app settings
 Type: `map`
 
 Default: `{}`
+
+### <a name="input_assigned_identity_ids"></a> [assigned\_identity\_ids](#input\_assigned\_identity\_ids)
+
+Description: The list of User Assigned Identity IDs to assign to the Function App.
+
+Type: `list(string)`
+
+Default: `[]`
+
+### <a name="input_cont_registry_use_mi"></a> [cont\_registry\_use\_mi](#input\_cont\_registry\_use\_mi)
+
+Description: Should connections for Azure Container Registry use Managed Identity.
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_cors_allowed_origins"></a> [cors\_allowed\_origins](#input\_cors\_allowed\_origins)
 
