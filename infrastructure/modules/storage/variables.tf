@@ -98,6 +98,12 @@ variable "public_network_access_enabled" {
   default     = false
 }
 
+variable "queues" {
+  description = "List of queues to create."
+  type        = list(string)
+  default     = []
+}
+
 variable "rbac_roles" {
   description = "List of RBAC roles to assign to the Storage Account."
   type        = list(string)

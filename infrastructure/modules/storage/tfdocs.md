@@ -115,6 +115,14 @@ Type: `bool`
 
 Default: `false`
 
+### <a name="input_queues"></a> [queues](#input\_queues)
+
+Description: List of queues to create.
+
+Type: `list(string)`
+
+Default: `[]`
+
 ### <a name="input_rbac_roles"></a> [rbac\_roles](#input\_rbac\_roles)
 
 Description: List of RBAC roles to assign to the Storage Account.
@@ -213,4 +221,5 @@ The following resources are used by this module:
 
 - [azurerm_storage_account.storage_account](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) (resource)
 - [azurerm_storage_container.container](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) (resource)
+- [azurerm_storage_queue.queue](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_queue) (resource)
 - [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
