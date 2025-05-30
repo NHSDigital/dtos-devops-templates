@@ -152,7 +152,7 @@ jobs:
           echo Docker compose...
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
 
-          echo "Docker tag with (${PR_NUM_TAG})..."
+          echo "Tag image ${registry_image} with ${pr_num_tag}..."
           docker tag ${image_name}:latest "${registry_image}:${pr_num_tag}"
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${image_name}:latest" "${registry_image}:${ENVIRONMENT_TAG}"
 
