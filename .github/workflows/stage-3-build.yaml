@@ -76,8 +76,7 @@ env:
   COMPOSE_FILE: ${{ inputs.docker_compose_file_csv_list }}
   ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
   PROJECT_NAME: ${{ inputs.project_name }}
-  USE_AZURECR: ${{ inputs.ACR_NAME != '' }}
-  IS_TEST_DEPLOY: true
+  USE_AZURECR: false
 
 jobs:
   containers-to-build:
@@ -285,23 +284,6 @@ jobs:
           docker_services: ${{ needs.containers-to-build.outputs.docker_services }}
           project_name: ${{ inputs.project_name }}
         run: |
-          # wait_for_completion() {
-          #   # acr tasks are backgrounded for parallelism
-          #   local -n arr=$1
-          #   for pid in "${arr[@]}"; do
-          #     wait ${pid}
-          #   done
-          # }
-          # pids=()
-          # az acr login --name "${ACR_NAME}"
-          # repositories=$(az acr repository list --name ${ACR_NAME} --output tsv)
-          # for repository in ${repositories}; do
-          #   echo "Adding tag ${repository}:${SHORT_COMMIT_HASH}..."
-          #   az acr import --name ${ACR_NAME} --source "${ACR_NAME}.azurecr.io/${repository}:${PR_NUM_TAG}" --image "${repository}:${SHORT_COMMIT_HASH}" --force &
-          #   pids+=($!)
-          # done
-          # wait_for_completion pids
-
           echo Running 'docker buildx imagetools' on remote repositories...
 
           if [[ ${USE_AZURECR} == 'true' ]]; then
