@@ -34,9 +34,11 @@ on:
 # for 'docker push' or 'docker buildx imagetools ...'
 
 env:
-  ACR_NAME: ${{ secrets.ACR_NAME }}
+  #ACR_NAME: ${{ secrets.ACR_NAME }}
+  ACR_NAME: ''
   ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
-  USE_AZURECR: ${{ secrets.ACR_NAME != '' && 'true' || 'false' }}
+  #USE_AZURECR: ${{ secrets.ACR_NAME != '' && 'true' || 'false' }}
+  USE_AZURECR: 'false'
   REGISTRY_HOST: ${{ secrets.ACR_NAME != '' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
 
 jobs:
@@ -154,7 +156,7 @@ jobs:
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${image_lc}:latest" "${reg_image}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
-        if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true') || true
+        if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true') && false
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -162,7 +164,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: ghcr.io login
-        if: github.ref == 'refs/heads/main' && env.USE_AZURECR == 'false'
+        if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'false') || true
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -220,7 +222,7 @@ jobs:
           ref: dev-dtoss-8958
 
       - name: AzureCLI login
-        if: env.USE_AZURECR == 'true'
+        if: env.USE_AZURECR == 'true' && false
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -228,7 +230,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: ghcr.io login
-        if: env.USE_AZURECR == 'false'
+        if: env.USE_AZURECR == 'false' || true
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
