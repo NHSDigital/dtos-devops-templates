@@ -38,6 +38,7 @@ env:
   ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
   PROJECT_NAME: ${{ inputs.project_name }}
   USE_AZURECR: ${{ secrets.ACR_NAME != '' && 'true' || 'false' }}
+  REGISTRY_HOST: ${{ secrets.ACR_NAME != '' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
 
 jobs:
   containers-to-build:
@@ -134,7 +135,7 @@ jobs:
         working-directory: ${{ needs.containers-to-build.outputs.docker_compose_dir }}
         continue-on-error: false
         env:
-          container_registry: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', env.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
+          container_registry: ${{ env.REGISTRY_HOST }}
           image_name: ${{ inputs.project_name }}-${{ matrix.function }}
           pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
           short_commit_hash: ${{ needs.containers-to-build.outputs.short_commit_hash }}
@@ -235,7 +236,7 @@ jobs:
 
       - name: Tag all Registry Container images
         env:
-          container_registry: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', env.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
+          container_registry: ${{ env.REGISTRY_HOST }}
           docker_services: ${{ needs.containers-to-build.outputs.docker_services }}
           project_name: ${{ inputs.project_name }}
         run: |
