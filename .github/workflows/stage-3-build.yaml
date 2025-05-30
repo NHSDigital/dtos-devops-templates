@@ -29,7 +29,8 @@ on:
         type: string
 
 env:
-  ACR_NAME: ${{ secrets.ACR_NAME }}
+  #ACR_NAME: ${{ secrets.ACR_NAME }}
+  ACR_NAME:
   COMPOSE_FILE: ${{ inputs.docker_compose_file_csv_list }}
   ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
   PROJECT_NAME: ${{ inputs.project_name }}
