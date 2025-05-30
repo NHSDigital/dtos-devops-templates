@@ -79,13 +79,17 @@ jobs:
 
       - name: Fetch Container Registry
         id: container_reg
+        env:
+          ACR_NAME: ${{ secrets.ACR_NAME }}
+          USE_AZURECR: ${{ secrets.ACR_NAME != '' }}
+          GITHUB_REPO_OWNER: ${{ github.repository_owner }}
         run: |
           if [[ "${USE_AZURECR,,}" == "true" ]]; then
-            echo "container_registry=${{ secrets.ACR_NAME }}.azurecr.io" >> "$GITHUB_OUTPUT"
+            registry="${ACR_NAME}.azurecr.io"
           else
-            echo "container_registry=ghcr.io/${{ github.repository_owner }}" >> "$GITHUB_OUTPUT"
+            registry="ghcr.io/${GITHUB_REPO_OWNER}"
           fi
-          echo "container_registry=${container_registry}"
+          echo "container_registry=${registry,,}" >> "$GITHUB_OUTPUT"
 
       - name: Fetch tag metadata
         id: tags
@@ -156,16 +160,16 @@ jobs:
         run: |
           echo "is_test_deploy=${TEST_DEPLOY}" >> "${GITHUB_OUTPUT}"
 
-          registry_image="${container_registry,,}/${image_name,,}"
-          echo "registry_image=${registry_image}" >> "${GITHUB_OUTPUT}"
-          echo registry_image=${registry_image}
+          reg_image="${container_registry}/${image_name}"
+          echo "registry_image=${reg_image,,}" >> "${GITHUB_OUTPUT}"
+          echo registry_image=${registry_image,,}
 
           echo Docker compose...
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
 
-          echo "Tag image ${registry_image} with ${pr_num_tag}..."
-          docker tag ${image_name}:latest "${registry_image}:${pr_num_tag}"
-          [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${image_name}:latest" "${registry_image}:${ENVIRONMENT_TAG}"
+          echo "Tag image ${reg_image} with ${pr_num_tag}..."
+          docker tag ${image_name}:latest "${reg_image}:${pr_num_tag}"
+          [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${image_name}:latest" "${reg_image}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
         if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true') || env.IS_TEST_DEPLOY == 'true'
