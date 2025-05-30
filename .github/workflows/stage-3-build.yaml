@@ -32,9 +32,6 @@ on:
 # =======================================================
 # Please ensure all images are converted to lowercase (Github requires this)
 # for 'docker push' or 'docker buildx imagetools ...'
-# =======================================================
-# Please ensure all images are converted to lowercase (Github requires this)
-# for 'docker push' or 'docker buildx imagetools ...'
 
 env:
   ACR_NAME: ${{ secrets.ACR_NAME }}
@@ -87,13 +84,9 @@ jobs:
 
           if [[ -z "$PR_NUMBER" ]]; then
             echo "Looking up (open) PR number for commit: $GITHUB_SHA"
-          if [[ -z "$PR_NUMBER" ]]; then
-            echo "Looking up (open) PR number for commit: $GITHUB_SHA"
             PR_NUMBER=$(gh pr list --state open --search "$GITHUB_SHA" --json number -q '.[0].number' 2>/dev/null || true)
           fi
 
-          if [[ -z "$PR_NUMBER" ]]; then
-            echo "Looking up (merged) PR number for commit: $GITHUB_SHA"
           if [[ -z "$PR_NUMBER" ]]; then
             echo "Looking up (merged) PR number for commit: $GITHUB_SHA"
             PR_NUMBER=$(gh pr list --state merged --search "$GITHUB_SHA" --json number -q '.[0].number' 2>/dev/null || true)
@@ -103,16 +96,10 @@ jobs:
             echo "Looking up (main) PR number for commit: $GITHUB_SHA"
             PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
           fi
-          if [[ -z "$PR_NUMBER" ]] && [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-            echo "Looking up (main) PR number for commit: $GITHUB_SHA"
-            PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
-          fi
 
           echo "Resolved PR number: ${PR_NUMBER}"
           echo "pr_num_tag=pr${PR_NUMBER}" >> "${GITHUB_OUTPUT}"
           echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})" >> "${GITHUB_OUTPUT}"
-
-
 
   build-and-push:
     name: Docker build and push
@@ -151,7 +138,6 @@ jobs:
           image_name: ${{ inputs.project_name }}-${{ matrix.function }}
           project_name: ${{ inputs.project_name }}
           pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
-          short_commit_hash: ${{ needs.containers-to-build.outputs.short_commit_hash }}
         run: |
           reg_image="${container_registry,,}/${image_name,,}"
           echo "registry_image=${reg_image}" >> "${GITHUB_OUTPUT}"
@@ -187,7 +173,6 @@ jobs:
         continue-on-error: false
         env:
           pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
-          short_commit_hash: ${{ needs.containers-to-build.outputs.short_commit_hash }}
           registry_image: ${{ steps.docker_image.outputs.registry_image }}
         run: |
           [[ "${USE_AZURECR}" == "true" ]] && az acr login --name "${ACR_NAME}"
