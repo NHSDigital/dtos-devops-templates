@@ -80,11 +80,12 @@ jobs:
       - name: Fetch Container Registry
         id: container_reg
         run: |
-          if [[ "${USE_AZURECR}" == "true" ]]; then
+          if [[ "${USE_AZURECR,,}" == "true" ]]; then
             echo "container_registry=${{ secrets.ACR_NAME }}.azurecr.io" >> "$GITHUB_OUTPUT"
           else
             echo "container_registry=ghcr.io/${{ github.repository_owner }}" >> "$GITHUB_OUTPUT"
           fi
+          echo "container_registry=${container_registry}"
 
       - name: Fetch tag metadata
         id: tags
