@@ -32,6 +32,9 @@ on:
 # =======================================================
 # Please ensure all images are converted to lowercase (Github requires this)
 # for 'docker push' or 'docker buildx imagetools ...'
+# =======================================================
+# Please ensure all images are converted to lowercase (Github requires this)
+# for 'docker push' or 'docker buildx imagetools ...'
 
 env:
   ACR_NAME: ${{ secrets.ACR_NAME }}
@@ -84,9 +87,13 @@ jobs:
 
           if [[ -z "$PR_NUMBER" ]]; then
             echo "Looking up (open) PR number for commit: $GITHUB_SHA"
+          if [[ -z "$PR_NUMBER" ]]; then
+            echo "Looking up (open) PR number for commit: $GITHUB_SHA"
             PR_NUMBER=$(gh pr list --state open --search "$GITHUB_SHA" --json number -q '.[0].number' 2>/dev/null || true)
           fi
 
+          if [[ -z "$PR_NUMBER" ]]; then
+            echo "Looking up (merged) PR number for commit: $GITHUB_SHA"
           if [[ -z "$PR_NUMBER" ]]; then
             echo "Looking up (merged) PR number for commit: $GITHUB_SHA"
             PR_NUMBER=$(gh pr list --state merged --search "$GITHUB_SHA" --json number -q '.[0].number' 2>/dev/null || true)
@@ -96,10 +103,15 @@ jobs:
             echo "Looking up (main) PR number for commit: $GITHUB_SHA"
             PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
           fi
+          if [[ -z "$PR_NUMBER" ]] && [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "Looking up (main) PR number for commit: $GITHUB_SHA"
+            PR_NUMBER=$(gh api repos/{owner}/{repo}/commits/${GITHUB_SHA}/pulls --jq 'sort_by(.updated_at) | reverse | .[0].number')
+          fi
 
           echo "Resolved PR number: ${PR_NUMBER}"
           echo "pr_num_tag=pr${PR_NUMBER}" >> "${GITHUB_OUTPUT}"
           echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})" >> "${GITHUB_OUTPUT}"
+
 
 
   build-and-push:
@@ -220,7 +232,7 @@ jobs:
           ref: main
 
       - name: AzureCLI login
-        if: env.USE_AZURECR == 'true'
+        if: env.USE_AZURECR == 'true' && false
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
