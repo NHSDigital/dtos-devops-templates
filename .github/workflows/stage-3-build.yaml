@@ -67,6 +67,10 @@ on:
         required: false
         type: string
 
+# Notes:
+# =============================
+# - Please ensure all images are converted to lowercase (Github requires this) for 'docker push' or 'docker buildx ...'
+
 env:
   ACR_NAME: ${{ inputs.acr_name }}
   COMPOSE_FILE: ${{ inputs.docker_compose_file_csv_list }}
@@ -176,7 +180,7 @@ jobs:
         run: |
           echo "is_test_deploy=${TEST_DEPLOY}" >> "${GITHUB_OUTPUT}"
 
-          repository_path="${REGISTRY,,}/${IMAGE_NAME}"
+          repository_path="${REGISTRY,,}/${IMAGE_NAME,,}"
           echo "repository_path=${repository_path}" >> "${GITHUB_OUTPUT}"
           echo repository_path=${repository_path}
 
@@ -209,12 +213,12 @@ jobs:
         continue-on-error: false
         env:
           PR_NUM_TAG: ${{ needs.containers-to-build.outputs.pr_num_tag }}
-          REPO_PATH: ${{ steps.docker_image.outputs.repository_path }}
           SHORT_COMMIT_HASH: ${{ needs.containers-to-build.outputs.short_commit_hash }}
+          repository_path: ${{ steps.docker_image.outputs.repository_path }}
         run: |
           [[ "${USE_AZURECR}" == "true" ]] && az acr login --name "${ACR_NAME}"
-          [[ -n "${ENVIRONMENT_TAG}" ]] && docker push "${REPO_PATH}:${ENVIRONMENT_TAG}"
-          docker push "${REPO_PATH}:${PR_NUM_TAG}"
+          [[ -n "${ENVIRONMENT_TAG}" ]] && docker push "${repository_path}:${ENVIRONMENT_TAG}"
+          docker push "${repository_path}:${PR_NUM_TAG}"
 
       - name: Software Bill of Materials (SBOM)
         id: sbom
@@ -310,17 +314,17 @@ jobs:
         if: env.USE_AZURECR == 'false' || env.IS_TEST_DEPLOY == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          REGISTRY: ghcr.io/${{ github.repository_owner }}
+          registry: ghcr.io/${{ github.repository_owner }}
           docker_services: ${{ needs.containers-to-build.outputs.docker_services }}
-          PROJECT_NAME: ${{ inputs.project_name }}
+          project_name: ${{ inputs.project_name }}
         run: |
           echo Running 'docker buildx imagetools' on remote repositories...
 
           services=($(echo "$docker_services" | jq -r '.[]'))
           for service in "${services[@]}"; do
-            image_name="${PROJECT_NAME}-${service}"
+            image_name="${project_name}-${service}"
             echo "Adding tag ${SHORT_COMMIT_HASH} to ${image_name}..."
-            docker buildx imagetools create "${REGISTRY,,}/${image_name,,}:${PR_NUM_TAG}" --tag "${REGISTRY,,}/${image_name,,}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $service"
+            docker buildx imagetools create "${registry,,}/${image_name,,}:${PR_NUM_TAG}" --tag "${registry,,}/${image_name,,}:${SHORT_COMMIT_HASH}" || echo "Tagging failed for $service"
           done
 
   aggregate-reports:
