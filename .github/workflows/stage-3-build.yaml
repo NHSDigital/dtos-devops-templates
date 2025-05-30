@@ -54,7 +54,7 @@ jobs:
       docker_compose_dir: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
       pr_num_tag: ${{ steps.tags.outputs.pr_num_tag }}
       short_commit_hash: ${{ steps.tags.outputs.short_commit_hash }}
-      container_registry: ${{ steps.container_reg.outputs.container_registry }}
+      container_registry: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', env.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -76,21 +76,6 @@ jobs:
           EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
           SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
         run: bash ./templates/scripts/deployments/get-docker-names.sh
-
-      - name: Fetch Container Registry
-        id: container_reg
-        env:
-          ACR_NAME: ${{ secrets.ACR_NAME }}
-          USE_AZURECR: ${{ secrets.ACR_NAME != '' }}
-          GITHUB_REPO_OWNER: ${{ github.repository_owner }}
-        run: |
-          if [[ "${USE_AZURECR,,}" == "true" ]]; then
-            registry="${ACR_NAME}.azurecr.io"
-          else
-            registry="ghcr.io/${GITHUB_REPO_OWNER}"
-          fi
-          echo "container_registry=${registry}"
-          echo "container_registry=${registry,,}" >> "$GITHUB_OUTPUT"
 
       - name: Fetch tag metadata
         id: tags
@@ -156,7 +141,6 @@ jobs:
           image_name: ${{ inputs.project_name }}-${{ matrix.function }}
           pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
           short_commit_hash: ${{ needs.containers-to-build.outputs.short_commit_hash }}
-          container_registry: ${{ needs.containers-to-build.outputs.container_registry }}
           TEST_DEPLOY: ${{ env.IS_TEST_DEPLOY }}
         run: |
           echo "is_test_deploy=${TEST_DEPLOY}" >> "${GITHUB_OUTPUT}"
