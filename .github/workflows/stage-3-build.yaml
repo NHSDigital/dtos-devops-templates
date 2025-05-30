@@ -54,7 +54,7 @@ jobs:
       docker_compose_dir: ${{ steps.get-function-names.outputs.DOCKER_COMPOSE_DIR }}
       pr_num_tag: ${{ steps.tags.outputs.pr_num_tag }}
       short_commit_hash: ${{ steps.tags.outputs.short_commit_hash }}
-      container_registry: ${{ env.USE_AZURECR == 'true' && format('{0}.azurecr.io', env.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
+      container_registry: ${{ steps.container_reg.outputs.container_registry }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -76,6 +76,15 @@ jobs:
           EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
           SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
         run: bash ./templates/scripts/deployments/get-docker-names.sh
+
+      - name: Fetch Container Registry
+        id: container_reg
+        run: |
+          if [[ "${USE_AZURECR}" == "true" ]]; then
+            echo "container_registry=${{ secrets.ACR_NAME }}.azurecr.io" >> "$GITHUB_OUTPUT"
+          else
+            echo "container_registry=ghcr.io/${{ github.repository_owner }}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Fetch tag metadata
         id: tags
@@ -102,6 +111,7 @@ jobs:
           echo "Resolved PR number: ${PR_NUMBER}"
           echo "pr_num_tag=pr${PR_NUMBER}" >> "${GITHUB_OUTPUT}"
           echo "short_commit_hash=$(git rev-parse --short ${GITHUB_SHA})" >> "${GITHUB_OUTPUT}"
+
 
   build-and-push:
     name: Docker build and push
