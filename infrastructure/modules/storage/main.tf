@@ -37,6 +37,7 @@ resource "azurerm_storage_queue" "queue" {
   storage_account_name = azurerm_storage_account.storage_account.name
 }
 
+
 /* --------------------------------------------------------------------------------------------------
   Private Endpoint Configuration
 -------------------------------------------------------------------------------------------------- */
