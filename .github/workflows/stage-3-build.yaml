@@ -257,7 +257,7 @@ jobs:
 
           echo Running 'docker buildx imagetools' on remote repositories...
 
-          if [[ ${use_azurecr} == 'true' ]; then
+          if [[ ${use_azurecr} == 'true' ]]; then
             az acr login --name "${registry}"
           fi
 
