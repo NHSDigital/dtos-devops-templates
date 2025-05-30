@@ -37,8 +37,10 @@ env:
   COMPOSE_FILE: ${{ inputs.docker_compose_file_csv_list }}
   ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
   PROJECT_NAME: ${{ inputs.project_name }}
+  #USE_AZURECR: ${{ secrets.ACR_NAME != '' && 'true' || 'false' }}
   USE_AZURECR: false
-  REGISTRY_HOST: ${{ secrets.ACR_NAME != '' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
+  #REGISTRY_HOST: ${{ secrets.ACR_NAME != '' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
+  REGISTRY_HOST: ${{ format('ghcr.io/{0}', github.repository_owner) }}
 
 jobs:
   containers-to-build:
