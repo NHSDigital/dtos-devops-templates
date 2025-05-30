@@ -191,7 +191,7 @@ jobs:
           echo Docker compose...
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
 
-          echo "Docker tag with (${PR_NUM_TAG})..."
+          echo "Tag image ${registry_image} with ${pr_num_tag}..."
           docker tag ${image_name}:latest "${registry_image}:${pr_num_tag}"
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${image_name}:latest" "${registry_image}:${ENVIRONMENT_TAG}"
 
@@ -263,7 +263,7 @@ jobs:
           ref: dev-dtoss-8958
 
       - name: AzureCLI login
-        if: env.USE_AZURECR == 'true' && false
+        if: (env.USE_AZURECR == 'true') || env.IS_TEST_DEPLOY == 'true'
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
