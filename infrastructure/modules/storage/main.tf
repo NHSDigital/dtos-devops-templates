@@ -31,7 +31,7 @@ resource "azurerm_storage_container" "container" {
 }
 
 resource "azurerm_storage_queue" "queue" {
-  for_each = toset(var.queues)
+  for_each = var.queues != null ? toset(var.queues) : {}
 
   name                 = each.key
   storage_account_name = azurerm_storage_account.storage_account.name
