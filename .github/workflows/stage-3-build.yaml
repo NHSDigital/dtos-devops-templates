@@ -73,13 +73,10 @@ on:
 # for 'docker push' or 'docker buildx imagetools ...'
 
 env:
-  #ACR_NAME: ${{ secrets.ACR_NAME }}
-  ACR_NAME: ''
+  ACR_NAME: ${{ secrets.ACR_NAME }}
   ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
-  #USE_AZURECR: ${{ secrets.ACR_NAME != '' && 'true' || 'false' }}
-  USE_AZURECR: 'false'
-  #REGISTRY_HOST: ${{ secrets.ACR_NAME != '' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
-  REGISTRY_HOST: ${{ format('ghcr.io/{0}', github.repository_owner) }}
+  USE_AZURECR: ${{ secrets.ACR_NAME != '' && 'true' || 'false' }}
+  REGISTRY_HOST: ${{ secrets.ACR_NAME != '' && format('{0}.azurecr.io', secrets.ACR_NAME) || format('ghcr.io/{0}', github.repository_owner) }}
 
 jobs:
   containers-to-build:
@@ -107,7 +104,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: dev-dtoss-8958
+          ref: main
 
       - name: Determine which Docker container(s) to build
         id: get-function-names
@@ -169,7 +166,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: dev-dtoss-8958
+          ref: main
 
       - name: Build Docker image
         id: docker_image
@@ -196,7 +193,7 @@ jobs:
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${image_lc}:latest" "${reg_image}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
-        if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true') && false
+        if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true')
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -204,7 +201,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: ghcr.io login
-        if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'false') || true
+        if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'false')
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -212,7 +209,7 @@ jobs:
           password: ${{ github.token }}
 
       - name: Push Docker image
-        if: github.ref == 'refs/heads/main' || true
+        if: github.ref == 'refs/heads/main'
         working-directory: ${{ needs.containers-to-build.outputs.docker_compose_dir }}
         continue-on-error: false
         env:
@@ -238,7 +235,7 @@ jobs:
 
   tag-all-repositories:
     name: Merge commit tag all images
-    if: github.ref == 'refs/heads/main' || true
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: [build-and-push, containers-to-build]
     env:
@@ -260,10 +257,10 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: dev-dtoss-8958
+          ref: main
 
       - name: AzureCLI login
-        if: env.USE_AZURECR == 'true' && false
+        if: env.USE_AZURECR == 'true'
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -271,7 +268,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: ghcr.io login
-        if: env.USE_AZURECR == 'false' || true
+        if: env.USE_AZURECR == 'false'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
