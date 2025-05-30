@@ -162,7 +162,7 @@ jobs:
 
           reg_image="${container_registry}/${image_name}"
           echo "registry_image=${reg_image,,}" >> "${GITHUB_OUTPUT}"
-          echo registry_image=${registry_image,,}
+          echo registry_image=${reg_image,,}
 
           echo Docker compose...
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${{ matrix.function }}
