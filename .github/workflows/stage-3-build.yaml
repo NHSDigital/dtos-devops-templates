@@ -89,6 +89,7 @@ jobs:
           else
             registry="ghcr.io/${GITHUB_REPO_OWNER}"
           fi
+          echo "container_registry=${registry}"
           echo "container_registry=${registry,,}" >> "$GITHUB_OUTPUT"
 
       - name: Fetch tag metadata
