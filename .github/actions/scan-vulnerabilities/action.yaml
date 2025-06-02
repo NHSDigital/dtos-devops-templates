@@ -1,0 +1,62 @@
+name: Vulnerabilities Report
+description: Generates and uploads a vulnerability report from an SBOM for the given image.
+
+inputs:
+  build_datetime:
+    description: Build datetime, set by the CI/CD pipeline workflow
+    required: true
+  build_timestamp:
+    description: Build timestamp, set by the CI/CD pipeline workflow
+    required: true
+  image_name:
+    description: Docker Image to be scanned
+    required: true
+  sbom_repository_report:
+    description: File path of SBOM report
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Create vulnerabilites report
+      shell: bash
+      env:
+        BUILD_DATETIME: ${{ inputs.build_datetime }}
+        CHECK_DOCKER_IMAGE: ${{ inputs.image_name }}:latest
+        FORCE_USE_DOCKER: true
+        VULNERABILITIES_REPOSITORY_REPORT: ${{ inputs.image_name }}-vulnerabilities-repository-report
+        VULNERABILITIES_SUMMARY_LOGFILE: ${{ inputs.image_name }}-vulnerabilities-summary.txt
+        SBOM_REPOSITORY_REPORT: ${{ inputs.sbom_repository_report }}
+      run: |
+        mkdir vulnerabilities
+        bash -x ${GITHUB_WORKSPACE}/templates/scripts/reports/scan-vulnerabilities.sh
+        curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sudo sh -s -- -b /usr/local/bin
+
+        SCAN_RESULTS=$(grype "${CHECK_DOCKER_IMAGE}" --scope all-layers)
+        echo "${SCAN_RESULTS}" > "vulnerabilities/${VULNERABILITIES_REPOSITORY_REPORT}.json"
+
+        # ANSI color codes
+        RED="\033[0;31m"
+        RESET="\033[0m"
+
+        # Clear existing log file (or create if it doesn't exist)
+        > "vulnerabilities/${VULNERABILITIES_SUMMARY_LOGFILE}"
+
+        for SEVERITY in CRITICAL HIGH MEDIUM; do
+          {
+            echo
+            echo "${CHECK_DOCKER_IMAGE}: vulnerabilities"
+            echo -e "=== ${RED}${SEVERITY}${RESET} Vulnerabilities list ==="
+            # If grep finds nothing, we print a fallback message
+            echo "${SCAN_RESULTS}" | grep -i "${SEVERITY}" || echo "No ${SEVERITY} vulnerabilities found."
+          } | tee -a "vulnerabilities/${VULNERABILITIES_SUMMARY_LOGFILE}"
+        done
+    - name: Upload vulnerabilities report
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.image_name }}-vulnerabilities
+        path: |
+          vulnerabilities/${{ inputs.image_name }}-vulnerabilities-repository-report.json
+          vulnerabilities/${{ inputs.image_name }}-vulnerabilities-summary.txt
+        retention-days: 21
