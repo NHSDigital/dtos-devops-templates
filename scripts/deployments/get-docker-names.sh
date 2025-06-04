@@ -156,7 +156,10 @@ EOF
 fi
 
 changed_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${changed_services[@]}")"
-services_json="$(jq -c -n '$ARGS.positional | unique' --args "${docker_services_map[@]}")"
+
+args=("${docker_services_map[@]}")
+services_json=$(jq -c -n '$ARGS.positional | unique' --args "${args[@]}")
+
 
 IFS=$IFS_OLD
 echo "List of services to build:"

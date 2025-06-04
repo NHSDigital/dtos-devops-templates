@@ -64,7 +64,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: ${{ github.ref }}
 
       - name: Determine which Docker container(s) to build
         id: get-function-names
@@ -126,7 +126,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: ${{ github.ref }}
 
       - name: Build Docker image
         id: docker_image
@@ -216,7 +216,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: ${{ github.ref }}
 
       - name: AzureCLI login
         #if: env.USE_AZURECR == 'true'
@@ -239,7 +239,7 @@ jobs:
       - name: Tag all Registry Container images
         env:
           container_registry: ${{ env.REGISTRY_HOST }}
-          docker_services: ${{ needs.containers-to-build.outputs.docker_services }}
+          docker_services: ${{ fromJSON(needs.containers-to-build.outputs.docker_services) }}
         run: |
           echo Running 'docker buildx imagetools' on remote repositories...
 
