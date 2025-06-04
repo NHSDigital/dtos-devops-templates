@@ -274,10 +274,8 @@ jobs:
           --org https://dev.azure.com/nhse-dtos \
           --project ${project_name} \
           --parameters \
-              image-hash="${short_commit_hash}" \
-              use-acr="$([ "${USE_AZURECR}" = "true" ] && echo true || echo false)" \
-              registry-host="${REGISTRY_HOST}" \
-              ENVIRONMENT="${ENVIRONMENT_TAG}"
+              imageHash="${short_commit_hash}" \
+              registryHost="${REGISTRY_HOST}"
 
   aggregate-reports:
     name: Aggregate reports
