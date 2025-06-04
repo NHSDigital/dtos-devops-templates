@@ -21,8 +21,8 @@ resource "azurerm_linux_function_app" "function_app" {
   # }
 
   identity {
-    type         = "SystemAssigned, UserAssigned"
-    identity_ids = var.assigned_identity_ids
+    type         = length(var.assigned_identity_ids) > 0 ? "SystemAssigned, UserAssigned" : "SystemAssigned"
+    identity_ids = length(var.assigned_identity_ids) > 0 ? var.assigned_identity_ids : null
   }
 
   site_config {
@@ -75,6 +75,11 @@ resource "azurerm_linux_function_app" "function_app" {
   storage_uses_managed_identity = var.storage_uses_managed_identity
 
   tags = var.tags
+
+  # To prevent Terraform removing 'hidden-link:' tagging created automatically by AzureRM
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 /* --------------------------------------------------------------------------------------------------

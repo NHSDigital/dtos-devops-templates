@@ -52,6 +52,7 @@ runs:
             echo "${SCAN_RESULTS}" | grep -i "${SEVERITY}" || echo "No ${SEVERITY} vulnerabilities found."
           } | tee -a "vulnerabilities/${VULNERABILITIES_SUMMARY_LOGFILE}"
         done
+
     - name: Upload vulnerabilities report
       uses: actions/upload-artifact@v4
       with:

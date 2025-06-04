@@ -30,6 +30,14 @@ resource "azurerm_storage_container" "container" {
   container_access_type = each.value.container_access_type
 }
 
+resource "azurerm_storage_queue" "queue" {
+  for_each = var.queues != null ? toset(var.queues) : toset([])
+
+  name                 = each.value
+  storage_account_name = azurerm_storage_account.storage_account.name
+}
+
+
 /* --------------------------------------------------------------------------------------------------
   Private Endpoint Configuration
 -------------------------------------------------------------------------------------------------- */

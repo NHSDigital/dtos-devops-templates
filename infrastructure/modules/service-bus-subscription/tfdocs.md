@@ -16,12 +16,6 @@ Description: The name of the Service Bus namespace.
 
 Type: `string`
 
-### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
-
-Description: The name of the resource group containing the Service Bus namespace.
-
-Type: `string`
-
 ### <a name="input_service_bus_namespace_id"></a> [service\_bus\_namespace\_id](#input\_service\_bus\_namespace\_id)
 
 Description: The ID of the Service Bus namespace resource for role assignment scope.
@@ -34,7 +28,7 @@ Description: The name of the Service Bus subscription.
 
 Type: `string`
 
-### <a name="input_topic_name"></a> [topic\_name](#input\_topic\_name)
+### <a name="input_topic_id"></a> [topic\_id](#input\_topic\_id)
 
 Description: The name of the Service Bus topic.
 
@@ -51,14 +45,6 @@ Description: The maximum delivery count of a message before it is dead-lettered.
 Type: `number`
 
 Default: `10`
-
-### <a name="input_tags"></a> [tags](#input\_tags)
-
-Description: A map of tags to assign to the subscription.
-
-Type: `map(string)`
-
-Default: `{}`
 
 
 ## Resources
