@@ -151,11 +151,14 @@ jobs:
           set -x
 
           # Build the image
+          echo "Build the image:"
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${function}
 
+          echo "Construct the image name:"
           repo_name="${{ secrets.ACR_NAME }}.azurecr.io/${PROJECT_NAME}-${function}"
 
           # Tag the image
+          echo "Tag the image:"
           docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${COMMIT_HASH_TAG}"
           docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${PR_NUM_TAG}"
           docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${ENVIRONMENT_TAG}"
