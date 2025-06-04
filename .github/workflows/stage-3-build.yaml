@@ -269,7 +269,7 @@ jobs:
           BRANCH_NAME: ${{ github.ref_name }}
         run: |
           az pipelines run \
-          --branch "${GITHUB_REF_NAME}" \
+          --branch "feat/dtoss-9326-trigger-cd-pipeline-with-commit" \
           --name cd-infrastructure-dev-core \
           --org https://dev.azure.com/nhse-dtos \
           --project ${project_name} \
