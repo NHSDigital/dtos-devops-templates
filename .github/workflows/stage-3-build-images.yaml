@@ -93,7 +93,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: fix/manual-trigger-fail-fix
 
       - name: Az CLI login
         if: github.ref == 'refs/heads/main'
