@@ -251,7 +251,7 @@ jobs:
     name: "Append short commit hash to images"
     runs-on: ubuntu-latest
     needs: build-and-push
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event.inputs.build_all_images != true
     permissions:
       id-token: write
     steps:
