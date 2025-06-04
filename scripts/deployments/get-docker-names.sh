@@ -157,9 +157,12 @@ EOF
     echo "#### $warning_message" >> "$GITHUB_STEP_SUMMARY"
 fi
 
-changed_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${changed_services[@]}")"
+# changed_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${changed_services[@]}")"
 
+changed_services_json="["add-participant"]" #,"allocate-service-provider","block-participant","bs-request-audit-data-service","bs-select-gp-practice-data-service","bs-select-outcode-data-service","cohort-distribution-data-service","create-cohort-distribution","create-exception","create-participant","current-posting-data-service","delete-participant","demographic-data-management","durable-demographic-function","exception-management-data-service","excluded-smu-data-service","file-validation","gene-code-lkp-data-service","get-validation-exceptions","gppractice-data-service","higher-risk-referral-reason-lkp-data-service","language-code-data-service","lookup-validation","nems-mesh-retrieval","nems-subscribe","nems-subscription-data-service","nems-unsubscribe","participant-demographic-data-service","participant-management-data-service","receive-caas-file","remove-participant","remove-validation-exception-data","retrieve-cohort-distribution-data","retrieve-cohort-request-audit","retrieve-mesh-file","retrieve-participant-data","retrieve-pds-demographic","screening-lkp-data-service","static-validation","transform-data-service","update-exception","update-participant","update-participant-details","validate-cohort-distribution-record","web"]
 IFS=$IFS_OLD
+
+
 echo "List of services to build:"
 echo "${changed_services_json}"
 echo "FUNC_NAMES=${changed_services_json}" >> "${GITHUB_OUTPUT}"
