@@ -259,9 +259,11 @@ jobs:
 
       - name: Call deployment pipeline
         if: success()
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
         run: |
           az pipelines run \
-          --commit-id ${short_commit_hash} \
+          --branch "${GITHUB_REF_NAME}" \
           --name cd-infrastructure-dev-core \
           --org https://dev.azure.com/nhse-dtos \
           --project ${project_name} \
