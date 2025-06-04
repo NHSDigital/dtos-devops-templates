@@ -18,7 +18,11 @@ module "key_vault_reader_role" {
 
 # Merge the identity created above with any passed in via a variables list:
 locals {
-  all_identity_ids = concat([var.acr_managed_identity_id], var.user_assigned_identity_ids, [module.container_app_identity.id])
+  all_identity_ids = compact(concat(
+    [var.acr_managed_identity_id],
+    var.user_assigned_identity_ids,
+    [module.container_app_identity.id]
+  ))
 }
 
 resource "azurerm_container_app" "main" {
