@@ -258,13 +258,18 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Call deployment pipeline
+        if: success()
         run: |
           az pipelines run \
           --commit-id ${short_commit_hash} \
           --name cd-infrastructure-dev-core \
           --org https://dev.azure.com/nhse-dtos \
           --project ${project_name} \
-          --parameters image-hash=${short_commit_hash} use-acr=${USE_AZURECR == 'true} registry-host=${REGISTRY_HOST} ENVIRONMENT=${ENVIRONMENT_TAG}
+          --parameters \
+              image-hash="${short_commit_hash}" \
+              use-acr="$([ "${USE_AZURECR}" = "true" ] && echo true || echo false)" \
+              registry-host="${REGISTRY_HOST}" \
+              ENVIRONMENT="${ENVIRONMENT_TAG}"
 
   aggregate-reports:
     name: Aggregate reports
