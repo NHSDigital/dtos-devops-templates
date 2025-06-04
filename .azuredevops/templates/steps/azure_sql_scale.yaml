@@ -3,6 +3,8 @@
 parameters:
   - name: serviceConnection
     type: string
+  - name: subscriptionId
+    type: string
   - name: resourceGroupName
     type: string
   - name: serverName
@@ -23,8 +25,9 @@ steps:
     scriptLocation: inlineScript
     inlineScript: |
       az sql db update \
-        --resource-group ${{ parameters.resourceGroupName }} \
         --server ${{ parameters.serverName }} \
+        --subscription ${{ parameters.subscriptionId }} \
+        --resource-group ${{ parameters.resourceGroupName }} \
         --name ${{ parameters.databaseName }} \
         --edition Standard \
         --service-objective ${{ parameters.sku }}
