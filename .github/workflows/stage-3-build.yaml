@@ -197,6 +197,7 @@ jobs:
     env:
       pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
       short_commit_hash: ${{ needs.containers-to-build.outputs.short_commit_hash }}
+      project_name: ${{ inputs.project_name }}
     permissions:
       id-token: write
       contents: read
@@ -234,7 +235,6 @@ jobs:
         env:
           container_registry: ${{ env.REGISTRY_HOST }}
           docker_services: ${{ needs.containers-to-build.outputs.docker_services }}
-          project_name: ${{ inputs.project_name }}
         run: |
           echo Running 'docker buildx imagetools' on remote repositories...
 
@@ -250,6 +250,21 @@ jobs:
             echo "Adding tag ${short_commit_hash} to ${image_name}..."
             docker buildx imagetools create "${registry_image}:${pr_num_tag}" --tag "${registry_image}:${short_commit_hash}" || echo "Tagging failed for $service"
           done
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Call deployment pipeline
+        run: |
+          az pipelines run \
+          --commit-id ${short_commit_hash} \
+          --name cd-infrastructure-dev-core \
+          --org https://dev.azure.com/nhse-dtos \
+          --project ${project_name} \
+          --parameters image-hash=${short_commit_hash} use-acr=${USE_AZURECR == 'true} registry-host=${REGISTRY_HOST} ENVIRONMENT=${ENVIRONMENT_TAG}
 
   aggregate-reports:
     name: Aggregate reports

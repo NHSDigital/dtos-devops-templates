@@ -24,7 +24,13 @@ steps:
       provider: azurerm
       command: plan
       workingDirectory: $(TF_DIRECTORY)
-      commandOptions: -input=false -var-file=$(tfVarsFile) ${{ parameters.tfCommandOptions }} -out=$(Build.ArtifactStagingDirectory)/$(ENVIRONMENT).tfplan
+      commandOptions: >
+        -input=false
+        -var-file=$(tfVarsFile)
+        -var="image_commit_hash=$(image-hash)"
+        -var="registry_host=$(registry-host)"
+        ${{ parameters.tfCommandOptions }}
+        -out=$(Build.ArtifactStagingDirectory)/$(ENVIRONMENT).tfplan
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
 
   - task: PublishBuildArtifacts@1
