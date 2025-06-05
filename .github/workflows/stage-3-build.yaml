@@ -239,7 +239,8 @@ jobs:
       - name: Tag all Registry Container images
         env:
           container_registry: ${{ env.REGISTRY_HOST }}
-          docker_services: ${{ fromJSON(needs.containers-to-build.outputs.docker_services) }}
+          docker_services: >-
+            ${{ join(fromJSON(needs.containers-to-build.outputs.docker_services || '[]'), '\n') }}
         run: |
           echo Running 'docker buildx imagetools' on remote repositories...
 
@@ -247,13 +248,13 @@ jobs:
             az acr login --name "${ACR_NAME}"
           fi
 
-          services=($(echo "$docker_services" | jq -r '.[]'))
-          for service in "${services[@]}"; do
+          echo "$docker_services" | while IFS= read -r service; do
             image_name="${project_name}-${service}"
             registry_image=${container_registry,,}/${image_name,,}
 
             echo "Adding tag ${short_commit_hash} to ${image_name}..."
-            docker buildx imagetools create "${registry_image}:${pr_num_tag}" --tag "${registry_image}:${short_commit_hash}" || echo "Tagging failed for $service"
+            docker buildx imagetools create "${registry_image}:${pr_num_tag}" --tag "${registry_image}:${short_commit_hash}" \
+              || echo "Tagging failed for $service"
           done
 
       - uses: azure/login@v2
