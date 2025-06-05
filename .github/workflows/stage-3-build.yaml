@@ -240,7 +240,7 @@ jobs:
         env:
           container_registry: ${{ env.REGISTRY_HOST }}
           docker_services: >-
-            ${{ join(fromJSON(needs.containers-to-build.outputs.docker_services || '[]'), '\n') }}
+            ${{ join(fromJSON(needs.containers-to-build.outputs.docker_services || '[]'), ',') }}
         run: |
           echo Running 'docker buildx imagetools' on remote repositories...
 
@@ -248,7 +248,7 @@ jobs:
             az acr login --name "${ACR_NAME}"
           fi
 
-          echo "$docker_services" | while IFS= read -r service; do
+          echo "$docker_services" | while IFS=, read -r service; do
             image_name="${project_name}-${service}"
             registry_image=${container_registry,,}/${image_name,,}
 
