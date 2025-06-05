@@ -141,6 +141,7 @@ jobs:
           PROJECT_NAME: ${{ inputs.project_name }}
         run: |
           function=${{ matrix.function }}
+
           echo PROJECT_NAME: ${PROJECT_NAME}
 
           if [ -z "${function}" ]; then
@@ -149,11 +150,13 @@ jobs:
           fi
 
           # Build the image
-          docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${function}
+          docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} --profile "*" build --no-cache --pull ${function}
 
           repo_name="${{ secrets.ACR_NAME }}.azurecr.io/${PROJECT_NAME}-${function}"
+          echo $(repo_name)
 
           # Tag the image
+          echo "Tag the image:"
           docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${COMMIT_HASH_TAG}"
           docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${PR_NUM_TAG}"
           docker tag ${PROJECT_NAME}-${function}:latest "$repo_name:${ENVIRONMENT_TAG}"
@@ -249,7 +252,7 @@ jobs:
     name: "Append short commit hash to images"
     runs-on: ubuntu-latest
     needs: build-and-push
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event.inputs.build_all_images != true
     permissions:
       id-token: write
     steps:
