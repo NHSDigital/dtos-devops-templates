@@ -93,7 +93,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: fix/build-process-fix
+          ref: main
 
       - name: Az CLI login
         if: github.ref == 'refs/heads/main'
@@ -142,7 +142,6 @@ jobs:
         run: |
           function=${{ matrix.function }}
 
-          set -x
           echo PROJECT_NAME: ${PROJECT_NAME}
 
           if [ -z "${function}" ]; then
@@ -151,10 +150,8 @@ jobs:
           fi
 
           # Build the image
-          echo "Build the image:"
           docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} --profile "*" build --no-cache --pull ${function}
 
-          echo "Construct the name:"
           repo_name="${{ secrets.ACR_NAME }}.azurecr.io/${PROJECT_NAME}-${function}"
           echo $(repo_name)
 
