@@ -248,7 +248,8 @@ jobs:
             az acr login --name "${ACR_NAME}"
           fi
 
-          echo "$docker_services" | while IFS=, read -r service; do
+          IFS=',' read -ra services <<< "$docker_services"
+          for service in "${services[@]}"; do
             image_name="${project_name}-${service}"
             registry_image=${container_registry,,}/${image_name,,}
 
