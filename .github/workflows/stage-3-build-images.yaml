@@ -93,7 +93,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: fix/build-process-fix
 
       - name: Az CLI login
         if: github.ref == 'refs/heads/main'
@@ -149,7 +149,7 @@ jobs:
           fi
 
           # Build the image
-          docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} build --no-cache --pull ${function}
+          docker compose -f ${COMPOSE_FILE//,/ -f } -p ${PROJECT_NAME} --profile "*" build --no-cache --pull ${function}
 
           repo_name="${{ secrets.ACR_NAME }}.azurecr.io/${PROJECT_NAME}-${function}"
 
