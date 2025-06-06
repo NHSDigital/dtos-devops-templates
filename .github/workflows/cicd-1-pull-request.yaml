@@ -105,6 +105,12 @@ jobs:
       python_version: "${{ needs.metadata.outputs.python_version }}"
       terraform_version: "${{ needs.metadata.outputs.terraform_version }}"
       version: "${{ needs.metadata.outputs.version }}"
+
+      docker_compose_file_csv_list: project-compose.yaml
+      excluded_containers_csv_list: exclude-service-1,exclude-service-2
+      environment_tag: ${{ needs.metadata.outputs.environment_tag }}
+      function_app_source_code_path: source-folder
+      project_name: project-pipeline-name
     secrets: inherit
   acceptance-stage: # Recommended maximum execution time is 10 minutes
     name: "Acceptance stage"
