@@ -64,7 +64,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: feat/dtoss-9326-trigger-cd-pipeline-with-commit
+          ref: main
 
       - name: Determine which Docker container(s) to build
         id: get-function-names
@@ -126,7 +126,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: feat/dtoss-9326-trigger-cd-pipeline-with-commit
+          ref: main
 
       - name: Build Docker image
         id: docker_image
@@ -151,8 +151,7 @@ jobs:
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${image_lc}:latest" "${reg_image}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
-        if: always()
-        #if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true')
+        if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true')
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -168,8 +167,7 @@ jobs:
           password: ${{ github.token }}
 
       - name: Push Docker image
-        #if: github.ref == 'refs/heads/main'
-        if: always()
+        if: github.ref == 'refs/heads/main'
         working-directory: ${{ needs.containers-to-build.outputs.docker_compose_dir }}
         env:
           pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
@@ -193,8 +191,7 @@ jobs:
 
   tag-all-repositories:
     name: Merge commit tag all images
-    #if: github.ref == 'refs/heads/main'
-    if: always()
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: [build-and-push, containers-to-build]
     env:
@@ -216,11 +213,10 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: feat/dtoss-9326-trigger-cd-pipeline-with-commit
+          ref: main
 
       - name: AzureCLI login
-        #if: env.USE_AZURECR == 'true'
-        if: always()
+        if: env.USE_AZURECR == 'true'
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -228,8 +224,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: ghcr.io login
-        #if: env.USE_AZURECR == 'false'
-        if: always()
+        if: env.USE_AZURECR == 'false'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -265,8 +260,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Call deployment pipeline
-        #if: success()
-        if: always()
+        if: success()
         run: |
           az pipelines run \
           --branch "feat/dtoss-9326-trigger-cd-pipeline-with-commit" \
