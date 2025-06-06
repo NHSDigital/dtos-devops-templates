@@ -267,8 +267,6 @@ jobs:
       - name: Call deployment pipeline
         #if: success()
         if: always()
-        env:
-          BRANCH_NAME: ${{ github.ref_name }}
         run: |
           az pipelines run \
           --branch "feat/dtoss-9326-trigger-cd-pipeline-with-commit" \
