@@ -64,7 +64,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: feat/dtoss-9326-trigger-cd-pipeline-with-commit
 
       - name: Determine which Docker container(s) to build
         id: get-function-names
@@ -126,7 +126,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: feat/dtoss-9326-trigger-cd-pipeline-with-commit
 
       - name: Build Docker image
         id: docker_image
@@ -151,7 +151,7 @@ jobs:
           [[ -n "${ENVIRONMENT_TAG}" ]] && docker tag "${image_lc}:latest" "${reg_image}:${ENVIRONMENT_TAG}"
 
       - name: AzureCLI login
-        if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true')
+        #if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'true')
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -159,7 +159,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: ghcr.io login
-        if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'false')
+        #if: (github.ref == 'refs/heads/main' && env.USE_AZURECR == 'false')
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -167,7 +167,7 @@ jobs:
           password: ${{ github.token }}
 
       - name: Push Docker image
-        if: github.ref == 'refs/heads/main'
+        #if: github.ref == 'refs/heads/main'
         working-directory: ${{ needs.containers-to-build.outputs.docker_compose_dir }}
         env:
           pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
@@ -191,12 +191,13 @@ jobs:
 
   tag-all-repositories:
     name: Merge commit tag all images
-    if: github.ref == 'refs/heads/main'
+    #if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: [build-and-push, containers-to-build]
     env:
       pr_num_tag: ${{ needs.containers-to-build.outputs.pr_num_tag }}
       short_commit_hash: ${{ needs.containers-to-build.outputs.short_commit_hash }}
+      project_name: ${{ inputs.project_name }}
     permissions:
       id-token: write
       contents: read
@@ -212,7 +213,7 @@ jobs:
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
-          ref: main
+          ref: feat/dtoss-9326-trigger-cd-pipeline-with-commit
 
       - name: AzureCLI login
         if: env.USE_AZURECR == 'true'
@@ -233,8 +234,8 @@ jobs:
       - name: Tag all Registry Container images
         env:
           container_registry: ${{ env.REGISTRY_HOST }}
-          docker_services: ${{ needs.containers-to-build.outputs.docker_services }}
-          project_name: ${{ inputs.project_name }}
+          docker_services: >-
+            ${{ needs.containers-to-build.outputs.docker_services && join(fromJSON(needs.containers-to-build.outputs.docker_services || '[]'), ',') }}
         run: |
           echo Running 'docker buildx imagetools' on remote repositories...
 
@@ -242,14 +243,36 @@ jobs:
             az acr login --name "${ACR_NAME}"
           fi
 
-          services=($(echo "$docker_services" | jq -r '.[]'))
+          IFS=',' read -ra services <<< "$docker_services"
           for service in "${services[@]}"; do
             image_name="${project_name}-${service}"
             registry_image=${container_registry,,}/${image_name,,}
 
             echo "Adding tag ${short_commit_hash} to ${image_name}..."
-            docker buildx imagetools create "${registry_image}:${pr_num_tag}" --tag "${registry_image}:${short_commit_hash}" || echo "Tagging failed for $service"
+            docker buildx imagetools create "${registry_image}:${pr_num_tag}" --tag "${registry_image}:${short_commit_hash}" \
+              || echo "Tagging failed for $service"
           done
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Call deployment pipeline
+        if: success()
+        env:
+          container_registry: ${{ env.REGISTRY_HOST }}
+        run: |
+          az pipelines run \
+          --branch "feat/dtoss-9326-trigger-cd-pipeline-with-commit" \
+          --name cd-infrastructure-dev-core \
+          --org https://dev.azure.com/nhse-dtos \
+          --project ${project_name} \
+          --parameters \
+              imageHash="${short_commit_hash}" \
+              registryHost="${container_registry,,}"
+
 
   aggregate-reports:
     name: Aggregate reports

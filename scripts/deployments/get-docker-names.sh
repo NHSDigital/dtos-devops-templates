@@ -156,13 +156,16 @@ EOF
 fi
 
 changed_services_json="$(jq -c -n '$ARGS.positional | unique' --args "${changed_services[@]}")"
-services_json="$(jq -c -n '$ARGS.positional | unique' --args "${docker_services_map[@]}")"
+
+args=("${docker_services_map[@]}")
+services_json=$(jq -c -n '$ARGS.positional | unique' --args "${args[@]}")
+
 
 IFS=$IFS_OLD
 echo "List of services to build:"
 echo "${changed_services_json}"
 echo "FUNC_NAMES=${changed_services_json}" >> "${GITHUB_OUTPUT}"
-echo "ALL_SERVICES=%{services_json}" >> "${GITHUB_OUTPUT}"
+echo "ALL_SERVICES=${services_json}" >> "${GITHUB_OUTPUT}"
 
 # Assumes all compose files are together in the same folder
 echo "DOCKER_COMPOSE_DIR=$(dirname "${compose_file}")" >> "${GITHUB_OUTPUT}"
