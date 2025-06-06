@@ -2,13 +2,7 @@
 
 parameters:
   - name: tfCommandOptions
-    type: string
     default: ''
-  - name: imageHash
-    type: string
-    default: ''
-  - name: registryHost
-    type: string
 
 steps:
   - template: tf_init.yaml
@@ -32,8 +26,8 @@ steps:
       commandOptions: >
         -input=false
         -var-file=$(tfVarsFile)
-        -var="image_commit_hash=${{ parameters.imageHash }}"
-        -var="registry_host=${{ parameters.registryHost }}"
+        -var="image_commit_hash=$(imageHash)"
+        -var="registry_host=$(registryHost)"
         ${{ parameters.tfCommandOptions }}
         -out=$(Build.ArtifactStagingDirectory)/$(ENVIRONMENT).tfplan
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)

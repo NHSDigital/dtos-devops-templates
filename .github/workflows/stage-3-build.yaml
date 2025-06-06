@@ -235,7 +235,7 @@ jobs:
         env:
           container_registry: ${{ env.REGISTRY_HOST }}
           docker_services: >-
-            ${{ join(fromJSON(needs.containers-to-build.outputs.docker_services || '[]'), ',') }}
+            ${{ needs.containers-to-build.outputs.docker_services && join(fromJSON(needs.containers-to-build.outputs.docker_services || '[]'), ',') }}
         run: |
           echo Running 'docker buildx imagetools' on remote repositories...
 
@@ -261,15 +261,15 @@ jobs:
 
       - name: Call deployment pipeline
         if: success()
+        env:
+          container_registry: ${{ env.REGISTRY_HOST }}
         run: |
           az pipelines run \
           --branch "main" \
           --name cd-infrastructure-dev-core \
           --org https://dev.azure.com/nhse-dtos \
           --project ${project_name} \
-          --parameters \
-              imageHash="${short_commit_hash}" \
-              registryHost="${REGISTRY_HOST}"
+          --parameters "imageHash=${short_commit_hash}" "registryHost=${container_registry,,}"
 
   aggregate-reports:
     name: Aggregate reports
