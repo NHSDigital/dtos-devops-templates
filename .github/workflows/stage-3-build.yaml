@@ -263,7 +263,7 @@ jobs:
         if: success()
         run: |
           az pipelines run \
-          --branch "feat/dtoss-9326-trigger-cd-pipeline-with-commit" \
+          --branch "main" \
           --name cd-infrastructure-dev-core \
           --org https://dev.azure.com/nhse-dtos \
           --project ${project_name} \
