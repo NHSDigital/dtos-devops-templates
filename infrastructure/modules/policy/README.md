@@ -58,9 +58,26 @@ The policy module is structured as shown below:
 
 Each folder has its relevant `main.tf`, `variables.tf`, and `outputs.tf` files. This structure allows us to focus on _what_ can be done with policies.
 
+<br>
+
+## Security Requirements
+
+This module requires the executing user to have **Resource Policy Contributor** RBAC role assigned. The **Resource Policy Contributor** role provides the following two required permissions:
+
+- **Create** policy definitions
+- **Create** policy assignments
+
+If this role is not assigned, then performing `terraform apply` will result in the following Azure RM error:
+
+```sh
+Error: creating/updating Policy Definition "XXXX": policy.DefinitionsClient#CreateOrUpdate: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: Service returned an error. Status=403 Code="AuthorizationFailed" Message="The client 'YYYY@hscic.gov.uk' with object id 'ZZZZZ' does not have authorization to perform action 'Microsoft.Authorization/policyDefinitions/write' over scope '/subscriptions/AAAAA/providers/Microsoft.Authorization/policyDefinitions/XXXX' or the scope is invalid. If access was recently granted, please refresh your credentials."
+```
+
 ## Module Inputs and Outputs
 
-#### General Flow of Outputs
+The following section details the important input and output values provided/required by each module.
+
+### General Flow of Outputs
 
 ```mermaid
 flowchart LR
