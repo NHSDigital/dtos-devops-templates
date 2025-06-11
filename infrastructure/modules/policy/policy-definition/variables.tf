@@ -31,7 +31,7 @@ variable "mode" {
       "Microsoft.Kubernetes.Data",
       "Microsoft.MachineLearningServices.Data",
       "Microsoft.Network.Data",
-      "Microsoft.Synapse.Data"], var.mode )
+    "Microsoft.Synapse.Data"], var.mode)
     error_message = "Mode must be one of: (Resource Provider Modes) All, Indexed. (Resource Provider Modes) Microsoft.ContainerService.Data, Microsoft.CustomerLockbox.Data, Microsoft.DataCatalog.Data, Microsoft.KeyVault.Data, Microsoft.Kubernetes.Data, Microsoft.MachineLearningServices.Data, Microsoft.Network.Data and Microsoft.Synapse.Data"
   }
 }
@@ -55,7 +55,7 @@ variable "policy_rule" {
       effect = string
     })
   })
- validation {
+  validation {
     condition = contains([
       "deny", "audit", "modify", "denyAction", "append",
       "auditIfNotExists", "deployIfNotExists", "disabled"
@@ -80,7 +80,7 @@ variable "policy_type" {
   default     = "Custom"
   description = "Type of policy."
   validation {
-    condition = contains(["BuiltIn","Custom", "NotSpecified", "Static"], var.policy_type)
+    condition     = contains(["BuiltIn", "Custom", "NotSpecified", "Static"], var.policy_type)
     error_message = "PolicyType must be one of: BuiltIn, Custom, NotSpecified, Static"
   }
 }

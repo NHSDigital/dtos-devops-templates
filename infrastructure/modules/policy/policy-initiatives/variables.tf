@@ -20,7 +20,7 @@ variable "policy_type" {
   default     = "custom"
   description = "Type of the initiative, whether it is custom or pre-existing."
   validation {
-    condition = contains(["custom", "builtin"], var.policy_type)
+    condition     = contains(["custom", "builtin"], var.policy_type)
     error_message = "PolicyType must be on of: custom, builtin"
   }
 }
@@ -31,6 +31,6 @@ variable "policy_definitions" {
     parameters   = optional(any)
     reference_id = optional(string)
   }))
-  default = []
+  default     = []
   description = "List of policy definitions included in the initiative."
 }

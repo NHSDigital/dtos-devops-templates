@@ -4,6 +4,6 @@ output "policy_definition_id" {
 }
 
 output "policy_requires_identity" {
-  value = local.requires_identity
+  value       = local.requires_identity
   description = "True if this policy must be assigned a managed identity, false otherwise"
 }

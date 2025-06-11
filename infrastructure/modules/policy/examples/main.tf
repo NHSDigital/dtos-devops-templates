@@ -25,9 +25,9 @@ module "example_policy_assignment_deny_public_ip" {
   policy_assignment_scope        = "/subscriptions/YYYY"
   policy_assignment_principal_id = ""
   policy_definition_id           = module.example_policy_definition_deny_public_ip.policy_definition_id
-  resource_id = "/subscriptions/XXXXXX"
-  log_analytics_wks_id = "/subscriptions/YYYY/resourceGroups/AAAA/providers/Microsoft.OperationalInsights/workspaces/BBBBB"
-  enabled_log = ["test_log1"]
+  resource_id                    = "/subscriptions/XXXXXX"
+  log_analytics_wks_id           = "/subscriptions/YYYY/resourceGroups/AAAA/providers/Microsoft.OperationalInsights/workspaces/BBBBB"
+  enabled_log                    = ["test_log1"]
 }
 
 module "example_policy_initiative_security" {
