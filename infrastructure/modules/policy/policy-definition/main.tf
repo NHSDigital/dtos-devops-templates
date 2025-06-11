@@ -14,3 +14,7 @@ resource "azurerm_policy_definition" "item" {
   policy_rule = jsonencode(var.policy_rule)
 }
 
+locals {
+  requires_identity = contains(["deployIfNotExists", "modify", "append"], var.policy_rule.then.effect)
+}
+

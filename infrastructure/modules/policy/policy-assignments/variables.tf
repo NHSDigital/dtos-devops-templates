@@ -3,15 +3,6 @@ variable "assignment_name" {
   description = "A short name for this policy assignment"
 }
 
-variable "assignment_type"{
-  type = string
-  default = "resource"
-  validation {
-    condition = contains(["resource", "resource-group"], var.assignment_type)
-    error_message = "AssignmentType must be one of: resource, resource-group"
-  }
-}
-
 variable "create_remediator_role" {
   type = bool
   default = false
@@ -37,7 +28,7 @@ variable "enforce_policy" {
 
 variable "enabled_log" {
   type        = list(string)
-  description = "True to enable logging, false otherwise"
+  description = "Collection of logs to capture"
   default     = []
 }
 
@@ -91,10 +82,10 @@ variable "resource_id" {
   default = null
 }
 
-variable "resource_group_id" {
-  type = string
-  description = "An identifier of a specific resource group to apply this policy onto"
-  default = null
+variable "requires_identity" {
+  type = bool
+  description = "True if the policy requires a managed identity, false otherwise"
+  default = false
 }
 
 
