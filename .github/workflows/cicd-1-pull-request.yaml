@@ -106,7 +106,7 @@ jobs:
     name: "Build stage"
     needs: [metadata, test-stage]
     uses: ./.github/workflows/stage-3-build.yaml
-    if: needs.metadata.outputs.docker_file_exists == 'true' && needs.metadata.outputs.does_pull_request_exist == 'true' || (github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened'))
+    if: needs.metadata.outputs.docker_file_exists == 'true' && (needs.metadata.outputs.does_pull_request_exist == 'true' || (github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened')))
     with:
       docker_compose_file_csv_list: ./compose.yaml
       excluded_containers_csv_list: azurite,azurite-setup,sql-database,database-setup,db
