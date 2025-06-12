@@ -77,3 +77,6 @@ coverage.xml
 .prof
 __azurite_db_blob__.json
 __azurite_db_blob_extent__.json
+scripts/azure/scan_results.html
+scripts/azure/azure_skipped_items.log
+scripts/azure/azure_resource_compliance_detailed.csv
