@@ -7,6 +7,8 @@ Async bulk publisher for Azure Service Bus Topics.
 import argparse, asyncio, csv, json, os, sys, time
 from itertools import islice
 from typing import AsyncIterator, Dict
+import uuid
+import copy
 
 from azure.servicebus.aio import ServiceBusClient
 from azure.servicebus import ServiceBusMessage
@@ -14,19 +16,30 @@ from azure.servicebus import ServiceBusMessage
 # ---------- Helpers ---------------------------------------------------------
 
 async def json_row_source(path: str | None, rows: int) -> AsyncIterator[Dict]:
-    """create dict rows either from CSV/JSONL file or generate synthetic rows."""
+    """Generate a stream of dict rows. Use file as a base template, repeating and modifying as needed."""
     if path:
         ext = os.path.splitext(path)[1].lower()
         open_fn = open if path != "-" else (lambda *_: sys.stdin)
         with open_fn(path, "r", encoding="utf-8") as fh:
             if ext == ".csv":
-                reader = csv.DictReader(fh)
-                for row in islice(reader, rows):
-                    yield row
+                templates = list(csv.DictReader(fh))
             else:  # JSON Lines
-                for line in islice(fh, rows):
-                    yield json.loads(line)
-    else:  # synthetic payload
+                templates = [json.loads(line) for line in fh]
+
+        total_templates = len(templates)
+        if total_templates == 0:
+            raise ValueError("Input file is empty")
+
+        for i in range(rows):
+            base = copy.deepcopy(templates[i % total_templates])
+            # Inject or override fields to make each row unique
+            base["synthetic_id"] = i
+            base["uuid"] = str(uuid.uuid4())
+            if "id" in base:
+                base["id"] = f"{base['id']}_{i}"
+            yield base
+    else:
+        # Default synthetic data if no file given
         for i in range(rows):
             yield {"id": i, "payload": f"row-{i}"}
 
@@ -81,7 +94,7 @@ async def main_async(args):
         )
     elapsed = time.perf_counter() - t0
     print(f"✅ Sent {args.rows:,} rows in {elapsed:,.1f}s "
-          f"({args.rows/elapsed:,.0f} msg/s)")
+        f"({args.rows/elapsed:,.0f} msg/s)")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Bulk Service Bus publisher")
@@ -91,7 +104,7 @@ if __name__ == "__main__":
     parser.add_argument("--file", help="CSV or JSONL input file (omit for synthetic)")
     parser.add_argument("--batch", type=int, default=0,
                         help="Force send after N messages added to batch "
-                             "(0 = until size limit)")
+                            "(0 = until size limit)")
     parser.add_argument("--concurrency", type=int, default=8,
                         help="Parallel async senders")
     asyncio.run(main_async(parser.parse_args()))
