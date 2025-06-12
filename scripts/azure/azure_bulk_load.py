@@ -94,7 +94,7 @@ async def main_async(args):
         )
     elapsed = time.perf_counter() - t0
     print(f"✅ Sent {args.rows:,} rows in {elapsed:,.1f}s "
-          f"({args.rows/elapsed:,.0f} msg/s)")
+        f"({args.rows/elapsed:,.0f} msg/s)")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Bulk Service Bus publisher")
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     parser.add_argument("--file", help="CSV or JSONL input file (omit for synthetic)")
     parser.add_argument("--batch", type=int, default=0,
                         help="Force send after N messages added to batch "
-                             "(0 = until size limit)")
+                            "(0 = until size limit)")
     parser.add_argument("--concurrency", type=int, default=8,
                         help="Parallel async senders")
     asyncio.run(main_async(parser.parse_args()))
