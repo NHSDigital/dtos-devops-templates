@@ -55,6 +55,14 @@ jobs:
             echo "Pull request doesn't exist"
             echo "does_pull_request_exist=false" >> $GITHUB_OUTPUT
           fi
+      - name: Check if .compose.yaml exists
+        id: check_compose
+        run: |
+          if [ -f ".compose.yaml" ]; then
+            echo "docker_file_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "docker_file_exists=false" >> $GITHUB_OUTPUT
+          fi
       - name: "List variables"
         run: |
           export BUILD_DATETIME_LONDON="${{ steps.variables.outputs.build_datetime_london }}"
@@ -66,16 +74,8 @@ jobs:
           export TERRAFORM_VERSION="${{ steps.variables.outputs.terraform_version }}"
           export VERSION="${{ steps.variables.outputs.version }}"
           export DOES_PULL_REQUEST_EXIST="${{ steps.pr_exists.outputs.does_pull_request_exist }}"
-          export DOCKER_FILE_EXISTS="${{ steps.pr_exists.outputs.docker_file_exists }}"
+          export DOCKER_FILE_EXISTS="${{ steps.check_compose.outputs.docker_file_exists }}"
           make list-variables
-      - name: Check if .compose.yaml exists
-        id: check_compose
-        run: |
-          if [ -f ".compose.yaml" ]; then
-            echo "docker_file_exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "docker_file_exists=false" >> $GITHUB_OUTPUT
-          fi
   commit-stage: # Recommended maximum execution time is 2 minutes
     name: "Commit stage"
     needs: [metadata]
