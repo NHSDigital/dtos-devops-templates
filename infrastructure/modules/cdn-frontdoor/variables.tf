@@ -1,0 +1,130 @@
+variable "cdn_frontdoor_firewall_policy_rg_name" {
+  description = "Resource Group name containing Front Door WAF policies. You may optionally override this per firewall policy in var.security_policies"
+  type        = string
+}
+
+variable "cdn_frontdoor_profile_id" {
+  description = "ID of the Front Door profile to associate endpoints and origin groups with"
+  type        = string
+}
+
+variable "custom_domains" {
+  description = "Map of Front Door Custom Domain configurations"
+  type = map(object({
+    dns_zone_name = string
+    host_name     = string
+
+    tls = optional(object({
+      # https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-configure-https-custom-domain?tabs=powershell#register-azure-front-door
+      certificate_type        = optional(string, "ManagedCertificate") # Use of apex domain as a hostname requires "CustomerCertificate"
+      cdn_frontdoor_secret_id = optional(string, null)
+    }), {})
+
+    zone_rg_name = optional(string, null)
+  }))
+}
+
+variable "endpoint" {
+  description = "Front Door Endpoint configuration"
+  type = object({
+    enabled = optional(bool, true)
+  })
+  default = {}
+}
+
+variable "environment" {
+  type = string
+}
+
+variable "frontdoor_naming_key" {
+  type = string
+}
+
+variable "origins" {
+  description = "Map of Front Door Origin configurations"
+  type = map(object({
+    certificate_name_check_enabled = bool # must be true for Private Link
+    enabled                        = optional(bool, true)
+    hostname                       = string
+    http_port                      = optional(number, 80)  # 1–65535
+    https_port                     = optional(number, 443) # 1–65535
+    origin_host_header             = optional(string)
+    priority                       = optional(number, 1) # 1–5
+
+    private_link = optional(object({
+      location               = string
+      private_link_target_id = string
+      target_type            = optional(string) # blob, blob_secondary, sites, web, etc.
+    }))
+
+    weight = optional(number, 500) # 1–1000
+  }))
+}
+
+variable "origin_group" {
+  description = "Front Door Origin Group configuration"
+  type = object({
+    health_probe = optional(object({
+      interval_in_seconds = number                   # Required: 1–255
+      path                = optional(string, "/")    # Optional
+      protocol            = string                   # Required: "Http" or "Https"
+      request_type        = optional(string, "HEAD") # Optional: "GET" or "HEAD"
+    }))
+
+    load_balancing = optional(object({
+      additional_latency_in_milliseconds = optional(number, 50) # Optional: 0–1000
+      sample_size                        = optional(number, 4)  # Optional: 0–255
+      successful_samples_required        = optional(number, 3)  # Optional: 0–255
+    }), {})
+
+    session_affinity_enabled                                  = optional(bool, true)
+    restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number)
+  })
+  default = {}
+}
+
+variable "public_dns_zone_rg_name" {
+  description = "Resource Group name for public DNS zones. You may optionally override this per custom domain in var.custom_domain"
+  type        = string
+}
+
+variable "resource_group_name" {
+  type = string
+}
+
+variable "route" {
+  description = "Map of Front Door route configurations"
+  type = object({
+    cache = optional(object({
+      compression_enabled           = optional(bool, false)
+      content_types_to_compress     = optional(list(string))
+      query_string_caching_behavior = optional(string, "IgnoreQueryString") # "IgnoreQueryString" etc.
+      query_strings                 = optional(list(string))
+    }))
+
+    cdn_frontdoor_origin_path  = optional(string, null)
+    cdn_frontdoor_rule_set_ids = optional(list(string))
+    enabled                    = optional(bool, true)
+    forwarding_protocol        = optional(string, "MatchRequest") # "HttpOnly" | "HttpsOnly" | "MatchRequest"
+    https_redirect_enabled     = optional(bool, false)
+    link_to_default_domain     = optional(bool, true)
+    patterns_to_match          = optional(list(string), ["/*"])
+    supported_protocols        = optional(list(string), ["Https"]) # Must be a subset of ["Http", "Https"]
+  })
+}
+
+variable "security_policies" {
+  description = "Optional map of security policies to apply. Each must include the WAF policy and domain associations"
+  type = map(object({
+    associated_domain_keys                = list(string) # From var.custom_domains above, use "endpoint" for the default domain
+    cdn_frontdoor_firewall_policy_name    = string
+    cdn_frontdoor_firewall_policy_rg_name = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Resource tags to be applied throughout the deployment"
+  default     = {}
+}

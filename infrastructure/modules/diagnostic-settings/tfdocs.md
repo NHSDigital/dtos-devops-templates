@@ -38,7 +38,7 @@ Default: `null`
 
 ### <a name="input_eventhub_name"></a> [eventhub\_name](#input\_eventhub\_name)
 
-Description: value of the eventhub name if logging to eventhub is being used.
+Description: value of the EventHub name if logging to an EventHub.
 
 Type: `string`
 
@@ -46,7 +46,7 @@ Default: `null`
 
 ### <a name="input_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#input\_log\_analytics\_workspace\_id)
 
-Description: id of the log analytics workspace to send resource logging to via diagnostic settings if logging to log analytic workspace is being used.
+Description: Identifier of a log analytics workspace to send resource logging to via diagnostic settings if logging to log analytic workspace is being used.
 
 Type: `string`
 
@@ -62,7 +62,7 @@ Default: `[]`
 
 ### <a name="input_metric_enabled"></a> [metric\_enabled](#input\_metric\_enabled)
 
-Description: to enable retention for diagnostic settings metric
+Description: True to retain diagnostic setting metrics, false otherwise
 
 Type: `bool`
 
