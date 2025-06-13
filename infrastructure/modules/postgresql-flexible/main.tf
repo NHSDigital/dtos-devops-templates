@@ -19,8 +19,8 @@ resource "azurerm_postgresql_flexible_server" "postgresql_flexible_server" {
     tenant_id                     = var.tenant_id
   }
 
-  administrator_login    = length(var.administrator_login) > 0 && var.password_auth_enabled ? var.administrator_login : null
-  administrator_password = length(var.administrator_login) > 0 && var.password_auth_enabled ? random_password.admin_password[0].result : null
+  administrator_login    = try(length(var.administrator_login), 0) > 0 && var.password_auth_enabled ? var.administrator_login : null
+  administrator_password = try(length(var.administrator_login), 0) > 0 && var.password_auth_enabled ? random_password.admin_password[0].result : null
 
   # Postgres Flexible Server does not support User Assigned Identity
   # so do not enable for now. If required, create the identity in an
@@ -31,10 +31,21 @@ resource "azurerm_postgresql_flexible_server" "postgresql_flexible_server" {
   # }
 
   tags = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      # Allow Azure to manage deployment zone. Ignore changes.
+      zone,
+      # Allow Azure to manage primary and standby server on fail-over. Ignore changes.
+      high_availability[0].standby_availability_zone,
+      # Required for import because of https://github.com/hashicorp/terraform-provider-azurerm/issues/15586
+      create_mode
+    ]
+  }
 }
 
 resource "random_password" "admin_password" {
-  count = length(var.administrator_login) > 0 && var.password_auth_enabled ? 1 : 0
+  count = try(length(var.administrator_login), 0) > 0 && var.password_auth_enabled ? 1 : 0
 
   length           = 30
   special          = true
@@ -42,7 +53,7 @@ resource "random_password" "admin_password" {
 }
 
 resource "azurerm_key_vault_secret" "db_admin_pwd" {
-  count = length(var.administrator_login) > 0 && var.password_auth_enabled ? 1 : 0
+  count = try(length(var.administrator_login), 0) > 0 && var.password_auth_enabled ? 1 : 0
 
   name         = var.key_vault_admin_pwd_secret_name
   value        = resource.random_password.admin_password[0].result
@@ -57,6 +68,20 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "po
   object_id           = var.postgresql_admin_object_id
   principal_name      = var.postgresql_admin_principal_name
   principal_type      = var.postgresql_admin_principal_type
+}
+
+resource "azurerm_postgresql_flexible_server_active_directory_administrator" "admin_identity" {
+  for_each = { for id in var.admin_identities : id.name => {
+    principal_name = id.name
+    object_id      = id.principal_id
+  } }
+
+  server_name         = azurerm_postgresql_flexible_server.postgresql_flexible_server.name
+  resource_group_name = var.resource_group_name
+  tenant_id           = var.tenant_id
+  principal_name      = each.value.principal_name
+  object_id           = each.value.object_id
+  principal_type      = "ServicePrincipal"
 }
 
 # Create the server configurations

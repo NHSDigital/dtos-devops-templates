@@ -65,6 +65,11 @@ variable "public_network_access_enabled" {
   type        = bool
   default     = false
 }
+variable "admin_identities" {
+  description = "List of managed identities modules with admin access to the postgres server. The managed identity must have the Directory.Read.All permission."
+  type        = list(any)
+  default     = []
+}
 
 variable "sku_name" {
   # See: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server#sku_name-2
@@ -122,6 +127,7 @@ variable "zone" {
 variable "tags" {
   description = "A map of tags to assign to the PostgreSQL Flexible Server."
   type        = map(string)
+  default     = {}
 }
 
 # Databases
