@@ -2,7 +2,7 @@ module "container_app_identity" {
   source              = "../managed-identity"
   resource_group_name = var.resource_group_name
   location            = var.location
-  uai_name            = "${var.name}-identity"
+  uai_name            = "mi-${var.name}"
 }
 
 # Allow the container app to read secrets from keyvaults in the resource groups
