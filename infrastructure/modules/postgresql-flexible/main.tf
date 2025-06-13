@@ -19,8 +19,8 @@ resource "azurerm_postgresql_flexible_server" "postgresql_flexible_server" {
     tenant_id                     = var.tenant_id
   }
 
-  administrator_login    = length(var.administrator_login) > 0 && var.password_auth_enabled ? var.administrator_login : null
-  administrator_password = length(var.administrator_login) > 0 && var.password_auth_enabled ? random_password.admin_password[0].result : null
+  administrator_login    = try(length(var.administrator_login), 0) > 0 && var.password_auth_enabled ? var.administrator_login : null
+  administrator_password = try(length(var.administrator_login), 0) > 0 && var.password_auth_enabled ? random_password.admin_password[0].result : null
 
   # Postgres Flexible Server does not support User Assigned Identity
   # so do not enable for now. If required, create the identity in an
@@ -34,7 +34,7 @@ resource "azurerm_postgresql_flexible_server" "postgresql_flexible_server" {
 }
 
 resource "random_password" "admin_password" {
-  count = length(var.administrator_login) > 0 && var.password_auth_enabled ? 1 : 0
+  count = try(length(var.administrator_login), 0) > 0 && var.password_auth_enabled ? 1 : 0
 
   length           = 30
   special          = true
@@ -42,7 +42,7 @@ resource "random_password" "admin_password" {
 }
 
 resource "azurerm_key_vault_secret" "db_admin_pwd" {
-  count = length(var.administrator_login) > 0 && var.password_auth_enabled ? 1 : 0
+  count = try(length(var.administrator_login), 0) > 0 && var.password_auth_enabled ? 1 : 0
 
   name         = var.key_vault_admin_pwd_secret_name
   value        = resource.random_password.admin_password[0].result
