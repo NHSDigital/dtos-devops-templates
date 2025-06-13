@@ -127,6 +127,7 @@ variable "zone" {
 variable "tags" {
   description = "A map of tags to assign to the PostgreSQL Flexible Server."
   type        = map(string)
+  default     = {}
 }
 
 # Databases
