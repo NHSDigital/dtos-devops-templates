@@ -5,6 +5,7 @@ import csv
 from datetime import datetime
 from io import BytesIO
 import json
+import sys
 from typing import Counter
 from azure.identity import AzureCliCredential
 from azure.mgmt.resource import SubscriptionClient, ResourceManagementClient
@@ -41,8 +42,23 @@ def check_area_compliance(tags: dict, area_name: str) -> dict:
     required = area["required"]
     optional = area["optional"]
 
-    required_present = [t for t in required if t in tags]
-    required_missing = [t for t in required if t not in tags]
+    required_present = []
+    required_missing = []
+
+    for req in required:
+        if "??" in req:
+            options = [r.strip() for r in req.split("??")]
+            found = next((opt for opt in options if opt in tags), None)
+            if found:
+                required_present.append(req)
+            else:
+                required_missing.append(req)
+        else:
+            if req in tags:
+                required_present.append(req)
+            else:
+                required_missing.append(req)
+
     optional_present = [t for t in optional if t in tags]
     optional_missing = [t for t in optional if t not in tags]
 
@@ -807,12 +823,17 @@ def write_outputs(data, skipped):
     print("✅ Outputs saved: azure_resource_compliance_detailed.csv and azure_skipped_items.log")
 
 def load_scan_file(filename):
-    with open(filename, mode='r', encoding='utf-8') as file:
-        reader = csv.DictReader(file)
-        return [
-            row for row in reader
-            if not args.filter or args.filter.lower() in row['resourceName'].lower()
-        ]
+    try:
+        with open(filename, mode='r', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            return [
+                row for row in reader
+                if not args.filter or args.filter.lower() in row['resourceName'].lower()
+            ]
+    except FileNotFoundError:
+        print(f"[ERROR] File not found: {filename}")
+        sys.exit(1)
+
 
 def write_report(content, filename):
     with open(filename, "w", encoding="utf-8") as f:
