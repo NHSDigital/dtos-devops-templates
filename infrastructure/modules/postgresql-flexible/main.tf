@@ -31,6 +31,17 @@ resource "azurerm_postgresql_flexible_server" "postgresql_flexible_server" {
   # }
 
   tags = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      # Allow Azure to manage deployment zone. Ignore changes.
+      zone,
+      # Allow Azure to manage primary and standby server on fail-over. Ignore changes.
+      high_availability[0].standby_availability_zone,
+      # Required for import because of https://github.com/hashicorp/terraform-provider-azurerm/issues/15586
+      create_mode
+    ]
+  }
 }
 
 resource "random_password" "admin_password" {
