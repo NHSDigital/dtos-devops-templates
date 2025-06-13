@@ -70,6 +70,20 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "po
   principal_type      = var.postgresql_admin_principal_type
 }
 
+resource "azurerm_postgresql_flexible_server_active_directory_administrator" "admin_identity" {
+  for_each = { for id in var.admin_identities : id.name => {
+    principal_name = id.name
+    object_id      = id.principal_id
+  } }
+
+  server_name         = azurerm_postgresql_flexible_server.postgresql_flexible_server.name
+  resource_group_name = var.resource_group_name
+  tenant_id           = var.tenant_id
+  principal_name      = each.value.principal_name
+  object_id           = each.value.object_id
+  principal_type      = "ServicePrincipal"
+}
+
 # Create the server configurations
 resource "azurerm_postgresql_flexible_server_configuration" "postgresql_flexible_config" {
   for_each = var.postgresql_configurations
