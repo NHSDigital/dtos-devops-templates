@@ -80,3 +80,8 @@ __azurite_db_blob_extent__.json
 scripts/azure/scan_results.html
 scripts/azure/azure_skipped_items.log
 scripts/azure/azure_resource_compliance_detailed.csv
+.vscode/launch.json
+scripts/azure/azure_resource_compliance_scan.csv
+azure_resource_compliance_scan.csv
+azure_skipped_items.log
+scan_results.html

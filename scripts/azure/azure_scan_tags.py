@@ -2,19 +2,87 @@ import argparse
 import base64
 from collections import defaultdict
 import csv
+from dataclasses import dataclass, fields
 from datetime import datetime
 from io import BytesIO
 import json
 import sys
-from typing import Counter
+from typing import Counter, List, Optional
 from azure.identity import AzureCliCredential
 from azure.mgmt.resource import SubscriptionClient, ResourceManagementClient
 from azure.core.exceptions import HttpResponseError
 from matplotlib import pyplot as plt
 
+from collections import defaultdict
+
+class Filter:
+    def __init__(self, filter_str: str = ""):
+        self._data = defaultdict(list)
+        self._parse(filter_str)
+
+    def _parse(self, filter_str: str):
+        if not filter_str:
+            return
+
+        for pair in filter_str.strip().split():
+            if '=' in pair:
+                key, value = pair.split('=', 1)
+                key = key.strip().lower()
+                if not key in ['sub', 'group', 'res']:
+                    print(f"Unknown filter category '{key}'. Will not be added to the filter")
+                    continue;
+
+                value = value.strip()
+                self._data[key].append(value)
+            else:
+                self._data["any"].append(pair)
+
+    def any_subscription(self, item):
+        '''Returns True if the specified item is in the subscriptions filter or there are no subscription filters specified.'''
+        return self._any_in(item, "sub")
+
+    def _any_in(self, item, key):
+        items = self._data.get(key, [])
+        return not items or any(s.lower() in item.lower() for s in items)
+
+    def any_group(self, item):
+        '''Returns True if the specified item is in the groups filter or there are no group filters specified.'''
+        return self._any_in(item, "group")
+
+    def any_resource(self, item):
+        '''Returns True if the specified item is in the resource filter or there are no resource filters specified.'''
+        return self._any_in(item, "res")
+
+    def any_text(self, item):
+        '''Returns True if the specified item contains any text or there are no any_text filters specified.'''
+        return self._any_in(item, "any")
+
+    def any(self, item):
+        '''Returns True if the specified item is in any filterable set.'''
+        return any(item in values for values in self._data.values())
+
+    def toFriendly(self):
+        '''Returns a human-readable summary of the active filters.'''
+        if not any(self._data.values()):
+            return "No filters applied"
+
+        parts = []
+        for key, values in self._data.items():
+            if values:
+                label = {
+                    "sub": "Subscriptions",
+                    "group": "Resource Groups",
+                    "res": "Resources",
+                    "any": "Any text"
+                }.get(key, key.capitalize())
+                parts.append(f"{label} containing {', '.join([f'\"{v}\"' for v in values])}")
+
+        return " | ".join(parts)
+
 
 MAX_PILL_LENGTH = 50
-
+COMPLIANT = "Compliant"
+NON_COMPLIANT = "Non-Compliant"
 TAG_AREAS = {
     "FinOps": {
         "required": ["TagVersion", "Programme ?? Service ", "Product ?? Project", "Owner", "CostCentre"],
@@ -34,16 +102,30 @@ TAG_AREAS = {
     }
 }
 
-def check_area_compliance(tags: dict, area_name: str) -> dict:
+def check_tag_compliance(tags: dict, area_name: str):
     area = TAG_AREAS.get(area_name)
     if not area:
-        return {"area": area_name, "error": "Unknown area"}
+        return {
+            "required_present":"",
+            "required_missing":"",
+            "required_missed": 0,
+            "required_met": 0,
+            "optional_present":"",
+            "optional_missing":"",
+            "optional_missed": 0,
+            "optional_met": 0,
+            "total_required": 0,
+            "compliance_area": area_name,
+            "error": "Unknown area"
+        }
 
     required = area["required"]
     optional = area["optional"]
 
     required_present = []
     required_missing = []
+    optional_present = []
+    optional_missing = []
 
     for req in required:
         if "??" in req:
@@ -59,18 +141,33 @@ def check_area_compliance(tags: dict, area_name: str) -> dict:
             else:
                 required_missing.append(req)
 
-    optional_present = [t for t in optional if t in tags]
-    optional_missing = [t for t in optional if t not in tags]
+    for opt in optional:
+        if "??" in opt:
+            options = [r.strip() for r in opt.split("??")]
+            found = next((opt for opt in options if opt in tags), None)
+            if found:
+                optional_present.append(opt)
+            else:
+                optional_missing.append(opt)
+        else:
+            if opt in tags:
+                optional_present.append(opt)
+            else:
+                optional_missing.append(opt)
 
     return {
-        "area": area_name,
+        "required_present": ", ".join(required_present),
+        "required_missing": ", ".join(required_missing),
+        "required_missed": len(required_missing),
         "required_met": len(required_present),
-        "required_total": len(required),
+        "optional_present": ", ".join(optional_present),
+        "optional_missing": ", ".join(optional_missing),
+        "optional_missed": len(optional_missing),
         "optional_met": len(optional_present),
-        "optional_total": len(optional),
-        "required_missing": required_missing,
-        "optional_missing": optional_missing
+        "total_required": len(required),
+        "compliance_area": area_name
     }
+
 
 def compute_compliance(data):
     compliant = 0
@@ -163,12 +260,13 @@ def generate_html_styles_and_scripts():
         .collapsible-header {
             background: var(--color-bg-header);
             padding: 10px;
-            cursor: hand;
+            cursor: pointer;
             font-weight: bold;
             position: relative;
         }
         .collapsible-header:hover{
             background: var(--color-bg-hover);
+            cursor: pointer;
         }
         .collapsible-header::after {
             display: inline-block;
@@ -383,7 +481,7 @@ def generate_html_styles_and_scripts():
             margin-bottom: 16px;
             padding: 20px;
         }
-        .title h2 { margin: 0; }
+        .title h2 { margin: 0 0 10px 0; }
     </style>
     <script>
         function showSection(id) {
@@ -467,6 +565,7 @@ def format_tag_pill(key, value: any = None, required: bool = False):
 
 
 def generate_resources_html(resources):
+
     html = f"""
      <table>
         <tr>
@@ -477,7 +576,12 @@ def generate_resources_html(resources):
         html += f"<th class='tag-area'>{area}</th>"
     html += "</tr>"
 
+    added = 0
     for res in resources:
+        if not res['resourceId']:
+            continue
+
+        added += 1
         tags = res["resourceTags"]
         if isinstance(tags, str):
             try:
@@ -499,8 +603,8 @@ def generate_resources_html(resources):
             </td>"""
 
         for area in TAG_AREAS:
-            raw_tags = res.get(f"{area}_required_missing", "")
-            missing_tags = [tag.strip() for tag in raw_tags.split(';') if tag.strip()]
+            raw_tags = res.get(f"{area}_res_missing", "")
+            missing_tags = [tag.strip() for tag in raw_tags.split(',') if tag.strip()]
             visible_tags = {k for k in missing_tags if not k.startswith("hidden-link:")}
             tag_pills_html = F"""<span class='tag-pills'>{ "".join(format_tag_pill(k, required = True) for k in visible_tags)}</span>"""
 
@@ -509,6 +613,11 @@ def generate_resources_html(resources):
     html += "</tr>"
     html += "</table>"
 
+    if added == 0:
+        return f"""
+            <span>No resources for this group.</span>
+        """
+
     return html
 
 
@@ -516,12 +625,21 @@ def count_all_tags(resources):
     tag_key_counter = Counter()
 
     for row in resources:
-        tags = json.loads(row["resourceTags"])
+        if row['resourceGroupTags']:
+            tags = json.loads(row['resourceGroupTags'])
+
         for key in tags:
             if not key.startswith("hidden-link:"):
                 tag_key_counter[key] += 1
 
+        if row['resourceTags']:
+            tags = json.loads(row["resourceTags"])
+            for key in tags:
+                if not key.startswith("hidden-link:"):
+                    tag_key_counter[key] += 1
+
     return tag_key_counter
+
 
 def generate_tag_summary_html(data):
     tag_key_counter = count_all_tags(data)
@@ -532,6 +650,12 @@ def generate_tag_summary_html(data):
         percentage = (count / total_resources) * 100
         tag_rows += f"<tr><td>🏷️ {tag}</td><td>{count} ({percentage:.1f}%)</td></tr>"
 
+    if not tag_rows:
+        return f"""
+            <h3>Tag Usage</h3>
+            <emphasis>No tags founds on the scanned resources.</emphasis>
+        """
+
     return f"""
         <h3>Tag Usage</h3>
         <table>
@@ -540,18 +664,23 @@ def generate_tag_summary_html(data):
         </table>
     """
 
+
 def build_subscriptions_map(data):
     results = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     for row in sorted(data, key=lambda subs: (subs['subscriptionName'], subs['resourceGroupName'], subs['resourceName'])):
         subsName = row['subscriptionName']
         rgName = row['resourceGroupName']
 
-        is_compliant = all(row[f"{area}_required_met"] >= row[f"{area}_required_total"] for area in TAG_AREAS)
-        compliance = "Compliant" if is_compliant else "Non-Compliant"
+        is_compliant = all(row[key]
+                           for key in row
+                           if key.endswith("_group_compliant") or key.endswith("_res_compliant"))
+
+        compliance = COMPLIANT if is_compliant else NON_COMPLIANT
 
         results[subsName][compliance][rgName].append(row)
 
     return results
+
 
 def generate_sidebar_html(resources):
     unique_subs = sorted({resource['subscriptionName'] for resource in resources})
@@ -565,7 +694,8 @@ def generate_sidebar_html(resources):
             {sidebar_links_html}
         </div>"""
 
-def generate_html_report(resources):
+
+def generate_html_report(resources, filter: Filter):
     styles_and_scripts = generate_html_styles_and_scripts()
     summary_html = generate_summary_html(resources)
     subscriptions_html = generate_subscriptions_html(resources)
@@ -575,7 +705,8 @@ def generate_html_report(resources):
     scan_date = now.strftime("%Y-%m-%d %H:%M:%S")
 
     return f"""
-    <html>
+    <!DOCTYPE html>
+    <html lang="en">
         <head>
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
             {styles_and_scripts}
@@ -583,7 +714,7 @@ def generate_html_report(resources):
         <body>
             <div class='title'>
                 <h2>Azure Tag Compliance Scan</h2>
-                <span>Scan completed on: 📅 {scan_date} by 👤 ???</span>
+                <span>Scan completed on: 📅 {scan_date} by 👤 ??? and 🔍 filtered by {filter.toFriendly()}<span>
             </div>
             <div class='container'>
                 {sidebar_html}
@@ -596,8 +727,9 @@ def generate_html_report(resources):
     </html>
     """
 
+
 def generate_subscriptions_html(data):
-    # The format of the data is [subscription_name][compliance][resource_group_name][resource]
+    # The format of the data is [subscription_name][compliance][resources]
     subscriptions = build_subscriptions_map(data)
 
     html = ""
@@ -609,36 +741,47 @@ def generate_subscriptions_html(data):
                     <h2>🗂️ {subsName}</h2>
                 </div>
             """
-        tag_areas_html = generate_subscription_tag_areas_html(compliance)
-        compliant_res_html = generate_subscription_compliant_res_html(compliance)
+        non_compliant_tags = compliance.get(NON_COMPLIANT, {})
+        compliant_tags = compliance.get(COMPLIANT, {})
 
-        html += f"{tag_areas_html} {compliant_res_html}</div>"
+        tag_areas_html = generate_subscription_tag_areas_html(compliant_tags, non_compliant_tags)
+
+        compliant_res_html = generate_subscription_groups_html(compliant_tags, COMPLIANT)
+        non_compliant_res_html = generate_subscription_groups_html(non_compliant_tags, NON_COMPLIANT)
+
+        html += f"{tag_areas_html} {compliant_res_html} {non_compliant_res_html}</div>"
+
+    return html
+
+
+def generate_subscription_groups_html(tags, compliance_type):
+    html = f"<div><h3>{compliance_type} ({len(tags.items())})</h3>"
+
+    if not tags.items():
+        return f"""
+            {html}
+            No compliant resource groups.
+            </div>
+            """
+
+    for resource_group, resources in tags.items():
+        tag_pills_html = generate_tag_pills_html(resources, "resourceGroupTags")
+        count_html = generate_compliance_count_html(compliance_type, resources)
+        resource_table_html = generate_resources_html(resources)
+
+        html += f"""
+            <div class='collapsible'>
+                <div class='collapsible-header'>📦{resource_group}
+                    <span style="margin-left: 10px; font-weight: normal;">{count_html}</span>
+                    <span class='tag-pills'>{tag_pills_html}</span>
+                </div>
+                <div class='collapsible-body'>{resource_table_html}</div>
+            </div>"""
+
+    html += "</div>"
 
     return html
 
-def generate_subscription_compliant_res_html(compliance):
-    html = ""
-    for category in ["Compliant", "Non-Compliant"]:
-        if category in compliance:
-            html += f"<div><h3>{category}</h3>"
-
-            for resource_group, resources in compliance[category].items():
-                tag_pills_html = generate_tag_pills_html(resources, "resourceGroupTags")
-                count_html = generate_compliance_count_html(category, resources)
-                resource_table_html = generate_resources_html(resources)
-
-                html += f"""
-                    <div class='collapsible'>
-                        <div class='collapsible-header'>📦{resource_group}
-                            <span style="margin-left: 10px; font-weight: normal;">{count_html}</span>
-                            <span class='tag-pills'>{tag_pills_html}</span>
-                        </div>
-                        <div class='collapsible-body'>{resource_table_html}</div>
-                    </div>"""
-
-            html += "</div>"
-
-    return html
 
 def generate_tag_pills_html(resources, key):
     tags = resources[0].get(key) or {}
@@ -651,29 +794,36 @@ def generate_tag_pills_html(resources, key):
     visible_tags = {k: v for k, v in tags.items() if not k.startswith("hidden-link:")}
     return "".join(format_tag_pill(k, v) for k, v in visible_tags.items())
 
-def generate_compliance_count_html(category, resources):
-    compliant = sum(
-                        all(res[f"{area}_required_met"] >= res[f"{area}_required_total"] for area in TAG_AREAS)
-                        for res in resources
-                    )
+
+def generate_compliance_count_html(compliance_type, resources):
+    compliant = sum(1 for item in resources
+                    for area in TAG_AREAS
+                    if (not item["resourceId"] and item[f"{area}_group_compliant"])
+                    or (item["resourceId"] and item[f"{area}_res_compliant"]))
+
+
     non_compliant = len(resources) - compliant
 
-    if category == "Compliant":
+    if compliance_type == COMPLIANT:
         return f"""(<span style="color:green">{compliant}</span>)"""
 
     return f"""(<span style="color:red">{non_compliant}</span>)"""
 
-def generate_subscription_tag_areas_html(compliance):
+
+def generate_subscription_tag_areas_html(compliant_tags, non_compliant_tags):
     html = "<table><tr><th>Tag Area</th><th>Compliant</th><th>Non-Compliant</th></tr>"
 
     for area in TAG_AREAS:
         # compliance.values() will contains the list of resource_groups
-        compliant = sum(1 for groups in compliance.values()
-                        for group in groups.values()
-                        for res in group if res[f'{area}_required_met'] >= res[f'{area}_required_total'])
-        non_compliant = sum(1 for groups in compliance.values()
-                            for group in groups.values()
-                            for res in group if res[f'{area}_required_met'] < res[f'{area}_required_total'])
+        compliant = sum(1 for item in compliant_tags.values()
+                        for row in item
+                        if (not row["resourceId"] and row[f"{area}_group_compliant"])
+                        or (row["resourceId"] and row[f"{area}_res_compliant"]))
+
+        non_compliant = sum(1 for item in non_compliant_tags.values()
+                        for row in item
+                        if (not row["resourceId"] and not row[f"{area}_group_compliant"])
+                        or (row["resourceId"] and not row[f"{area}_res_compliant"]))
 
         html += f"<tr><td>{area}</td><td style='color:green'>{compliant}</td><td style='color:red'>{non_compliant}</td></tr>"
 
@@ -681,27 +831,36 @@ def generate_subscription_tag_areas_html(compliance):
 
     return html
 
+
 def create_pie_chart_base64(resource_data, title):
     type_counts = defaultdict(int)
     for row in resource_data:
         type_counts[row['resourceType']] += 1
+
     sorted_types = sorted(type_counts.items(), key=lambda x: x[1], reverse=True)
     top = sorted_types[:5]
     other_count = sum(x[1] for x in sorted_types[5:])
+
     labels = [x[0] for x in top] + (["Other"] if other_count else [])
     sizes = [x[1] for x in top] + ([other_count] if other_count else [])
+
     fig, ax = plt.subplots()
     ax.pie(sizes, labels=labels, autopct='%1.1f%%')
     ax.axis('equal')
     plt.title(title)
+
     buf = BytesIO()
     plt.savefig(buf, format="png")
     plt.close(fig)
     buf.seek(0)
+
     return base64.b64encode(buf.read()).decode("utf-8")
 
+
 def generate_summary_charts_html(data):
-    compliant_data = [row for row in data if all(row[f"{area}_required_met"] >= row[f"{area}_required_total"] for area in TAG_AREAS)]
+    compliant_data = [row
+                      for area in TAG_AREAS
+                      for row in data if row[f"{area}_group_compliant"] or row[f"{area}_res_compliant"]]
     non_compliant_data = [row for row in data if row not in compliant_data]
 
     compliant_pie = create_pie_chart_base64(compliant_data, "Compliant Resources by Type")
@@ -711,6 +870,7 @@ def generate_summary_charts_html(data):
         <div><h4>Compliant</h4><img class='responsive-chart' src='data:image/png;base64,{compliant_pie}'/></div>
         <div><h4>Non-Compliant</h4><img class='responsive-chart' src='data:image/png;base64,{non_compliant_pie}'/></div>
     """
+
 
 def generate_summary_html(data):
     charts_html = generate_summary_charts_html(data)
@@ -724,28 +884,37 @@ def generate_summary_html(data):
             <div class="tag-usage">{tags_summary_html}</div>
         </div>"""
 
+
 def generate_cards_html(data):
-    card_summary = {area: {"required": TAG_AREAS[area]["required"], "compliant": 0, "non_compliant": 0} for area in TAG_AREAS}
-    for row in data:
-        for area in TAG_AREAS:
-            if row[f"{area}_required_met"] >= row[f"{area}_required_total"]:
-                card_summary[area]["compliant"] += 1
-            else:
-                card_summary[area]["non_compliant"] += 1
+    card_summary = {
+        area: {
+            "required": TAG_AREAS[area]["required"],
+            COMPLIANT: 0,
+            NON_COMPLIANT: 0
+        }
+        for area in TAG_AREAS
+    }
+
+    for area in TAG_AREAS:
+        card_summary[area][COMPLIANT] = sum(1 for row in data if row[f"{area}_group_compliant"] or row[f"{area}_res_compliant"])
+        card_summary[area][NON_COMPLIANT] = sum(1 for row in data
+                                                if (not row['resourceId'] and not row[f"{area}_group_compliant"])
+                                                or (row['resourceId'] and not row[f"{area}_res_compliant"]))
 
     return "".join(f"""
         <div class='card'>
             <h3>{area}</h3>
             <ul>{''.join(f'<li>{tag}</li>' for tag in values['required'])}</ul>
-            <span class='card-compliance'>{(values['compliant']/values['non_compliant'])*100}%</span>
+            <span class='card-compliance'>{(values[COMPLIANT]/values[NON_COMPLIANT])*100}%</span>
             <p class='card-summary'>(Compliant/Non-compliant):
-                <span style='color:green'>{values['compliant']}</span> /
-                <span style='color:red'>{values['non_compliant']}</span>
+                <span style='color:green'>{values[COMPLIANT]}</span> /
+                <span style='color:red'>{values[NON_COMPLIANT]}</span>
             </p>
         </div>
     """ for area, values in card_summary.items())
 
-def get_flattened_resource_data():
+
+def get_flattened_resource_data(filter: Filter):
     credential = AzureCliCredential()
     subscription_client = SubscriptionClient(credential)
 
@@ -755,6 +924,10 @@ def get_flattened_resource_data():
     for sub in subscription_client.subscriptions.list():
         sub_id = sub.subscription_id
         sub_name = sub.display_name
+
+        if not filter.any_subscription(sub_name) or not filter.any_text(sub_name):
+            continue;
+
         print(f"\n🔍 Scanning subscription: {sub_name} ({sub_id})")
 
         try:
@@ -773,6 +946,10 @@ def get_flattened_resource_data():
             rg_name = rg.name
             rg_location = rg.location
             rg_tags = rg.tags or {}
+
+            if not filter.any_group(rg_name) or not filter.any_text(rg_name):
+                continue
+
             print(f"  - Resource Group: {rg_name}")
 
             try:
@@ -781,54 +958,95 @@ def get_flattened_resource_data():
                 skipped_items.append(f"Subscription: {sub_id} - Resource Group: {rg_name} - Resources - ERROR: {e.message}")
                 continue
 
-            for resource in resources:
-                tags = resource.tags or {}
-                resource_record = {
-                    "subscriptionId": sub_id,
-                    "subscriptionName": sub_name,
-                    "resourceGroupName": rg_name,
-                    "resourceGroupLocation": rg_location,
-                    "resourceGroupTags": json.dumps(rg_tags),
-                    "resourceId": resource.id,
-                    "resourceName": resource.name,
-                    "resourceType": resource.type,
-                    "resourceLocation": resource.location,
-                    "resourceTags": json.dumps(tags)
-                }
+            resource_record = {
+                "subscriptionId": sub_id,
+                "subscriptionName": sub_name,
+                "resourceGroupId": rg.id,
+                "resourceGroupName": rg_name,
+                "resourceGroupLocation": rg_location,
+                "resourceGroupTags": json.dumps(rg_tags),
+                "resourceId": "",
+                "resourceName": "",
+                "resourceType": "",
+                "resourceLocation": "",
+                "resourceTags": "",
+            }
 
+            if not resources:
                 for area in TAG_AREAS:
-                    result = check_area_compliance(tags, area)
-
-                    resource_record[f"{area}_required_met"] = result["required_met"]
-                    resource_record[f"{area}_required_total"] = result["required_total"]
-                    resource_record[f"{area}_optional_met"] = result["optional_met"]
-                    resource_record[f"{area}_optional_total"] = result["optional_total"]
-                    resource_record[f"{area}_required_missing"] = "; ".join(result["required_missing"])
-                    resource_record[f"{area}_optional_missing"] = "; ".join(result["optional_missing"])
+                    group_compliance = check_tag_compliance(rg_tags, area)
+                    resource_record[f"{area}_group_met"] = group_compliance['required_met']
+                    resource_record[f"{area}_group_missed"] = group_compliance['required_missed']
+                    resource_record[f"{area}_group_missing"] = group_compliance['required_missing']
+                    resource_record[f"{area}_group_compliant"] = group_compliance['required_met']>=group_compliance['total_required']
+                    resource_record[f"{area}_res_met"] = "0"
+                    resource_record[f"{area}_res_missed"] = "0"
+                    resource_record[f"{area}_res_missing"] = ""
+                    resource_record[f"{area}_res_compliant"] = False
 
                 flat_data.append(resource_record)
+            else:
+                for resource in resources:
+                    if not filter.any_resource(resource.name) or not filter.any_text(resource.name):
+                        continue
+
+                    tags = resource.tags or {}
+                    resource_record = {
+                        "subscriptionId": sub_id,
+                        "subscriptionName": sub_name,
+                        "resourceGroupId": rg.id,
+                        "resourceGroupName": rg_name,
+                        "resourceGroupLocation": rg_location,
+                        "resourceGroupTags": json.dumps(rg_tags),
+                        "resourceId": resource.id,
+                        "resourceName": resource.name,
+                        "resourceType": resource.type,
+                        "resourceLocation": resource.location,
+                        "resourceTags": json.dumps(tags),
+                    }
+
+                    for area in TAG_AREAS:
+                        group_compliance = check_tag_compliance(rg_tags, area)
+                        tag_compliance = check_tag_compliance(tags, area)
+
+                        resource_record[f"{area}_group_met"] = group_compliance['required_met']
+                        resource_record[f"{area}_group_missed"] = group_compliance['required_missed']
+                        resource_record[f"{area}_group_missing"] = group_compliance['required_missing']
+                        resource_record[f"{area}_group_compliant"] = group_compliance['required_met']>=group_compliance['total_required']
+                        resource_record[f"{area}_res_met"] = tag_compliance['required_met']
+                        resource_record[f"{area}_res_missed"] = tag_compliance['required_missed']
+                        resource_record[f"{area}_res_missing"] = tag_compliance['required_missing']
+                        resource_record[f"{area}_res_compliant"] = tag_compliance['required_met']>=tag_compliance['total_required']
+
+                    flat_data.append(resource_record)
 
     return flat_data, skipped_items
 
-def write_outputs(data, skipped):
-    with open("azure_resource_compliance_detailed.csv", mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.DictWriter(file, fieldnames=data[0].keys())
-        writer.writeheader()
-        writer.writerows(data)
 
-    with open("azure_skipped_items.log", "w") as f:
-        for line in skipped:
-            f.write(line + "\n")
+def write_outputs(data, skipped, args):
 
-    print("✅ Outputs saved: azure_resource_compliance_detailed.csv and azure_skipped_items.log")
+    if len(data) == 0:
+        print(f"ℹ️  No outputs saved. The filter '{args.filter}' may have excluded many resources.")
+    else:
+        with open(args.output, mode='w', newline='', encoding='utf-8') as file:
+            writer = csv.DictWriter(file, fieldnames=data[0].keys())
+            writer.writeheader()
+            writer.writerows(data)
 
-def load_scan_file(filename):
+        with open("azure_skipped_items.log", "w") as f:
+            for line in skipped:
+                f.write(line + "\n")
+
+        print(f"✅ Outputs saved to {args.output} and azure_skipped_items.log")
+
+
+def load_scan_file(filename, filter: Filter):
     try:
         with open(filename, mode='r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             return [
                 row for row in reader
-                if not args.filter or args.filter.lower() in row['resourceName'].lower()
+                if filter.any(row['resourceName'].lower())
             ]
     except FileNotFoundError:
         print(f"[ERROR] File not found: {filename}")
@@ -841,18 +1059,23 @@ def write_report(content, filename):
 
     print(f"✅ HTML report saved to {filename}")
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate Azure tag compliance report.")
     parser.add_argument("-i", "--input", required=False, help="Specifies the input CSV file generated by a previous scan. Using this flag will not perform a new scan against the cloud provider resources.")
-    parser.add_argument("-f", "--filter", help="Optional filter to only include resources whose name contains this substring.")
+    parser.add_argument("-f", "--filter", type=str, help='Filter in the form: key=value [key=value ...]')
+    parser.add_argument("-o", "--output", required=False, default="azure_resource_compliance_scan.csv", help="Specifies the file name to write scan results to (CSV format)")
 
     args = parser.parse_args()
 
-    if args.input:
-        resources = load_scan_file(args.input)
-    else:
-        resources, skipped = get_flattened_resource_data()
-        write_outputs(resources, skipped)
+    filter = Filter(args.filter)
 
-    html = generate_html_report(resources)
-    write_report(html, "scan_results.html")
+    if args.input:
+        resources = load_scan_file(args.input, filter)
+    else:
+        resources, skipped = get_flattened_resource_data(filter)
+        write_outputs(resources, skipped, args)
+
+    if len(resources)> 0:
+        html = generate_html_report(resources, filter)
+        write_report(html, "scan_results.html")
