@@ -1,6 +1,7 @@
 resource "random_password" "pfx" {
   length  = 30
   special = true
+  override_special = "!@#$^*"
 }
 
 locals {
