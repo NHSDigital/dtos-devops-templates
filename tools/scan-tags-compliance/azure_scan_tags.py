@@ -6,6 +6,7 @@ from dataclasses import dataclass, fields
 from datetime import datetime
 from io import BytesIO
 import json
+import os
 import sys
 from typing import Counter, List, Optional
 from azure.identity import AzureCliCredential
@@ -79,7 +80,7 @@ class Filter:
 
         return " | ".join(parts)
 
-
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 MAX_PILL_LENGTH = 50
 COMPLIANT = "Compliant"
 NON_COMPLIANT = "Non-Compliant"
@@ -1022,22 +1023,38 @@ def get_flattened_resource_data(filter: Filter):
 
     return flat_data, skipped_items
 
+def get_output_folder(source) -> str:
+    if os.path.dirname(source):
+        output_path = source
+    else:
+        output_dir = os.path.join(SCRIPT_DIR, "scan-results")
+        os.makedirs(output_dir, exist_ok=True)
+        output_path = os.path.join(output_dir, source)
+
+    # Ensure the output directory exists
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    return output_path
 
 def write_outputs(data, skipped, args):
+    folder = get_output_folder(args.output)
 
+    # Write main output CSV
     if len(data) == 0:
         print(f"ℹ️  No outputs saved. The filter '{args.filter}' may have excluded many resources.")
     else:
-        with open(args.output, mode='w', newline='', encoding='utf-8') as file:
+        with open(folder, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.DictWriter(file, fieldnames=data[0].keys())
             writer.writeheader()
             writer.writerows(data)
 
-        with open("azure_skipped_items.log", "w") as f:
+        # Write skipped log to same directory as output
+        skipped_log_path = os.path.join(os.path.dirname(folder), "azure_skipped_items.log")
+        with open(skipped_log_path, "w") as f:
             for line in skipped:
                 f.write(line + "\n")
 
-        print(f"✅ Outputs saved to {args.output} and azure_skipped_items.log")
+    print(f"✅ Outputs saved to {folder} and {skipped_log_path}")
 
 
 def load_scan_file(filename, filter: Filter):
@@ -1054,11 +1071,12 @@ def load_scan_file(filename, filter: Filter):
 
 
 def write_report(content, filename):
-    with open(filename, "w", encoding="utf-8") as f:
+    folder = get_output_folder(filename)
+
+    with open(folder, "w", encoding="utf-8") as f:
         f.write(content)
 
     print(f"✅ HTML report saved to {filename}")
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate Azure tag compliance report.")
