@@ -161,16 +161,6 @@ class ResourceScanner:
     def get_resource(self, resource_id) -> ResourceRecord:
         return next((item for key, item in self._resources.items() if item.id == resource_id), None)
 
-
-
-    def count_compliant_for_area(self, area_name, group_id):
-        resources = self.get_resources_by_group(group_id)
-        return sum(1 for res in resources.values() if res.is_compliant_for_area(area_name))
-
-    def count_non_compliant_for_area(self, area_name, group_id):
-        resources = self.get_resources_by_group(group_id)
-        return sum(1 for res in resources if not res.is_compliant_for_area(area_name))
-
     def get_resources_by_group(self, group_id: str) -> list[ResourceRecord]:
         return [
             item for res_id, item in self._resources.items()

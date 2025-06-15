@@ -1,7 +1,7 @@
 import json
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Counter
+from typing import Counter
 
 from resource_compliance_areas import ComplianceAreas, ComplianceValues
 from resource_scanner import ResourceScanner, ResourceRecord
@@ -29,7 +29,7 @@ class TagCoverage:
     stats_counter: Counter
     tag_display_names: dict
     sorted_tags : list
-    required_tags: list
+    required_tags: set
     total_resources: int
 
 
@@ -109,6 +109,12 @@ class ResourceComplianceChecker:
 
     def count_non_compliant_resources_by_area(self, area_name) -> int:
         return len(self.non_compliant_areas[area_name])
+
+    def count_compliant_resources_by_parent(self, area_name, res_id):
+        return len([res for res in self.compliant_areas[area_name] if res.group_id == res_id])
+
+    def count_non_compliant_resources_by_parent(self, area_name, res_id):
+        return len([res for res in self.non_compliant_areas[area_name] if res.group_id == res_id])
 
     def get_resources_by_area(self, area_name: str) -> list[ResourceRecord]:
         return [item for item in (self.compliant_areas[area_name] + self.non_compliant_areas[area_name]).values()]
