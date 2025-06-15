@@ -15,8 +15,10 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    areas = ComplianceAreas()
+
     res_filter = ResourceFilter(args.filter)
-    res_compliance = ResourceComplianceChecker()
+    res_compliance = ResourceComplianceChecker(areas)
 
     scanner = ResourceScanner(res_filter)
     if args.input:
@@ -24,9 +26,8 @@ if __name__ == "__main__":
     else:
         scanner.scan_resources()
 
-    areas = ComplianceAreas()
     print(f"📊 Calculating compliance across {len(areas)} areas...")
-    res_compliance.check_compliance(scanner, areas)
+    res_compliance.check_compliance(scanner)
 
     if len(scanner) > 0:
         print('📝 Generating HTML report...')

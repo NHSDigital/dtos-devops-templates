@@ -51,17 +51,6 @@ class ResourceRecord:
         return area_name in self.compliance and self.compliance[area_name].is_compliant
 
 
-def get_tags_dict(tags) -> dict:
-    """Ensures the supplied tags is returned as a dictionary."""
-    if isinstance(tags, str):
-        try:
-            return json.loads(tags)
-        except json.JSONDecodeError:
-            return {}
-    elif isinstance(tags, dict):
-        return tags
-    else:
-        return {}
 
 class ResourceScanner:
     def __init__(self, res_filter: ResourceFilter):
@@ -172,20 +161,7 @@ class ResourceScanner:
     def get_resource(self, resource_id) -> ResourceRecord:
         return next((item for key, item in self._resources.items() if item.id == resource_id), None)
 
-    def count_all_resource_tags(self) -> tuple[Counter, dict[str, str]]:
-        """Counts tags applied to groups and resources, case-insensitively,
-        and returns display mapping for original casing."""
-        counter = Counter()
-        display_names = {}
 
-        for res in (self._groups | self._resources).values():
-            for tag in get_tags_dict(res.tags):
-                lower_tag = tag.lower().strip()
-                counter[lower_tag] += 1
-                if lower_tag not in display_names:
-                    display_names[lower_tag] = tag
-
-        return counter, display_names
 
     def count_compliant_for_area(self, area_name, group_id):
         resources = self.get_resources_by_group(group_id)
@@ -200,6 +176,7 @@ class ResourceScanner:
             item for res_id, item in self._resources.items()
             if item.group_id == group_id
         ]
+
 
     def is_fully_compliant_for_area(self, group_resource: ResourceRecord, area_name)-> bool:
         """Returns True is this resource is compliant with the specified area,

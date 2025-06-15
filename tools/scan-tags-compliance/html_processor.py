@@ -443,14 +443,11 @@ def create_pie_chart_base64(data: list[ResourceRecord], title) -> str:
 
     return base64.b64encode(buf.read()).decode("utf-8")
 
-def generate_compliance_count_html(compliance_type, resources: list[ResourceRecord]):
-    compliant = sum(1 for item in resources if item.is_fully_compliant)
-    non_compliant = len(resources) - compliant
-
+def generate_compliance_count_html(compliance_type, compliant_count, non_compliant_count):
     if compliance_type == COMPLIANT:
-        return f"""(<span style="color:green">{compliant}</span>)"""
+        return f"""(<span style="color:green">{compliant_count}</span>)"""
 
-    return f"""(<span style="color:red">{non_compliant}</span>)"""
+    return f"""(<span style="color:red">{non_compliant_count}</span>)"""
 
 
 class HtmlReportBuilder:
@@ -550,27 +547,13 @@ class HtmlReportBuilder:
         return html
 
     def _generate_tag_summary_html(self):
-        res_tag_counter, display_names = self.scanner.count_all_resource_tags()
-        total_resources = len(self.scanner)
+        coverage = self.compliance_check.get_tag_coverage()
+
         tag_rows = ""
-
-        # add compliance tags too, but exclude them if they already in the counter
-        required_tag_set = {req.lower() for area in self.areas for req in area.required}
-        res_tag_counter.update({tag: 0 for tag in required_tag_set - res_tag_counter.keys()})
-
-        display_names.update({req.lower(): req for area in self.areas for req in area.required})
-
-        # we want to sort the counted tags by count, then name so's it's easier to read for the
-        # same count value. item[1] is the count value, and item[0] is the name
-        sorted_tags = sorted(
-            res_tag_counter.items(),
-            key=lambda item: (-item[1], item[0])
-        )
-
-        for lower_tag, count in sorted_tags:
-            display = display_names[lower_tag]
-            percentage = 0 if not total_resources else (count / total_resources * 100)
-            info_icon = "" if lower_tag not in required_tag_set else " <span title='This tag is required' class='required-tag'>required</span>"
+        for lower_tag, count in coverage.sorted_tags:
+            display = coverage.tag_display_names[lower_tag]
+            percentage = 0 if not coverage.total_resources else (count / coverage.total_resources * 100)
+            info_icon = "" if lower_tag not in coverage.required_tags else " <span title='This tag is required' class='required-tag'>required</span>"
             tag_rows += (
                 f"<tr><td>🏷️ {display}{info_icon}</td>"
                 f"<td>{count} ({percentage:.1f}%)</td></tr>"
@@ -618,54 +601,43 @@ class HtmlReportBuilder:
         return html
 
     def _generate_groups_html(self, compliance_status, groups):
-        html = f"<div><h3>{compliance_status} ({len(groups)})</h3>"
-
         if not groups:
-            return f"""
-                {html}
-                No matching items for this status.
-                </div>
-                """
+            return f"<div><h3>{compliance_status} (0)</h3>No matching items for this status.</div>"
 
-        for group in groups:
+        html_parts = [f"<div><h3>{compliance_status} ({len(groups)})</h3>"]
+
+        for group in sorted(groups, key=lambda grp: grp.name.lower().strip()):
             tag_pills_html = generate_tag_pills_html(group.tags)
-
             resources = self.scanner.get_resources_by_group(group.id)
+
+            compliant_count = sum(item.is_fully_compliant for item in resources)
+            non_compliant_count = len(resources) - compliant_count
+
+            count_html = generate_compliance_count_html(compliance_status, compliant_count, non_compliant_count)
             resource_table_html = self._generate_resource_rows_html(resources)
-            count_html = generate_compliance_count_html(compliance_status, resources)
 
-            html += f"""
-                <div class='collapsible'>
-                    <div class='collapsible-header'>📦{group.name}
-                        <span style="margin-left: 10px; font-weight: normal;">{count_html}</span>
-                        {tag_pills_html}
-                    </div>
-                    <div class='collapsible-body'>{resource_table_html}</div>
-                </div>"""
+            html_parts.append(f"""
+                       <div class='collapsible'>
+                           <div class='collapsible-header'>📦{group.name}
+                               <span style="margin-left: 10px; font-weight: normal;">{count_html}</span>
+                               {tag_pills_html}
+                           </div>
+                           <div class='collapsible-body'>{resource_table_html}</div>
+                       </div>
+                   """)
 
-        html += "</div>"
+        html_parts.append("</div>")
+        return "".join(html_parts)
 
-        return html
+    def _generate_subscription_tag_areas_html(self, compliant_tags: list[ResourceRecord], non_compliant_tags: list[ResourceRecord]) -> str:
+        rows = "".join(
+            f"<tr><td>{area.name}</td>"
+            f"<td style='color:green'>{sum(self.scanner.count_compliant_for_area(area.name, res.id) for res in compliant_tags)}</td>"
+            f"<td style='color:red'>{sum(self.scanner.count_non_compliant_for_area(area.name, res.id) for res in non_compliant_tags)}</td></tr>"
+            for area in self.areas
+        )
+        return f"<table><tr><th>Tag Area</th><th>Compliant</th><th>Non-Compliant</th></tr>{rows}</table>"
 
-    def _generate_subscription_tag_areas_html(self, compliant_tags: list[ResourceRecord], non_compliant_tags: list[ResourceRecord]):
-        html = "<table><tr><th>Tag Area</th><th>Compliant</th><th>Non-Compliant</th></tr>"
-
-        for area in self.areas:
-            compliant = sum(
-                self.scanner.count_compliant_for_area(area.name, res.id)
-                for res in compliant_tags
-            )
-
-            non_compliant = sum(
-                self.scanner.count_non_compliant_for_area(area.name, res.id)
-                for res in non_compliant_tags
-            )
-
-            html += f"<tr><td>{area.name}</td><td style='color:green'>{compliant}</td><td style='color:red'>{non_compliant}</td></tr>"
-
-        html += "</table>"
-
-        return html
 
     def _generate_summary_charts_html(self):
         compliant_pie = create_pie_chart_base64(self.compliance_check.compliant_resources, "Compliant Resources by Type")
@@ -689,35 +661,46 @@ class HtmlReportBuilder:
             </div>"""
 
     def _generate_cards_html(self):
-        html = ""
-        for area in self.areas:
-            compliant_count = self.compliance_check.count_compliant_resources_by_area(area.name)
-            non_compliant_count = self.compliance_check.count_non_compliant_resources_by_area(area.name)
+        def render_card(name, tags, compliant, non_compliant):
+            total = compliant + non_compliant
+            percent = (compliant / total) * 100 if total else 0
+            tag_list = ''.join(f'<li>{tag}</li>' for tag in tags)
 
-            area_tags = self.areas[area.name].required
-            html += "".join(f"""
-                <div class='card'>
-                    <h3>{area.name}</h3>
-                    <ul>{''.join(f'<li>{tag}</li>' for tag in area_tags)}</ul>
-                    <span class='card-complianceCheck'>{(compliant_count/non_compliant_count)*100}%</span>
-                    <p class='card-summary'>(Compliant/Non-compliant):
-                        <span style='color:green'>{compliant_count}</span> /
-                        <span style='color:red'>{non_compliant_count}</span>
-                    </p>
-                </div>
-            """)
+            return f"""
+            <div class='card'>
+                <h3>{name}</h3>
+                <ul>{tag_list}</ul>
+                <span class='card-complianceCheck'>{percent:.1f}%</span>
+                <p class='card-summary'>(Compliant/Non-compliant):
+                    <span style='color:green'>{compliant}</span> /
+                    <span style='color:red'>{non_compliant}</span>
+                </p>
+            </div>
+            """
 
-        return html
+        return ''.join(
+            render_card(
+                area.name,
+                self.areas[area.name].required,
+                self.compliance_check.count_compliant_resources_by_area(area.name),
+                self.compliance_check.count_non_compliant_resources_by_area(area.name)
+            )
+            for area in self.areas
+        )
 
     def _generate_sidebar_html(self):
-        unique_subs = sorted({(sub.name, sub.id) for sub in self.scanner.subscriptions})
-        sidebar_links_html = ''.join(f"<a href='javascript:showSection(\"sub-{subs_id}\")'>{subs_name}</a>"
-                                     for subs_name, subs_id in unique_subs)
+        subs = sorted({(sub.name, sub.id) for sub in self.scanner.subscriptions})
+
+        links = [
+            f"<a href='javascript:showSection(\"sub-{sub_id}\")'>{sub_name}</a>"
+            for sub_name, sub_id in subs
+        ]
 
         return f"""
             <div class='sidebar'>
                 <h3>Menu</h3>
                 <a href='javascript:showSection("summary")' style='margin-bottom: 10px;'><strong>📊 Summary</strong></a>
                 <strong style='display:block;margin-bottom:20px'>Subscriptions</strong>
-                {sidebar_links_html}
-            </div>"""
+                {''.join(links)}
+            </div>
+        """
