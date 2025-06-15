@@ -195,12 +195,6 @@ class ResourceScanner:
         resources = self.get_resources_by_group(group_id)
         return sum(1 for res in resources if not res.is_compliant_for_area(area_name))
 
-    def get_resources_by_area(self, area_name):
-        return [
-            item for item in (self._groups | self._resources).values()
-            if item.compliance and area_name in item.compliance
-        ]
-
     def get_resources_by_group(self, group_id: str) -> list[ResourceRecord]:
         return [
             item for res_id, item in self._resources.items()

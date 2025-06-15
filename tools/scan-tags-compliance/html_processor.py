@@ -7,7 +7,7 @@ from pathlib import Path
 from matplotlib import pyplot as plt
 
 from resource_compliance_areas import COMPLIANT, NON_COMPLIANT
-from resource_compliance_checker import ComplianceAreas
+from resource_compliance_checker import ComplianceAreas, ResourceComplianceChecker
 from resource_scanner import ResourceScanner, ResourceRecord
 from results_writer import get_output_folder
 
@@ -456,9 +456,10 @@ def generate_compliance_count_html(compliance_type, resources: list[ResourceReco
 class HtmlReportBuilder:
     """Generates an HTML report based on the provided list of scanned resources"""
 
-    def __init__(self, scanner: ResourceScanner, compliance_areas: ComplianceAreas):
+    def __init__(self, scanner: ResourceScanner, compliance_areas: ComplianceAreas, compliance_check: ResourceComplianceChecker):
         self.scanner = scanner
         self.areas = compliance_areas
+        self.compliance_check = compliance_check
         self.content = ""
 
     # 'Public' methods
@@ -590,24 +591,17 @@ class HtmlReportBuilder:
         """
 
     def _generate_subscriptions_html(self) -> str:
-        compliant_groups_by_sub = defaultdict(list)
-        non_compliant_groups_by_sub = defaultdict(list)
-
-        for group in self.scanner.groups:
-            if group.is_fully_compliant and self.scanner.is_fully_compliant_for_group(group.id):
-                compliant_groups_by_sub[group.subscription_id].append(group)
-            else:
-                non_compliant_groups_by_sub[group.subscription_id].append(group)
 
         html = ""
         for subscription in self.scanner.subscriptions:
             sub_id = subscription.id
 
-            compliant_groups = compliant_groups_by_sub[sub_id]
-            non_compliant_groups = non_compliant_groups_by_sub[sub_id]
-
+            compliant_groups = self.compliance_check.compliant_groups_by_subscription(sub_id)
             compliant_res_html = self._generate_groups_html(COMPLIANT, compliant_groups)
+
+            non_compliant_groups = self.compliance_check.non_compliant_groups_by_subscription(sub_id)
             non_compliant_res_html = self._generate_groups_html(NON_COMPLIANT, non_compliant_groups)
+
             tag_areas_html = self._generate_subscription_tag_areas_html(compliant_groups, non_compliant_groups)
 
             html += f"""
@@ -674,17 +668,8 @@ class HtmlReportBuilder:
         return html
 
     def _generate_summary_charts_html(self):
-        compliant_data =[]
-        non_compliant_data =[]
-
-        for name, resource in self.scanner:
-            if resource.is_fully_compliant:
-                compliant_data.append(resource)
-            else:
-                non_compliant_data.append(resource)
-
-        compliant_pie = create_pie_chart_base64(compliant_data, "Compliant Resources by Type")
-        non_compliant_pie = create_pie_chart_base64(non_compliant_data, "Non-Compliant Resources by Type")
+        compliant_pie = create_pie_chart_base64(self.compliance_check.compliant_resources, "Compliant Resources by Type")
+        non_compliant_pie = create_pie_chart_base64(self.compliance_check.non_compliant_resources, "Non-Compliant Resources by Type")
 
         return f"""
             <div><h4>Compliant</h4><img class='responsive-chart' src='data:image/png;base64,{compliant_pie}'/></div>
@@ -706,14 +691,8 @@ class HtmlReportBuilder:
     def _generate_cards_html(self):
         html = ""
         for area in self.areas:
-            resources = self.scanner.get_resources_by_area(area.name)
-
-            compliant_count = sum(1
-                for resource in resources
-                if resource.compliance[area.name].is_compliant)
-            non_compliant_count = sum(1
-                for resource in resources
-                if not resource.compliance[area.name].is_compliant)
+            compliant_count = self.compliance_check.count_compliant_resources_by_area(area.name)
+            non_compliant_count = self.compliance_check.count_non_compliant_resources_by_area(area.name)
 
             area_tags = self.areas[area.name].required
             html += "".join(f"""

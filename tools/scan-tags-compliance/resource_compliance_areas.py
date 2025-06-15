@@ -48,5 +48,8 @@ class ComplianceAreas:
             for key, value in self._areas.items()
         )
 
+    def __len__(self) -> int:
+        return len(self._areas)
+
     def __getitem__(self,key) -> SimpleNamespace:
         return SimpleNamespace(name=key, **self._areas[key])

@@ -25,11 +25,16 @@ if __name__ == "__main__":
         scanner.scan_resources()
 
     areas = ComplianceAreas()
+    print(f"📊 Calculating compliance across {len(areas)} areas...")
     res_compliance.check_compliance(scanner, areas)
-    write_outputs(scanner, args.output)
 
     if len(scanner) > 0:
-        generator = HtmlReportBuilder(scanner, areas)
+        print('📝 Generating HTML report...')
+
         filter_val = res_filter.to_friendly()
+
+        generator = HtmlReportBuilder(scanner, areas, res_compliance)
         generator.generate(scanner.scan_datetime, scanner.scan_user, filter_val)
         generator.save("scan_results.html")
+
+    write_outputs(scanner, args.output)
