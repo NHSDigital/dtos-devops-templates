@@ -3,5 +3,10 @@
     "MD013": false,
     "MD024": { "siblings_only": true },
     "MD033": false
-  }
+  },
+  "python.analysis.extraPaths": [
+    "./tools/scan-tags-compliance",
+    "./tools/scan-tags-compliance/resource_",
+    "./tools/scan-tags-compliance/modules"
+  ]
 }

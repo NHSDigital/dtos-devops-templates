@@ -85,3 +85,9 @@ scripts/azure/azure_resource_compliance_scan.csv
 azure_resource_compliance_scan.csv
 azure_skipped_items.log
 scan_results.html
+.idea/.gitignore
+.idea/dtos-devops-templates.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/inspectionProfiles/profiles_settings.xml
