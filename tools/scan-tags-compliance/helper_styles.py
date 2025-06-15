@@ -363,6 +363,8 @@ def build_html_scripts():
                 cell.addEventListener("mouseenter", () => {
                     tooltip.innerHTML = inner.innerHTML;
                     tooltip.style.opacity = "1";
+                    tooltip.style.display = "block";
+                    tooltip.style.visibility = "visible";
 
                     const rect = cell.getBoundingClientRect();
                     const scrollY = window.scrollY || document.documentElement.scrollTop;
@@ -379,6 +381,10 @@ def build_html_scripts():
 
                 cell.addEventListener("mouseleave", () => {
                     tooltip.style.opacity = "0";
+                    tooltip.style.display = "none";
+                    tooltip.style.visibility = "hidden";
+
+                    //setTimeout(() => { tooltip.style.display = "none"; }, 200);
                 });
             });
         });

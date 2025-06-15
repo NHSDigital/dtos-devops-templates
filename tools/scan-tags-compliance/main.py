@@ -33,7 +33,6 @@ if __name__ == "__main__":
         print('📝 Generating HTML report...')
 
         filter_val = res_filter.to_friendly()
-
         generator = HtmlReportBuilder(scanner, areas, res_compliance)
         generator.generate(scanner.scan_datetime, scanner.scan_user, filter_val)
         generator.save("scan_results.html")

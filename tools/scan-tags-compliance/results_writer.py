@@ -1,4 +1,7 @@
+import base64
 import csv
+import gzip
+import json
 import os
 
 from resource_scanner import ResourceScanner
@@ -18,20 +21,12 @@ def get_output_folder(source) -> str:
 
     return output_path
 
-def write_outputs(scanner: ResourceScanner, output_filename):
-    """Writes all scanned resources and their complianceCheck status to a comma-separated file"""
 
-    def to_dict(x):
-        return vars(x) if hasattr(x, "__dict__") else x
+def to_dict(x):
+    return vars(x) if hasattr(x, "__dict__") else x
 
-    folder = get_output_folder(output_filename)
-
-    # Write main output CSV
-    if len(scanner) == 0:
-        print(f"ℹ️  No outputs saved because either no resources were scanned or the current filter returned no resources.")
-        return
+def build_lines(scanner):
     lines = []
-
     for name, resource in scanner:
         areas = resource.compliance
         flat_areas = {
@@ -39,8 +34,21 @@ def write_outputs(scanner: ResourceScanner, output_filename):
             for area, ns in areas.items()
             for k, v in to_dict(ns).items()
         }
-        csv_row = { **vars(resource), **flat_areas}
+        csv_row = {**vars(resource), **flat_areas}
         lines.append(csv_row)
+
+    return lines
+
+def write_outputs(scanner: ResourceScanner, output_filename):
+    """Writes all scanned resources and their complianceCheck status to a comma-separated file"""
+
+    folder = get_output_folder(output_filename)
+
+    if len(scanner) == 0:
+        print(f"ℹ️  No outputs saved because either no resources were scanned or the current filter returned no resources.")
+        return
+
+    lines = build_lines(scanner)
 
     csv_header = to_dict(lines[0])
     with open(folder, mode='w', newline='', encoding='utf-8') as file:
@@ -55,5 +63,3 @@ def write_outputs(scanner: ResourceScanner, output_filename):
             f.write(line + "\n")
 
     print(f"✅ Scanned resource outputs saved to '{folder}'. Skipped resource outputs saved to '{skipped_log_path}'")
-
-

@@ -25,7 +25,7 @@ class HtmlReportBuilder:
         self.content = ""
 
     # 'Public' methods
-    def generate(self, scan_datetime, scan_user, filter_used: str):
+    def generate(self, scan_datetime, scan_user, filter_used: str, scanned_json: str = None):
         self.content = f"""<!DOCTYPE html>
             <html lang="en">
             <head>
