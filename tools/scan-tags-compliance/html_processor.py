@@ -1,4 +1,4 @@
-from pathlib import Path
+import datetime
 
 from helper_charts import create_pie_chart_base64
 from helper_styles import build_html_styles, build_html_scripts
@@ -16,30 +16,13 @@ class HtmlReportBuilder:
 
     # 'Public' methods
     def generate(self, scan_datetime, scan_user, filter_used: str, scanned_json: str = None):
-        self.content = f"""<!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-                {build_html_styles()}
-                {build_html_scripts()}
-            </head>
-            <body>
-                <div class='title'>
-                    <h2>Azure Tag Compliance Scan</h2>
-                    <span>
-                        Scan completed on: 📅 {scan_datetime} by 👤 {scan_user} and 🔍 filtered by {filter_used}
-                    </span>
-                </div>
-                <div class='container'>
-                    {self._generate_sidebar_html()}
-                    <div class='main' id='content_area'>
-                        {self._generate_summary_html()}
-                        {self._generate_subscriptions_html(self.areas.area_names)}
-                    </div>
-                </div>
-            </body>
-            </html>
-        """
+        self.content = build_landing_page(
+            scan_datetime, scan_user, filter_used,
+            styles=build_html_styles(),
+            scripts=build_html_scripts(),
+            sidebar=self._generate_sidebar_html(),
+            summary=self._generate_summary_html(),
+            subscriptions=self._generate_subscriptions_html(self.areas.area_names))
 
     def save(self, filename):
         """Writes the results of the generated content to the specified output file."""
@@ -94,7 +77,7 @@ class HtmlReportBuilder:
 
     def _generate_subscription_tag_summary_html(self, groups: CompliantResources) -> str:
         area_compliance = self.compliance_check.count_compliance_by_areas(groups)
-        area_tag_compliance = build_subscription_tag_compliance_rows(self.areas, area_compliance)
+        area_tag_compliance = build_subscription_tag_compliance_rows(self.areas.area_names, area_compliance)
         return build_subscription_tag_summary(area_tag_compliance)
 
 

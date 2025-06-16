@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  {stylesheets}
+  {scripts}
+</head>
+<body>
+<div class='title'>
+  <h2>Azure Tag Compliance Scan</h2>
+  <span>Scan completed on: 📅 {scan_datetime} by 👤 {scan_user} and 🔍 filtered by {filter_used}</span>
+</div>
+<div class='container'>
+  {sidebar}
+  <div class='main' id='content_area'>
+    {overall_summary}
+    {subscriptions}
+  </div>
+</div>
+</body>
+</html>

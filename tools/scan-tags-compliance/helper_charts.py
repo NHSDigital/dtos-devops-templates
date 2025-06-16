@@ -1,8 +1,9 @@
 import base64
-from collections import defaultdict, Counter
+from collections import Counter
 from io import BytesIO
 
 from matplotlib import pyplot as plt
+
 
 def create_pie_chart_base64(points, title) -> str:
     type_counts = Counter(points)

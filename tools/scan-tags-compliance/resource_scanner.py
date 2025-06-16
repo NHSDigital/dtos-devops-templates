@@ -5,7 +5,7 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Iterator, Counter, DefaultDict
+from typing import Iterator, DefaultDict
 
 from azure.core.exceptions import HttpResponseError
 from azure.identity import AzureCliCredential

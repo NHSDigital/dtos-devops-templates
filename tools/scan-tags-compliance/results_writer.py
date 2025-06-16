@@ -1,7 +1,4 @@
-import base64
 import csv
-import gzip
-import json
 import os
 
 from resource_scanner import ResourceScanner
