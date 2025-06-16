@@ -1,5 +1,5 @@
 
-variable "name" {
+variable "policy_name" {
   type        = string
   description = "Policy definition name."
 }
@@ -39,40 +39,43 @@ variable "mode" {
 variable "metadata" {
   type        = map(any)
   default     = {}
-  description = "Metadata for the policy."
+  description = "Optional additional metadata for the policy definition."
+}
+
+variable "policy_conditions"{
+  type        = list(any)
+  default     = []
+  description = <<EOT
+    List of condition objects used in the `if.anyOf` block of the policy rule.
+    If not set, expects a local called `local.policy_conditions` to be used instead.
+  EOT
+}
+
+variable "policy_effect"{
+  type = string
+  description = "The effect to be applied by this policy"
+  validation {
+      condition = contains([
+        "deny", "audit", "modify", "denyAction", "append",
+        "auditIfNotExists", "deployIfNotExists", "disabled"
+      ], var.policy_effect)
+      error_message = "PolicyEffect must be one of: append, audit, auditIfNotExists, deny, denyAction, deployIfNotExists, disabled, modify"
+    }
+}
+
+variable "policy_operations"{
+  type        = list(any)
+  default     = []
+  description = <<EOT
+    List of `then.details.operations` objects used in the policy rule.
+    If not set, expects a local called `local.policy_operations` to be used instead.
+  EOT
 }
 
 variable "parameters" {
   type        = map(any)
   default     = {}
-  description = "Policy parameters."
-}
-
-variable "policy_rule" {
-  type = object({
-    if = any
-    then = object({
-      effect = string
-    })
-  })
-  validation {
-    condition = contains([
-      "deny", "audit", "modify", "denyAction", "append",
-      "auditIfNotExists", "deployIfNotExists", "disabled"
-    ], var.policy_rule.then.effect)
-    error_message = "PolicyEffect must be one of: append, audit, auditIfNotExists, deny, denyAction, deployIfNotExists, disabled, modify"
-  }
-  description = <<EOT
-Azure Policy Rule object. Must follow Microsoft schema:
-{
-  "if": {
-    <condition> | <logical operator> | nested conditions
-  },
-  "then": {
-    "effect": "deny | audit | modify | denyAction | append | auditIfNotExists | deployIfNotExists | disabled"
-  }
-}
-EOT
+  description = "Optional parameters to pass into the policy (used with `policy_rule`)."
 }
 
 variable "policy_type" {

@@ -1,17 +1,10 @@
+
 module "example_policy_definition_deny_public_ip" {
   source       = "../policy-definition"
-  name         = "deny-public-ip"
+  policy_name   = "deny-public-ip"
+  policy_effect = "update"
   display_name = "Deny Public IP"
   description  = "Denies creation of public IP addresses"
-  policy_rule = {
-    if = {
-      field  = "type"
-      equals = "Microsoft.Network/publicIPAddresses"
-    }
-    then = {
-      effect = "deny"
-    }
-  }
   metadata = {
     owner = "platform@nhs.net"
   }
