@@ -1,6 +1,6 @@
 resource "random_password" "pfx" {
-  length  = 30
-  special = true
+  length           = 30
+  special          = true
   override_special = "!@#$^*"
 }
 
@@ -9,14 +9,14 @@ locals {
 
   cname_relative_hostname = (
     var.certificate.dns_cname_zone_name != null
-      ? trim(replace(local.common_name_no_wildcard, var.certificate.dns_cname_zone_name, ""), ".")
-      : null
+    ? trim(replace(local.common_name_no_wildcard, var.certificate.dns_cname_zone_name, ""), ".")
+    : null
   )
 
   private_cname_relative_hostname = (
     var.certificate.dns_private_cname_zone_name != null
-      ? trim(replace(local.common_name_no_wildcard, var.certificate.dns_private_cname_zone_name, ""), ".")
-      : null
+    ? trim(replace(local.common_name_no_wildcard, var.certificate.dns_private_cname_zone_name, ""), ".")
+    : null
   )
 }
 
