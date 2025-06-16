@@ -21,9 +21,6 @@ TAG_AREAS = {
     }
 }
 
-COMPLIANT = "Compliant"
-NON_COMPLIANT = "Non-Compliant"
-
 @dataclass
 class ComplianceValues:
     required_present: str
@@ -38,6 +35,10 @@ class ComplianceValues:
     is_compliant: bool
 
 class ComplianceAreas:
+    @property
+    def area_names(self) -> list[str]:
+        return [item for item in self._areas]
+
     def __init__(self):
         self._areas = TAG_AREAS
         pass

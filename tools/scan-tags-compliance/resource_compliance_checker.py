@@ -6,6 +6,8 @@ from typing import Counter
 from resource_compliance_areas import ComplianceAreas, ComplianceValues
 from resource_scanner import ResourceScanner, ResourceRecord
 
+COMPLIANT = "Compliant"
+NON_COMPLIANT = "Non-Compliant"
 
 def classify_tags(tag_list, resource, required_missing, required_present):
     """Determines the number of required and missing tags from the specified resource's 'tags' property."""
@@ -23,6 +25,44 @@ def classify_tags(tag_list, resource, required_missing, required_present):
             else:
                 required_missing.append(tag)
 
+@dataclass
+class ComplianceCount:
+    compliant: int
+    non_compliant: int
+
+class Group:
+    resource: ResourceRecord
+    children: list[ResourceRecord]
+
+    def __init__(self, resource: ResourceRecord, children: list[ResourceRecord]):
+        self.resource = resource
+        self.children = children
+
+    @property
+    def compliant_count(self)->int:
+        return len([item for item in self.children if item.is_fully_compliant])
+
+    @property
+    def non_compliant_count(self)->int:
+        return len([item for item in self.children if not item.is_fully_compliant])
+
+@dataclass
+class CompliantResources:
+    compliant: list[Group]
+    non_compliant: list[Group]
+
+    def count_compliance_for_area(self, area_name: str) -> tuple[int, int]:
+        compliant = 0
+        non_compliant = 0
+
+        for grp in (self.compliant + self.non_compliant):
+            for child in grp.children:
+                if child.is_compliant_for_area(area_name):
+                    compliant += 1
+                else:
+                    non_compliant += 1
+
+        return compliant, non_compliant
 
 @dataclass
 class TagCoverage:
@@ -84,15 +124,25 @@ class ResourceComplianceChecker:
             else:
                 self.non_compliant_resources.append(resource)
 
-    def compliant_groups_by_subscription(self, subscription_id):
-        non_compliant_group_ids = {
-            res.group_id for res in self.non_compliant_resources if res.group_id and res.subscription_id == subscription_id
-        }
+    def get_resources_by_group(self, id):
+        return [item
+                for item in (self.compliant_resources + self.non_compliant_resources)
+                if item.group_id == id]
 
-        return [group
-                for group in self.compliant_resources
-                if group.is_group and group.subscription_id == subscription_id and group.id not in non_compliant_group_ids
+    def groups_by_subscription(self, subscription_id) -> CompliantResources:
+        non_compliant = [
+            Group(resource=group, children=self.get_resources_by_group(group.id))
+            for group in self.non_compliant_resources
+            if group.is_group and group.subscription_id==subscription_id
         ]
+
+        compliant = [
+            Group(resource=group, children=self.get_resources_by_group(group.id))
+            for group in self.compliant_resources
+            if group.is_group and group.subscription_id == subscription_id
+        ]
+
+        return CompliantResources(compliant=compliant, non_compliant=non_compliant)
 
     def non_compliant_groups_by_subscription(self, subscription_id):
         compliant_group_ids = {
@@ -103,6 +153,27 @@ class ResourceComplianceChecker:
                 for group in self.non_compliant_resources
                 if group.is_group and group.subscription_id == subscription_id and group.id not in compliant_group_ids
         ]
+
+    def count_compliance_by_areas(self, groups: CompliantResources = None)->dict[ComplianceCount]:
+        compliance = defaultdict(ComplianceCount)
+
+        if groups is None:
+            for area in self.areas:
+                cc = ComplianceCount(
+                    compliant = sum(self.count_compliant_resources_by_parent(area.name, res.id) for res in self.compliant_resources),
+                    non_compliant = sum(self.count_non_compliant_resources_by_parent(area.name, res.id) for res in self.non_compliant_resources)
+                )
+                compliance[area.name] = cc
+        else:
+            for area in self.areas:
+                compliant, non_compliant = groups.count_compliance_for_area(area.name)
+                compliance[area.name] = ComplianceCount(
+                    compliant=compliant,
+                    non_compliant=non_compliant
+                )
+
+        return compliance
+
 
     def count_compliant_resources_by_area(self, area_name) -> int:
         return len(self.compliant_areas[area_name])
@@ -117,7 +188,7 @@ class ResourceComplianceChecker:
         return len([res for res in self.non_compliant_areas[area_name] if res.group_id == res_id])
 
     def get_resources_by_area(self, area_name: str) -> list[ResourceRecord]:
-        return [item for item in (self.compliant_areas[area_name] + self.non_compliant_areas[area_name]).values()]
+        return [item for item in (self.compliant_areas[area_name] + self.non_compliant_areas[area_name])]
 
     def get_tag_coverage(self) -> TagCoverage:
 
