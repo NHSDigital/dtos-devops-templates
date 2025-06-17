@@ -1,5 +1,3 @@
-import datetime
-
 from helper_charts import create_pie_chart_base64
 from helper_styles import build_html_styles, build_html_scripts
 from results_writer import get_output_folder
@@ -38,28 +36,6 @@ class HtmlReportBuilder:
     #-------------------------------------
     # Not intended to be called directly
 
-    def _generate_tag_summary_html(self):
-        coverage = self.compliance_check.get_tag_coverage()
-
-        if not coverage.sorted_tags:
-            return "<h3>Tag Usage</h3><emphasis>No tags founds on the scanned resources.</emphasis>"
-
-        def build_row(tag, count):
-            display = coverage.tag_display_names[tag]
-            percentage = 0 if not coverage.total_resources else (count / coverage.total_resources * 100)
-            required = " <span title='This tag is required' class='required-tag'>required</span>" if tag in coverage.required_tags else ""
-            return f"<tr><td>🏷️ {display}{required}</td><td>{count} ({percentage:.1f}%)</td></tr>"
-
-        tag_rows = "\n".join(build_row(tag, count) for tag, count in coverage.sorted_tags)
-
-        return f"""
-                <h3>Tag Usage</h3>
-                <table>
-                    <thead><tr><th>Tag</th><th>Coverage</th></tr></thead>
-                    <tbody>{tag_rows}</tbody>
-                </table>
-            """
-
     def _generate_subscriptions_html(self, areas_names: list[str]) -> str:
         sections = []
 
@@ -74,45 +50,40 @@ class HtmlReportBuilder:
         return "\n".join(sections)
 
 
-
     def _generate_subscription_tag_summary_html(self, groups: CompliantResources) -> str:
         area_compliance = self.compliance_check.count_compliance_by_areas(groups)
         area_tag_compliance = build_subscription_tag_compliance_rows(self.areas.area_names, area_compliance)
         return build_subscription_tag_summary(area_tag_compliance)
 
-
-    def _generate_summary_charts_html(self):
-        return build_summary_charts(
-            create_pie_chart_base64(
-                [res.resourceType for res in self.compliance_check.compliant_resources if res.resourceType],
-                "Compliant Resources by Type"),
-            create_pie_chart_base64(
-                [res.resourceType for res in self.compliance_check.non_compliant_resources if res.resourceType],
-                "Non-Compliant Resources by Type"))
-
     def _generate_summary_html(self) -> str:
-        charts_html = self._generate_summary_charts_html()
-        cards_html = self._generate_cards_html()
-        tags_summary_html = self._generate_tag_summary_html()
-        return build_summary(charts_html, cards_html, tags_summary_html)
-
-    def _generate_cards_html(self):
-        def render_card(name, tags, compliant, non_compliant):
-            total = compliant + non_compliant
-            percent = (compliant / total) * 100 if total else 0
-            tags_list = build_card_tags(tags)
-
-            return build_cards(name, tags_list, percent, compliant, non_compliant)
-
-        return ''.join(
-            render_card(
-                area.name,
-                self.areas[area.name].required,
-                self.compliance_check.count_compliant_resources_by_area(area.name),
-                self.compliance_check.count_non_compliant_resources_by_area(area.name)
+        pie_charts = [
+            SummaryChart(
+                title = "Compliant Resources",
+                data = create_pie_chart_base64(
+                    [res.resourceType for res in self.compliance_check.compliant_resources if res.resourceType],
+                    "Resources grouped by Resource Type")
+            ),
+            SummaryChart (
+                title ="Non-Compliant Resources",
+                data = create_pie_chart_base64(
+                    [res.resourceType for res in self.compliance_check.non_compliant_resources if res.resourceType],
+                    "Resources grouped by Resource Type")
             )
-            for area in self.areas
-        )
+        ]
+
+        cards = [
+            SummaryCard(
+                title = area.name,
+                required = self.areas[area.name].required,
+                compliant_count = self.compliance_check.count_compliant_resources_by_area(area.name),
+                non_compliant_count = self.compliance_check.count_non_compliant_resources_by_area(area.name)
+            )
+            for area in sorted(self.areas, key=lambda k: k.name)
+        ]
+
+        coverage = self.compliance_check.get_tag_coverage()
+        return build_summary(pie_charts, cards, coverage)
+
 
     def _generate_sidebar_html(self):
         subs = sorted({(sub.name, sub.id) for sub in self.scanner.subscriptions})

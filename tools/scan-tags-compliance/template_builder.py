@@ -4,17 +4,56 @@ from helper_tags import generate_tag_pills_html
 from resource_compliance_checker import *
 
 
+@dataclass
+class SummaryChart:
+    title: str
+    data: str
+
+@dataclass
+class SummaryCard:
+    title: str
+    required: list[str]
+    compliant_count: int
+    non_compliant_count: int
+
 def load_template(template_name: str) -> str:
     path = Path("templates") / template_name
     return path.read_text(encoding="utf-8")
 
-def build_cards(name: str, tags_list: str, percent: float, compliant: int, non_compliant: int) -> str:
-    return load_template('card_template.html').format(card_name=name, tag_list=tags_list, percent=percent, compliant=compliant, non_compliant=non_compliant)
+def build_tags_list(tags: list[str])->str:
+    return "<ul>" + "".join(["<li class='tag'>{tag}</li>".format(tag=tag) for tag in tags]) + "</ul>"
 
-def build_card_tags(tags)-> str:
-    if not tags:
-        return ""
-    return "".join(f"<li>{tag}</li>" for tag in tags)
+def build_cards(cards: list[SummaryCard]) -> str:
+    content = load_template('card_template.html')
+
+    return "".join([content.format(card_name=card.title,
+                                     tag_list=build_tags_list(card.required),
+                                     percent=card.compliant_count/card.non_compliant_count*100,
+                                     compliant=card.compliant_count,
+                                     non_compliant=card.non_compliant_count)
+     for card in cards])
+
+
+def build_tag_coverage(coverage: TagCoverage)-> str:
+    if not coverage.sorted_tags:
+        return "<h3>Tag Usage</h3><emphasis>No tags founds on the scanned resources.</emphasis>"
+
+    content = load_template('tag_coverage_template.html')
+    cov_required = load_template('tag_coverage_required_template.html')
+
+    rows = "".join(
+        ["<tr><td>🏷️ {display}{required}</td><td>{total_count} ({percentage:.1f}%)</td></tr>"
+        .format(
+            total_count=coverage.stats_counter[key],
+            display = coverage.tag_display_names[key],
+            percentage = coverage.stats_counter[key] / coverage.total_resources * 100,
+            required = cov_required if key in coverage.required_tags else "")
+            for key, display_name in coverage.sorted_tags
+        ])
+    return content.format(tag_rows=rows,
+                          total_count=len(coverage.sorted_tags),
+                          total_resources=coverage.total_resources)
+
 
 def build_sidebar_subscription_links(source: list[tuple[str, str]])->str:
     return "".join(
@@ -26,11 +65,19 @@ def build_sidebar_subscription_links(source: list[tuple[str, str]])->str:
 def build_sidebar(links)->str:
     return load_template('sidebar_template.html').format(links=links)
 
-def build_summary(charts_html:str, cards_html:str, tags_summary_html:str):
-    return load_template('summary_template.html').format(charts=charts_html, cards=cards_html, tags_summary=tags_summary_html)
+def build_summary(pie_charts: list[SummaryChart], cards: list[SummaryCard], coverage: TagCoverage) -> str:
+    return (load_template('summary_template.html')
+    .format(
+        charts=build_summary_charts(pie_charts[0], pie_charts[1]),
+        cards=build_cards(cards),
+        tags_summary=build_tag_coverage(coverage)))
 
-def build_summary_charts(compliant_chart, non_compliant_chart) -> str:
-    return load_template('summary_charts_template.html').format(compliant_chart=compliant_chart, non_compliant_chart=non_compliant_chart)
+def build_summary_charts(chart_1: SummaryChart, chart_2: SummaryChart) -> str:
+    return load_template('summary_charts_template.html').format(
+        chart_title_1=chart_1.title,
+        chart_data_1=chart_1.data,
+        chart_title_2=chart_2.title,
+        chart_data_2=chart_2.data)
 
 def build_subscription_tag_compliance_rows(area_names:list[str], area_compliance)->str:
     return "".join(
@@ -52,13 +99,51 @@ def build_resource_tooltip(res_id:str) -> str:
     return load_template('resource_tooltip_template.html').format(resource_id=res_id)
 
 def build_group_resources(children, area_names: list[str]) -> str:
+    def parse_resource_id_tree(resource_id: str) -> list[dict]:
+        """Parses an Azure resource ID into a list of dicts representing each hierarchical level."""
+        parts = [p for p in resource_id.strip("/").split("/")]
+        colors = [
+            "#0057b7",  # blue
+            "#2a9d8f",  # green
+            "#e76f51",  # red-orange
+            "#264653",  # dark teal
+            "#8d99ae",  # slate
+            "#f4a261",  # orange
+            "#e9c46a",  # yellow
+        ]
+
+        html_lines = []
+        indent = "  "
+
+        html_lines.append('<ul class="resource-id-tree">')
+        for i in range(0, len(parts), 2):
+            key = parts[i]
+            value = parts[i + 1] if i + 1 < len(parts) else ""
+            color = colors[(i // 2) % len(colors)]
+
+            html_lines.append(f'{indent * (i + 1)}<li>')
+            html_lines.append(f'{indent * (i + 2)}<span style="color:{color}"><strong>{key}/</strong></span> {value}')
+            if i + 2 < len(parts):
+                html_lines.append(f'{indent * (i + 2)}<ul>')
+
+        # close open <ul> tags
+        for i in reversed(range(0, len(parts), 2)):
+            if i + 2 < len(parts):
+                html_lines.append(f'{indent * (i + 2)}</ul>')
+            html_lines.append(f'{indent * (i + 1)}</li>')
+
+        html_lines.append('</ul>')
+        html_lines.append(f'<span>{resource_id}>')
+
+        return "\n".join(html_lines)
+
     sorted_areas = sorted(area_names, key=lambda area: area)
     areas_header = "".join(f"<th class='tag-area'>{area}</th>" for area in sorted_areas)
 
     rows = []
     for resource in children:
         tag_pills_html = generate_tag_pills_html(resource.tags)
-        tooltip = build_resource_tooltip(resource.id)
+        tooltip = build_resource_tooltip(parse_resource_id_tree(resource.id))
 
         row = [f"""<tr>
             <td class='has-tooltip'>{resource.name}{tag_pills_html}{tooltip}</td>

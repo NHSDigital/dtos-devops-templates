@@ -6,7 +6,7 @@ def build_html_styles() -> str:
         </style>"""
 
 def build_html_scripts():
-    with open('assets/scan_report.js.ts', 'r', encoding='utf-8') as file:
+    with open('assets/scan_report.js', 'r', encoding='utf-8') as file:
         content = file.read()
     return f"""
         <script>

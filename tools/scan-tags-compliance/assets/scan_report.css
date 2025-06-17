@@ -142,9 +142,14 @@ body {
   padding: 10px;
   background: #fff;
 }
-
+.collapsible.open .collapsible-header{
+  position: sticky;
+  top: 0;
+}
 .collapsible.open .collapsible-body {
   display: block;
+  max-height:600px;
+  overflow-y: auto;
 }
 
 .flex-charts {
@@ -198,7 +203,21 @@ body {
   display: block;
   margin: auto;
 }
-
+.resource-id-tree {
+  font-family: "Segoe UI", sans-serif;
+  font-size: 14px;
+  list-style-type: none;
+  padding-left: 1em;
+}
+.resource-id-tree ul {
+  list-style-type: none;
+  margin-left: 1.2em;
+  padding-left: 0.5em;
+  border-left: 3px dotted #ccc;
+}
+.resource-id-tree li {
+  margin: 3px 0;
+}
 .required-tag {
   background-color: var(--color-bg-pill);
   border-radius: 5px;
@@ -288,7 +307,9 @@ td.has-tooltip {
 td.has-tooltip:hover {
   background-color: var(--color-bg-hover);
 }
-
+th{
+  font-size: 0.8rem;
+}
 th.tag-area {
   max-width: 150px;
   white-space: normal;
@@ -352,7 +373,7 @@ th, td {
   padding: 6px 10px;
   border-radius: 6px;
   font-size: 0.9em;
-  max-width: 300px;
+  max-width: 500px;
   white-space: normal;
   word-break: break-word;
   z-index: 9999;

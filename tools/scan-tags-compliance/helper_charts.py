@@ -5,7 +5,7 @@ from io import BytesIO
 from matplotlib import pyplot as plt
 
 
-def create_pie_chart_base64(points, title) -> str:
+def create_pie_chart_base64(points, title: str) -> str:
     type_counts = Counter(points)
     top = type_counts.most_common(5)
     other_count = sum(count for _, count in type_counts.most_common()[5:])

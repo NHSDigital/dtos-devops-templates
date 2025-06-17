@@ -91,3 +91,9 @@ scan_results.html
 .idea/modules.xml
 .idea/vcs.xml
 .idea/inspectionProfiles/profiles_settings.xml
+tools/scan-tags-compliance/templates/tag_coverage_required_template.html
+scripts/.idea/misc.xml
+scripts/.idea/modules.xml
+scripts/.idea/scripts.iml
+scripts/.idea/vcs.xml
+scripts/.idea/workspace.xml
