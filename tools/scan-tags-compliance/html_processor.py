@@ -87,5 +87,12 @@ class HtmlReportBuilder:
 
     def _generate_sidebar_html(self):
         subs = sorted({(sub.name, sub.id) for sub in self.scanner.subscriptions})
-        links = build_sidebar_subscription_links(subs)
+        entries = [SummarySubscription(
+                id=id,
+                name=name,
+                total_resources=self.compliance_check.count_resources_by_subscription(id)
+            )
+            for name, id in subs]
+
+        links = build_sidebar_subscription_links(entries)
         return build_sidebar(links)

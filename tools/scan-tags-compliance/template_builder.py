@@ -16,6 +16,12 @@ class SummaryCard:
     compliant_count: int
     non_compliant_count: int
 
+@dataclass
+class SummarySubscription:
+    id: str
+    name: str
+    total_resources: int
+
 def load_template(template_name: str) -> str:
     path = Path("templates") / template_name
     return path.read_text(encoding="utf-8")
@@ -55,11 +61,11 @@ def build_tag_coverage(coverage: TagCoverage)-> str:
                           total_resources=coverage.total_resources)
 
 
-def build_sidebar_subscription_links(source: list[tuple[str, str]])->str:
+def build_sidebar_subscription_links(source: list[SummarySubscription])->str:
     return "".join(
         [
-            f"<a href='javascript:showSection(\"sub-{sub_id}\")'>{sub_name}</a>"
-            for sub_name, sub_id in source
+            f"<a href='javascript:showSection(\"sub-{sub.id}\")'><div class='azsubscription small' style='flex-shrink:0'></div>{sub.name} <span class='ios-badge'>{sub.total_resources}</span></a>"
+            for sub in source
         ])
 
 def build_sidebar(links)->str:
@@ -99,6 +105,7 @@ def build_resource_tooltip(res_id:str) -> str:
     return load_template('resource_tooltip_template.html').format(resource_id=res_id)
 
 def build_group_resources(children, area_names: list[str]) -> str:
+
     def parse_resource_id_tree(resource_id: str) -> list[dict]:
         """Parses an Azure resource ID into a list of dicts representing each hierarchical level."""
         parts = [p for p in resource_id.strip("/").split("/")]

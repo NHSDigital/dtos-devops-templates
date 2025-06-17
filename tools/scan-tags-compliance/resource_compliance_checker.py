@@ -77,8 +77,8 @@ class ResourceComplianceChecker:
     """Checks each resource's tags for complianceCheck to the tag strategies provided."""
 
     def __init__(self, areas: ComplianceAreas):
-        self.compliant_resources = []
-        self.non_compliant_resources = []
+        self.compliant_resources: list[ResourceRecord] = []
+        self.non_compliant_resources: list[ResourceRecord] = []
         self.compliant_areas = defaultdict(list)
         self.non_compliant_areas = defaultdict(list)
         self.areas = areas
@@ -144,7 +144,7 @@ class ResourceComplianceChecker:
 
         return CompliantResources(compliant=compliant, non_compliant=non_compliant)
 
-    def non_compliant_groups_by_subscription(self, subscription_id):
+    def non_compliant_groups_by_subscription(self, subscription_id:str):
         compliant_group_ids = {
             res.group_id for res in self.compliant_resources if res.group_id and res.subcription_id == subscription_id
         }
@@ -153,6 +153,13 @@ class ResourceComplianceChecker:
                 for group in self.non_compliant_resources
                 if group.is_group and group.subscription_id == subscription_id and group.id not in compliant_group_ids
         ]
+
+    def count_resources_by_subscription(self, subscription_id:str)-> int:
+        # Count from groups and below
+        return len([res
+         for res in (self.compliant_resources+self.non_compliant_resources)
+         if res.subscription_id == subscription_id and res.group_id
+        ])
 
     def count_compliance_by_areas(self, groups: CompliantResources = None)->dict[ComplianceCount]:
         compliance = defaultdict(ComplianceCount)
