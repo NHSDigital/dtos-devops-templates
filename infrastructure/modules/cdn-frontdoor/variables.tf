@@ -84,3 +84,10 @@ variable "route" {
     }))
   }))
 }
+
+variable "tags" {
+  type        = map(string)
+  description = "Resource tags to be applied throughout the deployment."
+  default     = {}
+}
+

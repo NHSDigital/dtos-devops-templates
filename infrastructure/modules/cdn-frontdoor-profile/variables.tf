@@ -29,3 +29,9 @@ variable "sku_name" {
   description = "SKU name for the Azure CDN Front Door Profile (e.g., Standard_AzureFrontDoor or Premium_AzureFrontDoor)"
   type        = string
 }
+
+variable "tags" {
+  type        = map(string)
+  description = "Resource tags to be applied throughout the deployment."
+  default     = {}
+}
