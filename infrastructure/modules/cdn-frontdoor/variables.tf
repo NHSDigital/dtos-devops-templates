@@ -13,7 +13,7 @@ variable "endpoint" {
 variable "origin" {
   description = "Map of Front Door Origin configurations"
   type = object({
-    name                           = string
+    hostname                       = string
     enabled                        = optional(bool, true)
     cdn_frontdoor_origin_group_key = string # key from var.origin_group
     certificate_name_check_enabled = bool   # must be true for Private Link

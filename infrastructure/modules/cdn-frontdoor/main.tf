@@ -38,12 +38,12 @@ resource "azurerm_cdn_frontdoor_origin_group" "this" {
 resource "azurerm_cdn_frontdoor_origin" "this" {
   for_each = var.origin
 
-  name                          = each.value.name
+  name                          = each.key
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.this[each.value.cdn_frontdoor_origin_group_key].id
   enabled                       = each.value.enabled
 
   certificate_name_check_enabled = each.value.certificate_name_check_enabled
-  host_name                      = each.key
+  host_name                      = each.value.hostname
   origin_host_header             = each.value.origin_host_header
   priority                       = each.value.priority
   weight                         = each.value.weight
