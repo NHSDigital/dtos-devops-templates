@@ -103,18 +103,18 @@ module "private_endpoint_postgresql_flexible_server" {
 
   source = "../private-endpoint"
 
-  name                = "${var.name}-postgresql-private-endpoint"
+  name                = "${var.name}-postgresql-pep"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
   private_dns_zone_group = {
-    name                 = "${var.name}-postgresql-private-endpoint-zone-group"
+    name                 = "${var.name}-postgresql-pep-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids_postgresql
   }
 
   private_service_connection = {
-    name                           = "${var.name}-postgresql-private-endpoint-connection"
+    name                           = "${var.name}-postgresql-pep-connection"
     private_connection_resource_id = azurerm_postgresql_flexible_server.postgresql_flexible_server.id
     subresource_names              = ["postgresqlServer"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual

@@ -51,18 +51,18 @@ module "private_endpoint_sql_server" {
 
   source = "../private-endpoint"
 
-  name                = "${var.name}-sql-private-endpoint"
+  name                = "${var.name}-sql-pep"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
   private_dns_zone_group = {
-    name                 = "${var.name}-sql-private-endpoint-zone-group"
+    name                 = "${var.name}-sql-pep-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids_sql
   }
 
   private_service_connection = {
-    name                           = "${var.name}-sql-private-endpoint-connection"
+    name                           = "${var.name}-sql-pep-connection"
     private_connection_resource_id = azurerm_mssql_server.azure_sql_server.id
     subresource_names              = ["sqlServer"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
