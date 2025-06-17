@@ -21,7 +21,7 @@ def load_template(template_name: str) -> str:
     return path.read_text(encoding="utf-8")
 
 def build_tags_list(tags: list[str])->str:
-    return "<ul>" + "".join(["<li class='tag'>{tag}</li>".format(tag=tag) for tag in tags]) + "</ul>"
+    return "<ul>" + "".join(["<li class='tag'><div class='aztag'></div>{tag}</li>".format(tag=tag) for tag in tags]) + "</ul>"
 
 def build_cards(cards: list[SummaryCard]) -> str:
     content = load_template('card_template.html')
@@ -42,7 +42,7 @@ def build_tag_coverage(coverage: TagCoverage)-> str:
     cov_required = load_template('tag_coverage_required_template.html')
 
     rows = "".join(
-        ["<tr><td>🏷️ {display}{required}</td><td>{total_count} ({percentage:.1f}%)</td></tr>"
+        ["<tr><td><div class='aztag'></div>{display}{required}</td><td>{total_count} ({percentage:.1f}%)</td></tr>"
         .format(
             total_count=coverage.stats_counter[key],
             display = coverage.tag_display_names[key],
