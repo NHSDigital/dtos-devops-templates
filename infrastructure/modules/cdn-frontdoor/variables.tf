@@ -4,7 +4,7 @@ variable "cdn_frontdoor_profile_id" {
 }
 
 variable "endpoint" {
-  description = "Map of Front Door Endpoint configrations"
+  description = "Map of Front Door Endpoint configurations"
   type = object({
     enabled = optional(bool, true)
   })
@@ -15,8 +15,8 @@ variable "origin" {
   type = object({
     name                           = string
     enabled                        = optional(bool, true)
-    cdn_frontdoor_origin_group_key = string # must be true for Private Link
-    certificate_name_check_enabled = bool   # key from var.origin_group 
+    cdn_frontdoor_origin_group_key = string # key from var.origin_group
+    certificate_name_check_enabled = bool   # must be true for Private Link
     origin_host_header             = optional(string)
     priority                       = optional(number, 1)   # 1–5
     weight                         = optional(number, 500) # 1–1000
