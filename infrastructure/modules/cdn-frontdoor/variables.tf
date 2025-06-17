@@ -71,8 +71,8 @@ variable "route" {
     enabled                = optional(bool, true)
     forwarding_protocol    = optional(string, "MatchRequest") # "HttpOnly" | "HttpsOnly" | "MatchRequest"
     https_redirect_enabled = optional(bool, true)
-    patterns_to_match      = list(string) # Required
-    supported_protocols    = list(string) # Must be a subset of ["Http", "Https"]
+    patterns_to_match      = optional(list(string), ["/*"])
+    supported_protocols    = optional(list(string), ["Https"])
 
     link_to_default_domain = optional(bool, true)
 

@@ -60,19 +60,19 @@ resource "azurerm_cdn_frontdoor_origin" "this" {
   }
 }
 
-resource "azurerm_cdn_frontdoor_custom_domain" "this" {
-  for_each = toset(var.custom_domains)
+# resource "azurerm_cdn_frontdoor_custom_domain" "this" {
+#   for_each = toset(var.custom_domains)
 
-  name                     = each.key
-  cdn_frontdoor_profile_id = var.cdn_frontdoor_profile_id
-  dns_zone_id              = azurerm_dns_zone.example.id
-  host_name                = join(".", ["fabrikam", azurerm_dns_zone.example.name])
+#   name                     = each.key
+#   cdn_frontdoor_profile_id = var.cdn_frontdoor_profile_id
+#   dns_zone_id              = azurerm_dns_zone.example.id
+#   host_name                = join(".", ["fabrikam", azurerm_dns_zone.example.name])
 
-  tls {
-    certificate_type    = "ManagedCertificate"
-    minimum_tls_version = "TLS12"
-  }
-}
+#   tls {
+#     certificate_type    = "ManagedCertificate"
+#     minimum_tls_version = "TLS12"
+#   }
+# }
 
 resource "azurerm_cdn_frontdoor_route" "this" {
   for_each = var.route
