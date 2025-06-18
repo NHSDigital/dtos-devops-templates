@@ -42,18 +42,18 @@ module "private_endpoint_service_bus_namespace" {
 
   source = "../private-endpoint"
 
-  name                = "${var.servicebus_namespace_name}-servicebus-private-endpoint"
+  name                = "${var.servicebus_namespace_name}-servicebus-pep"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
   private_dns_zone_group = {
-    name                 = "${var.servicebus_namespace_name}-private-endpoint-zone-group"
+    name                 = "${var.servicebus_namespace_name}-pep-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids
   }
 
   private_service_connection = {
-    name                           = "${var.servicebus_namespace_name}-private-endpoint-connection"
+    name                           = "${var.servicebus_namespace_name}-pep-connection"
     private_connection_resource_id = azurerm_servicebus_namespace.this.id
     subresource_names              = ["namespace"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual

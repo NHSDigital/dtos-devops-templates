@@ -75,3 +75,9 @@ coverage.xml
 .pyre/
 .pylint.d/
 .prof
+__azurite_db_blob__.json
+__azurite_db_blob_extent__.json
+.idea/workspace.xml
+tools/scan-tags-compliance/scan-results/azure_resource_compliance_scan.csv
+tools/scan-tags-compliance/scan-results/azure_skipped_items.log
+tools/scan-tags-compliance/scan-results/scan_results.html

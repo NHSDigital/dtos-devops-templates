@@ -28,18 +28,18 @@ module "private_endpoint_keyvault" {
 
   source = "../private-endpoint"
 
-  name                = "${var.name}-azure-keyvault-private-endpoint"
+  name                = "${var.name}-azure-keyvault-pep"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
   private_dns_zone_group = {
-    name                 = "${var.name}-azure-keyvault-private-endpoint-zone-group"
+    name                 = "${var.name}-azure-keyvault-pep-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids_keyvault
   }
 
   private_service_connection = {
-    name                           = "${var.name}-keyvault-private-endpoint-connection"
+    name                           = "${var.name}-keyvault-pep-connection"
     private_connection_resource_id = azurerm_key_vault.keyvault.id
     subresource_names              = ["vault"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual

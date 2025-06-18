@@ -38,6 +38,10 @@ Default: `{}`
 
 The following outputs are exported:
 
+### <a name="output_client_id"></a> [client\_id](#output\_client\_id)
+
+Description: n/a
+
 ### <a name="output_id"></a> [id](#output\_id)
 
 Description: n/a

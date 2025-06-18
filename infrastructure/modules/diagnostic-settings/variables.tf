@@ -17,13 +17,13 @@ variable "eventhub_authorization_rule_id" {
 
 variable "eventhub_name" {
   type        = string
-  description = "value of the eventhub name if logging to eventhub is being used."
+  description = "value of the EventHub name if logging to an EventHub."
   default     = null
 }
 
 variable "log_analytics_workspace_id" {
   type        = string
-  description = "id of the log analytics workspace to send resource logging to via diagnostic settings if logging to log analytic workspace is being used."
+  description = "Identifier of a log analytics workspace to send resource logging to via diagnostic settings if logging to log analytic workspace is being used."
   default     = null
 }
 
@@ -35,7 +35,7 @@ variable "metric" {
 
 variable "metric_enabled" {
   type        = bool
-  description = "to enable retention for diagnostic settings metric"
+  description = "True to retain diagnostic setting metrics, false otherwise"
   default     = true
 }
 

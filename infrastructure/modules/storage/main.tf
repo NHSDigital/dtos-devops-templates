@@ -47,18 +47,18 @@ module "private_endpoint_blob_storage" {
 
   source = "../private-endpoint"
 
-  name                = "${var.name}-blob-private-endpoint"
+  name                = "${var.name}-blob-pep"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
   private_dns_zone_group = {
-    name                 = "${var.name}-blob-private-endpoint-zone-group"
+    name                 = "${var.name}-blob-pep-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids_blob
   }
 
   private_service_connection = {
-    name                           = "${var.name}-blob-private-endpoint-connection"
+    name                           = "${var.name}-blob-pep-connection"
     private_connection_resource_id = azurerm_storage_account.storage_account.id
     subresource_names              = ["blob"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
@@ -72,18 +72,18 @@ module "private_endpoint_table_storage" {
 
   source = "../private-endpoint"
 
-  name                = "${var.name}-table-private-endpoint"
+  name                = "${var.name}-table-pep"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
   private_dns_zone_group = {
-    name                 = "${var.name}-table-private-endpoint-zone-group"
+    name                 = "${var.name}-table-pep-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids_table
   }
 
   private_service_connection = {
-    name                           = "${var.name}-table-private-endpoint-connection"
+    name                           = "${var.name}-table-pep-connection"
     private_connection_resource_id = azurerm_storage_account.storage_account.id
     subresource_names              = ["table"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
@@ -97,18 +97,18 @@ module "private_endpoint_queue_storage" {
 
   source = "../private-endpoint"
 
-  name                = "${var.name}-queue-private-endpoint"
+  name                = "${var.name}-queue-pep"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
   private_dns_zone_group = {
-    name                 = "${var.name}-queue-private-endpoint-zone-group"
+    name                 = "${var.name}-queue-pep-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids_queue
   }
 
   private_service_connection = {
-    name                           = "${var.name}-queue-private-endpoint-connection"
+    name                           = "${var.name}-queue-pep-connection"
     private_connection_resource_id = azurerm_storage_account.storage_account.id
     subresource_names              = ["queue"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual

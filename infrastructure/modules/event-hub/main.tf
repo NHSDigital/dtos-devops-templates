@@ -73,18 +73,18 @@ module "private_endpoint_eventhub" {
 
   source = "../private-endpoint"
 
-  name                = "${var.name}-azure-eventhub-private-endpoint"
+  name                = "${var.name}-azure-eventhub-pep"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
   private_dns_zone_group = {
-    name                 = "${var.name}-azure-eventhub-private-endpoint-zone-group"
+    name                 = "${var.name}-azure-eventhub-pep-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids_eventhub
   }
 
   private_service_connection = {
-    name                           = "${var.name}-eventhub-private-endpoint-connection"
+    name                           = "${var.name}-eventhub-pep-connection"
     private_connection_resource_id = azurerm_eventhub_namespace.eventhub_ns.id
     subresource_names              = ["namespace"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
