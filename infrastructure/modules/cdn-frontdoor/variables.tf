@@ -3,9 +3,17 @@ variable "cdn_frontdoor_profile_id" {
   type        = string
 }
 
-variable "custom_domains" {
-  type = list
-}
+# variable "custom_domains" {
+#   type = map(object({
+#     dns_zone_id              = azurerm_dns_zone.example.id
+#     host_name                = join(".", ["fabrikam", azurerm_dns_zone.example.name])
+
+#     tls {
+#       certificate_type    = "ManagedCertificate"
+#       minimum_tls_version = "TLS12"
+#     }
+#   }))
+# }
 
 variable "endpoint" {
   description = "Map of Front Door Endpoint configurations"
