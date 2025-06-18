@@ -3,6 +3,10 @@ variable "cdn_frontdoor_profile_id" {
   type        = string
 }
 
+variable "custom_domains" {
+  type = list
+}
+
 variable "endpoint" {
   description = "Map of Front Door Endpoint configurations"
   type = map(object({
