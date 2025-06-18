@@ -102,10 +102,10 @@ variable "gateway_disabled" {
   description = "Specifies whether the gateway is disabled."
   type        = bool
   default     = false
-  # validation {
-  #   condition     = var.gateway_disabled == false || length(var.additional_locations) > 0
-  #   error_message = "The gateway can only be disabled when additional locations are provided."
-  # }
+  validation {
+    condition     = var.gateway_disabled == false || length(var.additional_locations) > 0
+    error_message = "The gateway can only be disabled when additional locations are provided."
+  }
 }
 
 variable "identity_ids" {
@@ -224,10 +224,10 @@ variable "virtual_network_configuration" {
   description = "The virtual network configuration for the API Management service."
   type        = list(string)
   default     = null
-  # validation {
-  #   condition     = var.virtual_network_type == "Internal" && length(var.virtual_network_configuration) > 0
-  #   error_message = "The virtual network configuration must be provided when the virtual network type is Internal."
-  # }
+  validation {
+    condition     = var.virtual_network_type == "Internal" && length(var.virtual_network_configuration) > 0
+    error_message = "The virtual network configuration must be provided when the virtual network type is Internal."
+  }
 }
 
 variable "virtual_network_type" {
