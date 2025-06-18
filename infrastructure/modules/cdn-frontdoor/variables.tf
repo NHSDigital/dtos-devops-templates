@@ -5,14 +5,14 @@ variable "cdn_frontdoor_profile_id" {
 
 variable "endpoint" {
   description = "Map of Front Door Endpoint configurations"
-  type = object({
+  type = map(object({
     enabled = optional(bool, true)
-  })
+  }))
 }
 
 variable "origin" {
   description = "Map of Front Door Origin configurations"
-  type = object({
+  type = map(object({
     hostname                       = string
     enabled                        = optional(bool, true)
     cdn_frontdoor_origin_group_key = string # key from var.origin_group
@@ -29,12 +29,12 @@ variable "origin" {
       location               = string
       private_link_target_id = string
     }))
-  })
+  }))
 }
 
 variable "origin_group" {
   description = "Map of Front Door Origin Group configurations"
-  type = object({
+  type = map(object({
     session_affinity_enabled                                  = optional(bool, true)
     restore_traffic_time_to_healed_or_new_endpoint_in_minutes = optional(number)
 
@@ -45,12 +45,12 @@ variable "origin_group" {
       path                = optional(string, "/")    # Optional
     }))
 
-    load_balancing = object({
+    load_balancing = optional(object({
       additional_latency_in_milliseconds = optional(number, 50) # Optional: 0–1000
       sample_size                        = optional(number, 4)  # Optional: 0–255
       successful_samples_required        = optional(number, 3)  # Optional: 0–255
-    })
-  })
+    }), {})
+  }))
 }
 
 variable "resource_group_name" {
@@ -59,7 +59,6 @@ variable "resource_group_name" {
 
 variable "route" {
   description = "Map of Front Door route configurations"
-
   type = map(object({
     cdn_frontdoor_endpoint_key       = string
     cdn_frontdoor_origin_group_key   = string
