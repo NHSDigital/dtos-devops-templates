@@ -82,7 +82,7 @@ resource "azurerm_cdn_frontdoor_route" "this" {
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin.this[each.value.cdn_frontdoor_origin_group_key].id
   cdn_frontdoor_origin_ids      = [for k in each.value.cdn_frontdoor_origin_keys : azurerm_cdn_frontdoor_origin.this[k].id]
   cdn_frontdoor_origin_path     = each.value.cdn_frontdoor_origin_path
-  cdn_frontdoor_rule_set_ids    = [for k in each.value.cdn_frontdoor_rule_set_keys : azurerm_cdn_frontdoor_rule_set.this[k].id]
+  cdn_frontdoor_rule_set_ids    = can(azurerm_cdn_frontdoor_rule_set.this) ? [for k in each.value.cdn_frontdoor_rule_set_keys : azurerm_cdn_frontdoor_rule_set.this[k].id] : null
   enabled                       = each.value.enabled
 
   forwarding_protocol    = each.value.forwarding_protocol
@@ -90,7 +90,9 @@ resource "azurerm_cdn_frontdoor_route" "this" {
   patterns_to_match      = each.value.patterns_to_match
   supported_protocols    = each.value.supported_protocols
 
-  cdn_frontdoor_custom_domain_ids = [for k in each.value.cdn_frontdoor_custom_domain_keys : azurerm_cdn_frontdoor_custom_domain.this[k].id]
+  cdn_frontdoor_custom_domain_ids = can(azurerm_cdn_frontdoor_custom_domain.this) ? [for k in each.value.cdn_frontdoor_custom_domain_keys : azurerm_cdn_frontdoor_custom_domain.this[k].id] : null
+  )
+
   link_to_default_domain          = each.value.link_to_default_domain
 
   dynamic "cache" {
