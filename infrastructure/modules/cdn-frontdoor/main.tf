@@ -91,7 +91,6 @@ resource "azurerm_cdn_frontdoor_route" "this" {
   supported_protocols    = each.value.supported_protocols
 
   cdn_frontdoor_custom_domain_ids = can(azurerm_cdn_frontdoor_custom_domain.this) ? [for k in each.value.cdn_frontdoor_custom_domain_keys : azurerm_cdn_frontdoor_custom_domain.this[k].id] : null
-  )
 
   link_to_default_domain          = each.value.link_to_default_domain
 
