@@ -1,30 +1,49 @@
 package test
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 )
 
-// getBaseTerraformOptions returns a base configuration that can be reused in tests.
-func getBaseTerraformOptions(vars map[string]interface{}) *terraform.Options {
-	// Default vars
+// injectProviderFile creates a temporary provider.tf file in the module directory.
+func injectProviderFile(dir string, t *testing.T) {
+	providerContent := `
+provider "azurerm" {
+  features {}
+}
+`
+	providerPath := filepath.Join(dir, "provider_test.tf")
+	err := os.WriteFile(providerPath, []byte(providerContent), 0644)
+	if err != nil {
+		t.Fatalf("failed to write provider file: %v", err)
+	}
+}
+
+func getBaseTerraformOptions(vars map[string]interface{}, t *testing.T) *terraform.Options {
+	moduleDir := "../../infrastructure/modules/api-management"
+
+	// Inject provider file
+	injectProviderFile(moduleDir, t)
+
 	defaultVars := map[string]interface{}{
-		"name":         "apim-default",
-		"location":     "uksouth",
-		"resource_group_name":  "rg-test",
-		"client_secret": "asecret",
-		"client_id":  "123",
-		"log_analytics_workspace_id":  "123",
-		"sku_capacity": 1,
-		"sku_name":     "Developer",
-		"zones": []interface{}{},
-		"additional_locations": []interface{}{},
-		"certificate_details": []interface{}{},
-		"publisher_name": "Example Ltd.",
-		"publisher_email": "email@example.com",
-		"virtual_network_type": "Internal",
+		"name":                     "apim-default",
+		"location":                 "uksouth",
+		"resource_group_name":      "rg-test",
+		"client_secret":            "asecret",
+		"client_id":                "123",
+		"log_analytics_workspace_id": "123",
+		"sku_capacity":             1,
+		"sku_name":                 "Developer",
+		"zones":                    []interface{}{},
+		"additional_locations":     []interface{}{},
+		"certificate_details":      []interface{}{},
+		"publisher_name":           "Example Ltd.",
+		"publisher_email":          "email@example.com",
+		"virtual_network_type":     "Internal",
 		"virtual_network_configuration": []string{
 			"/subscriptions/xxx/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet",
 		},
@@ -34,30 +53,26 @@ func getBaseTerraformOptions(vars map[string]interface{}) *terraform.Options {
 		},
 	}
 
-	// Override defaults with any test-specific values
 	for key, value := range vars {
 		defaultVars[key] = value
 	}
 
 	return &terraform.Options{
-		TerraformDir: "../../infrastructure/modules/api-management",
-		Vars:         defaultVars,
-		NoColor:      true,
-		TerraformBinary:  "terraform",
+		TerraformDir:    moduleDir,
+		Vars:            defaultVars,
+		NoColor:         true,
+		TerraformBinary: "terraform",
 	}
 }
 
 func TestInvalidSkuCapacity(t *testing.T) {
 	t.Parallel()
-
 	tfOptions := getBaseTerraformOptions(map[string]interface{}{
 		"name":         "apim-invalid-capacity",
 		"sku_capacity": 15,
-	})
+	}, t)
 
-	terraformOptions := terraform.WithDefaultRetryableErrors(t, tfOptions)
-
-	_, err := terraform.InitAndPlanE(t, terraformOptions)
+	_, err := terraform.InitAndPlanE(t, terraform.WithDefaultRetryableErrors(t, tfOptions))
 
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "The SKU capacity must be a positive integer less than 10.")
@@ -65,15 +80,12 @@ func TestInvalidSkuCapacity(t *testing.T) {
 
 func TestInvalidSkuName(t *testing.T) {
 	t.Parallel()
-
 	tfOptions := getBaseTerraformOptions(map[string]interface{}{
-		"name":      "apim-invalid-skuname",
-		"sku_name":  "MadeUpName",
-	})
+		"name":     "apim-invalid-skuname",
+		"sku_name": "MadeUpName",
+	}, t)
 
-	terraformOptions := terraform.WithDefaultRetryableErrors(t, tfOptions)
-
-	_, err := terraform.InitAndPlanE(t, terraformOptions)
+	_, err := terraform.InitAndPlanE(t, terraform.WithDefaultRetryableErrors(t, tfOptions))
 
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "The SKU name must be either Consumption, Developer, Basic, Standard")
@@ -81,73 +93,48 @@ func TestInvalidSkuName(t *testing.T) {
 
 func TestInvalidName(t *testing.T) {
 	t.Parallel()
-
-	// e.g. starts with a hyphen (invalid) and longer than 50 chars
-	invalidName := "-invalid-name-"
 	tfOptions := getBaseTerraformOptions(map[string]interface{}{
-			"name": invalidName,
-	})
+		"name": "-invalid-name-",
+	}, t)
 
-	terraformOptions := terraform.WithDefaultRetryableErrors(t, tfOptions)
-
-	_, err := terraform.InitAndPlanE(t, terraformOptions)
+	_, err := terraform.InitAndPlanE(t, terraform.WithDefaultRetryableErrors(t, tfOptions))
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(),
-			"The API Management service name must be between 1 and 50 characters")
+	assert.Contains(t, err.Error(), "The API Management service name must be between 1 and 50 characters")
 }
 
 func TestInvalidIdentityType(t *testing.T) {
 	t.Parallel()
-
-	// e.g. starts with a hyphen (invalid) and longer than 50 chars
-	invalidIdentityType := "invalidIdentity"
 	tfOptions := getBaseTerraformOptions(map[string]interface{}{
-			"identity_type": invalidIdentityType,
-	})
+		"identity_type": "invalidIdentity",
+	}, t)
 
-	terraformOptions := terraform.WithDefaultRetryableErrors(t, tfOptions)
-
-	_, err := terraform.InitAndPlanE(t, terraformOptions)
+	_, err := terraform.InitAndPlanE(t, terraform.WithDefaultRetryableErrors(t, tfOptions))
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(),
-			"The identity type must be either SystemAssigned, UserAssigned,")
+	assert.Contains(t, err.Error(), "The identity type must be either SystemAssigned, UserAssigned,")
 }
 
 func TestInvalidPublisherEmail(t *testing.T) {
 	t.Parallel()
-
-	// e.g. starts with a hyphen (invalid) and longer than 50 chars
-	invalidPublisherEmail := "invalidEmail"
 	tfOptions := getBaseTerraformOptions(map[string]interface{}{
-			"publisher_email": invalidPublisherEmail,
-	})
+		"publisher_email": "invalidEmail",
+	}, t)
 
-	terraformOptions := terraform.WithDefaultRetryableErrors(t, tfOptions)
-
-	_, err := terraform.InitAndPlanE(t, terraformOptions)
+	_, err := terraform.InitAndPlanE(t, terraform.WithDefaultRetryableErrors(t, tfOptions))
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(),
-			"The publisher email address is not valid.")
+	assert.Contains(t, err.Error(), "The publisher email address is not valid.")
 }
-
 
 func TestInvalidVirtualNetworkType(t *testing.T) {
 	t.Parallel()
-
-	// e.g. starts with a hyphen (invalid) and longer than 50 chars
-	invalidVirtualNetworkType := "invalidNetworkType"
 	tfOptions := getBaseTerraformOptions(map[string]interface{}{
-			"virtual_network_type": invalidVirtualNetworkType,
-	})
+		"virtual_network_type": "invalidNetworkType",
+	}, t)
 
-	terraformOptions := terraform.WithDefaultRetryableErrors(t, tfOptions)
-
-	_, err := terraform.InitAndPlanE(t, terraformOptions)
+	_, err := terraform.InitAndPlanE(t, terraform.WithDefaultRetryableErrors(t, tfOptions))
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(),
-			"The virtual network type must be either None, External or Internal.")
+	assert.Contains(t, err.Error(), "The virtual network type must be either None, External or Internal.")
 }
