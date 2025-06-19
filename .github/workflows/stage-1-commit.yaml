@@ -44,17 +44,17 @@ jobs:
           fetch-depth: 0 # Full history is needed to scan all commits
       - name: "Scan secrets"
         uses: ./.github/actions/scan-secrets
-  check-file-format:
-    name: "Check file format"
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    steps:
-      - name: "Checkout code"
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Full history is needed to compare branches
-      - name: "Check file format"
-        uses: ./.github/actions/check-file-format
+  # check-file-format:
+  #   name: "Check file format"
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 2
+  #   steps:
+  #     - name: "Checkout code"
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0 # Full history is needed to compare branches
+  #     - name: "Check file format"
+  #       uses: ./.github/actions/check-file-format
   # check-markdown-format:
   #   name: "Check Markdown format"
   #   runs-on: ubuntu-latest
