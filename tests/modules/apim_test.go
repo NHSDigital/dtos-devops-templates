@@ -11,8 +11,7 @@ import (
 
 // injectProviderFile creates a temporary provider.tf file in the module directory.
 func injectProviderFile(dir string, t *testing.T) {
-	providerContent := `
-provider "azurerm" {
+	providerContent := `provider "azurerm" {
   features {}
 }
 `
