@@ -87,7 +87,6 @@ jobs:
           terraform_version: 1.12.2
       - name: "run the tests"
         run: |
-          pwd
           cd tests/modules
           go test -v
   perform-static-analysis:

@@ -12,7 +12,7 @@ import (
 // injectProviderFile creates a temporary provider.tf file in the module directory.
 func injectProviderFile(dir string, t *testing.T) {
 	providerContent := `provider "azurerm" {
-  features {}
+	features {}
 }
 `
 	providerPath := filepath.Join(dir, "provider_test.tf")
@@ -29,20 +29,20 @@ func getBaseTerraformOptions(vars map[string]interface{}, t *testing.T) *terrafo
 	injectProviderFile(moduleDir, t)
 
 	defaultVars := map[string]interface{}{
-		"name":                     "apim-default",
-		"location":                 "uksouth",
-		"resource_group_name":      "rg-test",
-		"client_secret":            "asecret",
-		"client_id":                "123",
+		"name":                       "apim-default",
+		"location":                   "uksouth",
+		"resource_group_name":        "rg-test",
+		"client_secret":              "asecret",
+		"client_id":                  "123",
 		"log_analytics_workspace_id": "123",
-		"sku_capacity":             1,
-		"sku_name":                 "Developer",
-		"zones":                    []interface{}{},
-		"additional_locations":     []interface{}{},
-		"certificate_details":      []interface{}{},
-		"publisher_name":           "Example Ltd.",
-		"publisher_email":          "email@example.com",
-		"virtual_network_type":     "Internal",
+		"sku_capacity":               1,
+		"sku_name":                   "Developer",
+		"zones":                      []interface{}{},
+		"additional_locations":       []interface{}{},
+		"certificate_details":        []interface{}{},
+		"publisher_name":             "Example Ltd.",
+		"publisher_email":            "email@example.com",
+		"virtual_network_type":       "Internal",
 		"virtual_network_configuration": []string{
 			"/subscriptions/xxx/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet",
 		},
