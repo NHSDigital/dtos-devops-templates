@@ -43,6 +43,7 @@ func getBaseTerraformOptions(vars map[string]interface{}) *terraform.Options {
 		TerraformDir: "../../infrastructure/modules/api-management",
 		Vars:         defaultVars,
 		NoColor:      true,
+		TerraformBinary:  "terraform",
 	}
 }
 
