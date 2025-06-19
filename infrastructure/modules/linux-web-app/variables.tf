@@ -124,6 +124,11 @@ variable "https_only" {
 
 variable "linux_web_app_name" {
   description = "Name of the Web App"
+  type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9-]{0,58}[a-zA-Z0-9]$", var.linux_web_app_name))
+    error_message = "The Azure Linux Web App name must be between 1 and 60 characters, start with an alphanumeric character, end with an alphanumeric character, and can contain alphanumeric characters and hyphens."
+  }
 }
 
 variable "linux_web_app_slots" {

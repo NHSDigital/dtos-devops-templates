@@ -1,6 +1,10 @@
 variable "name" {
   description = "The name of the Event Hub namespace."
   type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9-]{1,50}$", var.name))
+    error_message = "The Event Hub namespace name must be between 1 and 50 characters, start with an alphanumeric character, end with an alphanumeric character, and can only contain alphanumeric characters and hyphens."
+  }
 }
 
 variable "resource_group_name" {

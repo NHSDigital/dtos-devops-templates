@@ -31,6 +31,10 @@ variable "public_network_access_enabled" {
 variable "topic_name" {
   description = "The name of the Event Grid topic."
   type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9_][a-zA-Z0-9-_]{0,48}[a-zA-Z0-9_]$", var.name))
+    error_message = "The Event Grid Topic name must be between 1 and 50 characters and can only contain alphanumeric characters, hyphens, and underscores."
+  }
 }
 
 variable "tags" {

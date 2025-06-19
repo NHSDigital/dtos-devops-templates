@@ -1,6 +1,10 @@
 variable "name" {
-  type        = string
   description = "The name (in FQDN form) of the zone."
+  type        = string
+  validation {
+    condition     = can(regex("^([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$", var.name))
+    error_message = "The Private DNS Zone name must be up to 253 characters, with each label starting and ending with an alphanumeric character, and can contain alphanumeric characters, hyphens, and periods (but not underscores at the start or end of labels)."
+  }
 }
 
 variable "resource_group_name" {

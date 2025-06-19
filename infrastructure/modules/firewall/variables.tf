@@ -2,14 +2,18 @@ variable "firewall_name" {
   description = "The name of the firewall."
   type        = string
   validation {
-    condition     = length(var.firewall_name) <= 64
-    error_message = "The name of the firewall must be less than or equal to 64 characters."
+    condition     = can(regex("^[a-zA-Z0-9_][a-zA-Z0-9-_]{0,253}[a-zA-Z0-9_]$", var.name))
+    error_message = "The Firewall name must be between 1 and 255 characters and can only contain alphanumeric characters, hyphens, and underscores."
   }
 }
 
 variable "resource_group_name" {
   description = "The name of the resource group in which to create the firewall."
   type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9-]{1,255}$", var.name))
+    error_message = "The APP Insight service name must be between 1 and 255 characters and can only contain alphanumeric characters, hyphens, and underscores."
+  }
 }
 
 variable "location" {

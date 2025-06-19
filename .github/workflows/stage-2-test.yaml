@@ -73,6 +73,22 @@ jobs:
       - name: "Save the coverage check result"
         run: |
           echo "Nothing to save"
+  unit-test-terraform-modules:
+    name: "Unit test terraform modules"
+    needs: [test-unit]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v4
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.2
+      - name: "run the tests"
+        run: |
+          cd tests/modules
+          go test -v
   perform-static-analysis:
     name: "Perform static analysis"
     needs: [test-unit]

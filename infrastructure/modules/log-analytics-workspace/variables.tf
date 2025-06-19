@@ -6,6 +6,10 @@ variable "location" {
 variable "name" {
   type        = string
   description = "Is the LAW name."
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9-]{2,61}[a-zA-Z0-9]$", var.name))
+    error_message = "The Azure Log Analytics Workspace name must be between 4 and 63 characters, start with a letter or number, end with a letter or number, and can contain letters, numbers, and hyphens. Hyphens cannot be the first or last character."
+  }
 }
 
 variable "law_sku" {

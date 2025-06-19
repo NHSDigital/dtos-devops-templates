@@ -1,5 +1,10 @@
 variable "name" {
-  type = string
+  description = "The name of the Azure MSSQL Server."
+  type        = string
+  validation {
+    condition     = can(regex("^[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$", var.name))
+    error_message = "The Azure MSSQL Server name must be between 1 and 63 characters, start and end with a lowercase letter or number, and can contain lowercase letters, numbers, and hyphens."
+  }
 }
 
 variable "resource_group_name" {
