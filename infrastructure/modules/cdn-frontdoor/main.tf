@@ -79,7 +79,7 @@ resource "azurerm_cdn_frontdoor_route" "this" {
 
   name                          = each.key
   cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.this[each.value.cdn_frontdoor_endpoint_key].id
-  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin.this[each.value.cdn_frontdoor_origin_group_key].id
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.this[each.value.cdn_frontdoor_origin_group_key].id
   cdn_frontdoor_origin_ids      = [for k in each.value.cdn_frontdoor_origin_keys : azurerm_cdn_frontdoor_origin.this[k].id]
   cdn_frontdoor_origin_path     = each.value.cdn_frontdoor_origin_path
 #  cdn_frontdoor_rule_set_ids    = [for k in each.value.cdn_frontdoor_rule_set_keys : azurerm_cdn_frontdoor_rule_set.this[k].id]
