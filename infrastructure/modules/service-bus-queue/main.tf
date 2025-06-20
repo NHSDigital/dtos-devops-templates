@@ -10,10 +10,10 @@ resource "azurerm_servicebus_namespace" "this" {
   tags = var.tags
 }
 
-resource "azurerm_servicebus_topic" "this" {
-  for_each = var.servicebus_topic_map
+resource "azurerm_servicebus_queue" "this" {
+  for_each = var.servicebus_queue_map
 
-  name                                    = coalesce(each.value.topic_name, each.key)
+  name                                    = coalesce(each.value.queue_name, each.key)
   namespace_id                            = azurerm_servicebus_namespace.this.id
   auto_delete_on_idle                     = each.value.auto_delete_on_idle
   batched_operations_enabled              = each.value.batched_operations_enabled

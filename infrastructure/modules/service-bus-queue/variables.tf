@@ -22,7 +22,7 @@ variable "location" {
 }
 
 variable "premium_messaging_partitions" {
-  description = "Boolean flag which controls whether to enable the topic to be partitioned across multiple message brokers. Changing this forces a new resource to be created."
+  description = "Boolean flag which controls whether to enable the queue to be partitioned across multiple message brokers. Changing this forces a new resource to be created."
   type        = number
   default     = 1
 }
@@ -33,7 +33,7 @@ variable "public_network_access_enabled" {
 }
 
 variable "partitioning_enabled" {
-  description = "Boolean flag which controls whether to enable the topic to be partitioned across multiple message brokers. Changing this forces a new resource to be created."
+  description = "Boolean flag which controls whether to enable the queue to be partitioned across multiple message brokers. Changing this forces a new resource to be created."
   type        = bool
   default     = false
 }
@@ -56,7 +56,7 @@ variable "servicebus_namespace_name" {
   }
 }
 
-variable "servicebus_topic_map" {
+variable "servicebus_queue_map" {
   type = map(object({
     auto_delete_on_idle                     = optional(string, "P10675199DT2H48M5.4775807S")
     batched_operations_enabled              = optional(bool, false)
@@ -68,7 +68,7 @@ variable "servicebus_topic_map" {
     requires_duplicate_detection            = optional(bool, false)
     support_ordering                        = optional(bool)
     status                                  = optional(string, "Active")
-    topic_name                              = optional(string)
+    queue_name                              = optional(string)
   }))
   default = {}
 }

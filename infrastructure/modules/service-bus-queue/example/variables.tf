@@ -39,13 +39,13 @@ variable "private_endpoint_properties" {
 }
 
 variable "service_bus" {
-  description = "Configuration for Service Bus namespaces and their topics"
+  description = "Configuration for Service Bus namespaces and their queues"
   type = map(object({
     namespace_name   = optional(string)
     capacity         = number
     sku_tier         = string
     max_payload_size = string
-    topics = map(object({
+    queues = map(object({
       auto_delete_on_idle                     = optional(string, "P10675199DT2H48M5.4775807S")
       batched_operations_enabled              = optional(bool, false)
       default_message_ttl                     = optional(string, "P10675199DT2H48M5.4775807S")
@@ -56,7 +56,7 @@ variable "service_bus" {
       requires_duplicate_detection            = optional(bool, false)
       support_ordering                        = optional(bool)
       status                                  = optional(string, "Active")
-      topic_name                              = optional(string)
+      queue_name                              = optional(string)
     }))
   }))
 }
