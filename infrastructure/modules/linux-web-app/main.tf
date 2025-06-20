@@ -120,18 +120,18 @@ module "private_endpoint" {
 
   source = "../private-endpoint"
 
-  name                = "${var.linux_web_app_name}-private-endpoint"
+  name                = "${var.linux_web_app_name}-pep"
   resource_group_name = var.private_endpoint_properties.private_endpoint_resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_properties.private_endpoint_subnet_id
 
   private_dns_zone_group = {
-    name                 = "${var.linux_web_app_name}-private-endpoint-zone-group"
+    name                 = "${var.linux_web_app_name}-pep-zone-group"
     private_dns_zone_ids = var.private_endpoint_properties.private_dns_zone_ids
   }
 
   private_service_connection = {
-    name                           = "${var.linux_web_app_name}-private-endpoint-connection"
+    name                           = "${var.linux_web_app_name}-pep-connection"
     private_connection_resource_id = azurerm_linux_web_app.this.id
     subresource_names              = ["sites"]
     is_manual_connection           = var.private_endpoint_properties.private_service_connection_is_manual
