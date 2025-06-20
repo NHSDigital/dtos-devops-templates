@@ -1,6 +1,10 @@
 variable "name" {
+  description = "The name of the Storage Account."
   type        = string
-  description = "The name of the Storage Account"
+  validation {
+    condition     = can(regex("^[a-z0-9]{3,24}$", var.name))
+    error_message = "The Azure Storage Account name must be between 3 and 24 characters and can only contain lowercase letters and numbers."
+  }
 
   validation {
     condition     = length(var.name) <= 24

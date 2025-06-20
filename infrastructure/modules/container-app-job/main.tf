@@ -1,6 +1,9 @@
 # Merge the identities passed in via a variables:
 locals {
-  all_identity_ids = concat([var.acr_managed_identity_id], var.user_assigned_identity_ids)
+  all_identity_ids = compact(concat(
+    [var.acr_managed_identity_id],
+    var.user_assigned_identity_ids)
+  )
 }
 
 resource "azurerm_container_app_job" "this" {

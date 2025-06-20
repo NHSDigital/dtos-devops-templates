@@ -107,12 +107,6 @@ Description: The SKU name for the PostgreSQL Flexible Server.
 
 Type: `string`
 
-### <a name="input_tags"></a> [tags](#input\_tags)
-
-Description: A map of tags to assign to the PostgreSQL Flexible Server.
-
-Type: `map(string)`
-
 ### <a name="input_tenant_id"></a> [tenant\_id](#input\_tenant\_id)
 
 Description: The tenant ID for the Azure Active Directory.
@@ -122,6 +116,14 @@ Type: `string`
 ## Optional Inputs
 
 The following input variables are optional (have default values):
+
+### <a name="input_admin_identities"></a> [admin\_identities](#input\_admin\_identities)
+
+Description: List of managed identities modules with admin access to the postgres server. The managed identity must have the Directory.Read.All permission.
+
+Type: `list(any)`
+
+Default: `[]`
 
 ### <a name="input_administrator_login"></a> [administrator\_login](#input\_administrator\_login)
 
@@ -195,6 +197,14 @@ Type: `string`
 
 Default: `"P4"`
 
+### <a name="input_tags"></a> [tags](#input\_tags)
+
+Description: A map of tags to assign to the PostgreSQL Flexible Server.
+
+Type: `map(string)`
+
+Default: `{}`
+
 ### <a name="input_zone"></a> [zone](#input\_zone)
 
 Description: The availability zone for the PostgreSQL Flexible Server. Azure will automatically assign an Availability Zone if one is not specified.
@@ -221,7 +231,15 @@ Version:
 
 The following outputs are exported:
 
+### <a name="output_database_names"></a> [database\_names](#output\_database\_names)
+
+Description: n/a
+
 ### <a name="output_db_admin_pwd_keyvault_secret"></a> [db\_admin\_pwd\_keyvault\_secret](#output\_db\_admin\_pwd\_keyvault\_secret)
+
+Description: n/a
+
+### <a name="output_host"></a> [host](#output\_host)
 
 Description: n/a
 ## Resources
@@ -230,6 +248,7 @@ The following resources are used by this module:
 
 - [azurerm_key_vault_secret.db_admin_pwd](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret) (resource)
 - [azurerm_postgresql_flexible_server.postgresql_flexible_server](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server) (resource)
+- [azurerm_postgresql_flexible_server_active_directory_administrator.admin_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_active_directory_administrator) (resource)
 - [azurerm_postgresql_flexible_server_active_directory_administrator.postgresql_admin](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_active_directory_administrator) (resource)
 - [azurerm_postgresql_flexible_server_configuration.postgresql_flexible_config](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_configuration) (resource)
 - [azurerm_postgresql_flexible_server_database.postgresql_flexible_db](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_database) (resource)

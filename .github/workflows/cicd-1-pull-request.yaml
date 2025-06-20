@@ -24,6 +24,7 @@ jobs:
       terraform_version: ${{ steps.variables.outputs.terraform_version }}
       version: ${{ steps.variables.outputs.version }}
       does_pull_request_exist: ${{ steps.pr_exists.outputs.does_pull_request_exist }}
+      docker_file_exists: ${{ steps.check_compose.outputs.docker_file_exists }}
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
@@ -54,6 +55,14 @@ jobs:
             echo "Pull request doesn't exist"
             echo "does_pull_request_exist=false" >> $GITHUB_OUTPUT
           fi
+      - name: Check if .compose.yaml exists
+        id: check_compose
+        run: |
+          if [ -f ".compose.yaml" ]; then
+            echo "docker_file_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "docker_file_exists=false" >> $GITHUB_OUTPUT
+          fi
       - name: "List variables"
         run: |
           export BUILD_DATETIME_LONDON="${{ steps.variables.outputs.build_datetime_london }}"
@@ -65,6 +74,7 @@ jobs:
           export TERRAFORM_VERSION="${{ steps.variables.outputs.terraform_version }}"
           export VERSION="${{ steps.variables.outputs.version }}"
           export DOES_PULL_REQUEST_EXIST="${{ steps.pr_exists.outputs.does_pull_request_exist }}"
+          export DOCKER_FILE_EXISTS="${{ steps.check_compose.outputs.docker_file_exists }}"
           make list-variables
   commit-stage: # Recommended maximum execution time is 2 minutes
     name: "Commit stage"
@@ -96,7 +106,7 @@ jobs:
     name: "Build stage"
     needs: [metadata, test-stage]
     uses: ./.github/workflows/stage-3-build.yaml
-    if: needs.metadata.outputs.does_pull_request_exist == 'true' || (github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened'))
+    if: needs.metadata.outputs.docker_file_exists == 'true' && (needs.metadata.outputs.does_pull_request_exist == 'true' || (github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened')))
     with:
       docker_compose_file_csv_list: ./compose.yaml
       excluded_containers_csv_list: azurite,azurite-setup,sql-database,database-setup,db

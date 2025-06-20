@@ -1,6 +1,10 @@
 variable "name" {
   description = "The name of the route table."
   type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_]{0,78}[a-zA-Z0-9]$", var.name))
+    error_message = "The Route Table name must be between 1 and 80 characters, start with an alphanumeric character, end with an alphanumeric character, and can only contain alphanumeric characters, hyphens, and underscores."
+  }
 }
 
 variable "resource_group_name" {
@@ -24,7 +28,7 @@ variable "routes" {
     name                   = string
     address_prefix         = string
     next_hop_type          = string
-    next_hop_in_ip_address = string
+    next_hop_in_ip_address = optional(string)
   }))
 
   validation {

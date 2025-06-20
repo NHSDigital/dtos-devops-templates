@@ -2,8 +2,8 @@ variable "name" {
   description = "The name of the API Management service."
   type        = string
   validation {
-    condition     = length(var.name) <= 50
-    error_message = "The API Management service name must be less than or equal to 50 characters."
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_]{0,48}[a-zA-Z0-9]$", var.name))
+    error_message = "The API Management service name must be between 1 and 50 characters, start and end with an alphanumeric character, and can contain alphanumeric characters and hyphens."
   }
 }
 

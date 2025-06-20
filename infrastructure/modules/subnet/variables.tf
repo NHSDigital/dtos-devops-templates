@@ -29,6 +29,10 @@ variable "location" {
 variable "name" {
   type        = string
   description = "The name of the subnet."
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9.-]{0,78}[a-zA-Z0-9]$", var.name))
+    error_message = "The Azure Subnet name must be between 2 and 80 characters, start and end with an alphanumeric character, and can contain alphanumeric characters, hyphens, and periods."
+  }
 }
 
 variable "network_security_group_name" {

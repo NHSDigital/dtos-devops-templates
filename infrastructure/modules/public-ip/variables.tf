@@ -2,8 +2,8 @@ variable "name" {
   description = "The name of the public IP address."
   type        = string
   validation {
-    condition     = can(regex("^[a-z0-9-]{1,80}$", var.name))
-    error_message = "The public IP address name must be a valid name."
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9.-]{0,78}[a-zA-Z0-9]$", var.name))
+    error_message = "The Public IP Address name must be between 1 and 80 characters, start with an alphanumeric character, end with an alphanumeric character, and can contain alphanumeric characters, hyphens, and periods."
   }
 }
 

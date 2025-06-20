@@ -102,6 +102,10 @@ variable "probe" {
 variable "names" {
   description = "A map containing configuration object names for the Application Gateway."
   type        = any
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9_][a-zA-Z0-9-_]{0,78}[a-zA-Z0-9_]$", var.names.name))
+    error_message = "The Application Gateway name must start and end with an alphanumeric character or underscore, and can contain alphanumeric characters, hyphens, periods, and underscores (up to 80 characters)."
+  }
 }
 
 variable "request_routing_rule" {

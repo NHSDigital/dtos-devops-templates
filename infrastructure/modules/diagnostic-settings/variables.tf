@@ -1,6 +1,10 @@
 variable "name" {
-  type        = string
   description = "value of the name of the diagnostic setting"
+  type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_]{0,78}[a-zA-Z0-9]$", var.name))
+    error_message = "The Diagnostic Setting name must be between 1 and 80 characters, start with an alphanumeric character, end with an alphanumeric character, and can only contain alphanumeric characters, hyphens, and underscores."
+  }
 }
 
 variable "enabled_log" {

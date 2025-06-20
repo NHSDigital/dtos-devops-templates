@@ -6,6 +6,10 @@ variable "location" {
 variable "name" {
   description = "The name of the private endpoint."
   type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9.-]{0,78}[a-zA-Z0-9]$", var.name))
+    error_message = "The Private Endpoint name must be between 1 and 80 characters, start and end with an alphanumeric character, and can contain alphanumeric characters, hyphens, and periods."
+  }
 }
 
 variable "private_dns_zone_group" {
