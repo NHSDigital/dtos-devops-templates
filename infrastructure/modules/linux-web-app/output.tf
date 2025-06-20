@@ -17,7 +17,3 @@ output "name" {
   description = "The name of the Linux Web App."
   value       = azurerm_linux_web_app.this.name
 }
-
-output "private_endpoint_id" {
-  value = var.private_endpoint_properties.private_endpoint_enabled ? module.private_endpoint[0].id : null
-}
