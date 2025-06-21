@@ -1,5 +1,5 @@
 resource "azurerm_dns_a_record" "apex" {
-  for_each = { for k, v in custom_domain : k => v if v.host_name == v.dns_zone_name }
+  for_each = { for k, v in var.custom_domain : k => v if v.host_name == v.dns_zone_name }
 
   provider = azurerm.dns
 
@@ -13,7 +13,7 @@ resource "azurerm_dns_a_record" "apex" {
 }
 
 resource "azurerm_dns_cname_record" "custom" {
-  for_each = { for k, v in custom_domain : k => v if v.host_name != v.dns_zone_name }
+  for_each = { for k, v in var.custom_domain : k => v if v.host_name != v.dns_zone_name }
 
   provider = azurerm.dns
 
