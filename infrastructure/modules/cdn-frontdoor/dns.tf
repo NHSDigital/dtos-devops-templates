@@ -1,8 +1,4 @@
-locals {
-  dns_name_host_part = replace(each.value.host_name, ".${each.value.dns_zone_name}", "")
-}
-
-resource "azurerm_dns_a_record" "apex" { # A record, because you cannot have a CNAME for @
+resource "azurerm_dns_a_record" "apex" { # A record, because you cannot have a CNAME for "@"
   for_each = { for k, v in var.custom_domain : k => v if v.host_name == v.dns_zone_name }
 
   provider = azurerm.dns
@@ -21,7 +17,7 @@ resource "azurerm_dns_cname_record" "custom" {
 
   provider = azurerm.dns
 
-  name                = local.dns_name_host_part
+  name                = replace(each.value.host_name, ".${each.value.dns_zone_name}", "")
   zone_name           = each.value.dns_zone_name
   resource_group_name = coalesce(each.value.zone_rg_name, var.public_dns_zone_rg_name)
   ttl                 = 60
@@ -33,7 +29,7 @@ resource "azurerm_dns_cname_record" "custom" {
 resource "azurerm_dns_txt_record" "challenge" {
   for_each = var.custom_domain
 
-  name                = join(".", compact(["_dnsauth", local.dns_name_host_part]))
+  name                = join(".", compact(["_dnsauth", replace(each.value.host_name, ".${each.value.dns_zone_name}", "")]))
   zone_name           = each.value.dns_zone_name
   resource_group_name = coalesce(each.value.zone_rg_name, var.public_dns_zone_rg_name)
   ttl                 = 60
