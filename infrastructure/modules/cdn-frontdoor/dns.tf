@@ -1,4 +1,4 @@
-resource "azurerm_dns_a_record" "apex" { # A record, because you cannot have a CNAME for "@"
+resource "azurerm_dns_a_record" "root_alias" {
   for_each = { for k, v in var.custom_domain : k => v if v.host_name == v.dns_zone_name }
 
   provider = azurerm.dns

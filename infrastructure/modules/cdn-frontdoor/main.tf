@@ -74,7 +74,7 @@ resource "azurerm_cdn_frontdoor_custom_domain" "this" {
   }
 
   depends_on = [
-    azurerm_dns_a_record.apex,
+    azurerm_dns_a_record.root_alias,
     azurerm_dns_cname_record.custom
   ]
 }
