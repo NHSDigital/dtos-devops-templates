@@ -13,7 +13,6 @@ variable "custom_domain" {
 
     tls = object({
       certificate_type        = optional(string, "ManagedCertificate") # Use of apex domain as a hostname requires "CustomerCertificate"
-      minimum_tls_version     = optional(string, "TLS12")
       cdn_frontdoor_secret_id = optional(string, null) # Key Vault versionless_secret_id of the customer certificate
     })
   }))

@@ -70,7 +70,6 @@ resource "azurerm_cdn_frontdoor_custom_domain" "this" {
 
   tls {
     certificate_type        = each.value.tls.certificate_type
-    minimum_tls_version     = each.value.tls.minimum_tls_version
     cdn_frontdoor_secret_id = each.value.tls.cdn_frontdoor_secret_id
   }
 
