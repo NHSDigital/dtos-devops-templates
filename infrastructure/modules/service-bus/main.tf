@@ -28,12 +28,12 @@ resource "azurerm_servicebus_topic" "this" {
 }
 
 resource "azurerm_servicebus_namespace_authorization_rule" "this" {
-  name                = "access-rule"
-  namespace_id        = azurerm_servicebus_namespace.this.id
+  name         = "access-rule"
+  namespace_id = azurerm_servicebus_namespace.this.id
 
-  listen              = true
-  send                = true
-  manage              = false
+  listen = true
+  send   = true
+  manage = false
 }
 
 

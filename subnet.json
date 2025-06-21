@@ -1,0 +1,27 @@
+{
+  "addressPrefix": "10.100.10.0/24",
+  "defaultOutboundAccess": true,
+  "delegations": [
+    {
+      "actions": [
+        "Microsoft.Network/virtualNetworks/subnets/join/action"
+      ],
+      "etag": "W/\"0f0373fa-68fd-411b-bf9d-c67f1789b66c\"",
+      "id": "/subscriptions/ecef17e1-613b-40b6-83d8-b93e8b5556bf/resourceGroups/rg-hub-dev-uks-hub-networking/providers/Microsoft.Network/virtualNetworks/VNET-DEV-UKS-HUB/subnets/SN-DEV-UKS-HUB-github-actions/delegations/GitHub.Network/networkSettings",
+      "name": "GitHub.Network/networkSettings",
+      "provisioningState": "Succeeded",
+      "resourceGroup": "rg-hub-dev-uks-hub-networking",
+      "serviceName": "GitHub.Network/networkSettings",
+      "type": "Microsoft.Network/virtualNetworks/subnets/delegations"
+    }
+  ],
+  "etag": "W/\"0f0373fa-68fd-411b-bf9d-c67f1789b66c\"",
+  "id": "/subscriptions/ecef17e1-613b-40b6-83d8-b93e8b5556bf/resourceGroups/rg-hub-dev-uks-hub-networking/providers/Microsoft.Network/virtualNetworks/VNET-DEV-UKS-HUB/subnets/SN-DEV-UKS-HUB-github-actions",
+  "name": "SN-DEV-UKS-HUB-github-actions",
+  "privateEndpointNetworkPolicies": "Disabled",
+  "privateLinkServiceNetworkPolicies": "Enabled",
+  "provisioningState": "Succeeded",
+  "resourceGroup": "rg-hub-dev-uks-hub-networking"
+  ],
+  "type": "Microsoft.Network/virtualNetworks/subnets"
+}
