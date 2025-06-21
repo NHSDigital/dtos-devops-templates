@@ -60,19 +60,25 @@ resource "azurerm_cdn_frontdoor_origin" "this" {
   }
 }
 
-# resource "azurerm_cdn_frontdoor_custom_domain" "this" {
-#   for_each = toset(var.custom_domains)
+resource "azurerm_cdn_frontdoor_custom_domain" "this" {
+  for_each = var.custom_domain
 
-#   name                     = each.key
-#   cdn_frontdoor_profile_id = var.cdn_frontdoor_profile_id
-#   dns_zone_id              = azurerm_dns_zone.example.id
-#   host_name                = join(".", ["fabrikam", azurerm_dns_zone.example.name])
+  name                     = each.key
+  cdn_frontdoor_profile_id = var.cdn_frontdoor_profile_id
+  dns_zone_id              = data.azurerm_dns_zone.custom[each.key].id
+  host_name                = each.value.host_name
 
-#   tls {
-#     certificate_type    = "ManagedCertificate"
-#     minimum_tls_version = "TLS12"
-#   }
-# }
+  tls {
+    certificate_type        = each.value.tls.certificate_type
+    minimum_tls_version     = each.value.tls.minimum_tls_version
+    cdn_frontdoor_secret_id = each.value.tls.cdn_frontdoor_secret_id
+  }
+
+  depends_on = [
+    azurerm_dns_a_record.apex,
+    azurerm_dns_cname_record.custom
+  ]
+}
 
 resource "azurerm_cdn_frontdoor_route" "this" {
   for_each = var.route
@@ -90,7 +96,7 @@ resource "azurerm_cdn_frontdoor_route" "this" {
   patterns_to_match      = each.value.patterns_to_match
   supported_protocols    = each.value.supported_protocols
 
-#  cdn_frontdoor_custom_domain_ids = [for k in each.value.cdn_frontdoor_custom_domain_keys : azurerm_cdn_frontdoor_custom_domain.this[k].id]
+  cdn_frontdoor_custom_domain_ids = [for k in each.value.cdn_frontdoor_custom_domain_keys : azurerm_cdn_frontdoor_custom_domain.this[k].id]
   link_to_default_domain          = each.value.link_to_default_domain
 
   dynamic "cache" {

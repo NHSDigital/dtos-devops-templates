@@ -3,17 +3,21 @@ variable "cdn_frontdoor_profile_id" {
   type        = string
 }
 
-# variable "custom_domains" {
-#   type = map(object({
-#     dns_zone_id              = azurerm_dns_zone.example.id
-#     host_name                = join(".", ["fabrikam", azurerm_dns_zone.example.name])
+variable "custom_domain" {
+  description = "Map of Front Door Custom Domain configurations"
+  type = map(object({
+    host_name                  = string
+    dns_zone_name              = string
+    zone_rg_name               = optional(string)
+    cdn_frontdoor_endpoint_key = string
 
-#     tls {
-#       certificate_type    = "ManagedCertificate"
-#       minimum_tls_version = "TLS12"
-#     }
-#   }))
-# }
+    tls = object({
+      certificate_type        = optional(string, "ManagedCertificate") # Use of apex domain as a hostname requires "CustomerCertificate"
+      minimum_tls_version     = optional(string, "TLS12")
+      cdn_frontdoor_secret_id = optional(string) # Key Vault versionless_secret_id of the customer certificate
+    })
+  }))
+}
 
 variable "endpoint" {
   description = "Map of Front Door Endpoint configurations"
@@ -65,6 +69,11 @@ variable "origin_group" {
   }))
 }
 
+variable "public_dns_zone_rg_name" {
+  description = "Resource Group name for public DNS zones. You may optionally specify this per custom domain in var.custom_domain."
+  type        = optional(string)
+}
+
 variable "resource_group_name" {
   type = string
 }
@@ -101,4 +110,3 @@ variable "tags" {
   description = "Resource tags to be applied throughout the deployment."
   default     = {}
 }
-
