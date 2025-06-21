@@ -38,4 +38,3 @@ resource "azurerm_dns_txt_record" "challenge" {
     value = azurerm_cdn_frontdoor_custom_domain.this[each.key].validation_token
   }
 }
-
