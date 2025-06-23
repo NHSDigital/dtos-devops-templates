@@ -145,6 +145,7 @@ locals {
     resource-application                = lower("${var.env}-${var.location_map[var.location]}-${var.application}")
     route-table                         = lower("RT-${var.env}-${var.location_map[var.location]}-${var.application}")
     service-bus                         = lower("SB-${var.location_map[var.location]}-${var.env}-${var.application}")
+    service-bus-namespace               = lower("SBN-${var.location_map[var.location]}-${var.env}-${var.application}")
     service-principal                   = upper("SP-${var.env}-${var.application}")
     sql-server                          = lower("SQLSVR-${var.application}-${var.env}-${var.location_map[var.location]}")
     sql-server-db                       = lower("SQLDB-${var.application}-${var.env}-${var.location_map[var.location]}")
