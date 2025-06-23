@@ -6,5 +6,5 @@ output "host" {
   value = azurerm_postgresql_flexible_server.postgresql_flexible_server.fqdn
 }
 output "database_names" {
-  value = [for db in var.databases: db["name"]]
+  value = [for db in var.databases : db["name"]]
 }

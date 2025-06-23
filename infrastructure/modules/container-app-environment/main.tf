@@ -1,11 +1,12 @@
 resource "azurerm_container_app_environment" "main" {
-  name                           = var.name
-  location                       = var.location
-  resource_group_name            = var.resource_group_name
-  log_analytics_workspace_id     = var.log_analytics_workspace_id
-  infrastructure_subnet_id       = var.vnet_integration_subnet_id
-  internal_load_balancer_enabled = true
-  zone_redundancy_enabled        = var.zone_redundancy_enabled
+  name                               = var.name
+  location                           = var.location
+  resource_group_name                = var.resource_group_name
+  log_analytics_workspace_id         = var.log_analytics_workspace_id
+  infrastructure_subnet_id           = var.vnet_integration_subnet_id
+  internal_load_balancer_enabled     = true
+  zone_redundancy_enabled            = var.zone_redundancy_enabled
+  infrastructure_resource_group_name = "${var.resource_group_name}-infra"
 }
 
 module "apex-record" {
