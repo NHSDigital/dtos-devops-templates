@@ -6,7 +6,7 @@ The following input variables are required:
 
 ### <a name="input_name"></a> [name](#input\_name)
 
-Description: n/a
+Description: The name of the DNS A Record service.
 
 Type: `string`
 

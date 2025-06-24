@@ -43,7 +43,7 @@ Type: `list(string)`
 
 ### <a name="input_name"></a> [name](#input\_name)
 
-Description: The name of the Storage Account
+Description: The name of the Storage Account.
 
 Type: `string`
 

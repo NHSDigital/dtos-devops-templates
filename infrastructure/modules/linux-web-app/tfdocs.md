@@ -38,7 +38,7 @@ Type: `any`
 
 Description: Name of the Web App
 
-Type: `any`
+Type: `string`
 
 ### <a name="input_location"></a> [location](#input\_location)
 
