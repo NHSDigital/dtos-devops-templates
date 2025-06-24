@@ -12,7 +12,7 @@ Type: `string`
 
 ### <a name="input_name"></a> [name](#input\_name)
 
-Description: The name (in FQDN form) of the zone.
+Description: The name of the Azure Monitor Private Link Scoped Service.
 
 Type: `string`
 

@@ -38,7 +38,7 @@ Type: `string`
 
 Description: Name of the Function App
 
-Type: `any`
+Type: `string`
 
 ### <a name="input_image_name"></a> [image\_name](#input\_image\_name)
 

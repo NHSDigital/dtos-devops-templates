@@ -28,6 +28,21 @@ Description: ID of the subnet for the container app environment. Must be at leas
 
 Type: `string`
 
+### <a name="input_workload_profile"></a> [workload\_profile](#input\_workload\_profile)
+
+Description: Workload profile for the container app environment. This defines the scaling and resource allocation for the environment. Possible workload\_profile\_type values include Consumption, D4, D8, D16, D32, E4, E8, E16 and E32.
+
+Type:
+
+```hcl
+object({
+    name                  = optional(string, "Consumption")
+    workload_profile_type = optional(string, "Consumption")
+    minimum_count         = optional(number, 0)
+    maximum_count         = optional(number, 1)
+  })
+```
+
 ## Optional Inputs
 
 The following input variables are optional (have default values):

@@ -6,7 +6,13 @@ resource "azurerm_container_app_environment" "main" {
   infrastructure_subnet_id           = var.vnet_integration_subnet_id
   internal_load_balancer_enabled     = true
   zone_redundancy_enabled            = var.zone_redundancy_enabled
-  infrastructure_resource_group_name = "${var.resource_group_name}-infra"
+  infrastructure_resource_group_name = "${var.resource_group_name}-cae-infra"
+  workload_profile {
+    name                  = var.workload_profile.name
+    workload_profile_type = var.workload_profile.workload_profile_type
+    minimum_count         = var.workload_profile.minimum_count
+    maximum_count         = var.workload_profile.maximum_count
+  }
 }
 
 module "apex-record" {
