@@ -14,6 +14,7 @@ resource "azurerm_container_app_job" "this" {
   container_app_environment_id = var.container_app_environment_id
   replica_timeout_in_seconds   = var.replica_timeout_in_seconds
   replica_retry_limit          = var.replica_retry_limit
+  workload_profile_name        = var.workload_profile_name
 
   identity {
     type         = "UserAssigned"

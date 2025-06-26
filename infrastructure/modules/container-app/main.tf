@@ -30,6 +30,7 @@ resource "azurerm_container_app" "main" {
   container_app_environment_id = var.container_app_environment_id
   resource_group_name          = var.resource_group_name
   revision_mode                = "Single"
+  workload_profile_name        = var.workload_profile_name
 
   identity {
     type         = "UserAssigned"

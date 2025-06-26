@@ -128,6 +128,14 @@ Type: `list(string)`
 
 Default: `[]`
 
+### <a name="input_workload_profile_name"></a> [workload\_profile\_name](#input\_workload\_profile\_name)
+
+Description: Workload profile in this container app environment
+
+Type: `string`
+
+Default: `"Consumption"`
+
 
 ## Resources
 
