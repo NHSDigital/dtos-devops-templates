@@ -90,6 +90,13 @@ variable "user_assigned_identity_ids" {
   default     = []
 }
 
+variable "workload_profile_name" {
+  description = "Workload profile in this container app environment"
+  type        = string
+  default     = "Consumption"
+  nullable    = false
+}
+
 locals {
   memory = "${var.memory}Gi"
   cpu    = var.memory / 2
