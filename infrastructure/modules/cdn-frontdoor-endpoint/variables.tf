@@ -1,6 +1,7 @@
 variable "cdn_frontdoor_firewall_policy_rg_name" {
   description = "Resource Group name containing Front Door WAF policies. You may optionally override this per firewall policy in var.security_policies"
   type        = string
+  default     = null # Security policies are optional
 }
 
 variable "cdn_frontdoor_profile_id" {
@@ -22,22 +23,12 @@ variable "custom_domains" {
 
     zone_rg_name = optional(string, null)
   }))
-}
-
-variable "endpoint" {
-  description = "Front Door Endpoint configuration"
-  type = object({
-    enabled = optional(bool, true)
-  })
   default = {}
 }
 
-variable "environment" {
-  type = string
-}
-
-variable "frontdoor_naming_key" {
-  type = string
+variable "name" {
+  description = "Name, which will be used as a prefix for most of the configuration elements. If multiple environments will cohabit with the Front Door Profile, ensure there is an environment component to this name to avoid naming collisions."
+  type        = string
 }
 
 variable "origins" {
@@ -54,7 +45,7 @@ variable "origins" {
     private_link = optional(object({
       location               = string
       private_link_target_id = string
-      target_type            = optional(string) # blob, blob_secondary, sites, web, etc.
+      target_type            = optional(string) # blob, blob_secondary, Gateway, managedEnvironments (Container Apps), sites (App Services), web and web_secondary
     }))
 
     weight = optional(number, 500) # 1–1000
@@ -65,10 +56,10 @@ variable "origin_group" {
   description = "Front Door Origin Group configuration"
   type = object({
     health_probe = optional(object({
-      interval_in_seconds = number                   # Required: 1–255
-      path                = optional(string, "/")    # Optional
-      protocol            = string                   # Required: "Http" or "Https"
-      request_type        = optional(string, "HEAD") # Optional: "GET" or "HEAD"
+      interval_in_seconds = number # Required: 1–255
+      path                = optional(string, "/")
+      protocol            = optional(string, "Https")
+      request_type        = optional(string, "HEAD")
     }))
 
     load_balancing = optional(object({
@@ -86,6 +77,7 @@ variable "origin_group" {
 variable "public_dns_zone_rg_name" {
   description = "Resource Group name for public DNS zones. You may optionally override this per custom domain in var.custom_domain"
   type        = string
+  default     = null # Custom domains are optional
 }
 
 variable "resource_group_name" {
@@ -107,10 +99,11 @@ variable "route" {
     enabled                    = optional(bool, true)
     forwarding_protocol        = optional(string, "MatchRequest") # "HttpOnly" | "HttpsOnly" | "MatchRequest"
     https_redirect_enabled     = optional(bool, false)
-    link_to_default_domain     = optional(bool, true)
+    link_to_default_domain     = optional(bool, false)
     patterns_to_match          = optional(list(string), ["/*"])
     supported_protocols        = optional(list(string), ["Https"]) # Must be a subset of ["Http", "Https"]
   })
+  default = {}
 }
 
 variable "security_policies" {

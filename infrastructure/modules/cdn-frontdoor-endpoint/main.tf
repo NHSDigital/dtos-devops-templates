@@ -1,13 +1,13 @@
 resource "azurerm_cdn_frontdoor_endpoint" "this" {
-  name                     = lower("${var.environment}-${var.frontdoor_naming_key}")
+  name                     = var.name
   cdn_frontdoor_profile_id = var.cdn_frontdoor_profile_id
-  enabled                  = var.endpoint.enabled
+  enabled                  = true
 
   tags = var.tags
 }
 
 resource "azurerm_cdn_frontdoor_origin_group" "this" {
-  name                     = lower("${var.environment}-${var.frontdoor_naming_key}-origins")
+  name                     = "${var.name}-origins"
   cdn_frontdoor_profile_id = var.cdn_frontdoor_profile_id
   session_affinity_enabled = var.origin_group.session_affinity_enabled
 
@@ -76,7 +76,7 @@ resource "azurerm_cdn_frontdoor_custom_domain" "this" {
 }
 
 resource "azurerm_cdn_frontdoor_route" "this" {
-  name                          = lower("${var.environment}-${var.frontdoor_naming_key}-route")
+  name                          = "${var.name}-route"
   cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.this.id
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.this.id
   cdn_frontdoor_origin_ids      = [for k in keys(var.origins) : azurerm_cdn_frontdoor_origin.this[k].id]
@@ -90,7 +90,7 @@ resource "azurerm_cdn_frontdoor_route" "this" {
   supported_protocols    = var.route.supported_protocols
 
   cdn_frontdoor_custom_domain_ids = [for k in keys(var.custom_domains) : azurerm_cdn_frontdoor_custom_domain.this[k].id]
-  link_to_default_domain          = var.route.link_to_default_domain
+  link_to_default_domain          = var.custom_domains == {} && var.route.link_to_default_domain == false ? true : var.route.link_to_default_domain
 
   dynamic "cache" {
     for_each = var.route.cache != null ? [1] : []
@@ -107,7 +107,7 @@ resource "azurerm_cdn_frontdoor_route" "this" {
 resource "azurerm_cdn_frontdoor_security_policy" "this" {
   for_each = var.security_policies
 
-  name                     = lower("${var.environment}-${var.frontdoor_naming_key}-${each.key}")
+  name                     = "${var.name}-${each.key}"
   cdn_frontdoor_profile_id = var.cdn_frontdoor_profile_id
 
   security_policies {

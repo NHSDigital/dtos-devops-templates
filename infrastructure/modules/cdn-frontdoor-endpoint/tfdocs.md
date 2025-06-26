@@ -8,7 +8,7 @@ The following input variables are required:
 
 Description: Resource Group name containing Front Door WAF policies. You may optionally override this per firewall policy in var.security\_policies
 
-Type: `string`
+Type: `optional(string)`
 
 ### <a name="input_cdn_frontdoor_profile_id"></a> [cdn\_frontdoor\_profile\_id](#input\_cdn\_frontdoor\_profile\_id)
 
@@ -16,34 +16,7 @@ Description: ID of the Front Door profile to associate endpoints and origin grou
 
 Type: `string`
 
-### <a name="input_custom_domains"></a> [custom\_domains](#input\_custom\_domains)
-
-Description: Map of Front Door Custom Domain configurations
-
-Type:
-
-```hcl
-map(object({
-    dns_zone_name = string
-    host_name     = string
-
-    tls = optional(object({
-      # https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-configure-https-custom-domain?tabs=powershell#register-azure-front-door
-      certificate_type        = optional(string, "ManagedCertificate") # Use of apex domain as a hostname requires "CustomerCertificate"
-      cdn_frontdoor_secret_id = optional(string, null)
-    }), {})
-
-    zone_rg_name = optional(string, null)
-  }))
-```
-
-### <a name="input_environment"></a> [environment](#input\_environment)
-
-Description: n/a
-
-Type: `string`
-
-### <a name="input_frontdoor_naming_key"></a> [frontdoor\_naming\_key](#input\_frontdoor\_naming\_key)
+### <a name="input_name"></a> [name](#input\_name)
 
 Description: n/a
 
@@ -68,8 +41,7 @@ map(object({
     private_link = optional(object({
       location               = string
       private_link_target_id = string
-      request_message        = optional(string, "Access request for CDN FrontDoor Private Link Origin")
-      target_type            = optional(string) # blob, blob_secondary, sites, web, etc.
+      target_type            = optional(string) # blob, blob_secondary, Gateway, managedEnvironments (Container Apps), sites (App Services), web and web_secondary
     }))
 
     weight = optional(number, 500) # 1–1000
@@ -80,7 +52,7 @@ map(object({
 
 Description: Resource Group name for public DNS zones. You may optionally override this per custom domain in var.custom\_domain
 
-Type: `string`
+Type: `optional(string)`
 
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
@@ -108,7 +80,7 @@ object({
     enabled                    = optional(bool, true)
     forwarding_protocol        = optional(string, "MatchRequest") # "HttpOnly" | "HttpsOnly" | "MatchRequest"
     https_redirect_enabled     = optional(bool, false)
-    link_to_default_domain     = optional(bool, true)
+    link_to_default_domain     = optional(bool, false)
     patterns_to_match          = optional(list(string), ["/*"])
     supported_protocols        = optional(list(string), ["Https"]) # Must be a subset of ["Http", "Https"]
   })
@@ -118,16 +90,25 @@ object({
 
 The following input variables are optional (have default values):
 
-### <a name="input_endpoint"></a> [endpoint](#input\_endpoint)
+### <a name="input_custom_domains"></a> [custom\_domains](#input\_custom\_domains)
 
-Description: Front Door Endpoint configuration
+Description: Map of Front Door Custom Domain configurations
 
 Type:
 
 ```hcl
-object({
-    enabled = optional(bool, true)
-  })
+map(object({
+    dns_zone_name = string
+    host_name     = string
+
+    tls = optional(object({
+      # https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-configure-https-custom-domain?tabs=powershell#register-azure-front-door
+      certificate_type        = optional(string, "ManagedCertificate") # Use of apex domain as a hostname requires "CustomerCertificate"
+      cdn_frontdoor_secret_id = optional(string, null)
+    }), {})
+
+    zone_rg_name = optional(string, null)
+  }))
 ```
 
 Default: `{}`
@@ -141,10 +122,10 @@ Type:
 ```hcl
 object({
     health_probe = optional(object({
-      interval_in_seconds = number                   # Required: 1–255
-      path                = optional(string, "/")    # Optional
-      protocol            = string                   # Required: "Http" or "Https"
-      request_type        = optional(string, "HEAD") # Optional: "GET" or "HEAD"
+      interval_in_seconds = number # Required: 1–255
+      path                = optional(string, "/")
+      protocol            = optional(string, "Https")
+      request_type        = optional(string, "HEAD")
     }))
 
     load_balancing = optional(object({
