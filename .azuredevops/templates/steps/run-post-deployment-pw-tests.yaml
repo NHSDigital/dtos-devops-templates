@@ -5,6 +5,8 @@ parameters:
   type: string
 - name: testProjectName
   type: string
+- name: testType
+  type: string
 - name: testfileDirectory
   type: string
 - name: slackWebHook
@@ -64,7 +66,7 @@ steps:
     ls -la
     echo "Running tests..."
 
-    npm test
+    npm run test:${{ parameters.testType }}
 
     EXIT_CODE=$?
 
