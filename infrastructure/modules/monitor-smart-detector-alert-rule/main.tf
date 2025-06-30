@@ -12,9 +12,9 @@ resource "azurerm_monitor_smart_detector_alert_rule" "this" {
     ids = [ var.action_group_id ]
   }
 
-  dynamic_criteria {
-    alert_rule_resource_id = "/subscriptions/${var.subscription_id}/providers/Microsoft.AlertsManagement/smartDetectorAlertRules"
-  }
+  # dynamic_criteria {
+  #   alert_rule_resource_id = "/subscriptions/${var.subscription_id}/providers/Microsoft.AlertsManagement/smartDetectorAlertRules"
+  # }
 
   enabled = true
 }
