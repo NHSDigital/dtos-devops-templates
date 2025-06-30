@@ -12,3 +12,19 @@ variable "service_health_email_id" {
   description = "Azure monitor action group service health email ID."
   type        = string
 }
+
+variable "detector_name" {
+  description = "Detector name."
+  type        = string
+}
+
+variable "severity" {
+  description = "severity name."
+  type        = number
+  default     = 2
+}
+
+variable "description" {
+  description = "description of the smart detector alert rule."
+  type        = string
+}
