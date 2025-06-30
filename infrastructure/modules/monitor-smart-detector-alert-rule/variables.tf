@@ -8,8 +8,8 @@ variable "subscription_id" {
   type        = string
 }
 
-variable "service_health_email_id" {
-  description = "Azure monitor action group service health email ID."
+variable "action_group_id" {
+  description = "Azure monitor action group ID."
   type        = string
 }
 

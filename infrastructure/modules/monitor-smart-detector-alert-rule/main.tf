@@ -9,7 +9,7 @@ resource "azurerm_monitor_smart_detector_alert_rule" "this" {
   severity            = var.severity
 
   action_group {
-    action_group_id = var.service_health_email_id
+    ids = [ var.action_group_id ]
   }
 
   dynamic_criteria {
