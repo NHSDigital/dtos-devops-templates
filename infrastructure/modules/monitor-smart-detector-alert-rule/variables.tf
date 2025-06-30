@@ -63,3 +63,8 @@ variable "description" {
   description = "description of the smart detector alert rule."
   type        = string
 }
+
+variable "scope_resource_ids" {
+  description = "Specifies the scopes of this Smart Detector Alert Rule."
+  type        = string
+}
