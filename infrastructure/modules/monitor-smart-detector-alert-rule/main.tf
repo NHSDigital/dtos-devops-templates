@@ -3,10 +3,10 @@ resource "azurerm_monitor_smart_detector_alert_rule" "service_health_incident_al
   resource_group_name = var.resource_group_name
   scope               = ["/subscriptions/${var.subscription_id}"]
 
-  description         = "Alerts on Azure service incidents and advisories"
-  detector_name       = "ServiceHealth"
+  description         = var.description
+  detector_name       = var.detector_name
   frequency           = var.frequency
-  severity            = 2
+  severity            = var.severity
 
   action_group {
     action_group_id = var.service_health_email_id

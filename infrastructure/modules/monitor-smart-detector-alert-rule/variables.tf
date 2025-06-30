@@ -23,3 +23,19 @@ variable "frequency" {
     error_message = "Frequency must be a valid ISO8601 duration string starting with 'PT' (e.g., PT5M, PT1H, PT15M, PT30S)."
   }
 }
+
+variable "detector_name" {
+  description = "Detector name."
+  type        = string
+}
+
+variable "severity" {
+  description = "severity name."
+  type        = number
+  default     = 2
+}
+
+variable "description" {
+  description = "description of the smart detector alert rule."
+  type        = string
+}
