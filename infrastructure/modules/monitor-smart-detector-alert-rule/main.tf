@@ -5,7 +5,7 @@ resource "azurerm_monitor_smart_detector_alert_rule" "service_health_incident_al
 
   description         = "Alerts on Azure service incidents and advisories"
   detector_name       = "ServiceHealth"
-  frequency           = "PT5M"
+  frequency           = var.frequency
   severity            = 2
 
   action_group {

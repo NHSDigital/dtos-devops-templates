@@ -12,3 +12,14 @@ variable "service_health_email_id" {
   description = "Azure monitor action group service health email ID."
   type        = string
 }
+
+variable "frequency" {
+  description = "Specifies the frequency of this Smart Detector Alert Rule in ISO8601 duration format (e.g., PT5M, PT15M, PT1H)."
+  type        = string
+  default     = "PT5M"
+
+  validation {
+    condition = can(regex("^PT([0-9]+H)?([0-9]+M)?([0-9]+S)?$", var.frequency))
+    error_message = "Frequency must be a valid ISO8601 duration string starting with 'PT' (e.g., PT5M, PT1H, PT15M, PT30S)."
+  }
+}
