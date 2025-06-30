@@ -54,9 +54,14 @@ EOT
 }
 
 variable "severity" {
-  description = "severity name."
-  type        = number
-  default     = 2
+  description = "Specifies the severity level. Allowed values: Sev0, Sev1, Sev2, Sev3, Sev4."
+  type        = string
+  default     = "Sev2"
+
+  validation {
+    condition = contains(["Sev0", "Sev1", "Sev2", "Sev3", "Sev4"], var.severity)
+    error_message = "Severity must be one of: Sev0, Sev1, Sev2, Sev3, Sev4."
+  }
 }
 
 variable "description" {
