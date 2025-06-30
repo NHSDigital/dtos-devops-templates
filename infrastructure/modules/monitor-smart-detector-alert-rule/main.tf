@@ -1,10 +1,10 @@
-resource "azurerm_monitor_smart_detector_alert_rule" "service_health_incident_alert" {
+resource "azurerm_monitor_smart_detector_alert_rule" "this" {
   name                = "ServiceHealth-Incidents"
   resource_group_name = var.resource_group_name
   scope               = ["/subscriptions/${var.subscription_id}"]
 
   description         = var.description
-  detector_name       = var.detector_name
+  detector_type       = var.detector_type
   frequency           = var.frequency
   severity            = var.severity
 

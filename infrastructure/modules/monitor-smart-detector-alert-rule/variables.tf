@@ -24,9 +24,33 @@ variable "frequency" {
   }
 }
 
-variable "detector_name" {
-  description = "Detector name."
-  type        = string
+variable "detector_type" {
+  description = <<EOT
+Specifies the Built-In Smart Detector type that this alert rule will use.
+
+Allowed values:
+- FailureAnomaliesDetector
+- RequestPerformanceDegradationDetector
+- DependencyPerformanceDegradationDetector
+- ExceptionVolumeChangedDetector
+- TraceSeverityDetector
+- MemoryLeakDetector
+EOT
+
+  type = string
+
+  validation {
+    condition = contains([
+      "FailureAnomaliesDetector",
+      "RequestPerformanceDegradationDetector",
+      "DependencyPerformanceDegradationDetector",
+      "ExceptionVolumeChangedDetector",
+      "TraceSeverityDetector",
+      "MemoryLeakDetector"
+    ], var.detector_type)
+
+    error_message = "detector_type must be one of: FailureAnomaliesDetector, RequestPerformanceDegradationDetector, DependencyPerformanceDegradationDetector, ExceptionVolumeChangedDetector, TraceSeverityDetector, or MemoryLeakDetector."
+  }
 }
 
 variable "severity" {
