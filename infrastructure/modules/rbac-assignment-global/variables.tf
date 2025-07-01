@@ -1,0 +1,48 @@
+variable "assignments" {
+  description = <<EOT
+List of role assignments to apply to the principal. Each entry must have:
+  - role_definition_name (e.g. "Key Vault Secrets User")
+  - scope (e.g. a resource ID)
+EOT
+
+  type = list(object({
+    scope                = string
+    role_definition_name = string
+  }))
+  default = []
+}
+
+variable "environment" {
+  type        = string
+  description = "A code of the environment in which to create the user-assigned identity and role assignments."
+}
+
+variable "identity_prefix" {
+  type        = string
+  description = "A prefix to use when creating a user-assigned identity"
+  default     = "uami-global"
+}
+
+variable "principal_id" {
+  description = "The principal ID (e.g., user, group, or service principal) to which the role will be assigned."
+  type        = string
+  default     = null
+}
+
+variable "location" {
+  type        = string
+  description = "The region where the user assigned identity must be created."
+}
+
+variable "resource_group" {
+  type        = string
+  description = "A name of a resource group to locate this user assigned identity."
+}
+
+
+variable "tags" {
+  type        = map(string)
+  description = "Resource tags to be applied throughout the deployment."
+  default     = {}
+}
+
