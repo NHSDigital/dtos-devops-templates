@@ -36,50 +36,46 @@ resource "azurerm_role_assignment" "global_uami_role_assignments" {
 # }
 
 locals {
-  kv_ids    = try(var.key_vault_ids, {})
-  st_ids    = try(var.storage_ids, {})
-  sql_ids   = try(var.sql_server_ids, {})
-
-  role_assignments_kv = [
-    for region, obj in local.kv_ids : {
-      scope                = obj.key_vault_id
-      role_definition_name = "Key Vault Secrets User"
+  input_maps = {
+    key_vault_ids = {
+      map    = try(var.key_vault_ids, {}),
+      id_key = "key_vault_id",
+      roles  = ["Key Vault Secrets User"]
     }
-    if try(obj.key_vault_id, null) != null
-  ]
+    storage_ids = {
+      map = try(var.storage_ids, {}),
+      id_key = "storage_account_id", roles = [
+        "Storage Blob Data Reader",
+        "Storage Table Data Contributor",
+        "Storage Queue Data Contributor"
+      ]
+    }
+    sql_server_ids = {
+      map    = try(var.sql_server_ids, {}),
+      id_key = "sql_server_id",
+      roles  = ["SQL DB Contributor"]
+    }
+    function_ids = {
+      map    = try(var.function_ids, {}),
+      id_key = "function_app_id",
+      roles  = ["Contributor"]
+    }
+  }
 
-  role_assignments_st = flatten([
-    for region, obj in local.st_ids : [
-      {
-        scope                = obj.storage_account_id
-        role_definition_name = "Storage Blob Data Reader"
-      },
-      {
-        scope = obj.storage_account_id
-        role_definition_name = "Storage Table Data Reader"
-      },
-      {
-        scope = obj.storage_account_id
-        role_definition_name = "Storage Queue Data Reader"
-      }
+  flattened_roles = flatten([
+    for label, config in local.input_maps : [
+      for region, obj in config.map : [
+        for role in config.roles : {
+          scope                = lookup(obj, config.id_key, null)
+          role_definition_name = role
+        }
+        if lookup(obj, config.id_key, null) != null
+      ]
     ]
-    if try(obj.storage_account_id, null) != null
-  ])
-
-  role_assignments_db = flatten([
-    for region, obj in local.sql_ids : [
-      {
-        scope                = obj.sql_server_id
-        role_definition_name = "SQL DB Contributor"
-      }
-    ]
-    if try(obj.sql_server_id, null) != null
   ])
 
   all_role_assignments = concat(
     var.assignments,
-    local.role_assignments_kv,
-    local.role_assignments_st,
-    local.role_assignments_db
+    local.flattened_roles
   )
 }
