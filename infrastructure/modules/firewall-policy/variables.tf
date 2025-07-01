@@ -2,7 +2,7 @@ variable "policy_name" {
   description = "The name of the firewall policy"
   type        = string
   validation {
-    condition     = can(regex("^[a-zA-Z0-9_][a-zA-Z0-9-_]{0,78}[a-zA-Z0-9_]$", var.name))
+    condition     = can(regex("^[a-zA-Z0-9_][a-zA-Z0-9-_]{0,78}[a-zA-Z0-9_]$", var.policy_name))
     error_message = "The Firewall Policy name must be between 1 and 80 characters and can only contain alphanumeric characters, hyphens, and underscores."
   }
 
