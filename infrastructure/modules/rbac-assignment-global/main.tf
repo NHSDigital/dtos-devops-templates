@@ -8,16 +8,11 @@ resource "azurerm_user_assigned_identity" "global_uami" {
 
 resource "azurerm_role_assignment" "global_uami_role_assignments" {
   for_each = {
-    for assignment in local.all_role_assignments :
-    "uami-${var.environment}-${replace(lower(assignment.role_definition_name), " ", "-")}-${substr(md5(assignment.scope), 0, 6)}" => {
-      scope                = assignment.scope
-      role_definition_name = assignment.role_definition_name
-    }
+    for idx, assignment in local.all_role_assignments : idx => assignment
   }
 
   # This allows us to use service / group principals
   principal_id = var.principal_id != null ? var.principal_id : azurerm_user_assigned_identity.global_uami.principal_id
-
   role_definition_name = each.value.role_definition_name
   scope                = each.value.scope
 }
