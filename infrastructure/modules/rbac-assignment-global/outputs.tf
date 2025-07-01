@@ -18,3 +18,15 @@ output "assigned_roles" {
     }
   ]
 }
+
+output "assigned_roles_by_scope" {
+  value = {
+    for k, v in azurerm_role_assignment.global_uami_role_assignments :
+    "${v.scope}-${v.role_definition_name}" => {
+      id           = v.id
+      scope        = v.scope
+      role         = v.role_definition_name
+      principal_id = v.principal_id
+    }
+  }
+}

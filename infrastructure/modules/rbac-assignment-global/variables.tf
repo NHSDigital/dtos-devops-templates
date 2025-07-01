@@ -46,3 +46,26 @@ variable "tags" {
   default     = {}
 }
 
+variable "key_vault_ids" {
+  type = map(object({
+    key_vault_id = string
+  }))
+  description = "A collection of key vault resources to apply a user assigned managed identity and default roles"
+  default = {}
+}
+
+variable "storage_ids" {
+  type = map(object({
+    storage_account_id = string
+  }))
+  description = "A collection of storage resources to apply a user assigned managed identity and default roles"
+  default = {}
+}
+
+variable "sql_server_ids" {
+  type = map(object({
+    sql_server_id = string
+  }))
+  description = "A collection of sql server resources to apply a user assigned managed identity and default roles"
+  default = {}
+}
