@@ -9,7 +9,7 @@ output "global_uami_principal_id" {
 output "assigned_roles" {
   description = "List of role assignments created."
   value = [
-    for k, v in azurerm_role_assignment.this :
+    for k, v in azurerm_role_assignment.global_uami_role_assignments :
     {
       id                  = v.id
       role_definition     = v.role_definition_name
