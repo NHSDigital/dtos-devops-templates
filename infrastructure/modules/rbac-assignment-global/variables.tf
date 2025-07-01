@@ -72,7 +72,7 @@ variable "sql_server_ids" {
 
 variable "function_ids" {
   type = map(object({
-    sql_server_id = string
+    function_app_id = string
   }))
   description = "A collection of Function App resources to apply a user assigned managed identity and default roles"
   default = {}
