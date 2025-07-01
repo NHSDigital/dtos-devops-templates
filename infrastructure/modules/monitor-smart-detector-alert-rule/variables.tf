@@ -70,6 +70,6 @@ variable "description" {
 }
 
 variable "scope_resource_ids" {
-  description = "Specifies the scopes of this Smart Detector Alert Rule."
-  type        = string
+  description = "List of resource IDs the smart detector alert rule applies to."
+  type        = list(string)
 }
