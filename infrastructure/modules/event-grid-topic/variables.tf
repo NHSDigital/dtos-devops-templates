@@ -32,7 +32,7 @@ variable "topic_name" {
   description = "The name of the Event Grid topic."
   type        = string
   validation {
-    condition     = can(regex("^[a-zA-Z0-9_][a-zA-Z0-9-_]{0,48}[a-zA-Z0-9_]$", var.name))
+    condition     = can(regex("^[a-zA-Z0-9_][a-zA-Z0-9-_]{0,48}[a-zA-Z0-9_]$", var.topic_name))
     error_message = "The Event Grid Topic name must be between 1 and 50 characters and can only contain alphanumeric characters, hyphens, and underscores."
   }
 }
