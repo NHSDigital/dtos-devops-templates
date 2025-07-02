@@ -12,14 +12,6 @@ EOT
   default = []
 }
 
-# We apply global RBAC as phase two after Terraform plan, so do not set this value
-# to True during the plan phase.
-variable "enable_global_rbac" {
-  description = "True to enable RBAC assignments for the global User Assigned Managed Identity, False otherwise"
-  type        = bool
-  default     = false
-}
-
 variable "environment" {
   type        = string
   description = "A code of the environment in which to create the user-assigned identity and role assignments."

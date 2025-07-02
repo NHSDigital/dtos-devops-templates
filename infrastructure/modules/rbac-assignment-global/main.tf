@@ -7,9 +7,9 @@ resource "azurerm_user_assigned_identity" "global_uami" {
 }
 
 resource "azurerm_role_assignment" "global_uami_role_assignments" {
-  for_each = var.enable_global_rbac ? {
+  for_each = {
     for idx, assignment in local.all_role_assignments : idx => assignment
-  } : {}
+  }
 
   # This allows us to use service / group principals
   principal_id = var.principal_id != null ? var.principal_id : azurerm_user_assigned_identity.global_uami.principal_id
