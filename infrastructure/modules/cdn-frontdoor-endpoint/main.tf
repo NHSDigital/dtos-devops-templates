@@ -38,7 +38,7 @@ resource "azurerm_cdn_frontdoor_origin" "this" {
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.this.id
   enabled                       = each.value.enabled
 
-  certificate_name_check_enabled = each.value.certificate_name_check_enabled
+  certificate_name_check_enabled = true
   host_name                      = each.value.hostname
   origin_host_header             = each.value.origin_host_header
   priority                       = each.value.priority

@@ -72,7 +72,6 @@ frontdoor_endpoint = {
     origin = {
       # Dynamically picks all origins for a specific Web App, adding Private Link connection if enabled (needs manual approval)
       webapp_key                     = "FrontEndUi" # From var.linux_web_app.linux_web_app_config
-      certificate_name_check_enabled = true         # Required for Private Link
     }
 
     custom_domains = {
@@ -157,7 +156,6 @@ variable "frontdoor_endpoint" {
   description = "Configuration for Front Door"
   type = map(object({
     origin = object({
-      certificate_name_check_enabled = bool # must be true for Private Link
       enabled                        = optional(bool, true)
       http_port                      = optional(number, 80)  # 1–65535
       https_port                     = optional(number, 443) # 1–65535

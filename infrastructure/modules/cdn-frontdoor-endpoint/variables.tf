@@ -34,7 +34,6 @@ variable "name" {
 variable "origins" {
   description = "Map of Front Door Origin configurations"
   type = map(object({
-    certificate_name_check_enabled = bool # must be true for Private Link
     enabled                        = optional(bool, true)
     hostname                       = string
     http_port                      = optional(number, 80)  # 1–65535

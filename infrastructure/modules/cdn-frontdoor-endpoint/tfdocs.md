@@ -24,7 +24,6 @@ Type:
 
 ```hcl
 map(object({
-    certificate_name_check_enabled = bool # must be true for Private Link
     enabled                        = optional(bool, true)
     hostname                       = string
     http_port                      = optional(number, 80)  # 1–65535
