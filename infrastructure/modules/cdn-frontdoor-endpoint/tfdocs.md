@@ -18,7 +18,7 @@ Type: `string`
 
 ### <a name="input_origins"></a> [origins](#input\_origins)
 
-Description: Map of Front Door Origin configurations
+Description: Map of Front Door Origin configurations. If 'origin\_host\_header' is omitted, the connection to the target will use the host header from the original request.
 
 Type:
 
@@ -28,8 +28,8 @@ map(object({
     hostname                       = string
     http_port                      = optional(number, 80)  # 1–65535
     https_port                     = optional(number, 443) # 1–65535
-    origin_host_header             = optional(string)
-    priority                       = optional(number, 1) # 1–5
+    origin_host_header             = optional(string)      # if omitted, the connection to the target will use the host header from the original request
+    priority                       = optional(number, 1)   # 1–5
 
     private_link = optional(object({
       location               = string
@@ -40,12 +40,6 @@ map(object({
     weight = optional(number, 500) # 1–1000
   }))
 ```
-
-### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
-
-Description: n/a
-
-Type: `string`
 
 ## Optional Inputs
 

@@ -32,14 +32,14 @@ variable "name" {
 }
 
 variable "origins" {
-  description = "Map of Front Door Origin configurations"
+  description = "Map of Front Door Origin configurations. If 'origin_host_header' is omitted, the connection to the target will use the host header from the original request."
   type = map(object({
-    enabled                        = optional(bool, true)
-    hostname                       = string
-    http_port                      = optional(number, 80)  # 1–65535
-    https_port                     = optional(number, 443) # 1–65535
-    origin_host_header             = optional(string)
-    priority                       = optional(number, 1) # 1–5
+    enabled            = optional(bool, true)
+    hostname           = string
+    http_port          = optional(number, 80)  # 1–65535
+    https_port         = optional(number, 443) # 1–65535
+    origin_host_header = optional(string)      # if omitted, the connection to the target will use the host header from the original request
+    priority           = optional(number, 1)   # 1–5
 
     private_link = optional(object({
       location               = string
@@ -77,10 +77,6 @@ variable "public_dns_zone_rg_name" {
   description = "Resource Group name for public DNS zones. You may optionally override this per custom domain in var.custom_domain"
   type        = string
   default     = null # Custom domains are optional
-}
-
-variable "resource_group_name" {
-  type = string
 }
 
 variable "route" {

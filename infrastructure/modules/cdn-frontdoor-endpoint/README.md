@@ -36,6 +36,7 @@ module "frontdoor_endpoint" {
       host_name     = "www.foo.com"
       dns_zone_name = "foo.com"
     }
+  }
   name = "dev-www" # environment-specific to avoid naming collisions within a Front Door Profile
   origins = {
     "dev-uks-www" = {
