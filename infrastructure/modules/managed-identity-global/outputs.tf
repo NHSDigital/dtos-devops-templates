@@ -1,9 +1,9 @@
 output "global_uami_id" {
-  value = azurerm_user_assigned_identity.global_uami.id
+  value = module.global_uami[0].id
 }
 
 output "global_uami_principal_id" {
-  value = azurerm_user_assigned_identity.global_uami.principal_id
+  value = module.global_uami[0].principal_id
 }
 
 output "assigned_roles" {
