@@ -2,14 +2,13 @@
 
 ## Overview
 
-This Terraform module provisions a **User Assigned Managed Identity (UAMI)** for a specified environment and applies **minimal RBAC role assignments** to Azure resources like SQL Servers, Key Vaults, and Storage Accounts. This follows Secure-by-Design principles and enables reuse across other Terraform services like Azure Function Apps.
+This Terraform module provisions a single **User Assigned Managed Identity (UAMI)** for a specified environment and applies **minimal RBAC role assignments** to it that permits access to resources like SQL Servers, Key Vaults, and Storage Accounts following a least-privilege.
 
 ## Features
 
 * Creates one UAMI per environment
 * Applies RBAC roles using least privilege, for example `Key Vault Secrets User`
 * Outputs identity metadata and role assignment summary
-* Designed to integrate with Azure Function Apps
 
 ## Benefits
 
@@ -20,17 +19,17 @@ This module reduces RBAC complexity, centralise identity usage, and aligns with 
 
 ## Requirements
 
-> Note: This module expects the `infra.tfstate` remote state to expose the following outputs:
-> - `key_vault_ids` (map)
-> - `storage_account_ids` (map)
-> - `sql_server_ids` (map)
+> Note: This module uses resource output ids from various modules in order to assign the single UAMI.
+> - `key_vault_ids`
+> - `storage_account_ids`
+> - `sql_server_ids`
 >
 > *These must be exposed in upstream infrastructure modules for KeyVaults, Storage Accounts and SQL Servers. Please ensure their `outputs.tf` are correctly specified.*
 
 ## Example Usage
 
 ```hcl
-module "gloabl_uami_rbac" {
+module "global_uami_rbac" {
   source = "./modules/rbac-assignment-global"
 
   identity_prefix  = "uami-global"
