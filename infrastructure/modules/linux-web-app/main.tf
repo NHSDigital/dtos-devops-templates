@@ -159,7 +159,6 @@ module "linux_web_app_slots" {
   share_name                 = var.share_name
   storage_type               = var.storage_type
 
-
   tags = var.tags
 }
 
@@ -175,5 +174,4 @@ module "diagnostic-settings" {
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_log                = var.monitor_diagnostic_setting_linux_web_app_enabled_logs
   metric                     = var.monitor_diagnostic_setting_linux_web_app_metrics
-
 }

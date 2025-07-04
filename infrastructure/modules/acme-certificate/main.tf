@@ -1,6 +1,7 @@
 resource "random_password" "pfx" {
-  length  = 30
-  special = true
+  length           = 30
+  special          = true
+  override_special = "!@#$^*" # Azure Portal is incapable of handling certain special chars in this password, in particular "<>"
 }
 
 locals {

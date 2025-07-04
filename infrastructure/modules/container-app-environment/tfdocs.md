@@ -59,7 +59,7 @@ object({
     name                  = optional(string, "Consumption")
     workload_profile_type = optional(string, "Consumption")
     minimum_count         = optional(number, 0)
-    maximum_count         = optional(number, 1)
+    maximum_count         = optional(number, 0)
   })
 ```
 

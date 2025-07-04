@@ -118,6 +118,7 @@ locals {
     event-grid-topic                    = lower("EVGT-${var.env}-${var.location_map[var.location]}")
     event-hub-namespace                 = lower("EVHNS-${var.env}-${var.location_map[var.location]}-${var.application}")
     firewall                            = lower("FW-${var.env}-${var.location_map[var.location]}-${var.application}")
+    front-door-profile                  = lower("AFD-${var.env_type}-${var.application}")
     function-app                        = lower("${var.env}-${var.location_map[var.location]}")
     linux-web-app                       = lower("${var.env}-${var.location_map[var.location]}")
     internal-load-balancer              = lower("ILB-${var.env}-${var.location_map[var.location]}-${var.application}")
