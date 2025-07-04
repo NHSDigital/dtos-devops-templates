@@ -48,7 +48,7 @@ resource "azurerm_cdn_frontdoor_origin" "this" {
     for_each = each.value.private_link != null ? [1] : []
 
     content {
-      request_message        = "CDN Front Door connection from ${azurerm_cdn_frontdoor_origin_group.this.name}"
+      request_message        = substr("CDN Front Door connection from origin ${each.key} in ${azurerm_cdn_frontdoor_origin_group.this.name} in profile ${reverse(split("/", var.cdn_frontdoor_profile_id))[0]}", 0, 140)
       target_type            = each.value.private_link.target_type
       location               = each.value.private_link.location
       private_link_target_id = each.value.private_link.private_link_target_id
