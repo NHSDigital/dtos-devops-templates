@@ -1,9 +1,3 @@
-variable "enable_global_rbac" {
-  description = "True to enable RBAC assignments for the global User Assigned Managed Identity, False otherwise"
-  type        = bool
-  default     = false
-}
-
 variable "environment" {
   type        = string
   description = "A code of the environment in which to create the user-assigned identity and role assignments."
@@ -12,7 +6,7 @@ variable "environment" {
 variable "identity_prefix" {
   type        = string
   description = "A prefix to use when creating a user-assigned identity"
-  default     = "uami-global"
+  default     = "UAMI-"
 }
 
 variable "principal_id" {
