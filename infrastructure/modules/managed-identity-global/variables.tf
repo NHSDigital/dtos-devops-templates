@@ -9,12 +9,6 @@ variable "identity_prefix" {
   default     = "UAMI-"
 }
 
-variable "principal_id" {
-  description = "The principal ID (e.g., user, group, or service principal) to which the role will be assigned."
-  type        = string
-  default     = null
-}
-
 variable "location" {
   type        = string
   description = "The region where the user assigned identity must be created."
@@ -29,17 +23,6 @@ variable "tags" {
   type        = map(string)
   description = "Resource tags to be applied throughout the deployment."
   default     = {}
-}
-
-variable "custom_resource_roles"{
-  description = "Custom roles to be assigned to specified resource types."
-  type    = map(list(string))
-  default = {}
-}
-
-variable "resource_ids" {
-  description = "List of resource IDs to assign the UAMI onto"
-  type        = list(string)
 }
 
 variable "uai_name" {

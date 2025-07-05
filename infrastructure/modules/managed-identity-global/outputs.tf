@@ -6,27 +6,17 @@ output "global_uami_principal_id" {
   value = module.global_uami.principal_id
 }
 
-output "assigned_roles" {
-  description = "List of role assignments created."
-  value = [
-    for k, v in azurerm_role_assignment.global_uami_role_assignments :
-    {
-      id                  = v.id
-      role_definition     = v.role_definition_name
-      scope               = v.scope
-      principal_id        = v.principal_id
-    }
-  ]
+output "storage_role_definition_id" {
+  value = azurerm_role_definition.global_uami_storage_role_definition.id
+}
+output "keyvault_role_definition_id" {
+  value = azurerm_role_definition.global_uami_keyvault_role_definition.id
+}
+output "sql_role_definition_id" {
+  value = azurerm_role_definition.global_uami_sql_role_definition.id
 }
 
-output "assigned_roles_by_scope" {
-  value = {
-    for k, v in azurerm_role_assignment.global_uami_role_assignments :
-    "${v.scope}-${v.role_definition_name}" => {
-      id           = v.id
-      scope        = v.scope
-      role         = v.role_definition_name
-      principal_id = v.principal_id
-    }
-  }
+output "function_role_definition_id" {
+  value = data.azurerm_role_definition.contributor.id
 }
+
