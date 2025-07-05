@@ -1,10 +1,8 @@
 
 module "global_uami" {
-  count = var.enable_global_rbac ? 1 : 0
-
   source = "../managed-identity"
 
-  uai_name            = "${var.identity_prefix}-${var.environment}"
+  uai_name            = join("-", [var.identity_prefix, var.environment])
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
@@ -22,22 +20,27 @@ resource "azurerm_role_assignment" "global_uami_role_assignments" {
     ]) : "${item.scope}-${item.role}" => item
   }
 
-  principal_id         = var.principal_id != null ? var.principal_id : module.global_uami[0].principal_id
+  principal_id         = var.principal_id != null ? var.principal_id : module.global_uami.principal_id
   role_definition_name = each.value.role
   scope                = each.value.scope
 }
 
 locals {
   default_roles = {
-    "keyvault" = ["Key Vault Secrets User"]
+    "keyvault" = [
+      "Key Vault Secrets User"
+    ]
     "storage" = [
       "Storage Blob Data Reader",
       "Storage Table Data Contributor",
       "Storage Queue Data Contributor"
     ]
-    "sql" = ["SQL DB Contributor"]
+    "sql" = [
+      "SQL DB Contributor"
+    ]
   }
 
+  # Discover the type of the resource based on well-known ID patterns in Azure
   resource_tuples = [
     for rid in var.resource_ids : {
       id = rid
@@ -60,6 +63,7 @@ locals {
     )
   }
 
+  # We group by scope to reduce the number of assignments made
   grouped_role_assignments = [
     for scope, roles in local.scoped_role_map : {
       scope = scope
