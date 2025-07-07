@@ -3,12 +3,6 @@ variable "environment" {
   description = "A code of the environment in which to create the user-assigned identity and role assignments."
 }
 
-variable "user_identity_prefix" {
-  type        = string
-  description = "A prefix to use when creating a user-assigned identity"
-  default     = "UAMI-"
-}
-
 variable "location" {
   type        = string
   description = "The region where the user assigned identity must be created."

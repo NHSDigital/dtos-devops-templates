@@ -20,3 +20,8 @@ output "function_role_definition_id" {
   value = data.azurerm_role_definition.contributor_role.id
 }
 
+output "reader_role_id" {
+  value = data.azurerm_role_definition.reader_role.id
+}
+
+
