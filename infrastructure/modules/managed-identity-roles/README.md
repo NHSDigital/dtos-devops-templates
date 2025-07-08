@@ -1,130 +1,110 @@
-# Module: User Assigned Managed Identity (UAMI) & Standard RBAC Assignments
+# Module: User Assigned Managed Identity Standard RBAC Role Definitions
 
 ## Overview
 
-This Terraform module provisions a single **User Assigned Managed Identity (UAMI)** for a specified environment and applies **minimal RBAC role assignments** to it that permits access to resources like SQL Servers, Key Vaults, and Storage Accounts following a least-privilege.
+This Terraform module conditionally assigns roles with a default set of permissions to a single **User Assigned Managed Identity (UAMI)** created in each environment specified in the `.tfvars` file. The *minimal RBAC role assignments* are setup to permit least-privilege access to resources like SQL Servers, Key Vaults, and Storage Accounts.
 
-## Features
+### Features
 
-* Creates one UAMI per environment
+* Creates one User Assigned Managed Identity per environment
 * Applies RBAC roles using least privilege, for example `Key Vault Secrets User`
 * Outputs identity metadata and role assignment summary
 
-## Benefits
+### Benefits
 
-This module reduces RBAC complexity, centralise identity usage, and aligns with zero-trust and Secure-by-Design principles. To be most impactful, consumers of this module must:
+This module reduces RBAC complexity, centralises identity usage, and aligns with zero-trust and Secure-by-Design principles.
 
-* Remove legacy system-assigned identity bindings
-* Review assignments regularly
+## Role Definitions
 
-## Requirements
+This module create custom role definitions for each category of resources whose permission set we wish to manage as a collective whole.
 
-> Note: This module uses resource output ids from various modules in order to assign the single UAMI.
-> - `key_vault_ids`
-> - `storage_account_ids`
-> - `sql_server_ids`
->
-> *These must be exposed in upstream infrastructure modules for KeyVaults, Storage Accounts and SQL Servers. Please ensure their `outputs.tf` are correctly specified.*
+The permissions assigned to the custom role definitions are taken from Microsof's documentation.
 
-## Example Usage
+* **[Azure Key Vaults](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/security#key-vault-reader)**
+
+  * Certificate User
+  * Crypto User
+  * Secrets User
+
+* **[Storage Accounts](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/storage#storage-queue-data-contributor)**
+  * Storage Blob Data Reader
+  * Storage Table Data Reader
+  * Storage Queue Data Reader
+  * Storage Queue Data Message Processor
+  * Storage Queue Data Message Sender
+  * Storage Queue Data Reader
+
+* **SQL Servers**
+  * (placeholder)
+
+## Module
+
+### Example Usage
 
 ```hcl
-module "global_uami_rbac" {
-  source = "./modules/rbac-assignment-global"
+module "example" {
+ source = "./managed-identity-roles"
 
-  identity_prefix  = "uami-global"
-  environment      = "dev"
-  location         = "uksouth"
-  resource_group   = "rg-cohortmanager-dev"
-  tags             = var.global_tags
-
-  principal_id = null # optional if not delegating to another principal
-
-# These assignments are optional and can be used to extend the default role assignments
-  assignments = [
-    {
-      scope                = <resource id>
-      role_definition_name = <resource definition name>
-    },
-    ...
-  ]
-}
-
-resource "azurerm_linux_function_app" "cohort_app" {
-  # ...
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [module.global_uami_rbac.global_uami_id]
-  }
+  uai_name            = join("-", compact(["<my_global_name>l", each.key]))
+  location            = "<region_name>"
+  resource_group_name = "<sample_resource_group_name>"
+  environment         = var.environment
+  tags                = var.tags
 }
 ```
 
----
+### 📥 Inputs
 
-## Review & Approval Guidance
+| Name | Type| Description | Default |
+|-|-|-|-|
+|`environment` | string | A code of the environment in which to create the user-assigned identity and role assignments. | |
+| `location` |string| The region where the user assigned identity must be created. | |
+| `resource_group_name` | string | A name of a resource group to locate this user assigned identity. | |
+|`tags`| map(string) | Resource tags to be applied throughout the deployment. | default(null) |
+| `uai_name` |string| The name of the user assigned identity. | |
 
-To ensure compliance with RBAC and security standards:
+### 📤Outputs
 
-1. **Review Role Assignments**
+| Name | Description |
+|------|-------------|
+| `storage_role_definition_id` | The role definition ID containing storage permission set. |
+| `keyvault_role_definition_id` | The role definition ID containing key vault permission set. |
+| `sql_role_definition_id` | The role definition ID containing SQL server permission set. |
+| `function_role_definition_id` | The role definition ID containing function app permission set. _**Defaults to `Contributor` role**_ |
+| `reader_role_id` | The role definition ID of the _**`Reader`**_ role.
 
-   * Inspect `module.global_uami_rbac.assigned_roles` output after `plan` or `apply` steps.
-   * Validate each role aligns with the principle of least privilege.
+### Review & Approval Guidance
 
-2. **Change Approval**
+After running the default global role assignments, please consider to inspect the assigned_roles output after Terraform plan/apply stage to confirm all scopes and roles align with least-privilege access principles.
 
-   * RBAC changes should be reviewed via Pull Request by a lead engineer or security team explaining why  enhanced  roles are required.
+If a Pull Request modifies the role assignments, it's recommended the assignments be reviewed by a security stakeholder and the need of extended role(s) justified in PR comments.
 
----
+## Handling Legacy System-Assigned Identities
 
-## Outputs
+This module does not remove system-assigned identities or pre-existing RBAC bindings. These must be handled manually or through targeted Terraform cleanup.
 
-* `global_uami_id` is the resource ID of the UAMI.
-* `global_uami_principal_id` is the principal ID of role assignment.
-* `assigned_roles` is a list of RBAC assignments made.
+**Option 1** One-Time Manual Cleanup
+Use the Azure Portal or CLI to disable system-assigned identities on apps and remove old `azurerm_role_assignment` resources.
 
----
-
-## Handling System-Assigned Identity Cleanup
-
-### Current Issue
-
-Existing Function Apps may have
-
-* System-assigned identities enabled on them, and
-* RBAC roles granted to them
-
-This module **does not clean up** existing identities and role assignments. This must be managed separately to avoid over-extending the current permission set.Running identity / role cleanup is a destructive process and **should not** be run every time.
-
-A few proposals include:
-
-#### Option 1: One-Time Manual Cleanup
-
-Use the Azure Portal or CLI to remove old `azurerm_role_assignment` and disable system identity on Function Apps.
-
-#### Option 2: Terraform Cleanup Block
-
-Add a Terraform block to each project's Function App module. For example,
+**Option 2** Add explicit "cleanup" blocks per project via Terraform
+If desired, add explicit cleanup blocks per project, for example:
 
 ```hcl
 resource "azurerm_role_assignment" "remove_old" {
   count = var.cleanup_enabled ? 1 : 0
 
-  scope              = <affected_resource>
+  scope              = <resource_id>
   role_definition_id = data.azurerm_role_definition.old_role.id
-  principal_id       = data.azurerm_function_app.function.identity.principal_id
+  principal_id       = data.azurerm_function_app.old_app.identity.principal_id
+
   lifecycle {
     prevent_destroy = false
   }
 }
 ```
 
-and also
+## 💡 Best Practices
 
-```hcl
-resource "azurerm_linux_function_app" "cohort_app" {
-  identity {
-    type = "UserAssigned"
-    identity_ids = [module.uami_rbac.global_uami_id]
-  }
-}
-```
+A best practice approach for managing security is to prefer centralised identity management using this module. Also, it's not recommended to mix user assigned and system-assigned identities in the same application.
+
+As always, it's important to *periodically audit* assigned_roles and rotate access scopes where possible.
