@@ -1,17 +1,8 @@
 
-module "global_managed_identity" {
-  source = "../managed-identity"
-
-  uai_name            = lower(join("-", compact([var.uai_name, var.environment])))
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  tags                = var.tags
-}
-
 # Note: when adding permissions relevant to any definition,
-# DO NOT use the "*" action. Instead be specific about the permission(s)
-# to use. Doing so ensures we keep control on least privilege access control
-#
+# Try to not use the "*" action if possible. Instead be specific
+# about the permission(s) to use. Doing so ensures we keep control on
+# least privilege access control
 
 resource "azurerm_role_definition" "global_mi_storage_role_definition" {
   name        = lower(join("-", ["mi-global-role-storage", var.environment]))
@@ -64,11 +55,6 @@ resource "azurerm_role_definition" "global_mi_storage_role_definition" {
 
     not_actions       = []
     not_data_actions  = []
-  }
-
-  # We want to ensure that Terry creates the definition and replaces it without harming the assignments
-  lifecycle {
-    create_before_destroy = true
   }
 
   assignable_scopes = [

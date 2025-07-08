@@ -1,11 +1,3 @@
-output "global_mi_id" {
-  value = module.global_managed_identity.id
-}
-
-output "global_mi_principal_id" {
-  value = module.global_managed_identity.principal_id
-}
-
 # Note: for custom role definition resources, don't use the "id" property.
 # This is a Terraform property in the format "<id>|<scope>". Instead use
 # the role_definition_resource_id property (the ARM ID)
