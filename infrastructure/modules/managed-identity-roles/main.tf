@@ -109,6 +109,7 @@ resource "azurerm_role_definition" "global_mi_sql_role_definition" {
   scope       = data.azurerm_resource_group.target_resource_group.id
   description = "Contains the least required roles for SQL data access"
 
+  # Reference: https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/databases
   permissions {
     actions = [
       "Microsoft.Sql/servers/read",
