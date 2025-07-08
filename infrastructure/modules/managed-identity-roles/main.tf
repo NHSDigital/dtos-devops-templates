@@ -2,7 +2,7 @@
 module "global_managed_identity" {
   source = "../managed-identity"
 
-  uai_name            = upper(join("-", compact(["global-mi", var.uai_name, var.environment])))
+  uai_name            = lower(join("-", compact([var.uai_name, var.environment])))
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
@@ -14,7 +14,7 @@ module "global_managed_identity" {
 #
 
 resource "azurerm_role_definition" "global_mi_storage_role_definition" {
-  name        = join("-", ["global-role-mi", var.environment, "storage"])
+  name        = lower(join("-", ["mi-global-role-storage", var.environment]))
   scope       = data.azurerm_resource_group.target_resource_group.id
   description = "Contains the least required roles for storage access to queues, blobs and tables"
 
@@ -77,7 +77,7 @@ resource "azurerm_role_definition" "global_mi_storage_role_definition" {
 }
 
 resource "azurerm_role_definition" "global_mi_keyvault_role_definition" {
-  name        = join("-", ["global-role-mi", var.environment, "keyvault"])
+  name        = lower(join("-", ["mi-global-role-keyvault", var.environment]))
   scope       = data.azurerm_resource_group.target_resource_group.id
   description = "Contains the least required roles for keyvault access"
 
@@ -119,7 +119,7 @@ resource "azurerm_role_definition" "global_mi_keyvault_role_definition" {
 }
 
 resource "azurerm_role_definition" "global_mi_sql_role_definition" {
-  name        = join("-", ["global-role-mi", var.environment, "sql"])
+  name        = lower(join("-", ["mi-global-role-sql", var.environment]))
   scope       = data.azurerm_resource_group.target_resource_group.id
   description = "Contains the least required roles for SQL data access"
 
