@@ -79,6 +79,7 @@ def slack_message_style1_subheading(test_results, build_url):
 def slack_message_style1_content(
     test_results,
     environment,
+    testtype,
     deploy_date: str,
     deploy_user: str,
     deploy_id: str,
@@ -92,6 +93,7 @@ def slack_message_style1_content(
     id = f" (#{deploy_id})" if deploy_id else ""
     date = deploy_date or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     env = environment or "(environment)"
+    testtype = testtype or "(testtype)"
 
     def safe_get(key):
         return test_results.get(key, "-") if test_results else "-"
@@ -101,7 +103,7 @@ def slack_message_style1_content(
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": f"Build{id} in *{env}* completed at *{date}* with a *{safe_get('pass_rate')}%* pass rate",
+                "text": f"*{testtype}* test run in *{env}* completed at *{date}* with a *{safe_get('pass_rate')}%* pass rate",
             },
         },
         {

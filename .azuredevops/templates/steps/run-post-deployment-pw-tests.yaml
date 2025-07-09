@@ -229,6 +229,7 @@ steps:
     scriptPath: '$(Pipeline.Workspace)/templates/scripts/integrations/slack/SlackIntegrator.py'
     arguments: >
       --env "$(TARGET_ENVIRONMENT)"
+      --testtype "${{ parameters.testType }}"
       --reports "$(Build.ArtifactStagingDirectory)/JUnit/results.xml"
       --url $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)
       --webhook "$(envScript.envSlackWebhook)"
