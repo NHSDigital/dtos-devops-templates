@@ -103,7 +103,7 @@ def slack_message_style1_content(
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": f"*{testtype}* test run in *{env}* completed at *{date}* with a *{safe_get('pass_rate')}%* pass rate",
+                "text": f"*{testtype}* test run on Build{id} in *{env}* completed at *{date}* with a *{safe_get('pass_rate')}%* pass rate",
             },
         },
         {
