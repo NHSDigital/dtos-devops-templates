@@ -24,6 +24,7 @@ class SlackWebhookBot:
             body = slack_message_style1_content(
                 test_results,
                 args.env,
+                args.testtype,
                 args.date,
                 args.user,
                 args.id,
