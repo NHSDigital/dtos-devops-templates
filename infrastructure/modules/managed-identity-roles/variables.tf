@@ -1,11 +1,22 @@
-variable "resource_group_name" {
+variable "environment" {
   type        = string
-  description = "The name of the resource group in which to create the Identity. Changing this forces a new resource to be created."
+  description = "A code of the environment in which to create the user-assigned identity and role assignments."
 }
 
 variable "location" {
   type        = string
-  description = ""
+  description = "The region where the user assigned identity must be created."
+}
+
+variable "resource_group_name" {
+  type        = string
+  description = "A name of a resource group to locate this user assigned identity."
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Resource tags to be applied throughout the deployment."
+  default     = {}
 }
 
 variable "uai_name" {
@@ -17,8 +28,4 @@ variable "uai_name" {
   }
 }
 
-variable "tags" {
-  type        = map(string)
-  description = "Resource tags to be applied throughout the deployment."
-  default     = {}
-}
+

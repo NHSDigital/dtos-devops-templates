@@ -20,6 +20,7 @@ steps:
     name: TerraformPlan
     displayName: Terraform Plan - $(ENVIRONMENT) environment
     continueOnError: false
+
     inputs:
       provider: azurerm
       command: plan
