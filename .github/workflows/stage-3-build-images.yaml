@@ -168,10 +168,6 @@ jobs:
           export PR_NUM_TAG=${PR_NUM_TAG}
           echo "PR_NUM_TAG=${PR_NUM_TAG}" >> ${GITHUB_ENV}
 
-          # save the image as tar file
-          echo "Saving image: ${PROJECT_NAME}-${function}:latest"
-          docker save ${PROJECT_NAME}-${function}:latest --output ${function}.tar
-          
           # Push the image to the repository
           if [ "${GITHUB_REF}" == 'refs/heads/main' ]; then
             docker push "${repo_name}:${COMMIT_HASH_TAG}"
@@ -218,12 +214,6 @@ jobs:
           docker rmi "${repo_name}:${PR_NUM_TAG}"
           docker rmi "${repo_name}:${ENVIRONMENT_TAG}"
           docker rmi ${PROJECT_NAME}-${function}:latest
-
-      - name: Upload Image Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ inputs.project_name }}-${{ matrix.function }}
-          path: ${{ matrix.function }}.tar
 
       - name: Compress SBOM report
         shell: bash
