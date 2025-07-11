@@ -7,4 +7,4 @@ terraform {
   }
 }
 
-provider "azapi" {}
+
