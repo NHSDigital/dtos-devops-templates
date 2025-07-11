@@ -17,7 +17,7 @@ data "azurerm_key_vault_secrets" "infra" {
   count      = var.fetch_secrets_from_infra_key_vault ? 1 : 0
   depends_on = [module.key_vault_reader_role]
 
-  key_vault_id = var.infra_key_vault_id
+  key_vault_id = data.azurerm_key_vault.infra[0].id
 }
 
 data "azurerm_key_vault_secret" "all" {
