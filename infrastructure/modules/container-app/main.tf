@@ -38,7 +38,9 @@ resource "azurerm_container_app" "main" {
   }
 
   dynamic "secret" {
-    for_each = var.fetch_secrets_from_app_key_vault ? data.azurerm_key_vault_secrets.app[0].secrets : []
+    # Map secrets from key vaults from the app and infra key vaults
+    for_each = concat(var.fetch_secrets_from_app_key_vault ? data.azurerm_key_vault_secrets.app[0].secrets : [],
+                      var.fetch_secrets_from_infra_key_vault ? data.azurerm_key_vault_secrets.aad_kv.secrets : [])
 
     content {
       # KV secrets are uppercase and hyphen separated
@@ -100,4 +102,43 @@ resource "azurerm_container_app" "main" {
       }
     }
   }
+}
+
+# Enable Microsoft Entra ID authentication if specified
+resource "azapi_resource" "auth" {
+  count     = var.enable_auth ? 1 : 0
+  type      = "Microsoft.App/containerApps/authConfigs@2025-01-01"
+  name      = "current"
+  parent_id = azurerm_container_app.main.id
+
+  body = {
+    properties = {
+      platform = {
+        enabled = true
+      }
+      globalValidation = {
+        unauthenticatedClientAction = var.unauthenticated_action
+      }
+      identityProviders = {
+        azureActiveDirectory = {
+          enabled = true
+          registration = {
+            clientId = data.azurerm_key_vault_secret.all["aad-client-id"].value
+            clientSecretSettingName = "aad-client-secret"
+            openIdIssuer = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/v2.0"
+          }
+          validation = {
+            # Values within the Key Vault secret are separated by commas
+            allowedAudiences = split(",", data.azurerm_key_vault_secret.all["aad-client-audiences"].value)
+          }
+        }
+      }
+    }
+  }
+}
+
+
+locals {
+  # Fetch secrets names from the app key vault
+  secret_names = var.fetch_secrets_from_infra_key_vault && length(data.azurerm_key_vault_secrets.infra) > 0 ? toset(data.azurerm_key_vault_secrets.infra[0].secrets[*].name) : []
 }
