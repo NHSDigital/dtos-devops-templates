@@ -22,5 +22,5 @@ data "azurerm_key_vault_secrets" "infra" {
 data "azurerm_key_vault_secret" "all" {
   for_each    = local.secret_names
   name       = each.value
-  key_vault_id = data.azurerm_key_vault.infra.id
+  key_vault_id = data.azurerm_key_vault.infra[0].id
 }

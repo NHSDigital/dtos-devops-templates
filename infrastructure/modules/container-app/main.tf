@@ -40,7 +40,7 @@ resource "azurerm_container_app" "main" {
   dynamic "secret" {
     # Map secrets from key vaults from the app and infra key vaults
     for_each = concat(var.fetch_secrets_from_app_key_vault ? data.azurerm_key_vault_secrets.app[0].secrets : [],
-                      var.fetch_secrets_from_infra_key_vault ? data.azurerm_key_vault_secrets.aad_kv.secrets : [])
+                      var.fetch_secrets_from_infra_key_vault ? data.azurerm_key_vault_secrets.infra[0].secrets : [])
 
     content {
       # KV secrets are uppercase and hyphen separated
