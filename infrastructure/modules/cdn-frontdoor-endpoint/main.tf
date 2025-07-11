@@ -61,7 +61,7 @@ resource "azurerm_cdn_frontdoor_custom_domain" "this" {
 
   name                     = each.key
   cdn_frontdoor_profile_id = var.cdn_frontdoor_profile_id
-  dns_zone_id              = data.azurerm_dns_zone.custom[each.value.dns_zone_name].id
+  dns_zone_id              = data.azurerm_dns_zone.custom[each.key].id
   host_name                = each.value.host_name
 
   tls {

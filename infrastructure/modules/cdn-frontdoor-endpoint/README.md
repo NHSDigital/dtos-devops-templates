@@ -34,7 +34,8 @@ module "frontdoor_endpoint" {
   custom_domains = {
     www = {
       host_name     = "www.foo.com"
-      dns_zone_name = "foo.com"
+      dns_zone_name    = "foo.com"
+      dns_zone_rg_name = "nonlive-dns-records"
     }
   }
   name = "dev-www" # environment-specific to avoid naming collisions within a Front Door Profile
@@ -44,8 +45,6 @@ module "frontdoor_endpoint" {
       origin_host_header = "dev-uks-www.azurewebsites.net"
     }
   }
-  public_dns_zone_rg_name = "nonlive-dns-records"
-  resource_group_name     = "my-project-non-live"
 
   tags = var.tags
 }
@@ -77,8 +76,9 @@ frontdoor_endpoint = {
 
     custom_domains = {
       foo = {
-        host_name     = "foo.com"
-        dns_zone_name = "foo.com"
+        host_name        = "foo.com"
+        dns_zone_name    = "foo.com"
+        dns_zone_rg_name = "nonlive-dns-records"
 
         tls = {
           certificate_type         = "CustomerCertificate"
@@ -89,8 +89,9 @@ frontdoor_endpoint = {
 
     security_policies = {
       MyWafPolicy = {
-        cdn_frontdoor_firewall_policy_name = "mywafpolicy"
-        associated_domain_keys             = ["foo"] # From custom_domains above. Use "endpoint" for the default domain (if linked in Front Door route).
+        associated_domain_keys                = ["foo"] # From custom_domains above. Use "endpoint" for the default domain (if linked in Front Door route).
+        cdn_frontdoor_firewall_policy_name    = "mywafpolicy"
+        cdn_frontdoor_firewall_policy_rg_name = "nonlive-waf-policies"
       }
     }
   }
@@ -109,7 +110,6 @@ module "frontdoor_endpoint" {
     azurerm.dns = azurerm.hub
   }
 
-  cdn_frontdoor_firewall_policy_rg_name = data.terraform_remote_state.hub.outputs.networking_rg_name[local.primary_region]
   cdn_frontdoor_profile_id              = data.terraform_remote_state.hub.outputs.frontdoor_profile["dtos-${var.application_full_name}"].id
   custom_domains = {
     for k, v in each.value.custom_domains : k => merge(
@@ -141,8 +141,6 @@ module "frontdoor_endpoint" {
       }
     )
   }
-  public_dns_zone_rg_name = data.terraform_remote_state.hub.outputs.public_dns_zone_rg_name
-  resource_group_name     = data.terraform_remote_state.hub.outputs.project_rg_names["${var.application_full_name}-${local.primary_region}"]
   route                   = each.value.route
   security_policies       = each.value.security_policies
 
@@ -158,8 +156,6 @@ variable "frontdoor_endpoint" {
   type = map(object({
     origin = object({
       enabled                        = optional(bool, true)
-      http_port                      = optional(number, 80)  # 1–65535
-      https_port                     = optional(number, 443) # 1–65535
       priority                       = optional(number, 1)   # 1–5
       webapp_key                     = string                # From var.linux_web_app.linux_web_app_config
       weight                         = optional(number, 500) # 1–1000
