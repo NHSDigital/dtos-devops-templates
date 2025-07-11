@@ -7,6 +7,7 @@ data "azurerm_key_vault_secrets" "app" {
 }
 
 data "azurerm_key_vault" "infra" {
+  provider          = azurerm.hub
   count = var.fetch_secrets_from_infra_key_vault ? 1 : 0
   name                = var.infra_key_vault_name
   resource_group_name = var.infra_key_vault_rg
