@@ -32,7 +32,7 @@ on:
         description: Build all images (true) or only changed ones (false)
         required: false
         type: boolean
-        default: false
+        default: true
 
 jobs:
   get-functions:
@@ -63,7 +63,7 @@ jobs:
           COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file }}
           EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
           SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
-          MANUAL_BUILD_ALL: ${{ inputs.build_all_images || false }}
+          MANUAL_BUILD_ALL: ${{ inputs.build_all_images || true }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash ./templates/scripts/deployments/get-docker-names.sh
 
@@ -247,46 +247,6 @@ jobs:
           name: ${{ env.VULNERABILITIES_SUMMARY_LOGFILE }}
           path: ./${{ env.VULNERABILITIES_SUMMARY_LOGFILE }}
           retention-days: 21
-
-  tag-all-repositories:
-    name: "Append short commit hash to images"
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    if: github.ref == 'refs/heads/main' && inputs.build_all_images != true
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          # to allow git diff between HEAD and the previous commit to main branch
-          fetch-depth: 2
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Checkout dtos-devops-templates repository
-        uses: actions/checkout@v4
-        with:
-          repository: NHSDigital/dtos-devops-templates
-          path: templates
-          ref: main
-
-      - name: Az CLI login
-        if: github.ref == 'refs/heads/main'
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Azure Container Registry login
-        if: github.ref == 'refs/heads/main'
-        run: az acr login --name ${{ secrets.ACR_NAME }}
-
-      - name: Tag all repositories with new short commit hash
-        env:
-          ACR_NAME: ${{ secrets.ACR_NAME }}
-          SHORT_COMMIT_HASH: ${{ needs.build-and-push.outputs.short_commit_hash }}
-          ENVIRONMENT_TAG: ${{ inputs.environment_tag }}
-        run: bash ./templates/scripts/deployments/append-commit-hash.sh
 
   aggregate-json:
     runs-on: ubuntu-latest
