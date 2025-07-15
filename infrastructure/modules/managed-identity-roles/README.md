@@ -2,31 +2,25 @@
 
 ## Overview
 
-This Terraform module conditionally assigns roles with a default set of permissions to a single **User Assigned Managed Identity (UAMI)** created in each environment specified in the `.tfvars` file. The *minimal RBAC role assignments* are setup to permit least-privilege access to resources like SQL Servers, Key Vaults, and Storage Accounts.
+This Terraform module creates a simple custom role definition with a default set of permissions in each environment specified in the `.tfvars` file. Only the *minimal RBAC role assignments* for least-privilege access to resources like SQL Servers, Key Vaults, and Storage Accounts are specified.
 
 ### Features
 
-* Creates one User Assigned Managed Identity per environment
 * Applies RBAC roles using least privilege, for example `Key Vault Secrets User`
-* Outputs identity metadata and role assignment summary
-
-### Benefits
-
-This module reduces RBAC complexity, centralises identity usage, and aligns with zero-trust and Secure-by-Design principles.
 
 ## Role Definitions
 
-This module create custom role definitions for each category of resources whose permission set we wish to manage as a collective whole.
+Note: *The permissions assigned to the custom role definitions are taken from Microsoft's documentation. Please refer to the URL references specified for additional permissions*
 
-The permissions assigned to the custom role definitions are taken from Microsof's documentation.
+The minimal permissions are taken from the following standard Azure roles:
 
-* **[Azure Key Vaults](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/security#key-vault-reader)**
+* For **[Azure Key Vaults](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/security#key-vault-reader)**
 
   * Certificate User
   * Crypto User
   * Secrets User
 
-* **[Storage Accounts](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/storage#storage-queue-data-contributor)**
+* For **[Storage Accounts](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/storage#storage-queue-data-contributor)**
   * Storage Blob Data Reader
   * Storage Table Data Reader
   * Storage Queue Data Reader
@@ -34,22 +28,34 @@ The permissions assigned to the custom role definitions are taken from Microsof'
   * Storage Queue Data Message Sender
   * Storage Queue Data Reader
 
-* **SQL Servers**
-  * (placeholder)
+* For **[SQL Servers](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/databases)**
+  * (trimmed-down version of SQL DB Contributor and SQL Server Contributor)
+
+* For **[Service Bus]()**
+  * Azure Service Bus Data Receiver
+  * Azure Service Bus Data Sender
+
+* For **[Event Grid]()**
+  * Event Grid Data Sender
 
 ## Module
 
 ### Example Usage
 
-```hcl
+```arm
 module "example" {
- source = "./managed-identity-roles"
+  source = "../managed-identity-roles"
 
-  uai_name            = join("-", compact(["<my_global_name>l", each.key]))
-  location            = "<region_name>"
-  resource_group_name = "<sample_resource_group_name>"
-  environment         = var.environment
-  tags                = var.tags
+  # Assign at the group level
+  assignable_scopes = [azurerm_resource_group.main.id]
+
+  # Apply to the subscription level
+  role_name         = "My Custom Product Role for (${var.environment})"
+  role_scope_id     = local.subscription_scope_id
+
+  location          = each.key
+  environment       = var.environment
+  tags              = var.tags
 }
 ```
 
@@ -59,52 +65,26 @@ module "example" {
 |-|-|-|-|
 |`environment` | string | A code of the environment in which to create the user-assigned identity and role assignments. | |
 | `location` |string| The region where the user assigned identity must be created. | |
-| `resource_group_name` | string | A name of a resource group to locate this user assigned identity. | |
+| `role_name` | string | A custom name to assign to this role definition. | |
+| `role_scope_id` | string | Ideally, the identifier of a subscription id, however it can also be a resource group identifier. | |
 |`tags`| map(string) | Resource tags to be applied throughout the deployment. | default(null) |
-| `uai_name` |string| The name of the user assigned identity. | |
 
 ### 📤Outputs
 
 | Name | Description |
 |------|-------------|
-| `storage_role_definition_id` | The role definition ID containing storage permission set. |
-| `keyvault_role_definition_id` | The role definition ID containing key vault permission set. |
-| `sql_role_definition_id` | The role definition ID containing SQL server permission set. |
-| `function_role_definition_id` | The role definition ID containing function app permission set. _**Defaults to `Contributor` role**_ |
-| `reader_role_id` | The role definition ID of the _**`Reader`**_ role.
+| `role_definition_id` | The resource definition ID assigned to this custom role definition. |
 
 ### Review & Approval Guidance
 
-After running the default global role assignments, please consider to inspect the assigned_roles output after Terraform plan/apply stage to confirm all scopes and roles align with least-privilege access principles.
+After running the default global role assignments, please consider validating the assigned roles output after Terraform plan/apply stage to confirm all scopes and roles align with least-privilege access principles.
 
-If a Pull Request modifies the role assignments, it's recommended the assignments be reviewed by a security stakeholder and the need of extended role(s) justified in PR comments.
-
-## Handling Legacy System-Assigned Identities
-
-This module does not remove system-assigned identities or pre-existing RBAC bindings. These must be handled manually or through targeted Terraform cleanup.
-
-**Option 1** One-Time Manual Cleanup
-Use the Azure Portal or CLI to disable system-assigned identities on apps and remove old `azurerm_role_assignment` resources.
-
-**Option 2** Add explicit "cleanup" blocks per project via Terraform
-If desired, add explicit cleanup blocks per project, for example:
-
-```hcl
-resource "azurerm_role_assignment" "remove_old" {
-  count = var.cleanup_enabled ? 1 : 0
-
-  scope              = <resource_id>
-  role_definition_id = data.azurerm_role_definition.old_role.id
-  principal_id       = data.azurerm_function_app.old_app.identity.principal_id
-
-  lifecycle {
-    prevent_destroy = false
-  }
-}
-```
+If a Pull Request modifies the permissions of the role definition, it's recommended to perform all user acceptance testing to ensure the access to required resources remains valid.
 
 ## 💡 Best Practices
 
-A best practice approach for managing security is to prefer centralised identity management using this module. Also, it's not recommended to mix user assigned and system-assigned identities in the same application.
+1. A best practice approach for managing security is to prefer centralised identity management using security groups or custom role definitions (as exposed in this module).
 
-As always, it's important to *periodically audit* assigned_roles and rotate access scopes where possible.
+1. Also, consider not mixing user assigned and system-assigned identities in the same application.
+
+1. Be mindful to *periodically audit* assigned roles and rotate access scopes where possible.
