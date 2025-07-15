@@ -25,30 +25,22 @@ variable "name"{
 
 variable "permissions" {
   description = <<EOT
-    A list of permission blocks to apply to the role definition. Each block should contain:
-    - actions
-    - data_actions
-    - not_actions
-    - not_data_actions
-
-    Please consult the relevant Microsoft documentation related to the available "actions",
-    "data actions", and any "not actions" available.
+    A set of permissions to apply to the role definition. Please refer to the relevant Microsoft
+    documentation related to the available "actions", "data actions", and any "not actions" available.
     Example:
-    [
       {
         actions           = ["Microsoft.Storage/storageAccounts/listkeys/action"]
         data_actions      = ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"]
         not_actions       = []
         not_data_actions  = []
       }
-    ]
     EOT
-  type = list(object({
+  type = object({
     actions          = optional(list(string), [])
     data_actions     = optional(list(string), [])
     not_actions      = optional(list(string), [])
     not_data_actions = optional(list(string), [])
-  }))
+  })
 }
 
 variable "scope"{
