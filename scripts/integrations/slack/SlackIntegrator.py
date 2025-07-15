@@ -41,6 +41,12 @@ def parse_args():
         required=False,
     )
     parser.add_argument(
+        "-t",
+        "--testtype",
+        help="The testtype of the test runs (e.g,. 'smoke', 'end-end' ' epic1')",
+        required=False,
+    )
+    parser.add_argument(
         "-p",
         "--pipeline",
         help="The pipeline source containing the build and artifacts.",

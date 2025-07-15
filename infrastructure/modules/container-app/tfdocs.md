@@ -148,6 +148,10 @@ Version:
 
 The following outputs are exported:
 
+### <a name="output_fqdn"></a> [fqdn](#output\_fqdn)
+
+Description: FQDN of the container app. Only available if is\_web\_app is true.
+
 ### <a name="output_url"></a> [url](#output\_url)
 
 Description: URL of the container app. Only available if is\_web\_app is true.
