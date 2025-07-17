@@ -41,12 +41,6 @@ echo -e "\nChanged source code folder(s):"
 printf "  - %s\n" "${source_changes[@]}"
 echo
 
-# If MANUAL_BUILD_ALL is true
-if [[ "${MANUAL_BUILD_ALL,,}" == "true" ]]; then
-    echo "MANUAL_BUILD_ALL is true. Change detection based on specific folders will be skipped; all services will be included."
-    source_changes=()
-fi
-
 [[ -n "${EXCLUDED_CONTAINERS_CSV}" ]] && EXCLUSION_FILTER="select($(echo "${EXCLUDED_CONTAINERS_CSV}" | awk -v ORS='' '{split($0, arr, ","); for (i in arr) printf ".container_name != \"%s\" and ", arr[i]} END {print "1"}')) |"
 
 IFS_OLD=$IFS
@@ -105,35 +99,12 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
     echo
 
     # STEP 2 - Now check the source code changes against the map created in STEP 1 to determine which containers to build
-    if [[ "${MANUAL_BUILD_ALL,,}" == "true" ]]; then
-        echo "MANUAL_BUILD_ALL: Adding all services from '${compose_file}'."
-        for key in "${!docker_services_map[@]}"; do
-            changed_services+=("${docker_services_map[$key]}")
-        done
-    elif [[ ${#source_changes[@]} -eq 0 ]]; then
-        echo "No files changed."
-    elif [[ "${source_changes[*],,}" =~ shared ]]; then
-        echo "Shared folder changed, building all images."
-        for key in "${!docker_services_map[@]}"; do
-            changed_services+=("${docker_services_map[$key]}")
-        done
+    if [[ ${#source_changes[@]} -eq 0 ]]; then
+        echo "No files changed."    
     else
-        echo "Checking changed folders..."
-        for folder in "${source_changes[@]}"; do
-            matched="false"
-            for function_path in "${!docker_services_map[@]}"; do
-                # The changed folder may be a deeper path than the Function path, so it must be matched this way around
-                if [[ "${folder}" =~ ${function_path} ]]; then
-                    changed_services+=("${docker_services_map[$function_path]}")
-                    echo "  - ${folder} matches service '${docker_services_map[$function_path]}'"
-                    matched="true"
-                    remove_from_array "${folder}" source_changes
-                    remove_from_array "${folder}" non_matched_changes # In case it's in this array from a previous compose file iteration
-                    continue
-                fi
-            done
-            # Collect changed folders that were not matched to services
-            [[ "${matched}" == "false" ]] && non_matched_changes+=("${folder}")
+        echo "Application change detected, building all images."
+        for key in "${!docker_services_map[@]}"; do
+            changed_services+=("${docker_services_map[$key]}")
         done
     fi
     echo
