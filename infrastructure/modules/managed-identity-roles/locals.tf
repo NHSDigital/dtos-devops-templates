@@ -93,7 +93,7 @@ locals {
     "Microsoft.Sql/servers/databases/auditingSettings/write"
   ]
 
-  # https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/databases
+  # https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/integration
   action_bus_rw = [
     # Sender & Receiver
     "Microsoft.ServiceBus/*/queues/read",
@@ -109,7 +109,7 @@ locals {
     "Microsoft.ServiceBus/*/receive/action"
   ]
 
-  # https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/integration#azure-service-bus-data-sender
+  # https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/integration#eventgrid-data-sender
   action_grid_rw = [
     # Sender
     "Microsoft.Authorization/*/read",
