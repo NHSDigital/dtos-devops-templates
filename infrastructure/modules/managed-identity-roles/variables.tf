@@ -7,6 +7,11 @@ variable "assignable_scopes" {
   }
 }
 
+variable "role_name" {
+  type = string
+  description = "A name to apply to the single global role definition"
+}
+
 variable "environment" {
   type        = string
   description = "A code of the environment in which to create the user-assigned identity and role assignments."
