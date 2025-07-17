@@ -46,25 +46,62 @@ module "worker" {
 ```
 
 ## Key vault secrets
-The container app can be mapped to an Azure key vault. All secrets are fetched and provided as secret environment variables to the app. The values are updated when terraform runs, or automatically within 30 min.
+The container app can be mapped to Azure Key Vaults for secret management:
 
-A secret name in key vault must use hyphens: `SECRET-KEY`. It is automatically mapped as an environment variable with underscore: `SECRET_KEY`.
+- **App Key Vault:**
+  - All secrets from the app key vault are fetched and mapped to secret environment variables if `fetch_secrets_from_app_key_vault = true` and `app_key_vault_id` is provided.
+  - Secret names in Key Vault must use hyphens (e.g., `SECRET-KEY`). These are mapped to environment variables with underscores (e.g., `SECRET_KEY`).
+  - Secrets are updated when Terraform runs, or automatically within 30 minutes.
 
-**Warning:** The module cannot read from key vault if doesn't exist yet:
-1. For each environment, create first via terraform:
-    - key vault with the [key-vault module](../key-vault/)
-    - container-app with `app_key_vault_id` from above and `fetch_secrets_from_app_key_vault` set to `false` (default)
-1. Add the secrets to the key vault manually
-1. Set `fetch_secrets_from_app_key_vault` set to `true` and run terraform to populate the app secret environment variables
+- **Infra Key Vault:**
+  - When authentication is enabled (`enable_auth = true`), secrets are fetched from the infra key vault using the list in `infra_secret_names` (default: `aad-client-id`, `aad-client-secret`, `aad-client-audiences`).
+  - You can override `infra_secret_names` to fetch additional or custom secrets as needed.
+  - The infra key vault must exist and be populated with the required secrets before enabling authentication.
 
-Example:
+**Warning:** The module cannot read from a key vault if it doesn't exist yet. Recommended workflow:
+1. Create the key vault(s) using the [key-vault module](../key-vault/).
+2. Deploy the container app with `fetch_secrets_from_app_key_vault = false` (default) and/or `enable_auth = false`.
+3. Manually add the required secrets to the key vault(s).
+4. Set `fetch_secrets_from_app_key_vault = true` and/or `enable_auth = true`, then re-run Terraform to populate the app with secret environment variables and enable authentication.
+
+Example (app secrets):
 ```hcl
 module "worker" {
   source                           = "../../../modules/dtos-devops-templates/infrastructure/modules/container-app"
   ...
   app_key_vault_id                 = module.app-key-vault.key_vault_id
-  fetch_secrets_from_app_key_vault = var.fetch_secrets_from_app_key_vault
+  fetch_secrets_from_app_key_vault = true
 }
+```
 
-# Set fetch_secrets_from_app_key_vault to true in tfvars once the key vault is populated with secrets
+Example (infra secrets for authentication):
+```hcl
+module "container-app" {
+  ...
+  enable_auth           = true
+  infra_key_vault_name  = "my-infra-kv"
+  infra_key_vault_rg    = "my-infra-rg"
+  infra_secret_names    = ["aad-client-id", "aad-client-secret", "aad-client-audiences"] # can be customized
+}
+```
+
+> **Note:** If your infra key vault is in a different subscription, configure the `azurerm.hub` provider in your root module and pass it to this module.
+
+## Authentication
+
+To enable Azure AD authentication:
+- Set `enable_auth = true`.
+- Provide the infra key vault details (`infra_key_vault_name`, `infra_key_vault_rg`).
+- Ensure the infra key vault contains the required secrets listed in `infra_secret_names` (default: `aad-client-id`, `aad-client-secret`, `aad-client-audiences`).
+- You may customize `infra_secret_names` to fetch additional secrets if needed.
+
+Example:
+```hcl
+module "container-app" {
+  ...
+  enable_auth           = true
+  infra_key_vault_name  = "my-infra-kv"
+  infra_key_vault_rg    = "my-infra-rg"
+  infra_secret_names    = ["aad-client-id", "aad-client-secret", "aad-client-audiences"]
+}
 ```

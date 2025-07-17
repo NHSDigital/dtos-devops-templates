@@ -24,7 +24,6 @@ variable "app_key_vault_id" {
   type        = string
   default     = null
 }
-
 variable "fetch_secrets_from_app_key_vault" {
   description = <<EOT
     Fetch secrets from the app key vault and map them to secret environment variables. Requires app_key_vault_id.
@@ -35,7 +34,6 @@ variable "fetch_secrets_from_app_key_vault" {
   default     = false
   nullable    = false
 }
-
 variable "acr_managed_identity_id" {
   description = "Managed identity ID for the container registry. Required if using a private registry."
   type        = string
@@ -94,6 +92,42 @@ variable "workload_profile_name" {
   type        = string
   default     = "Consumption"
   nullable    = false
+}
+
+variable "enable_auth" {
+  description = "Enable authentication for the container app. If true, the app will use Azure AD authentication."
+  type        = bool
+  default     = false
+}
+
+variable "unauthenticated_action" {
+  description = "Action for unauthenticated requests: RedirectToLoginPage, Return401, Return403, AllowAnonymous"
+  type        = string
+  default     = "RedirectToLoginPage"
+  validation {
+    condition     = contains(["RedirectToLoginPage", "Return401", "Return403", "AllowAnonymous"], var.unauthenticated_action)
+    error_message = "Invalid unauthenticated action. Must be one of: RedirectToLoginPage, Return401, Return403, AllowAnonymous."
+  }
+}
+
+# Always fetch the AAD client secret from Key Vault
+variable "infra_key_vault_name" {
+  description = "Name of Key Vault to retrieve the AAD client secrets"
+  type        = string
+}
+
+variable "infra_key_vault_rg" {
+  description = "Resource group of the Key Vault"
+  type        = string
+}
+variable "infra_secret_names" {
+  description = "List of secret names to fetch from the infra key vault. Used to fetch AAD client secrets."
+  type        = list(string)
+  default = [
+    "aad-client-id",
+    "aad-client-secret",
+    "aad-client-audiences"
+  ]
 }
 
 locals {

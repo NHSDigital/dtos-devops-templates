@@ -6,12 +6,22 @@ module "container_app_identity" {
 }
 
 # Allow the container app to read secrets from keyvaults in the resource groups
-module "key_vault_reader_role" {
+module "key_vault_reader_role_app" {
   count = var.fetch_secrets_from_app_key_vault ? 1 : 0
 
   source = "../rbac-assignment"
 
   scope                = var.app_key_vault_id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = module.container_app_identity.principal_id
+}
+
+module "key_vault_reader_role_infra" {
+  count = var.enable_auth ? 1 : 0
+
+  source = "../rbac-assignment"
+
+  scope                = data.azurerm_key_vault.infra[0].id
   role_definition_name = "Key Vault Secrets User"
   principal_id         = module.container_app_identity.principal_id
 }
@@ -38,7 +48,9 @@ resource "azurerm_container_app" "main" {
   }
 
   dynamic "secret" {
-    for_each = var.fetch_secrets_from_app_key_vault ? data.azurerm_key_vault_secrets.app[0].secrets : []
+
+    for_each = concat(var.fetch_secrets_from_app_key_vault ? data.azurerm_key_vault_secrets.app[0].secrets : [],
+    var.enable_auth ? [for s in data.azurerm_key_vault_secret.infra : { name = s.name, id = s.id }] : [])
 
     content {
       # KV secrets are uppercase and hyphen separated
@@ -100,4 +112,42 @@ resource "azurerm_container_app" "main" {
       }
     }
   }
+}
+
+# Enable Microsoft Entra ID authentication if specified
+# Reqquires infra key vault to contain secrets:
+## - aad-client-id
+## - aad-client-secret
+## - aad-client-audiences
+resource "azapi_resource" "auth" {
+  count     = var.enable_auth ? 1 : 0
+  type      = "Microsoft.App/containerApps/authConfigs@2025-01-01"
+  name      = "current"
+  parent_id = azurerm_container_app.main.id
+
+  body = {
+    properties = {
+      platform = {
+        enabled = true
+      }
+      globalValidation = {
+        unauthenticatedClientAction = var.unauthenticated_action
+      }
+      identityProviders = {
+        azureActiveDirectory = {
+          enabled = true
+          registration = {
+            clientId                = data.azurerm_key_vault_secret.infra["aad-client-id"].value
+            clientSecretSettingName = "aad-client-secret"
+            openIdIssuer            = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/v2.0"
+          }
+          validation = {
+            # Values within the Key Vault secret are separated by commas
+            allowedAudiences = split(",", data.azurerm_key_vault_secret.infra["aad-client-audiences"].value)
+          }
+        }
+      }
+    }
+  }
+  depends_on = [data.azurerm_key_vault_secret.infra]
 }
