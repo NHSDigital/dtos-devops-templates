@@ -112,7 +112,7 @@ for compose_file in ${COMPOSE_FILES_CSV}; do
         done
     elif [[ ${#source_changes[@]} -eq 0 ]]; then
         echo "No files changed."
-    else
+    elif [[ ${#source_changes[@]} -ne 0 ]]; then
         echo "Application change detected, building all images."
         for key in "${!docker_services_map[@]}"; do
             changed_services+=("${docker_services_map[$key]}")
