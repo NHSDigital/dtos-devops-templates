@@ -1,3 +1,8 @@
+variable "name" {
+  description = "The name of the azurerm_monitor_smart_detector_alert_rule."
+  type        = string
+}
+
 variable "resource_group_name" {
   description = "The name of the resource group to deploy Service Health alerts into."
   type        = string

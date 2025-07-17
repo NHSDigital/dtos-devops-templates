@@ -1,5 +1,5 @@
 resource "azurerm_monitor_smart_detector_alert_rule" "this" {
-  name                = "ServiceHealth-Incidents"
+  name                = var.name
   resource_group_name = var.resource_group_name
   scope_resource_ids  = var.scope_resource_ids
 
@@ -18,4 +18,3 @@ resource "azurerm_monitor_smart_detector_alert_rule" "this" {
 
   enabled = true
 }
-
