@@ -32,7 +32,7 @@ on:
         description: Build all images (true) or only changed ones (false)
         required: false
         type: boolean
-        default: true
+        default: false
 
 jobs:
   get-functions:
@@ -63,7 +63,7 @@ jobs:
           COMPOSE_FILES_CSV: ${{ inputs.docker_compose_file }}
           EXCLUDED_CONTAINERS_CSV: ${{ inputs.excluded_containers_csv_list }}
           SOURCE_CODE_PATH: ${{ inputs.function_app_source_code_path }}
-          MANUAL_BUILD_ALL: ${{ inputs.build_all_images || true }}
+          MANUAL_BUILD_ALL: ${{ inputs.build_all_images || false }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash ./templates/scripts/deployments/get-docker-names.sh
 
