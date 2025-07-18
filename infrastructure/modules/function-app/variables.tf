@@ -222,6 +222,9 @@ variable "rbac_role_assignments" {
     role_definition_name = string
     scope                = string
   }))
+  # These values are provided by the new global rbac assignments module,
+  # but you can specify additional ones here if needed
+  default = []
 }
 
 variable "resource_group_name" {

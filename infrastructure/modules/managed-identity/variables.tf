@@ -12,7 +12,7 @@ variable "uai_name" {
   description = "The name of the user assigned identity."
   type        = string
   validation {
-    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_]{1,126}[a-zA-Z0-9_]$", var.uai_name))
+    condition     = can(regex("^[a-zA-Z0-9][-_a-zA-Z0-9]{1,126}[-_a-zA-Z0-9]$", var.uai_name))
     error_message = "The User-Assigned Managed Identity name must be between 3 and 128 characters, start with an alphanumeric character, end with an alphanumeric character or underscore, and can contain alphanumeric characters, hyphens, and underscores."
   }
 }
