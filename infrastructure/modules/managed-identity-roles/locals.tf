@@ -5,8 +5,12 @@
 # least privilege access control
 
 locals {
-  # https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/storage#storage-queue-data-contributor
+  # https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/containers#acrpull
+  action_acr_rw = [
+    "Microsoft.ContainerRegistry/registries/pull/read"
+  ]
 
+  # https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/storage#storage-queue-data-contributor
   action_storage_rw_accounts = [
     "Microsoft.Storage/storageAccounts/listkeys/action",
     "Microsoft.Storage/storageAccounts/regeneratekey/action",
