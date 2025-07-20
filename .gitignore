@@ -81,3 +81,7 @@ __azurite_db_blob_extent__.json
 tools/scan-tags-compliance/scan-results/azure_resource_compliance_scan.csv
 tools/scan-tags-compliance/scan-results/azure_skipped_items.log
 tools/scan-tags-compliance/scan-results/scan_results.html
+.idea/.gitignore
+.idea/dtos-devops-templates.iml
+.idea/vcs.xml
+.idea/inspectionProfiles/profiles_settings.xml
