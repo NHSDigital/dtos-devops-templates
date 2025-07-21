@@ -1,0 +1,28 @@
+parameters:
+  azureSubscription: ''
+  backendKeyPrefix: 'tf_plan_hub_art_multi_subscription_DEV'
+
+steps:
+  - task: AzureCLI@2
+    name: get_associated_subscription_ids
+    displayName: Get associated subscription IDs
+    inputs:
+      azureSubscription: ${{ parameters.azureSubscription }}
+      addSpnToEnvironment: false
+      failOnStandardError: false
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        subscription_ids=$(az account list -o json | jq -r 'map(.id)')
+        echo "##vso[task.setvariable variable=SPLIT_SUBSCRIPTIONS;isOutput=true]${subscription_ids}"
+
+        matrix_json="{"
+        for id in $(echo "$subscription_ids" | jq -r '.[]'); do
+          short_id=${id:0:4}
+          state_file_name="${BACKEND_AZURE_STORAGE_ACCOUNT_KEY}-${short_id}.tfstate"
+          TF_PLAN_ARTIFACT="${{ parameters.backendKeyPrefix }}_${short_id}"
+          matrix_json+="\"$id\": {\"value\": \"$id\", \"BACKEND_AZURE_STORAGE_ACCOUNT_KEY\": \"$state_file_name\", \"TF_PLAN_ARTIFACT\": \"$TF_PLAN_ARTIFACT\" },"
+        done
+        matrix_json="${matrix_json%,}}"
+        echo "Matrix JSON: $matrix_json"
+        echo "##vso[task.setvariable variable=subscriptionMatrix;isOutput=true]$matrix_json"
