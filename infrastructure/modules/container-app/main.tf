@@ -147,6 +147,12 @@ resource "azapi_resource" "auth" {
           }
         }
       }
+      httpSettings = {
+        forwardProxy = {
+          convention           = "Custom"
+          customHostHeaderName = "X-forwarded-Host"
+        }
+      }
     }
   }
   depends_on = [data.azurerm_key_vault_secret.infra]
