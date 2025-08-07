@@ -22,9 +22,22 @@ resource "azurerm_container_app_job" "this" {
   }
 
   # Configure manual trigger for on-demand execution via CLI
-  manual_trigger_config {
-    parallelism              = var.job_parallelism
-    replica_completion_count = var.replica_completion_count
+  dynamic "manual_trigger_config" {
+    for_each = var.cron_expression == null ? [1] : []
+    content {
+      parallelism              = var.job_parallelism
+      replica_completion_count = var.replica_completion_count
+    }
+  }
+
+  # Configure schedule trigger for scheduled execution
+  dynamic "schedule_trigger_config" {
+    for_each = var.cron_expression != null ? [1] : []
+    content {
+      cron_expression          = var.cron_expression
+      parallelism              = var.job_parallelism
+      replica_completion_count = var.replica_completion_count
+    }
   }
 
   # Define the container template for the job.

@@ -64,6 +64,14 @@ Type: `list(string)`
 
 Default: `null`
 
+### <a name="input_cron_expression"></a> [cron\_expression](#input\_cron\_expression)
+
+Description: Cron formatted repeating schedule of a Cron Job eg. '0 5 * * *'. Optional.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_environment_variables"></a> [environment\_variables](#input\_environment\_variables)
 
 Description: Environment variables to pass to the container app. Only non-secret variables. Secrets must be stored in key vault 'app\_key\_vault\_id'
