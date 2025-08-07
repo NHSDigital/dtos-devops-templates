@@ -23,7 +23,7 @@ module "container-app-environment" {
 }
 ```
 
-Create a container app job to run an image pulled from Azure Container Registry (ACR). The job will run in the container app environment and can be triggered manually or via an event source:
+Create a container app job to run an image pulled from Azure Container Registry (ACR). The job will run in the container app environment and can be triggered manually, via a cron schedule or via an event source:
 ```hcl
 module "container-app-job" {
 

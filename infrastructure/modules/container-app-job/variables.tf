@@ -43,6 +43,12 @@ variable "container_command" {
   default     = null
 }
 
+variable "cron_expression" {
+  description = "Cron formatted repeating schedule of a Cron Job eg. '0 5 * * *'. Optional."
+  type        = string
+  default     = null
+}
+
 variable "docker_image" {
   description = "Docker image and tag. Format: <registry>/<repository>:<tag>"
   type        = string
