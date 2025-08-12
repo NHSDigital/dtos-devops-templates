@@ -72,6 +72,12 @@ variable "memory" {
   default     = "0.5"
 }
 
+variable "polling_interval_in_seconds" {
+  description = "Interval to check each event source in seconds."
+  type        = number
+  default     = 300
+}
+
 variable "replica_completion_count" {
   description = "The number of replicas that must complete successfully for the job to be considered successful."
   type        = number
@@ -90,6 +96,18 @@ variable "replica_retry_limit" {
   default     = 3
 }
 
+variable "scale_rule_metadata" {
+  description = "Metadata properties to describe the scale rule. Refer to [KEDA scaler documentation](https://keda.sh/docs/2.17/scalers/) for metadata relevant to the scale rule."
+  type        = map(string)
+  default     = {}
+}
+
+variable "scale_rule_type" {
+  description = "Type of scale rule for the event trigger. See [KEDA scaler documentation](https://keda.sh/docs/2.17/scalers/) for supported types."
+  type        = string
+  default     = null
+}
+
 variable "user_assigned_identity_ids" {
   description = "List of user assigned identity IDs to assign to the container app."
   type        = list(string)
@@ -104,6 +122,7 @@ variable "workload_profile_name" {
 }
 
 locals {
-  memory = "${var.memory}Gi"
-  cpu    = var.memory / 2
+  memory          = "${var.memory}Gi"
+  cpu             = var.memory / 2
+  scale_rule_name = "${var.name}-event-trigger-${var.scale_rule_type}"
 }

@@ -47,3 +47,50 @@ module "container-app-job" {
 }
 ```
 
+Add cron expression trigger for the container app job:
+```hcl
+module "container-app-job" {
+
+  source = "../../../dtos-devops-templates/infrastructure/modules/container-app-job"
+
+  name                         = "ca-workload-name-${var.environment}"
+  resource_group_name          = var.resource_group_name
+  location                     = var.location
+  container_app_environment_id = module.container-app-environment.id
+
+  schedule_trigger_config {
+    cron_expression          = var.cron_expression
+    parallelism              = var.job_parallelism
+    replica_completion_count = var.replica_completion_count
+  }
+
+  ...
+}
+```
+
+Add event source trigger for the container app job:
+```hcl
+module "container-app-job" {
+
+  source = "../../../dtos-devops-templates/infrastructure/modules/container-app-job"
+
+  name                         = "ca-workload-name-${var.environment}"
+  resource_group_name          = var.resource_group_name
+  location                     = var.location
+  container_app_environment_id = module.container-app-environment.id
+
+  event_trigger_config {
+    parallelism              = var.job_parallelism
+    replica_completion_count = var.replica_completion_count
+    scale {
+      polling_interval_in_seconds = var.polling_interval_in_seconds
+      rules {
+        custom_rule_type = var.scale_rule_type
+        metadata         = var.scale_rule_metadata
+      }
+    }
+  }
+
+  ...
+}
+```
