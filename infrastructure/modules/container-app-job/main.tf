@@ -23,16 +23,39 @@ resource "azurerm_container_app_job" "this" {
 
   # Configure manual trigger for on-demand execution via CLI
   dynamic "manual_trigger_config" {
-    for_each = var.cron_expression == null ? [1] : []
+    for_each = var.trigger_type == "manual" ? [1] : []
     content {
       parallelism              = var.job_parallelism
       replica_completion_count = var.replica_completion_count
     }
   }
 
+  # Configure event trigger for event source execution
+  dynamic "event_trigger_config" {
+    for_each = var.trigger_type == "event" ? [1] : []
+    content {
+      parallelism              = var.job_parallelism
+      replica_completion_count = var.replica_completion_count
+      scale {
+        max_executions              = var.max_executions
+        min_executions              = var.min_executions
+        polling_interval_in_seconds = var.polling_interval_in_seconds
+        rules {
+          name             = local.scale_rule_name
+          custom_rule_type = var.scale_rule_type
+          metadata         = var.scale_rule_metadata
+          authentication {
+            secret_name       = var.scale_rule_auth_secret_name
+            trigger_parameter = var.scale_rule_auth_trigger_param
+          }
+        }
+      }
+    }
+  }
+
   # Configure schedule trigger for scheduled execution
   dynamic "schedule_trigger_config" {
-    for_each = var.cron_expression != null ? [1] : []
+    for_each = var.trigger_type == "schedule" ? [1] : []
     content {
       cron_expression          = var.cron_expression
       parallelism              = var.job_parallelism
