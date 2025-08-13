@@ -1,0 +1,43 @@
+---
+
+parameters:
+  - name: serviceConnection
+    type: string
+
+steps:
+  - task: AzureCLI@2
+    name: deploy_images
+    displayName: Restart Function Apps
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      addSpnToEnvironment: true
+      failOnStandardError: false
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -eo pipefail
+        declare -a pids
+
+        wait_for_completion() {
+          # acr tasks are backgrounded for parallelism
+          local -n arr=$1
+          for pid in "${arr[@]}"; do
+            wait ${pid}
+          done
+        }
+
+        az account set -s $(TF_VAR_TARGET_SUBSCRIPTION_ID)
+
+        functionApps=$(az functionapp list --resource-group $(FUNCTION_RESOURCE_GROUP) --query "[].name" -o tsv)
+        for functionApp in $functionApps; do
+
+          imageName="${PROJECT_NAME}-$(echo $functionApp | sed "s/^$(ENVIRONMENT_SHORT)-uks-//")"
+
+          # Push the new image to the function app and perform manual restart. Pair the commands to run in parallel:
+          echo "##[debug] $functionApp updating and restarting with image ${SRC_REGISTRY}.azurecr.io/${imageName}:${ADD_IMAGE_TAG}" && \
+          az functionapp restart --name $functionApp --resource-group $(FUNCTION_RESOURCE_GROUP) &
+
+          pids+=($!)
+        done
+        wait_for_completion pids
+        echo "##[debug] All function apps restarted"
