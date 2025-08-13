@@ -96,6 +96,14 @@ Type: `string`
 
 Default: `"UK South"`
 
+### <a name="input_max_executions"></a> [max\_executions](#input\_max\_executions)
+
+Description: Maximum number of job executions that are created for a trigger.
+
+Type: `number`
+
+Default: `1`
+
 ### <a name="input_memory"></a> [memory](#input\_memory)
 
 Description: Memory allocated to the app (GiB). Also dictates the CPU allocation: CPU(%)=MEMORY(Gi)/2. Maximum: 4Gi
@@ -103,6 +111,22 @@ Description: Memory allocated to the app (GiB). Also dictates the CPU allocation
 Type: `number`
 
 Default: `"0.5"`
+
+### <a name="input_min_executions"></a> [min\_executions](#input\_min\_executions)
+
+Description: Minimum number of job executions that are created for a trigger.
+
+Type: `number`
+
+Default: `1`
+
+### <a name="input_polling_interval_in_seconds"></a> [polling\_interval\_in\_seconds](#input\_polling\_interval\_in\_seconds)
+
+Description: Interval to check each event source in seconds.
+
+Type: `number`
+
+Default: `300`
 
 ### <a name="input_replica_completion_count"></a> [replica\_completion\_count](#input\_replica\_completion\_count)
 
@@ -127,6 +151,46 @@ Description: The timeout in seconds for a replica to complete execution.
 Type: `number`
 
 Default: `300`
+
+### <a name="input_scale_rule_auth_secret_name"></a> [scale\_rule\_auth\_secret\_name](#input\_scale\_rule\_auth\_secret\_name)
+
+Description: Name of the secret from which to pull the authentication params.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_scale_rule_auth_trigger_param"></a> [scale\_rule\_auth\_trigger\_param](#input\_scale\_rule\_auth\_trigger\_param)
+
+Description: Trigger parameter that uses the authentication secret.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_scale_rule_metadata"></a> [scale\_rule\_metadata](#input\_scale\_rule\_metadata)
+
+Description: Metadata properties to describe the scale rule.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_scale_rule_type"></a> [scale\_rule\_type](#input\_scale\_rule\_type)
+
+Description: Type of the scale rule. This
+
+Type: `string`
+
+Default: `"azure-queue"`
+
+### <a name="input_trigger_type"></a> [trigger\_type](#input\_trigger\_type)
+
+Description: The type of trigger used to execute the container app job
+
+Type: `string`
+
+Default: `"manual"`
 
 ### <a name="input_user_assigned_identity_ids"></a> [user\_assigned\_identity\_ids](#input\_user\_assigned\_identity\_ids)
 

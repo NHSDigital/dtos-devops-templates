@@ -66,10 +66,28 @@ variable "job_parallelism" {
   default     = 1
 }
 
+variable "max_executions" {
+  description = "Maximum number of job executions that are created for a trigger."
+  type        = number
+  default     = 1
+}
+
 variable "memory" {
   description = "Memory allocated to the app (GiB). Also dictates the CPU allocation: CPU(%)=MEMORY(Gi)/2. Maximum: 4Gi"
   type        = number
   default     = "0.5"
+}
+
+variable "min_executions" {
+  description = "Minimum number of job executions that are created for a trigger."
+  type        = number
+  default     = 1
+}
+
+variable "polling_interval_in_seconds" {
+  description = "Interval to check each event source in seconds."
+  type        = number
+  default     = 300
 }
 
 variable "replica_completion_count" {
@@ -90,6 +108,36 @@ variable "replica_retry_limit" {
   default     = 3
 }
 
+variable "scale_rule_auth_secret_name" {
+  description = "Name of the secret from which to pull the authentication params."
+  type        = string
+  default     = null
+}
+
+variable "scale_rule_auth_trigger_param" {
+  description = "Trigger parameter that uses the authentication secret."
+  type        = string
+  default     = null
+}
+
+variable "scale_rule_metadata" {
+  description = "Metadata properties to describe the scale rule."
+  type        = string
+  default     = null
+}
+
+variable "scale_rule_type" {
+  description = "Type of the scale rule. This "
+  type        = string
+  default     = "azure-queue"
+}
+
+variable "trigger_type" {
+  description = "The type of trigger used to execute the container app job"
+  type        = string
+  default     = "manual"
+}
+
 variable "user_assigned_identity_ids" {
   description = "List of user assigned identity IDs to assign to the container app."
   type        = list(string)
@@ -104,6 +152,7 @@ variable "workload_profile_name" {
 }
 
 locals {
-  memory = "${var.memory}Gi"
-  cpu    = var.memory / 2
+  memory          = "${var.memory}Gi"
+  cpu             = var.memory / 2
+  scale_rule_name = "${var.name}-event-trigger-${var.scale_rule_type}"
 }
