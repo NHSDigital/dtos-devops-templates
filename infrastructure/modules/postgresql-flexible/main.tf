@@ -33,6 +33,7 @@ resource "azurerm_postgresql_flexible_server" "postgresql_flexible_server" {
   tags = var.tags
 
   lifecycle {
+    prevent_destroy = false
     ignore_changes = [
       # Allow Azure to manage deployment zone. Ignore changes.
       zone,

@@ -24,7 +24,7 @@ variable "frequency" {
   default     = "PT1M"
 
   validation {
-    condition = can(regex("^PT([0-9]+H)?([0-9]+M)?([0-9]+S)?$", var.frequency))
+    condition     = can(regex("^PT([0-9]+H)?([0-9]+M)?([0-9]+S)?$", var.frequency))
     error_message = "Frequency must be a valid ISO8601 duration string starting with 'PT' (e.g., PT5M, PT1H, PT15M, PT30S)."
   }
 }
@@ -64,7 +64,7 @@ variable "severity" {
   default     = "Sev2"
 
   validation {
-    condition = contains(["Sev0", "Sev1", "Sev2", "Sev3", "Sev4"], var.severity)
+    condition     = contains(["Sev0", "Sev1", "Sev2", "Sev3", "Sev4"], var.severity)
     error_message = "Severity must be one of: Sev0, Sev1, Sev2, Sev3, Sev4."
   }
 }

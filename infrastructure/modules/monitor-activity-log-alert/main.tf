@@ -9,8 +9,8 @@ resource "azurerm_monitor_activity_log_alert" "this" {
   dynamic "criteria" {
     for_each = var.criteria != null ? [var.criteria] : []
     content {
-      category       = criteria.value.category
-      level          = criteria.value.level
+      category = criteria.value.category
+      level    = criteria.value.level
       dynamic "service_health" {
         for_each = try([criteria.value.service_health], [])
         content {

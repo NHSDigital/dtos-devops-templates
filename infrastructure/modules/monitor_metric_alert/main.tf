@@ -3,9 +3,9 @@ resource "azurerm_monitor_metric_alert" "planned_maintenance_alert" {
   resource_group_name = var.resource_group_name
   scopes              = ["/subscriptions/${var.subscription_id}"]
 
-  description         = "Alerts on Azure planned maintenance"
-  severity            = 2
-  frequency           = "PT5M"
+  description          = "Alerts on Azure planned maintenance"
+  severity             = 2
+  frequency            = "PT5M"
   evaluation_frequency = "PT5M"
   window_size          = "PT5M"
 

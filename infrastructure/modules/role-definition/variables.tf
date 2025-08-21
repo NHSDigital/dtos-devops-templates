@@ -1,16 +1,16 @@
 variable "assignable_scopes" {
-  type = list(string)
+  type        = list(string)
   description = "A collection of one or more scopes at which this definition can be assigned."
   validation {
-    condition = length(var.assignable_scopes) >= 1
+    condition     = length(var.assignable_scopes) >= 1
     error_message = "At least one scope ID must be provided"
   }
 }
 
-variable "description"{
-  type = string
+variable "description" {
+  type        = string
   description = "A friendly textual description of this role and its intended purpose."
-  default = "Custom role for managing access to Azure resources in the specified environment."
+  default     = "Custom role for managing access to Azure resources in the specified environment."
 }
 
 variable "environment" {
@@ -18,8 +18,8 @@ variable "environment" {
   type        = string
 }
 
-variable "name"{
-  type = string
+variable "name" {
+  type        = string
   description = "A user-defined name for this custom role definition"
 }
 
@@ -43,8 +43,8 @@ variable "permissions" {
   })
 }
 
-variable "scope"{
-  type = string
+variable "scope" {
+  type        = string
   description = "The resource group or subscription ID that acts as the main scope at which this custom role definition will apply."
 }
 

@@ -1,11 +1,11 @@
 module "global_role_definition_rw" {
-source = "../role-definition"
+  source = "../role-definition"
 
-  name        = var.role_name
-  environment = var.environment
-  scope       = var.role_scope_id
+  name              = var.role_name
+  environment       = var.environment
+  scope             = var.role_scope_id
   assignable_scopes = var.assignable_scopes
-  description = "Contains the least required roles for storage access to queues, blobs and tables"
+  description       = "Contains the least required roles for storage access to queues, blobs and tables"
 
   permissions = {
     actions = concat(

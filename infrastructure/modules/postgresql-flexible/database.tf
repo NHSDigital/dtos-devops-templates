@@ -7,6 +7,6 @@ resource "azurerm_postgresql_flexible_server_database" "postgresql_flexible_db" 
   collation = each.value.collation
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }

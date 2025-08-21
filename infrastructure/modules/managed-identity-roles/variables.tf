@@ -1,14 +1,14 @@
 variable "assignable_scopes" {
-  type = list(string)
+  type        = list(string)
   description = "A collection of one or more scopes at which this definition can be assigned."
   validation {
-    condition = length(var.assignable_scopes) >= 1
+    condition     = length(var.assignable_scopes) >= 1
     error_message = "At least one scope ID must be provided"
   }
 }
 
 variable "role_name" {
-  type = string
+  type        = string
   description = "A name to apply to the single global role definition"
 }
 
@@ -23,7 +23,7 @@ variable "location" {
 }
 
 variable "role_scope_id" {
-  type = string
+  type        = string
   description = "The ID of a resource group or subscription for this custom role definition"
 }
 
