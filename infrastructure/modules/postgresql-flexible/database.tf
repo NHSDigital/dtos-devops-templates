@@ -9,4 +9,10 @@ resource "azurerm_postgresql_flexible_server_database" "postgresql_flexible_db" 
   lifecycle {
     prevent_destroy = false
   }
+
+  # Ensure admins are destroyed before databases
+  depends_on = [
+    azurerm_postgresql_flexible_server_active_directory_administrator.postgresql_admin,
+    azurerm_postgresql_flexible_server_active_directory_administrator.admin_identity
+  ]
 }
