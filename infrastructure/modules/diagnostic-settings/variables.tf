@@ -31,16 +31,10 @@ variable "log_analytics_workspace_id" {
   default     = null
 }
 
-variable "metric" {
+variable "enabled_metric" {
   type        = list(string)
   description = "value of the metric"
   default     = []
-}
-
-variable "metric_enabled" {
-  type        = bool
-  description = "True to retain diagnostic setting metrics, false otherwise"
-  default     = true
 }
 
 variable "storage_account_id" {
