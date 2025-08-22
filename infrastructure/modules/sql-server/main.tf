@@ -83,7 +83,7 @@ module "diagnostic_setting_sql_server" {
   target_resource_id         = "${azurerm_mssql_server.azure_sql_server.id}/databases/master"
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_log                = var.monitor_diagnostic_setting_sql_server_enabled_logs
-  metric                     = var.monitor_diagnostic_setting_sql_server_metrics
+  enabled_metric             = var.monitor_diagnostic_setting_sql_server_metrics
 
   # Add dependency on the database we create as the master database will be created by that point too
   depends_on = [azurerm_mssql_database.defaultdb]

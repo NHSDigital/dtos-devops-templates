@@ -31,7 +31,7 @@ variable "log_analytics_workspace_id" {
   default     = null
 }
 
-variable "metric" {
+variable "enabled_metric" {
   type        = list(string)
   description = "value of the metric"
   default     = []

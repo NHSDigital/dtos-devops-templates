@@ -27,6 +27,6 @@ module "diagnostic-settings" {
   name                       = "${var.name}-diagnostic-setting"
   target_resource_id         = azurerm_service_plan.appserviceplan.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
+  enabled_metric             = var.monitor_diagnostic_setting_appserviceplan_metrics
   #enabled_log                = var.enabled_log
-  metric = var.monitor_diagnostic_setting_appserviceplan_metrics
 }

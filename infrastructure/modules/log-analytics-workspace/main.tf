@@ -25,6 +25,6 @@ module "diagnostic-settings" {
   target_resource_id         = azurerm_log_analytics_workspace.log_analytics_workspace.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace.id
   enabled_log                = var.monitor_diagnostic_setting_log_analytics_workspace_enabled_logs
-  metric                     = var.monitor_diagnostic_setting_log_analytics_workspace_metrics
+  enabled_metric             = var.monitor_diagnostic_setting_log_analytics_workspace_metrics
 
 }
