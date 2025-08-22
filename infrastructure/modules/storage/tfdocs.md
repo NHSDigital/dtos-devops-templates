@@ -6,15 +6,24 @@ The following input variables are required:
 
 ### <a name="input_containers"></a> [containers](#input\_containers)
 
-Description: Definition of Storage Containers configuration
+Description: Definition of Storage Containers configuration, including optional immutability policy settings.
 
 Type:
 
 ```hcl
-map(object({
+variable "containers" {
+  description = "Definition of Storage Containers configuration"
+  type = map(object({
     container_name        = string
     container_access_type = string
+    immutability_policy = optional(object({
+      is_locked                           = optional(bool, false)
+      immutability_period_in_days         = optional(number, 0)
+      protected_append_writes_all_enabled = optional(bool, false)
+      protected_append_writes_enabled     = optional(bool, false)
+    }))
   }))
+}
 ```
 
 ### <a name="input_location"></a> [location](#input\_location)
