@@ -48,16 +48,22 @@ variable "blob_properties_versioning_enabled" {
 }
 
 variable "containers" {
-  description = "Definition of Storage Containers configuration"
+  description = "Definition of Storage Containers configuration, including optional immutability policy settings."
   type = map(object({
     container_name        = string
     container_access_type = string
+    immutability_policy = optional(object({
+      is_locked                           = optional(bool, false)
+      immutability_period_in_days         = optional(number, 0)
+      protected_append_writes_all_enabled = optional(bool, false)
+      protected_append_writes_enabled     = optional(bool, false)
+    }))
   }))
 }
 
 variable "log_analytics_workspace_id" {
   type        = string
-  description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
+  description = "Id of the log analytics workspace to send resource logging to via diagnostic settings"
 }
 
 variable "monitor_diagnostic_setting_storage_account_enabled_logs" {
@@ -124,5 +130,3 @@ variable "tags" {
   description = "Resource tags to be applied throughout the deployment."
   default     = {}
 }
-
-
