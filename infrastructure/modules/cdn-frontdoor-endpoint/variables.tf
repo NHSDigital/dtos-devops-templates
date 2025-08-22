@@ -29,8 +29,8 @@ variable "origins" {
   type = map(object({
     enabled            = optional(bool, true)
     hostname           = string
-    origin_host_header = optional(string)      # if omitted, the connection to the target will use the host header from the original request
-    priority           = optional(number, 1)   # 1–5
+    origin_host_header = optional(string)    # if omitted, the connection to the target will use the host header from the original request
+    priority           = optional(number, 1) # 1–5
 
     private_link = optional(object({
       location               = string

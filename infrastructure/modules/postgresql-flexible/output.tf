@@ -8,3 +8,7 @@ output "host" {
 output "database_names" {
   value = [for db in var.databases : db["name"]]
 }
+
+output "id" {
+  value = azurerm_postgresql_flexible_server.postgresql_flexible_server.id
+}

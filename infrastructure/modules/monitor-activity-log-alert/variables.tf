@@ -20,8 +20,8 @@ variable "description" {
 }
 
 variable "enabled" {
-  type        = bool
-  default     = true
+  type    = bool
+  default = true
 }
 
 variable "action_group_id" {
@@ -30,8 +30,8 @@ variable "action_group_id" {
 }
 
 variable "webhook_properties" {
-  type        = map(string)
-  default     = {}
+  type    = map(string)
+  default = {}
 }
 
 variable "tags" {
@@ -48,8 +48,8 @@ variable "location" {
 variable "criteria" {
   description = "Criteria for the activity log alert"
   type = object({
-    category       = string
-    level          = string
+    category = string
+    level    = string
     service_health = optional(object({
       events    = list(string)
       locations = list(string)
