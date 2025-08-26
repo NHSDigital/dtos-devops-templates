@@ -6,6 +6,6 @@ module "diagnostic-settings" {
   target_resource_id         = "${azurerm_storage_account.example.id}/${each.value}/default"
   log_analytics_workspace_id = azurerm_log_analytics_workspace.example.id
   enabled_log                = ["StorageWrite", "StorageRead", "StorageDelete"]
-  metric                     = ["AllMetrics"]
+  enabled_metric             = ["AllMetrics"]
 
 }

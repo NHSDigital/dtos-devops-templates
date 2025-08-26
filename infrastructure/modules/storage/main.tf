@@ -126,6 +126,6 @@ module "diagnostic-settings" {
   target_resource_id         = "${azurerm_storage_account.storage_account.id}/${each.value}/default"
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_log                = var.monitor_diagnostic_setting_storage_account_enabled_logs
-  metric                     = var.monitor_diagnostic_setting_storage_account_metrics
+  enabled_metric             = var.monitor_diagnostic_setting_storage_account_metrics
 
 }

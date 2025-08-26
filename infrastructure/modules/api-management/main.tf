@@ -152,6 +152,6 @@ module "diagnostic-settings" {
   target_resource_id         = azurerm_api_management.apim.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_log                = var.monitor_diagnostic_setting_apim_enabled_logs
-  metric                     = var.monitor_diagnostic_setting_apim_metrics
-  metric_enabled             = var.metric_enabled
+  enabled_metric             = var.monitor_diagnostic_setting_apim_metrics
+
 }
