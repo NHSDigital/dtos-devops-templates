@@ -69,6 +69,10 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "po
   object_id           = var.postgresql_admin_object_id
   principal_name      = var.postgresql_admin_principal_name
   principal_type      = var.postgresql_admin_principal_type
+
+  timeouts {
+    delete = "60m"
+  }
 }
 
 resource "azurerm_postgresql_flexible_server_active_directory_administrator" "admin_identity" {
@@ -83,6 +87,10 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "ad
   principal_name      = each.value.principal_name
   object_id           = each.value.object_id
   principal_type      = "ServicePrincipal"
+
+  timeouts {
+    delete = "60m"
+  }
 }
 
 # Create the server configurations
