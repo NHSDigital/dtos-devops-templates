@@ -48,6 +48,14 @@ Type: `string`
 
 Default: `null`
 
+### <a name="input_app_key_vault_id"></a> [app\_key\_vault\_id](#input\_app\_key\_vault\_id)
+
+Description: ID of the key vault to store app secrets. Each secret is mapped to an environment variable. Required when fetch\_secrets\_from\_app\_key\_vault is true.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_container_args"></a> [container\_args](#input\_container\_args)
 
 Description: The arguments to pass to the container command. Optional.
@@ -79,6 +87,16 @@ Description: Environment variables to pass to the container app. Only non-secret
 Type: `map(string)`
 
 Default: `{}`
+
+### <a name="input_fetch_secrets_from_app_key_vault"></a> [fetch\_secrets\_from\_app\_key\_vault](#input\_fetch\_secrets\_from\_app\_key\_vault)
+
+Description:     Fetch secrets from the app key vault and map them to secret environment variables. Requires app\_key\_vault\_id.
+
+    WARNING: The key vault must be created by terraform and populated manually before setting this to true.
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_job_parallelism"></a> [job\_parallelism](#input\_job\_parallelism)
 
@@ -143,10 +161,25 @@ Description: Workload profile in this container app environment
 Type: `string`
 
 Default: `"Consumption"`
+## Modules
 
+The following Modules are called:
+
+### <a name="module_container_app_identity"></a> [container\_app\_identity](#module\_container\_app\_identity)
+
+Source: ../managed-identity
+
+Version:
+
+### <a name="module_key_vault_reader_role_app"></a> [key\_vault\_reader\_role\_app](#module\_key\_vault\_reader\_role\_app)
+
+Source: ../rbac-assignment
+
+Version:
 
 ## Resources
 
 The following resources are used by this module:
 
 - [azurerm_container_app_job.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_job) (resource)
+- [azurerm_key_vault_secrets.app](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secrets) (data source)

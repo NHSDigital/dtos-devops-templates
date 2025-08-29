@@ -47,3 +47,26 @@ module "container-app-job" {
 }
 ```
 
+## Key vault secrets
+The container app job can be mapped to Azure Key Vaults for secret management:
+
+- **App Key Vault:**
+  - All secrets from the app key vault are fetched and mapped to secret environment variables if `fetch_secrets_from_app_key_vault = true` and `app_key_vault_id` is provided.
+  - Secret names in Key Vault must use hyphens (e.g., `SECRET-KEY`). These are mapped to environment variables with underscores (e.g., `SECRET_KEY`).
+  - Secrets are updated when Terraform runs, or automatically within 30 minutes.
+
+**Warning:** The module cannot read from a key vault if it doesn't exist yet. Recommended workflow:
+1. Create the key vault(s) using the [key-vault module](../key-vault/).
+2. Deploy the container app with `fetch_secrets_from_app_key_vault = false` (default) and/or `enable_auth = false`.
+3. Manually add the required secrets to the key vault(s).
+4. Set `fetch_secrets_from_app_key_vault = true` and/or `enable_auth = true`, then re-run Terraform to populate the app with secret environment variables and enable authentication.
+
+Example (app secrets):
+```hcl
+module "job" {
+  source                           = "../../../modules/dtos-devops-templates/infrastructure/modules/container-app-job"
+  ...
+  app_key_vault_id                 = module.app-key-vault.key_vault_id
+  fetch_secrets_from_app_key_vault = true
+}
+```

@@ -8,6 +8,22 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "app_key_vault_id" {
+  description = "ID of the key vault to store app secrets. Each secret is mapped to an environment variable. Required when fetch_secrets_from_app_key_vault is true."
+  type        = string
+  default     = null
+}
+variable "fetch_secrets_from_app_key_vault" {
+  description = <<EOT
+    Fetch secrets from the app key vault and map them to secret environment variables. Requires app_key_vault_id.
+
+    WARNING: The key vault must be created by terraform and populated manually before setting this to true.
+    EOT
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
 variable "location" {
   type        = string
   description = "The location/region where the container app environment is created."

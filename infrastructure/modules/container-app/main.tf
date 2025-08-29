@@ -30,7 +30,7 @@ module "key_vault_reader_role_infra" {
 locals {
   all_identity_ids = compact(concat(
     [var.acr_managed_identity_id],
-    var.user_assigned_identity_ids,
+
     [module.container_app_identity.id]
   ))
 }
