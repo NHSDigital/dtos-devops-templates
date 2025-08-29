@@ -139,6 +139,6 @@ module "diagnostic-settings" {
   target_resource_id         = azurerm_linux_function_app.function_app.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_log                = var.monitor_diagnostic_setting_function_app_enabled_logs
-  metric                     = var.monitor_diagnostic_setting_function_app_metrics
+  enabled_metric             = var.monitor_diagnostic_setting_function_app_metrics
 
 }

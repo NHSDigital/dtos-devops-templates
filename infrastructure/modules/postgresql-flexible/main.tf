@@ -143,5 +143,5 @@ module "diagnostic_setting_postgresql_server" {
   target_resource_id         = azurerm_postgresql_flexible_server.postgresql_flexible_server.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_log                = var.monitor_diagnostic_setting_postgresql_server_enabled_logs
-  metric                     = var.monitor_diagnostic_setting_postgresql_server_metrics
+  enabled_metric             = var.monitor_diagnostic_setting_postgresql_server_metrics
 }

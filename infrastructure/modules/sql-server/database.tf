@@ -52,7 +52,7 @@ module "azurerm_monitor_diagnostic_setting_db" {
   target_resource_id         = azurerm_mssql_database.defaultdb.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_log                = var.monitor_diagnostic_setting_database_enabled_logs
-  metric                     = var.monitor_diagnostic_setting_database_metrics
+  enabled_metric             = var.monitor_diagnostic_setting_database_metrics
 }
 
 
