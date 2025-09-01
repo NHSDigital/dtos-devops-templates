@@ -41,6 +41,7 @@ steps:
           echo "##[debug] Source and Destination Repositors do not match. Setting up cross-subscription access..."
           # If the source registry is a Dev registry, we need to set the subscription context to access it:
           [[ "${SRC_REGISTRY}" =~ dev ]] && cmdopt_sub="--subscription ${TF_VAR_HUB_SUBSCRIPTION_ID}"
+          echo "##[debug] Getting source registry ID for ${SRC_REGISTRY} using command: 'az acr show --name ${SRC_REGISTRY} ${cmdopt_sub} --query id --output tsv'"
           source_registry_id=$(az acr show --name ${SRC_REGISTRY} ${cmdopt_sub} --query id --output tsv)
           cmdopt_reg="--registry ${source_registry_id}" # needed when the source registry is in a different subscription
           echo "##[debug] Authenticating with container registry ${DEST_REGISTRY}..."
