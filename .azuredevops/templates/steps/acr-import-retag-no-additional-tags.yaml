@@ -32,9 +32,10 @@ steps:
         echo "##[debug] Source Registry: ${SRC_REGISTRY}"
         echo "##[debug] Destination Registry: ${DEST_REGISTRY}"
 
+        echo "##[debug] Source and Destination Repositors match. Authenticating with container registry ${SRC_REGISTRY}..."
+        az acr login --name ${SRC_REGISTRY}
+
         if [[ "${SRC_REGISTRY}" == ${DEST_REGISTRY} ]]; then
-          echo "##[debug] Source and Destination Repositors match. Authenticating with container registry ${SRC_REGISTRY}..."
-          az acr login --name ${SRC_REGISTRY}
           src_reg_prefix="${SRC_REGISTRY}.azurecr.io/" # omitted when the source registry is in a different subscription
         else
           echo "##[debug] Source and Destination Repositors do not match. Setting up cross-subscription access..."
