@@ -52,7 +52,13 @@ variable "docker_image" {
 }
 
 variable "environment_variables" {
-  description = "Environment variables to pass to the container app. Only non-secret variables. Secrets must be stored in key vault 'app_key_vault_id'"
+  description = "Environment variables to pass to the container app. Only non-secret variables. Secrets can be stored in key vault 'app_key_vault_id'"
+  type        = map(string)
+  default     = {}
+}
+
+variable "secret_variables" {
+  description = "Secret environment variables to pass to the container app."
   type        = map(string)
   default     = {}
 }
@@ -69,8 +75,14 @@ variable "is_web_app" {
   default     = false
 }
 
-variable "http_port" {
-  description = "HTTP port for the web app. Default is 8080."
+variable "is_tcp_app" {
+  description = "Is this a TCP app? If true, ingress is enabled."
+  type        = bool
+  default     = false
+}
+
+variable "port" {
+  description = "Port for the ingress. Default is 8080."
   type        = number
   default     = 8080
 }

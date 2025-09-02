@@ -61,6 +61,14 @@ resource "azurerm_container_app" "main" {
     }
   }
 
+  dynamic "secret" {
+    for_each = var.secret_variables
+    content {
+      name  = replace(lower(secret.key), "_", "-")
+      value = secret.value
+    }
+  }
+
   template {
     container {
       name   = var.name
@@ -73,6 +81,15 @@ resource "azurerm_container_app" "main" {
         content {
           name  = env.key
           value = env.value
+        }
+      }
+
+      dynamic "env" {
+        for_each = var.secret_variables
+        content {
+          # Env vars are uppercase and underscore separated
+          name        = upper(replace(env.key, "-", "_"))
+          secret_name = replace(lower(env.key), "_", "-")
         }
       }
 
@@ -104,8 +121,24 @@ resource "azurerm_container_app" "main" {
 
     content {
       external_enabled           = true
-      target_port                = var.http_port
+      target_port                = var.port
       allow_insecure_connections = false
+      traffic_weight {
+        percentage      = 100
+        latest_revision = true
+      }
+    }
+  }
+
+  dynamic "ingress" {
+    for_each = var.is_tcp_app ? [1] : []
+
+    content {
+      external_enabled           = true
+      target_port                = var.port
+      exposed_port               = var.port
+      allow_insecure_connections = false
+      transport                  = "tcp"
       traffic_weight {
         percentage      = 100
         latest_revision = true
