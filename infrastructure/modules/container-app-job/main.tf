@@ -71,6 +71,14 @@ resource "azurerm_container_app_job" "this" {
     }
   }
 
+  dynamic "secret" {
+    for_each = var.secret_variables
+    content {
+      name  = replace(lower(secret.key), "_", "-")
+      value = secret.value
+    }
+  }
+
   # Define the container template for the job.
   template {
 
@@ -92,6 +100,7 @@ resource "azurerm_container_app_job" "this" {
           value = env.value
         }
       }
+
       dynamic "env" {
         for_each = var.fetch_secrets_from_app_key_vault ? data.azurerm_key_vault_secrets.app[0].secrets : []
         content {
@@ -100,6 +109,16 @@ resource "azurerm_container_app_job" "this" {
           # KV secrets are uppercase and hyphen separated
           # app container secrets are lowercase and hyphen separated
           secret_name = lower(env.value.name)
+        }
+      }
+
+      dynamic "env" {
+        for_each = var.secret_variables
+        content {
+          # Env vars are uppercase and underscore separated
+          name = upper(replace(env.key, "-", "_"))
+          # app container secrets are lowercase and hyphen separated
+          secret_name = replace(lower(env.key), "_", "-")
         }
       }
     }

@@ -76,6 +76,12 @@ variable "environment_variables" {
   default     = {}
 }
 
+variable "secret_variables" {
+  description = "Secret environment variables to pass to the container app."
+  type        = map(string)
+  default     = {}
+}
+
 variable "job_parallelism" {
   description = "The number of replicas that can run in parallel."
   type        = number
