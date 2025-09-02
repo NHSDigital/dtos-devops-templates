@@ -104,6 +104,14 @@ Type: `number`
 
 Default: `"0.5"`
 
+### <a name="input_polling_interval_in_seconds"></a> [polling\_interval\_in\_seconds](#input\_polling\_interval\_in\_seconds)
+
+Description: Interval to check each event source in seconds.
+
+Type: `number`
+
+Default: `300`
+
 ### <a name="input_replica_completion_count"></a> [replica\_completion\_count](#input\_replica\_completion\_count)
 
 Description: The number of replicas that must complete successfully for the job to be considered successful.
@@ -127,6 +135,22 @@ Description: The timeout in seconds for a replica to complete execution.
 Type: `number`
 
 Default: `300`
+
+### <a name="input_scale_rule_metadata"></a> [scale\_rule\_metadata](#input\_scale\_rule\_metadata)
+
+Description: Metadata properties to describe the scale rule. Refer to [KEDA scaler documentation](https://keda.sh/docs/2.17/scalers/) for metadata relevant to the scale rule.
+
+Type: `map(string)`
+
+Default: `{}`
+
+### <a name="input_scale_rule_type"></a> [scale\_rule\_type](#input\_scale\_rule\_type)
+
+Description: Type of scale rule for the event trigger. See [KEDA scaler documentation](https://keda.sh/docs/2.17/scalers/) for supported types.
+
+Type: `string`
+
+Default: `null`
 
 ### <a name="input_user_assigned_identity_ids"></a> [user\_assigned\_identity\_ids](#input\_user\_assigned\_identity\_ids)
 
