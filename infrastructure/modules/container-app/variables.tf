@@ -82,9 +82,15 @@ variable "is_tcp_app" {
 }
 
 variable "port" {
-  description = "Port for the ingress. Default is 8080."
+  description = "Internal port for ingress. Default is 8080."
   type        = number
   default     = 8080
+}
+
+variable "exposed_port" {
+  description = "Externally exposed port for ingress. Default is var.port."
+  type        = number
+  default     = null
 }
 
 variable "memory" {

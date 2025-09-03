@@ -16,6 +16,18 @@ Description: Docker image and tag. Format: <registry>/<repository>:<tag>
 
 Type: `string`
 
+### <a name="input_infra_key_vault_name"></a> [infra\_key\_vault\_name](#input\_infra\_key\_vault\_name)
+
+Description: Name of Key Vault to retrieve the AAD client secrets
+
+Type: `string`
+
+### <a name="input_infra_key_vault_rg"></a> [infra\_key\_vault\_rg](#input\_infra\_key\_vault\_rg)
+
+Description: Resource group of the Key Vault
+
+Type: `string`
+
 ### <a name="input_name"></a> [name](#input\_name)
 
 Description: Name of the container app. Limited to 32 characters
@@ -56,13 +68,29 @@ Type: `string`
 
 Default: `null`
 
+### <a name="input_enable_auth"></a> [enable\_auth](#input\_enable\_auth)
+
+Description: Enable authentication for the container app. If true, the app will use Azure AD authentication.
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_environment_variables"></a> [environment\_variables](#input\_environment\_variables)
 
-Description: Environment variables to pass to the container app. Only non-secret variables. Secrets must be stored in key vault 'app\_key\_vault\_id'
+Description: Environment variables to pass to the container app. Only non-secret variables. Secrets can be stored in key vault 'app\_key\_vault\_id'
 
 Type: `map(string)`
 
 Default: `{}`
+
+### <a name="input_exposed_port"></a> [exposed\_port](#input\_exposed\_port)
+
+Description: Externally exposed port for ingress. Default is var.port.
+
+Type: `number`
+
+Default: `null`
 
 ### <a name="input_fetch_secrets_from_app_key_vault"></a> [fetch\_secrets\_from\_app\_key\_vault](#input\_fetch\_secrets\_from\_app\_key\_vault)
 
@@ -74,13 +102,29 @@ Type: `bool`
 
 Default: `false`
 
-### <a name="input_http_port"></a> [http\_port](#input\_http\_port)
+### <a name="input_infra_secret_names"></a> [infra\_secret\_names](#input\_infra\_secret\_names)
 
-Description: HTTP port for the web app. Default is 8080.
+Description: List of secret names to fetch from the infra key vault. Used to fetch AAD client secrets.
 
-Type: `number`
+Type: `list(string)`
 
-Default: `8080`
+Default:
+
+```json
+[
+  "aad-client-id",
+  "aad-client-secret",
+  "aad-client-audiences"
+]
+```
+
+### <a name="input_is_tcp_app"></a> [is\_tcp\_app](#input\_is\_tcp\_app)
+
+Description: Is this a TCP app? If true, ingress is enabled.
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_is_web_app"></a> [is\_web\_app](#input\_is\_web\_app)
 
@@ -114,6 +158,30 @@ Type: `number`
 
 Default: `1`
 
+### <a name="input_port"></a> [port](#input\_port)
+
+Description: Internal port for ingress. Default is 8080.
+
+Type: `number`
+
+Default: `8080`
+
+### <a name="input_secret_variables"></a> [secret\_variables](#input\_secret\_variables)
+
+Description: Secret environment variables to pass to the container app.
+
+Type: `map(string)`
+
+Default: `{}`
+
+### <a name="input_unauthenticated_action"></a> [unauthenticated\_action](#input\_unauthenticated\_action)
+
+Description: Action for unauthenticated requests: RedirectToLoginPage, Return401, Return403, AllowAnonymous
+
+Type: `string`
+
+Default: `"RedirectToLoginPage"`
+
 ### <a name="input_user_assigned_identity_ids"></a> [user\_assigned\_identity\_ids](#input\_user\_assigned\_identity\_ids)
 
 Description: List of user assigned identity IDs to assign to the container app.
@@ -139,7 +207,13 @@ Source: ../managed-identity
 
 Version:
 
-### <a name="module_key_vault_reader_role"></a> [key\_vault\_reader\_role](#module\_key\_vault\_reader\_role)
+### <a name="module_key_vault_reader_role_app"></a> [key\_vault\_reader\_role\_app](#module\_key\_vault\_reader\_role\_app)
+
+Source: ../rbac-assignment
+
+Version:
+
+### <a name="module_key_vault_reader_role_infra"></a> [key\_vault\_reader\_role\_infra](#module\_key\_vault\_reader\_role\_infra)
 
 Source: ../rbac-assignment
 
@@ -147,6 +221,10 @@ Version:
 ## Outputs
 
 The following outputs are exported:
+
+### <a name="output_container_app_fqdn"></a> [container\_app\_fqdn](#output\_container\_app\_fqdn)
+
+Description: n/a
 
 ### <a name="output_fqdn"></a> [fqdn](#output\_fqdn)
 
@@ -159,5 +237,9 @@ Description: URL of the container app. Only available if is\_web\_app is true.
 
 The following resources are used by this module:
 
-- [azurerm_container_app.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app) (resource)
-- [azurerm_key_vault_secrets.app](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secrets) (data source)
+- [azapi_resource.auth](https://registry.terraform.io/providers/azure/azapi/2.5.0/docs/resources/resource) (resource)
+- [azurerm_container_app.main](https://registry.terraform.io/providers/hashicorp/azurerm/4.34.0/docs/resources/container_app) (resource)
+- [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/4.34.0/docs/data-sources/client_config) (data source)
+- [azurerm_key_vault.infra](https://registry.terraform.io/providers/hashicorp/azurerm/4.34.0/docs/data-sources/key_vault) (data source)
+- [azurerm_key_vault_secret.infra](https://registry.terraform.io/providers/hashicorp/azurerm/4.34.0/docs/data-sources/key_vault_secret) (data source)
+- [azurerm_key_vault_secrets.app](https://registry.terraform.io/providers/hashicorp/azurerm/4.34.0/docs/data-sources/key_vault_secrets) (data source)

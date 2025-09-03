@@ -136,7 +136,7 @@ resource "azurerm_container_app" "main" {
     content {
       external_enabled           = true
       target_port                = var.port
-      exposed_port               = var.port
+      exposed_port               = var.exposed_port != null ? var.exposed_port : var.port
       allow_insecure_connections = false
       transport                  = "tcp"
       traffic_weight {

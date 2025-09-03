@@ -146,6 +146,14 @@ Type: `number`
 
 Default: `300`
 
+### <a name="input_secret_variables"></a> [secret\_variables](#input\_secret\_variables)
+
+Description: Secret environment variables to pass to the container app.
+
+Type: `map(string)`
+
+Default: `{}`
+
 ### <a name="input_user_assigned_identity_ids"></a> [user\_assigned\_identity\_ids](#input\_user\_assigned\_identity\_ids)
 
 Description: List of user assigned identity IDs to assign to the container app.
