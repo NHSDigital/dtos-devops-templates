@@ -52,4 +52,4 @@ steps:
         done
 
         wait_for_completion pids
-        echo "##[debug] All App Service restarted"
+        echo "##[debug] All App Services restarted"
