@@ -7,7 +7,7 @@ parameters:
 steps:
   - task: AzureCLI@2
     name: deploy_images
-    displayName: Restart Function Apps
+    displayName: Restart App Services
     inputs:
       azureSubscription: ${{ parameters.serviceConnection }}
       addSpnToEnvironment: true
@@ -19,7 +19,6 @@ steps:
         declare -a pids
 
         wait_for_completion() {
-          # acr tasks are backgrounded for parallelism
           local -n arr=$1
           for pid in "${arr[@]}"; do
             wait ${pid}
@@ -39,5 +38,18 @@ steps:
 
           pids+=($!)
         done
+
+        webApps=$(az webapp list --resource-group $(FUNCTION_RESOURCE_GROUP) --query "[].name" -o tsv)
+        for webApp in $webApps; do
+
+          imageName="${PROJECT_NAME}-$(echo $webApp | sed "s/^$(ENVIRONMENT_SHORT)-uks-//")"
+
+          # Push the new image to the function app and perform manual restart. Pair the commands to run in parallel:
+          echo "##[debug] $webApp updating and restarting with image ${SRC_REGISTRY}.azurecr.io/${imageName}:${ADD_IMAGE_TAG}" && \
+          az webapp restart --name $webApp --resource-group $(FUNCTION_RESOURCE_GROUP) &
+
+          pids+=($!)
+        done
+
         wait_for_completion pids
-        echo "##[debug] All function apps restarted"
+        echo "##[debug] All App Service restarted"
