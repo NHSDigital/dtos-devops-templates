@@ -176,6 +176,12 @@ variable "minimum_tls_version" {
   }
 }
 
+variable "http2_enabled" {
+  type        = bool
+  description = "Specifies whether or not the HTTP2 protocol should be enabled. Defaults to false"
+  default     = false
+}
+
 variable "monitor_diagnostic_setting_function_app_enabled_logs" {
   type        = list(string)
   description = "Controls what logs will be enabled for the function app"
