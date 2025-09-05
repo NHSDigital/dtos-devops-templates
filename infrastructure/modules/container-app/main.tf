@@ -148,7 +148,7 @@ resource "azurerm_container_app" "main" {
 }
 
 # Enable Microsoft Entra ID authentication if specified
-# Reqquires infra key vault to contain secrets:
+# Requires infra key vault to contain secrets:
 ## - aad-client-id
 ## - aad-client-secret
 ## - aad-client-audiences

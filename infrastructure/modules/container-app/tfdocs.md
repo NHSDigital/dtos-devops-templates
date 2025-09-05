@@ -16,18 +16,6 @@ Description: Docker image and tag. Format: <registry>/<repository>:<tag>
 
 Type: `string`
 
-### <a name="input_infra_key_vault_name"></a> [infra\_key\_vault\_name](#input\_infra\_key\_vault\_name)
-
-Description: Name of Key Vault to retrieve the AAD client secrets
-
-Type: `string`
-
-### <a name="input_infra_key_vault_rg"></a> [infra\_key\_vault\_rg](#input\_infra\_key\_vault\_rg)
-
-Description: Resource group of the Key Vault
-
-Type: `string`
-
 ### <a name="input_name"></a> [name](#input\_name)
 
 Description: Name of the container app. Limited to 32 characters
@@ -101,6 +89,22 @@ Description:     Fetch secrets from the app key vault and map them to secret env
 Type: `bool`
 
 Default: `false`
+
+### <a name="input_infra_key_vault_name"></a> [infra\_key\_vault\_name](#input\_infra\_key\_vault\_name)
+
+Description: Name of Key Vault to retrieve the AAD client secrets
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_infra_key_vault_rg"></a> [infra\_key\_vault\_rg](#input\_infra\_key\_vault\_rg)
+
+Description: Resource group of the Key Vault
+
+Type: `string`
+
+Default: `null`
 
 ### <a name="input_infra_secret_names"></a> [infra\_secret\_names](#input\_infra\_secret\_names)
 
