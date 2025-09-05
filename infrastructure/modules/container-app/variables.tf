@@ -132,11 +132,12 @@ variable "unauthenticated_action" {
 variable "infra_key_vault_name" {
   description = "Name of Key Vault to retrieve the AAD client secrets"
   type        = string
+  default     = null
 }
-
 variable "infra_key_vault_rg" {
   description = "Resource group of the Key Vault"
   type        = string
+  default     = null
 }
 variable "infra_secret_names" {
   description = "List of secret names to fetch from the infra key vault. Used to fetch AAD client secrets."
