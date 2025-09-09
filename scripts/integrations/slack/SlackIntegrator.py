@@ -86,6 +86,12 @@ def parse_args():
         required=False,
     )
     parser.add_argument(
+    "-m",
+    "--message",
+    help="Custom message to send to Slack (if not sending test results).",
+    required=False,
+)
+    parser.add_argument(
         "-U",
         "--user",
         help="The user who initiated/triggered the build.",
@@ -113,7 +119,7 @@ def main(argv):
         webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
 
     if args.verbose:
-        print(f"[VERBOSE] Report Path: {args.report}")
+        print(f"[VERBOSE] Report Path: {args.reports}")
         print(f"[VERBOSE] Success flag: {args.success}")
         print(f"[VERBOSE] Deployment Date: {args.date}")
         print(f"[VERBOSE] Deployment ID: {args.id}")
@@ -127,16 +133,24 @@ def main(argv):
         )
         sys.exit(1)
 
-    if not args.reports:
+    # Ensure we have either a report path or a message:
+    if not args.reports and not args.message:
         print(
-            "❌ 'REPORT_PATH' was not specified. Please use the '-r' or '--reports' parameters to provide a valid path to a JUnit test results file."
+            "❌ Neither 'REPORT_PATH' nor 'MESSAGE' were specified. Please use the '-r' or '--reports' parameters to provide a valid path to a JUnit test results file, or the '-m' or '--message' parameter to provide a custom message to send to Slack."
         )
         sys.exit(1)
 
     slack = SlackWebhookBot(webhook_url)
-    test_results = parse_junit_results(args.reports)
-    slack.send_report_message(args, test_results)
 
+    if args.reports:
+        test_results = parse_junit_results(args.reports)
+        slack.send_report_message(args, test_results)
+    elif args.message:
+        message_json = {"text": args.message}
+        slack.send(message_json)
+    else:
+        print("❌ Either '--reports' or '--message' must be provided.")
+        sys.exit(1)
 
 def parse_junit_results(path) -> Dict:
     import xml.etree.ElementTree as ET
