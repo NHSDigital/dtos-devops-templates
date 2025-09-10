@@ -6,6 +6,7 @@ from SlackMessages import *
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+logger.info("The SlackWebhookBot application is starting.")
 
 class SlackWebhookBot:
     def __init__(self, webhook_url: str, timeout: int = 15):
@@ -46,6 +47,7 @@ class SlackWebhookBot:
 
     def send(self, message) -> bool:
         success = False
+        logger.info("Sending message to Slack endpoint...")
         try:
             r = requests.post(
                 self.webhook_url,
@@ -66,8 +68,5 @@ class SlackWebhookBot:
             )
         except requests.RequestException as e:
             logger.error(f"Error occurred while communicating with Slack: {e}.")
-        else:
-            success = False
-            logger.info("Another error occurred while sending the message to Slack endpoint.")
 
         return success
