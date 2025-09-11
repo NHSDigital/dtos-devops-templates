@@ -12,11 +12,17 @@ parameters:
   - name: waitForCompletion
     type: boolean
     default: true
+  - name: pollingIntervalSeconds
+    type: number
+    default: 5
+  - name: maxPollingAttempts
+    type: number
+    default: 60
 
 steps:
   - task: AzureCLI@2
-    name: apply_database_changes
-    displayName: Apply database changes
+    name: run_job
+    displayName: Run Container App Job
     inputs:
       azureSubscription: ${{ parameters.serviceConnection }}
       addSpnToEnvironment: true
@@ -32,8 +38,8 @@ steps:
         JOB_NAME="${{ parameters.jobName }}"
         RESOURCE_GROUP_NAME="${{ parameters.resourceGroupName }}"
 
-        POLLING_INTERVAL_SECONDS=5
-        MAX_POLLING_ATTEMPTS=60
+        POLLING_INTERVAL_SECONDS=${{ parameters.pollingIntervalSeconds }}
+        MAX_POLLING_ATTEMPTS=${{ parameters.maxPollingAttempts }}
         CURRENT_ATTEMPT=0
 
         echo "##[section]Starting Container App Job: ${JOB_NAME} in Resource Group: ${RESOURCE_GROUP_NAME}"
