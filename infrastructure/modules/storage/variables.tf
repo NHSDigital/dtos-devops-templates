@@ -132,7 +132,7 @@ variable "tags" {
 }
 
 variable "shares" {
-  description = "List of Storage Shares to create."
+  description = "List of Storage Shares to create for the storage account."
   type        = list(string)
   default     = []
 }
