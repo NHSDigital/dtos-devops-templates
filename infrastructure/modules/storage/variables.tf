@@ -130,3 +130,9 @@ variable "tags" {
   description = "Resource tags to be applied throughout the deployment."
   default     = {}
 }
+
+variable "shares" {
+  description = "List of Storage Shares to create."
+  type        = list(string)
+  default     = []
+}

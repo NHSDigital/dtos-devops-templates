@@ -37,6 +37,13 @@ resource "azurerm_storage_queue" "queue" {
   storage_account_name = azurerm_storage_account.storage_account.name
 }
 
+resource "azurerm_storage_share" "share" {
+  for_each = var.shares != null ? toset(var.shares) : toset([])
+
+  name                 = each.value
+  storage_account_id   = azurerm_storage_account.storage_account.id
+  quota                = each.value.quota
+}
 
 /* --------------------------------------------------------------------------------------------------
   Private Endpoint Configuration
