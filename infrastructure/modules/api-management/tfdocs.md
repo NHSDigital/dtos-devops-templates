@@ -129,7 +129,7 @@ Type:
 ```hcl
 list(object({
     host_name                    = string
-    key_vault_id                 = optional(string)
+    key_vault_certificate_id     = optional(string)
     certificate                  = optional(string)
     certificate_password         = optional(string)
     negotiate_client_certificate = optional(bool, false)
@@ -148,7 +148,7 @@ Type:
 list(object({
     host_name                    = string
     default_ssl_binding          = optional(bool, false)
-    key_vault_id                 = optional(string)
+    key_vault_certificate_id     = optional(string)
     certificate                  = optional(string)
     certificate_password         = optional(string)
     negotiate_client_certificate = optional(bool, false)
@@ -166,7 +166,7 @@ Type:
 ```hcl
 list(object({
     host_name                    = string
-    key_vault_id                 = optional(string)
+    key_vault_certificate_id     = optional(string)
     certificate                  = optional(string)
     certificate_password         = optional(string)
     negotiate_client_certificate = optional(bool, false)
@@ -184,7 +184,7 @@ Type:
 ```hcl
 list(object({
     host_name                    = string
-    key_vault_id                 = optional(string)
+    key_vault_certificate_id     = optional(string)
     certificate                  = optional(string)
     certificate_password         = optional(string)
     negotiate_client_certificate = optional(bool, false)
@@ -332,6 +332,10 @@ Version:
 ## Outputs
 
 The following outputs are exported:
+
+### <a name="output_id"></a> [id](#output\_id)
+
+Description: The id of the API Management service.
 
 ### <a name="output_name"></a> [name](#output\_name)
 

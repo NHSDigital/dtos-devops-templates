@@ -28,6 +28,14 @@ Type: `list(string)`
 
 Default: `[]`
 
+### <a name="input_enabled_metric"></a> [enabled\_metric](#input\_enabled\_metric)
+
+Description: value of the metric
+
+Type: `list(string)`
+
+Default: `[]`
+
 ### <a name="input_eventhub_authorization_rule_id"></a> [eventhub\_authorization\_rule\_id](#input\_eventhub\_authorization\_rule\_id)
 
 Description: value of the eventhub authorization rule id
@@ -51,14 +59,6 @@ Description: Identifier of a log analytics workspace to send resource logging to
 Type: `string`
 
 Default: `null`
-
-### <a name="input_metric"></a> [metric](#input\_metric)
-
-Description: value of the metric
-
-Type: `list(string)`
-
-Default: `[]`
 
 ### <a name="input_metric_enabled"></a> [metric\_enabled](#input\_metric\_enabled)
 

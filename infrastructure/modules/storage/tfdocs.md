@@ -11,9 +11,7 @@ Description: Definition of Storage Containers configuration, including optional 
 Type:
 
 ```hcl
-variable "containers" {
-  description = "Definition of Storage Containers configuration"
-  type = map(object({
+map(object({
     container_name        = string
     container_access_type = string
     immutability_policy = optional(object({
@@ -23,7 +21,6 @@ variable "containers" {
       protected_append_writes_enabled     = optional(bool, false)
     }))
   }))
-}
 ```
 
 ### <a name="input_location"></a> [location](#input\_location)
@@ -34,7 +31,7 @@ Type: `string`
 
 ### <a name="input_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#input\_log\_analytics\_workspace\_id)
 
-Description: id of the log analytics workspace to send resource logging to via diagnostic settings
+Description: Id of the log analytics workspace to send resource logging to via diagnostic settings
 
 Type: `string`
 
@@ -230,5 +227,6 @@ The following resources are used by this module:
 
 - [azurerm_storage_account.storage_account](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) (resource)
 - [azurerm_storage_container.container](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) (resource)
+- [azurerm_storage_container_immutability_policy.policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container_immutability_policy) (resource)
 - [azurerm_storage_queue.queue](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_queue) (resource)
 - [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)

@@ -24,12 +24,10 @@ Type:
 
 ```hcl
 map(object({
-    enabled                        = optional(bool, true)
-    hostname                       = string
-    http_port                      = optional(number, 80)  # 1–65535
-    https_port                     = optional(number, 443) # 1–65535
-    origin_host_header             = optional(string)      # if omitted, the connection to the target will use the host header from the original request
-    priority                       = optional(number, 1)   # 1–5
+    enabled            = optional(bool, true)
+    hostname           = string
+    origin_host_header = optional(string)    # if omitted, the connection to the target will use the host header from the original request
+    priority           = optional(number, 1) # 1–5
 
     private_link = optional(object({
       location               = string
@@ -45,14 +43,6 @@ map(object({
 
 The following input variables are optional (have default values):
 
-### <a name="input_cdn_frontdoor_firewall_policy_rg_name"></a> [cdn\_frontdoor\_firewall\_policy\_rg\_name](#input\_cdn\_frontdoor\_firewall\_policy\_rg\_name)
-
-Description: Resource Group name containing Front Door WAF policies. You may optionally override this per firewall policy in var.security\_policies
-
-Type: `string`
-
-Default: `null`
-
 ### <a name="input_custom_domains"></a> [custom\_domains](#input\_custom\_domains)
 
 Description: Map of Front Door Custom Domain configurations
@@ -61,16 +51,15 @@ Type:
 
 ```hcl
 map(object({
-    dns_zone_name = string
-    host_name     = string
+    dns_zone_name    = string
+    dns_zone_rg_name = string
+    host_name        = string
 
     tls = optional(object({
       # https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-configure-https-custom-domain?tabs=powershell#register-azure-front-door
       certificate_type        = optional(string, "ManagedCertificate") # Use of apex domain as a hostname requires "CustomerCertificate"
       cdn_frontdoor_secret_id = optional(string, null)
     }), {})
-
-    zone_rg_name = optional(string, null)
   }))
 ```
 
@@ -103,14 +92,6 @@ object({
 ```
 
 Default: `{}`
-
-### <a name="input_public_dns_zone_rg_name"></a> [public\_dns\_zone\_rg\_name](#input\_public\_dns\_zone\_rg\_name)
-
-Description: Resource Group name for public DNS zones. You may optionally override this per custom domain in var.custom\_domain
-
-Type: `string`
-
-Default: `null`
 
 ### <a name="input_route"></a> [route](#input\_route)
 
@@ -150,7 +131,7 @@ Type:
 map(object({
     associated_domain_keys                = list(string) # From var.custom_domains above, use "endpoint" for the default domain
     cdn_frontdoor_firewall_policy_name    = string
-    cdn_frontdoor_firewall_policy_rg_name = optional(string, null)
+    cdn_frontdoor_firewall_policy_rg_name = string
   }))
 ```
 

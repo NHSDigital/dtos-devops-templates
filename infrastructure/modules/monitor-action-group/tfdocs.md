@@ -122,7 +122,13 @@ map(object({
 
 Default: `null`
 
+## Outputs
 
+The following outputs are exported:
+
+### <a name="output_monitor_action_group"></a> [monitor\_action\_group](#output\_monitor\_action\_group)
+
+Description: n/a
 ## Resources
 
 The following resources are used by this module:
