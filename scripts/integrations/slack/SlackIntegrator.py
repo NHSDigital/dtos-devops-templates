@@ -86,11 +86,17 @@ def parse_args():
         required=False,
     )
     parser.add_argument(
+    "-k",
+    "--markdown",
+    help="Custom message in MarkDown format to send to Slack (if not sending test results).",
+    required=False,
+    )
+    parser.add_argument(
     "-m",
     "--message",
     help="Custom message to send to Slack (if not sending test results).",
     required=False,
-)
+    )
     parser.add_argument(
         "-U",
         "--user",
@@ -133,10 +139,10 @@ def main(argv):
         )
         sys.exit(1)
 
-    # Ensure we have either a report path or a message:
-    if not args.reports and not args.message:
+    # Ensure we have either a report path, a simple message, or markdown message to send:
+    if not args.reports and not args.message and not args.markdown:
         print(
-            "❌ Neither 'REPORT_PATH' nor 'MESSAGE' were specified. Please use the '-r' or '--reports' parameters to provide a valid path to a JUnit test results file, or the '-m' or '--message' parameter to provide a custom message to send to Slack."
+            "❌ Neither 'REPORT_PATH', 'MESSAGE' nor 'MARKDOWN' were specified. Please use the '-r' or '--reports' parameters to provide a valid path to a JUnit test results file, or the '-m' or '--message' or '-k' or '--markdown' parameters to provide a custom message to send to Slack."
         )
         sys.exit(1)
 
@@ -145,12 +151,31 @@ def main(argv):
     if args.reports:
         test_results = parse_junit_results(args.reports)
         slack.send_report_message(args, test_results)
+    elif args.markdown:
+        markdown = format_markdown(args.markdown)
+        slack.send(markdown)
     elif args.message:
         message_json = {"text": args.message}
         slack.send(message_json)
     else:
-        print("❌ Either '--reports' or '--message' must be provided.")
+        print("❌ Either '--reports' or '--message' or '--markdown' must be provided.")
         sys.exit(1)
+
+def format_markdown(markdown: str) -> Dict:
+    """
+    Formats a markdown string into a Slack message payload using Block Kit.
+    """
+    return {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": markdown,
+                },
+            }
+        ]
+    }
 
 def parse_junit_results(path) -> Dict:
     import xml.etree.ElementTree as ET
