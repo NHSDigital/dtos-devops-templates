@@ -29,5 +29,6 @@ steps:
       scriptLocation: inlineScript
       workingDirectory: $(TF_DIRECTORY)
       inlineScript: |
+        set -e  # Exit immediately if a command exits with a non-zero status. This marks the whole stage as failed.
         ${{ parameters.tfApplyScript }}
         terraform apply -auto-approve -input=false $(TF_PLAN_ARTIFACT)/$(ENVIRONMENT).tfplan
