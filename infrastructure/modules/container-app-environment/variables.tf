@@ -47,6 +47,12 @@ variable "zone_redundancy_enabled" {
   default     = false
 }
 
+variable "custom_infra_rg_name" {
+  type        = string
+  description = "Set the custom name for the infrastructure_resource_group_name variable per each CAE. "
+  default     = null
+}
+
 locals {
   dns_record = replace(
     azurerm_container_app_environment.main.default_domain,
