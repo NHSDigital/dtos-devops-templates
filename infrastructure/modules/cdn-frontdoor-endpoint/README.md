@@ -12,7 +12,7 @@ A Terraform module to publish an application or website to the Internet, populat
 
 ## Features
 - Working Custom Domain managed certificates for leaf domains without their own DNS zones. e.g.:
-  ```
+  ```hcl
   host_name     = "www.foo.bar.com"
   dns_zone_name = "bar.com"
   ```
@@ -21,7 +21,7 @@ A Terraform module to publish an application or website to the Internet, populat
 - Can associate multiple WAF policies in different resource groups.
 
 ## Simple Example
-```
+```hcl
 module "frontdoor_endpoint" {
   source = "../../../dtos-devops-templates/infrastructure/modules/cdn-frontdoor-endpoint"
 

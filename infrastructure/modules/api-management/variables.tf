@@ -49,7 +49,7 @@ variable "custom_domains_developer_portal" {
   description = "List of Custom Domains configurations for the Developer Portal endpoint."
   type = list(object({
     host_name                    = string
-    key_vault_id                 = optional(string)
+    key_vault_certificate_id     = optional(string)
     certificate                  = optional(string)
     certificate_password         = optional(string)
     negotiate_client_certificate = optional(bool, false)
@@ -63,7 +63,7 @@ variable "custom_domains_gateway" {
   type = list(object({
     host_name                    = string
     default_ssl_binding          = optional(bool, false)
-    key_vault_id                 = optional(string)
+    key_vault_certificate_id     = optional(string)
     certificate                  = optional(string)
     certificate_password         = optional(string)
     negotiate_client_certificate = optional(bool, false)
@@ -76,7 +76,7 @@ variable "custom_domains_management" {
   description = "List of Custom Domains configurationd for the Management endpoint."
   type = list(object({
     host_name                    = string
-    key_vault_id                 = optional(string)
+    key_vault_certificate_id     = optional(string)
     certificate                  = optional(string)
     certificate_password         = optional(string)
     negotiate_client_certificate = optional(bool, false)
@@ -89,7 +89,7 @@ variable "custom_domains_scm" {
   description = "List of Custom Domains configurations for the SCM endpoint."
   type = list(object({
     host_name                    = string
-    key_vault_id                 = optional(string)
+    key_vault_certificate_id     = optional(string)
     certificate                  = optional(string)
     certificate_password         = optional(string)
     negotiate_client_certificate = optional(bool, false)

@@ -93,7 +93,7 @@ resource "azurerm_api_management_custom_domain" "apim" {
     for_each = var.custom_domains_management
     content {
       host_name                    = management.value.host_name
-      key_vault_id                 = management.value.key_vault_id
+      key_vault_certificate_id     = management.value.key_vault_certificate_id
       certificate                  = management.value.certificate
       certificate_password         = management.value.certificate_password
       negotiate_client_certificate = management.value.negotiate_client_certificate
@@ -104,7 +104,7 @@ resource "azurerm_api_management_custom_domain" "apim" {
     for_each = var.custom_domains_developer_portal
     content {
       host_name                    = developer_portal.value.host_name
-      key_vault_id                 = developer_portal.value.key_vault_id
+      key_vault_certificate_id     = developer_portal.value.key_vault_certificate_id
       certificate                  = developer_portal.value.certificate
       certificate_password         = developer_portal.value.certificate_password
       negotiate_client_certificate = developer_portal.value.negotiate_client_certificate
@@ -116,7 +116,7 @@ resource "azurerm_api_management_custom_domain" "apim" {
     content {
       host_name                    = gateway.value.host_name
       default_ssl_binding          = gateway.value.default_ssl_binding
-      key_vault_id                 = gateway.value.key_vault_id
+      key_vault_certificate_id     = gateway.value.key_vault_certificate_id
       certificate                  = gateway.value.certificate
       certificate_password         = gateway.value.certificate_password
       negotiate_client_certificate = gateway.value.negotiate_client_certificate
@@ -127,7 +127,7 @@ resource "azurerm_api_management_custom_domain" "apim" {
     for_each = var.custom_domains_scm
     content {
       host_name                    = scm.value.host_name
-      key_vault_id                 = scm.value.key_vault_id
+      key_vault_certificate_id     = scm.value.key_vault_certificate_id
       certificate                  = scm.value.certificate
       certificate_password         = scm.value.certificate_password
       negotiate_client_certificate = scm.value.negotiate_client_certificate

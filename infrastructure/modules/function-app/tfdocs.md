@@ -92,19 +92,6 @@ object({
   })
 ```
 
-### <a name="input_rbac_role_assignments"></a> [rbac\_role\_assignments](#input\_rbac\_role\_assignments)
-
-Description: Map of RBAC role assignments by region
-
-Type:
-
-```hcl
-list(object({
-    role_definition_name = string
-    scope                = string
-  }))
-```
-
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
 Description: The name of the resource group in which to create the Function App. Changing this forces a new resource to be created.
@@ -236,6 +223,14 @@ Type: `string`
 
 Default: `null`
 
+### <a name="input_http2_enabled"></a> [http2\_enabled](#input\_http2\_enabled)
+
+Description: Specifies whether or not the HTTP2 protocol should be enabled. Defaults to false
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_http_version"></a> [http\_version](#input\_http\_version)
 
 Description: The HTTP version to use for the function app. Override standard default.
@@ -300,6 +295,21 @@ Description: Should the Function App be accessible from the public network. Over
 Type: `bool`
 
 Default: `false`
+
+### <a name="input_rbac_role_assignments"></a> [rbac\_role\_assignments](#input\_rbac\_role\_assignments)
+
+Description: Map of RBAC role assignments by region
+
+Type:
+
+```hcl
+list(object({
+    role_definition_name = string
+    scope                = string
+  }))
+```
+
+Default: `[]`
 
 ### <a name="input_storage_account_access_key"></a> [storage\_account\_access\_key](#input\_storage\_account\_access\_key)
 

@@ -242,6 +242,10 @@ Description: n/a
 ### <a name="output_host"></a> [host](#output\_host)
 
 Description: n/a
+
+### <a name="output_id"></a> [id](#output\_id)
+
+Description: n/a
 ## Resources
 
 The following resources are used by this module:
