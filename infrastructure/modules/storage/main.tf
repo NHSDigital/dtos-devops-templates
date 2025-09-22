@@ -28,6 +28,8 @@ resource "azurerm_storage_container" "container" {
   name                  = each.value.container_name
   storage_account_id    = azurerm_storage_account.storage_account.id
   container_access_type = each.value.container_access_type
+
+  depends_on = [module.private_endpoint_blob_storage]
 }
 
 resource "azurerm_storage_queue" "queue" {
@@ -35,6 +37,8 @@ resource "azurerm_storage_queue" "queue" {
 
   name                 = each.value
   storage_account_name = azurerm_storage_account.storage_account.name
+
+  depends_on = [module.private_endpoint_queue_storage]
 }
 
 
