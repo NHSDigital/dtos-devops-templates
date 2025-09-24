@@ -49,5 +49,4 @@ resource "azurerm_monitor_action_group" "this" {
       use_common_alert_schema = webhook_receiver.value.use_common_alert_schema
     }
   }
-
 }

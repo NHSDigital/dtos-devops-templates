@@ -16,7 +16,31 @@ variable "location" {
 
 variable "log_analytics_workspace_id" {
   type        = string
-  description = "ID of the log analytics workspace to send resource logging to via diagnostic settings"
+  description = "ID of the log analytics workspace to send resource logging to via diagnostic settings."
+}
+
+variable "logs_destination" {
+  type        = string
+  description = "Destination for the logs. Possible values are 'log-analytics' or 'azure-monitor'."
+  default     = "log-analytics"
+}
+
+variable "metric_enabled" {
+  type        = bool
+  description = "To enable retention for diagnostic settings metric"
+  default     = false
+}
+
+variable "monitor_diagnostic_setting_cae_enabled_logs" {
+  type        = list(string)
+  description = "Controls what logs will be enabled for the container app environment"
+  default     = []
+}
+
+variable "monitor_diagnostic_setting_cae_metrics" {
+  type        = list(string)
+  description = "Controls what metrics will be enabled for the container app environment"
+  default     = []
 }
 
 variable "vnet_integration_subnet_id" {
