@@ -75,6 +75,36 @@ resource "azurerm_cdn_frontdoor_custom_domain" "this" {
   ]
 }
 
+resource "azurerm_cdn_frontdoor_rule_set" "this" {
+  count                     = length(var.route.patterns_to_match) > 0 ? 1 : 0
+  name                      = "allowed"
+  cdn_frontdoor_profile_id  = var.cdn_frontdoor_profile_id
+}
+
+resource "azurerm_cdn_frontdoor_rule" "this" {
+  count                     = length(var.route.patterns_to_match)
+  name                       = "allowlist${count.index}"
+  cdn_frontdoor_rule_set_id = azurerm_cdn_frontdoor_rule_set.this[0].id
+  order                     = count.index + 1
+
+  actions {
+    route_configuration_override_action {
+      forwarding_protocol           = "MatchRequest"
+      cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.this.id
+      cache_behavior                = "HonorOrigin"
+      query_string_caching_behavior = var.route.cache.query_string_caching_behavior
+    }
+  }
+
+  conditions {
+    request_uri_condition {
+      operator  = "Equal"
+      match_values = [var.route.patterns_to_match[count.index]]
+      transforms = []
+    }
+  }
+}
+
 resource "azurerm_cdn_frontdoor_route" "this" {
   name                          = "${var.name}-route"
   cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.this.id
@@ -115,7 +145,7 @@ resource "azurerm_cdn_frontdoor_security_policy" "this" {
       cdn_frontdoor_firewall_policy_id = data.azurerm_cdn_frontdoor_firewall_policy.waf[each.key].id
 
       association {
-        patterns_to_match = ["/*"]
+        patterns_to_match = length(var.route.patterns_to_match) > 0 ? var.route.patterns_to_match : ["/*"]
 
         dynamic "domain" {
           for_each = toset(each.value.associated_domain_keys)

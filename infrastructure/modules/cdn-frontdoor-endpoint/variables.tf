@@ -101,3 +101,9 @@ variable "tags" {
   description = "Resource tags to be applied throughout the deployment"
   default     = {}
 }
+
+variable "allowed_paths" {
+  description = "List of allowed paths. Empty = allow all."
+  type        = list(string)
+  default     = []
+}
