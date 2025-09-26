@@ -66,12 +66,9 @@ variable "webhook_receiver" {
 }
 
 variable "location" {
-  description = "The location/region where the Event Hub namespace is created."
+  description = "Deprecated: The location/region where the Event Hub namespace is created. (Not required by module - present for backward compatibility)"
   type        = string
-  validation {
-    condition     = contains(["uksouth", "ukwest"], var.location)
-    error_message = "The location must be either uksouth or ukwest."
-  }
+  default =   null
 }
 
 variable "tags" {
@@ -79,4 +76,3 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
-

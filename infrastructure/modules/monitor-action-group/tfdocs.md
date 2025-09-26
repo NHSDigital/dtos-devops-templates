@@ -4,12 +4,6 @@
 
 The following input variables are required:
 
-### <a name="input_location"></a> [location](#input\_location)
-
-Description: The location/region where the Event Hub namespace is created.
-
-Type: `string`
-
 ### <a name="input_name"></a> [name](#input\_name)
 
 Description: value of the name of the diagnostic setting
@@ -63,6 +57,14 @@ map(object({
     use_common_alert_schema = bool
   }))
 ```
+
+Default: `null`
+
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: Deprecated: The location/region where the Event Hub namespace is created. (Not required by module - present for backward compatibility)
+
+Type: `string`
 
 Default: `null`
 

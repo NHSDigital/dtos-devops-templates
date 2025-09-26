@@ -6,7 +6,7 @@ The following input variables are required:
 
 ### <a name="input_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#input\_log\_analytics\_workspace\_id)
 
-Description: ID of the log analytics workspace to send resource logging to via diagnostic settings
+Description: ID of the log analytics workspace to send resource logging to via diagnostic settings.
 
 Type: `string`
 
@@ -32,6 +32,14 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
+### <a name="input_custom_infra_rg_name"></a> [custom\_infra\_rg\_name](#input\_custom\_infra\_rg\_name)
+
+Description: Set the custom name for the infrastructure\_resource\_group\_name variable per each CAE.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_location"></a> [location](#input\_location)
 
 Description: The location/region where the container app environment is created.
@@ -39,6 +47,38 @@ Description: The location/region where the container app environment is created.
 Type: `string`
 
 Default: `"UK South"`
+
+### <a name="input_logs_destination"></a> [logs\_destination](#input\_logs\_destination)
+
+Description: Destination for the logs. Possible values are 'log-analytics' or 'azure-monitor'.
+
+Type: `string`
+
+Default: `"log-analytics"`
+
+### <a name="input_metric_enabled"></a> [metric\_enabled](#input\_metric\_enabled)
+
+Description: To enable retention for diagnostic settings metric
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_monitor_diagnostic_setting_cae_enabled_logs"></a> [monitor\_diagnostic\_setting\_cae\_enabled\_logs](#input\_monitor\_diagnostic\_setting\_cae\_enabled\_logs)
+
+Description: Controls what logs will be enabled for the container app environment
+
+Type: `list(string)`
+
+Default: `[]`
+
+### <a name="input_monitor_diagnostic_setting_cae_metrics"></a> [monitor\_diagnostic\_setting\_cae\_metrics](#input\_monitor\_diagnostic\_setting\_cae\_metrics)
+
+Description: Controls what metrics will be enabled for the container app environment
+
+Type: `list(string)`
+
+Default: `[]`
 
 ### <a name="input_private_dns_zone_rg_name"></a> [private\_dns\_zone\_rg\_name](#input\_private\_dns\_zone\_rg\_name)
 
@@ -79,6 +119,12 @@ The following Modules are called:
 ### <a name="module_apex-record"></a> [apex-record](#module\_apex-record)
 
 Source: ../private-dns-a-record
+
+Version:
+
+### <a name="module_diagnostic-settings"></a> [diagnostic-settings](#module\_diagnostic-settings)
+
+Source: ../diagnostic-settings
 
 Version:
 
