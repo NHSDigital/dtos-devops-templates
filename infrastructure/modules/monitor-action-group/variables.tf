@@ -68,7 +68,7 @@ variable "webhook_receiver" {
 variable "location" {
   description = "Deprecated: The location/region where the Event Hub namespace is created. (Not required by module - present for backward compatibility)"
   type        = string
-  default =   null
+  default     = null
 }
 
 variable "tags" {

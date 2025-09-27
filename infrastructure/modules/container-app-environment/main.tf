@@ -5,7 +5,7 @@ resource "azurerm_container_app_environment" "main" {
   log_analytics_workspace_id         = var.logs_destination == "log-analytics" ? var.log_analytics_workspace_id : null
   logs_destination                   = var.logs_destination
   infrastructure_subnet_id           = var.vnet_integration_subnet_id
-  internal_load_balancer_enabled     = true
+  internal_load_balancer_enabled     = var.internal_load_balancer_enabled
   zone_redundancy_enabled            = var.zone_redundancy_enabled
   infrastructure_resource_group_name = var.custom_infra_rg_name != null ? var.custom_infra_rg_name : "${var.resource_group_name}-cae-infra"
 

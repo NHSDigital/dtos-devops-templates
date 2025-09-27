@@ -40,6 +40,14 @@ Type: `string`
 
 Default: `null`
 
+### <a name="input_internal_load_balancer_enabled"></a> [internal\_load\_balancer\_enabled](#input\_internal\_load\_balancer\_enabled)
+
+Description: Limit the ingress to the local VNET.
+
+Type: `bool`
+
+Default: `true`
+
 ### <a name="input_location"></a> [location](#input\_location)
 
 Description: The location/region where the container app environment is created.

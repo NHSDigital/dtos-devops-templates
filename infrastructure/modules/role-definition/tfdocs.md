@@ -24,14 +24,13 @@ Type: `string`
 
 ### <a name="input_permissions"></a> [permissions](#input\_permissions)
 
-Description:     A set of permissions to apply to the role definition. Please refer to the relevant Microsoft
-    documentation related to the available "actions", "data actions", and any "not actions" available.
+Description:     A set of permissions to apply to the role definition. Please refer to the relevant Microsoft  
+    documentation related to the available "actions", "data actions", and any "not actions" available.  
     Example:
-
-      {
-        actions           = ["Microsoft.Storage/storageAccounts/listkeys/action"]
-        data\_actions      = ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"]
-        not\_actions       = []
+      {  
+        actions           = ["Microsoft.Storage/storageAccounts/listkeys/action"]  
+        data\_actions      = ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"]  
+        not\_actions       = []  
         not\_data\_actions  = []
       }
 
