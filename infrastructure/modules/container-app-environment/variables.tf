@@ -1,3 +1,9 @@
+variable "internal_load_balancer_enabled" {
+  description = "Limit the ingress to the local VNET."
+  type        = bool
+  default     = true
+}
+
 variable "name" {
   description = "Name of the container app environment."
   type        = string
