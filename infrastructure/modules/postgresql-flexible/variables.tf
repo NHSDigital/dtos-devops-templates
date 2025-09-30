@@ -208,11 +208,13 @@ variable "alert_window_size" {
 variable "enable_monitoring" {
   description = "Whether monitoring and alerting is enabled for the PostgreSQL Flexible Server."
   type        = bool
+  default     = false
 }
 
 variable "action_group_id" {
   type        = string
   description = "ID of the action group to notify."
+  default     = null
 }
 
 variable "alert_memory_threshold" {
