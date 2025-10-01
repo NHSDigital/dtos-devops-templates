@@ -184,6 +184,12 @@ variable "dec_scale_cooldown" {
   Monitoring and Diagnostics Variables
 -------------------------------------------------------------------------------------------------- */
 
+variable "resource_group_name_monitoring" {
+  type        = string
+  description = "The name of the resource group in which to create the Monitoring resources for the App Service Plan. Changing this forces a new resource to be created."
+  default     = null
+}
+
 variable "action_group_id" {
   type        = string
   description = "The ID of the Action Group to use for alerts."
@@ -227,6 +233,12 @@ variable "log_analytics_workspace_id" {
 variable "monitor_diagnostic_setting_appserviceplan_metrics" {
   type        = list(string)
   description = "Controls what metrics will be enabled for the appserviceplan"
+}
+
+variable "severity" {
+  type        = number
+  description = "Severity of the alert. 0 = Critical, 1 = Error, 2 = Warning, 3 = Informational, 4 = Verbose. Default is 3."
+  default     = 3
 }
 
 locals {
