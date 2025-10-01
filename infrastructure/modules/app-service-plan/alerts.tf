@@ -10,7 +10,7 @@ resource "azurerm_monitor_metric_alert" "memory" {
 
   criteria {
     metric_namespace = "Microsoft.Web/serverFarms"
-    metric_name      = "memory_percent"
+    metric_name      = "MemoryPercentage"
     aggregation      = "Average"
     operator         = "GreaterThan"
     threshold        = var.alert_memory_threshold
@@ -39,7 +39,7 @@ resource "azurerm_monitor_metric_alert" "cpu" {
 
   criteria {
     metric_namespace = "Microsoft.Web/serverFarms"
-    metric_name      = "cpu_percent"
+    metric_name      = "CpuPercentage"
     aggregation      = "Average"
     operator         = "GreaterThan"
     threshold        = var.alert_cpu_threshold
