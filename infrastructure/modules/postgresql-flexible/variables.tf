@@ -205,7 +205,7 @@ variable "alert_window_size" {
   description = "The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly."
 }
 
-variable "enable_monitoring" {
+variable "enable_alerting" {
   description = "Whether monitoring and alerting is enabled for the PostgreSQL Flexible Server."
   type        = bool
   default     = false
@@ -218,15 +218,15 @@ variable "action_group_id" {
 }
 
 variable "alert_memory_threshold" {
-  type    = number
+  type        = number
   description = "If alerting is enabled this will control what the memory threshold will be, default will be 80."
-  default = 80
+  default     = 80
 }
 
 variable "azure_storage_threshold" {
-  type    = number
+  type        = number
   description = "If alerting is enabled this will control what the storage threshold will be, default will be 80."
-  default = 80
+  default     = 80
 }
 
 variable "azure_cpu_threshold" {

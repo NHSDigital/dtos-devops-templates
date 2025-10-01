@@ -1,5 +1,5 @@
 resource "azurerm_monitor_metric_alert" "memory" {
-  count = var.enable_monitoring ? 1 : 0
+  count = var.enable_alerting ? 1 : 0
 
   name                = "${azurerm_postgresql_flexible_server.postgresql_flexible_server.name}-memory"
   resource_group_name = var.resource_group_name
@@ -28,7 +28,7 @@ resource "azurerm_monitor_metric_alert" "memory" {
 }
 
 resource "azurerm_monitor_metric_alert" "cpu" {
-  count = var.enable_monitoring ? 1 : 0
+  count = var.enable_alerting ? 1 : 0
 
   name                = "${azurerm_postgresql_flexible_server.postgresql_flexible_server.name}-cpu"
   resource_group_name = var.resource_group_name
@@ -57,7 +57,7 @@ resource "azurerm_monitor_metric_alert" "cpu" {
 }
 
 resource "azurerm_monitor_metric_alert" "storage" {
-  count = var.enable_monitoring ? 1 : 0
+  count = var.enable_alerting ? 1 : 0
 
   name                = "${azurerm_postgresql_flexible_server.postgresql_flexible_server.name}-storage"
   resource_group_name = var.resource_group_name
