@@ -218,15 +218,15 @@ variable "action_group_id" {
 }
 
 variable "alert_memory_threshold" {
-  type    = number
+  type        = number
   description = "If alerting is enabled this will control what the memory threshold will be, default will be 80."
-  default = 80
+  default     = 80
 }
 
 variable "azure_storage_threshold" {
-  type    = number
+  type        = number
   description = "If alerting is enabled this will control what the storage threshold will be, default will be 80."
-  default = 80
+  default     = 80
 }
 
 variable "azure_cpu_threshold" {
