@@ -122,6 +122,38 @@ Type: `any`
 
 Default: `null`
 
+### <a name="input_action_group_id"></a> [action\_group\_id](#input\_action\_group\_id)
+
+Description: The ID of the Action Group to use for alerts.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_alert_4xx_threshold"></a> [alert\_4xx\_threshold](#input\_alert\_4xx\_threshold)
+
+Description: The threshold for 4xx errors to trigger the alert.
+
+Type: `number`
+
+Default: `10`
+
+### <a name="input_alert_5xx_threshold"></a> [alert\_5xx\_threshold](#input\_alert\_5xx\_threshold)
+
+Description: The threshold for 4xx errors to trigger the alert.
+
+Type: `number`
+
+Default: `10`
+
+### <a name="input_alert_window_size"></a> [alert\_window\_size](#input\_alert\_window\_size)
+
+Description: The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly.
+
+Type: `string`
+
+Default: `"PT5M"`
+
 ### <a name="input_always_on"></a> [always\_on](#input\_always\_on)
 
 Description: Should the Function App be always on. Override standard default.
@@ -167,6 +199,14 @@ Default:
   ""
 ]
 ```
+
+### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
+
+Description: Whether monitoring and alerting is enabled for the App Service Plan.
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_entra_id_group_ids"></a> [entra\_id\_group\_ids](#input\_entra\_id\_group\_ids)
 
@@ -311,6 +351,22 @@ list(object({
 
 Default: `[]`
 
+### <a name="input_resource_group_name_monitoring"></a> [resource\_group\_name\_monitoring](#input\_resource\_group\_name\_monitoring)
+
+Description: The name of the resource group in which to create the Monitoring resources for the App Service Plan. Changing this forces a new resource to be created.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_severity"></a> [severity](#input\_severity)
+
+Description: Severity of the alert. 0 = Critical, 1 = Error, 2 = Warning, 3 = Informational, 4 = Verbose. Default is 3.
+
+Type: `number`
+
+Default: `3`
+
 ### <a name="input_storage_account_access_key"></a> [storage\_account\_access\_key](#input\_storage\_account\_access\_key)
 
 Description: The Storage Account Primary Access Key.
@@ -402,3 +458,5 @@ The following resources are used by this module:
 
 - [azuread_group_member.function_app](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/group_member) (resource)
 - [azurerm_linux_function_app.function_app](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/linux_function_app) (resource)
+- [azurerm_monitor_metric_alert.function_4xx](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)
+- [azurerm_monitor_metric_alert.function_5xx](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)
