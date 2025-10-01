@@ -117,6 +117,14 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
+### <a name="input_action_group_id"></a> [action\_group\_id](#input\_action\_group\_id)
+
+Description: ID of the action group to notify.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_admin_identities"></a> [admin\_identities](#input\_admin\_identities)
 
 Description: List of managed identities modules with admin access to the postgres server. The managed identity must have the Directory.Read.All permission.
@@ -132,6 +140,46 @@ Description: n/a
 Type: `string`
 
 Default: `null`
+
+### <a name="input_alert_memory_threshold"></a> [alert\_memory\_threshold](#input\_alert\_memory\_threshold)
+
+Description: If alerting is enabled this will control what the memory threshold will be, default will be 80.
+
+Type: `number`
+
+Default: `80`
+
+### <a name="input_alert_window_size"></a> [alert\_window\_size](#input\_alert\_window\_size)
+
+Description: The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly.
+
+Type: `string`
+
+Default: `"PT5M"`
+
+### <a name="input_azure_cpu_threshold"></a> [azure\_cpu\_threshold](#input\_azure\_cpu\_threshold)
+
+Description: If alerting is enabled this will control what the cpu threshold will be, default will be 80.
+
+Type: `number`
+
+Default: `80`
+
+### <a name="input_azure_storage_threshold"></a> [azure\_storage\_threshold](#input\_azure\_storage\_threshold)
+
+Description: If alerting is enabled this will control what the storage threshold will be, default will be 80.
+
+Type: `number`
+
+Default: `80`
+
+### <a name="input_enable_monitoring"></a> [enable\_monitoring](#input\_enable\_monitoring)
+
+Description: Whether monitoring and alerting is enabled for the PostgreSQL Flexible Server.
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_key_vault_admin_pwd_secret_name"></a> [key\_vault\_admin\_pwd\_secret\_name](#input\_key\_vault\_admin\_pwd\_secret\_name)
 
@@ -251,6 +299,9 @@ Description: n/a
 The following resources are used by this module:
 
 - [azurerm_key_vault_secret.db_admin_pwd](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret) (resource)
+- [azurerm_monitor_metric_alert.cpu](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)
+- [azurerm_monitor_metric_alert.memory](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)
+- [azurerm_monitor_metric_alert.storage](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)
 - [azurerm_postgresql_flexible_server.postgresql_flexible_server](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server) (resource)
 - [azurerm_postgresql_flexible_server_active_directory_administrator.admin_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_active_directory_administrator) (resource)
 - [azurerm_postgresql_flexible_server_active_directory_administrator.postgresql_admin](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_active_directory_administrator) (resource)
