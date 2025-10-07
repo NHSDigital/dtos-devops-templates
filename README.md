@@ -67,9 +67,7 @@ Make sure to link all modules from this README.
 
 ## Alerts
 
-Alerting exists on both container app and postgres modules.
-
-To enable alerting on container app or postgres.
+To enable alerting (example here on container app)
 - Set `enable_alerting = true`.
 - Severity are 0 = Critical, 1 = Error, 2 = Warning, 3 = informational and 4 = verbose
 
