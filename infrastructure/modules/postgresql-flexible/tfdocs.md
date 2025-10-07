@@ -141,9 +141,25 @@ Type: `string`
 
 Default: `null`
 
+### <a name="input_alert_cpu_threshold"></a> [alert\_cpu\_threshold](#input\_alert\_cpu\_threshold)
+
+Description: If alerting is enabled this will control what the cpu threshold will be, default will be 80.
+
+Type: `number`
+
+Default: `80`
+
 ### <a name="input_alert_memory_threshold"></a> [alert\_memory\_threshold](#input\_alert\_memory\_threshold)
 
 Description: If alerting is enabled this will control what the memory threshold will be, default will be 80.
+
+Type: `number`
+
+Default: `80`
+
+### <a name="input_alert_storage_threshold"></a> [alert\_storage\_threshold](#input\_alert\_storage\_threshold)
+
+Description: If alerting is enabled this will control what the storage threshold will be, default will be 80.
 
 Type: `number`
 
@@ -157,23 +173,7 @@ Type: `string`
 
 Default: `"PT5M"`
 
-### <a name="input_azure_cpu_threshold"></a> [azure\_cpu\_threshold](#input\_azure\_cpu\_threshold)
-
-Description: If alerting is enabled this will control what the cpu threshold will be, default will be 80.
-
-Type: `number`
-
-Default: `80`
-
-### <a name="input_azure_storage_threshold"></a> [azure\_storage\_threshold](#input\_azure\_storage\_threshold)
-
-Description: If alerting is enabled this will control what the storage threshold will be, default will be 80.
-
-Type: `number`
-
-Default: `80`
-
-### <a name="input_enable_monitoring"></a> [enable\_monitoring](#input\_enable\_monitoring)
+### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
 
 Description: Whether monitoring and alerting is enabled for the PostgreSQL Flexible Server.
 

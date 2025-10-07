@@ -48,6 +48,38 @@ Type: `string`
 
 Default: `null`
 
+### <a name="input_action_group_id"></a> [action\_group\_id](#input\_action\_group\_id)
+
+Description: ID of the action group to notify.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_alert_cpu_threshold"></a> [alert\_cpu\_threshold](#input\_alert\_cpu\_threshold)
+
+Description: If alerting is enabled this will control what the cpu threshold will be, default will be 80.
+
+Type: `number`
+
+Default: `80`
+
+### <a name="input_alert_memory_threshold"></a> [alert\_memory\_threshold](#input\_alert\_memory\_threshold)
+
+Description: If alerting is enabled this will control what the memory threshold will be, default will be 80.
+
+Type: `number`
+
+Default: `80`
+
+### <a name="input_alert_window_size"></a> [alert\_window\_size](#input\_alert\_window\_size)
+
+Description: The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly.
+
+Type: `string`
+
+Default: `"PT5M"`
+
 ### <a name="input_app_key_vault_id"></a> [app\_key\_vault\_id](#input\_app\_key\_vault\_id)
 
 Description: ID of the key vault to store app secrets. Each secret is mapped to an environment variable. Required when fetch\_secrets\_from\_app\_key\_vault is true.
@@ -55,6 +87,14 @@ Description: ID of the key vault to store app secrets. Each secret is mapped to 
 Type: `string`
 
 Default: `null`
+
+### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
+
+Description: Whether monitoring and alerting is enabled for the PostgreSQL Flexible Server.
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_enable_auth"></a> [enable\_auth](#input\_enable\_auth)
 
@@ -170,6 +210,14 @@ Type: `number`
 
 Default: `8080`
 
+### <a name="input_replica_restart_alert_threshold"></a> [replica\_restart\_alert\_threshold](#input\_replica\_restart\_alert\_threshold)
+
+Description: The replica restart alert threshold, default will be 1.
+
+Type: `number`
+
+Default: `1`
+
 ### <a name="input_secret_variables"></a> [secret\_variables](#input\_secret\_variables)
 
 Description: Secret environment variables to pass to the container app.
@@ -243,6 +291,9 @@ The following resources are used by this module:
 
 - [azapi_resource.auth](https://registry.terraform.io/providers/azure/azapi/2.5.0/docs/resources/resource) (resource)
 - [azurerm_container_app.main](https://registry.terraform.io/providers/hashicorp/azurerm/4.34.0/docs/resources/container_app) (resource)
+- [azurerm_monitor_metric_alert.cpu](https://registry.terraform.io/providers/hashicorp/azurerm/4.34.0/docs/resources/monitor_metric_alert) (resource)
+- [azurerm_monitor_metric_alert.memory](https://registry.terraform.io/providers/hashicorp/azurerm/4.34.0/docs/resources/monitor_metric_alert) (resource)
+- [azurerm_monitor_metric_alert.replica_restart_alert](https://registry.terraform.io/providers/hashicorp/azurerm/4.34.0/docs/resources/monitor_metric_alert) (resource)
 - [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/4.34.0/docs/data-sources/client_config) (data source)
 - [azurerm_key_vault.infra](https://registry.terraform.io/providers/hashicorp/azurerm/4.34.0/docs/data-sources/key_vault) (data source)
 - [azurerm_key_vault_secret.infra](https://registry.terraform.io/providers/hashicorp/azurerm/4.34.0/docs/data-sources/key_vault_secret) (data source)

@@ -149,7 +149,58 @@ variable "infra_secret_names" {
   ]
 }
 
+variable "alert_window_size" {
+  type     = string
+  nullable = false
+  default  = "PT5M"
+  validation {
+    condition     = contains(["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H"], var.alert_window_size)
+    error_message = "The alert_window_size must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H"
+  }
+  description = "The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly."
+}
+
+variable "enable_alerting" {
+  description = "Whether monitoring and alerting is enabled for the PostgreSQL Flexible Server."
+  type        = bool
+  default     = false
+}
+
+variable "action_group_id" {
+  type        = string
+  description = "ID of the action group to notify."
+  default     = null
+}
+
+variable "alert_memory_threshold" {
+  type        = number
+  description = "If alerting is enabled this will control what the memory threshold will be, default will be 80."
+  default     = 80
+}
+
+variable "alert_cpu_threshold" {
+  type        = number
+  description = "If alerting is enabled this will control what the cpu threshold will be, default will be 80."
+  default     = 80
+}
+
+variable "replica_restart_alert_threshold" {
+  type        = number
+  description = "The replica restart alert threshold, default will be 1."
+  default     = 1
+}
+
 locals {
   memory = "${var.memory}Gi"
   cpu    = var.memory / 2
+
+  alert_frequency_map = {
+    PT5M  = "PT1M"
+    PT15M = "PT1M"
+    PT30M = "PT1M"
+    PT1H  = "PT1M"
+    PT6H  = "PT5M"
+    PT12H = "PT5M"
+  }
+  alert_frequency = local.alert_frequency_map[var.alert_window_size]
 }
