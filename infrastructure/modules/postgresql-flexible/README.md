@@ -56,3 +56,20 @@ module "postgres" {
   ]
 }
 ```
+
+## Alerts
+
+To enable container app alerting:
+- Set `enable_alerting = true`.
+
+Example:
+```hcl
+module "postgres" {
+  ...
+  enable_alerting                 = true
+  action_group_id                 = <action_group_id>
+  alert_memory_threshold          = 80 (already defaults to this)
+  alert_cpu_threshold             = 80 (already defaults to this)
+  alert_storage_threshold         =  (already defaults to this)
+}
+```

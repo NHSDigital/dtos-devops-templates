@@ -178,10 +178,16 @@ variable "alert_memory_threshold" {
   default     = 80
 }
 
-variable "azure_cpu_threshold" {
+variable "alert_cpu_threshold" {
   type        = number
   description = "If alerting is enabled this will control what the cpu threshold will be, default will be 80."
   default     = 80
+}
+
+variable "replica_restart_alert_threshold" {
+  type        = number
+  description = "The replica restart alert threshold, default will be 1."
+  default     = 1
 }
 
 locals {
