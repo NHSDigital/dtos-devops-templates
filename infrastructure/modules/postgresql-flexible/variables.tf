@@ -223,13 +223,13 @@ variable "alert_memory_threshold" {
   default     = 80
 }
 
-variable "azure_storage_threshold" {
+variable "alert_storage_threshold" {
   type        = number
   description = "If alerting is enabled this will control what the storage threshold will be, default will be 80."
   default     = 80
 }
 
-variable "azure_cpu_threshold" {
+variable "alert_cpu_threshold" {
   type        = number
   description = "If alerting is enabled this will control what the cpu threshold will be, default will be 80."
   default     = 80

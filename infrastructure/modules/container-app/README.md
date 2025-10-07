@@ -105,3 +105,20 @@ module "container-app" {
   infra_secret_names    = ["aad-client-id", "aad-client-secret", "aad-client-audiences"]
 }
 ```
+
+## Alerts
+
+To enable container app alerting:
+- Set `enable_alerting = true`.
+
+Example:
+```hcl
+module "container-app" {
+  ...
+  enable_alerting                 = true
+  action_group_id                 = <action_group_id>
+  alert_memory_threshold          = 80 (already defaults to this)
+  alert_cpu_threshold             = 80 (already defaults to this)
+  replica_restart_alert_threshold = 1 (already defaults to this)
+}
+```

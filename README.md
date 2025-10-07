@@ -63,3 +63,24 @@ make terraform-docs
 For each module, add a description to the README. Add basic usage to the README. If the code is more involved, add example code to the `examples/` directory instead.
 
 Make sure to link all modules from this README.
+
+
+## Alerts
+
+Alerting exists on both container app and postgres modules.
+
+To enable alerting on container app or postgres.
+- Set `enable_alerting = true`.
+- Severity are 0 = Critical, 1 = Error, 2 = Warning, 3 = informational and 4 = verbose
+
+Example:
+```hcl
+module "postgres" {
+  ...
+  enable_alerting                 = true
+  action_group_id                 = <action_group_id>
+  alert_memory_threshold          = 80 (already defaults to this)
+  alert_cpu_threshold             = 80 (already defaults to this)
+  alert_storage_threshold         =  (already defaults to this)
+}
+```

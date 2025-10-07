@@ -28,7 +28,7 @@ resource "azurerm_monitor_metric_alert" "cpu" {
   name                = "${azurerm_container_app.main.name}-cpu"
   resource_group_name = var.resource_group_name
   scopes              = [azurerm_container_app.main.id]
-  description         = "Action will be triggered when cpu use is greater than ${var.azure_cpu_threshold}% of container limit"
+  description         = "Action will be triggered when cpu use is greater than ${var.alert_cpu_threshold}% of container limit"
   severity            = 2
   window_size         = var.alert_window_size
   frequency           = local.alert_frequency
@@ -38,7 +38,7 @@ resource "azurerm_monitor_metric_alert" "cpu" {
     metric_name      = "CpuPercentage"
     aggregation      = "Average"
     operator         = "GreaterThan"
-    threshold        = var.azure_cpu_threshold
+    threshold        = var.alert_cpu_threshold
   }
 
   action {

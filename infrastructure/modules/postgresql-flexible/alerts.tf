@@ -6,6 +6,7 @@ resource "azurerm_monitor_metric_alert" "memory" {
   scopes              = [azurerm_postgresql_flexible_server.postgresql_flexible_server.id]
   description         = "Action will be triggered when memory use is greater than ${var.alert_memory_threshold}%"
   window_size         = var.alert_window_size
+  severity            = 2
   frequency           = local.alert_frequency
 
   criteria {
@@ -33,8 +34,9 @@ resource "azurerm_monitor_metric_alert" "cpu" {
   name                = "${azurerm_postgresql_flexible_server.postgresql_flexible_server.name}-cpu"
   resource_group_name = var.resource_group_name
   scopes              = [azurerm_postgresql_flexible_server.postgresql_flexible_server.id]
-  description         = "Action will be triggered when cpu use is greater than ${var.azure_cpu_threshold}%"
+  description         = "Action will be triggered when cpu use is greater than ${var.alert_cpu_threshold}%"
   window_size         = var.alert_window_size
+  severity            = 2
   frequency           = local.alert_frequency
 
   criteria {
@@ -42,7 +44,7 @@ resource "azurerm_monitor_metric_alert" "cpu" {
     metric_name      = "cpu_percent"
     aggregation      = "Average"
     operator         = "GreaterThan"
-    threshold        = var.azure_cpu_threshold
+    threshold        = var.alert_cpu_threshold
   }
 
   action {
@@ -62,8 +64,9 @@ resource "azurerm_monitor_metric_alert" "storage" {
   name                = "${azurerm_postgresql_flexible_server.postgresql_flexible_server.name}-storage"
   resource_group_name = var.resource_group_name
   scopes              = [azurerm_postgresql_flexible_server.postgresql_flexible_server.id]
-  description         = "Action will be triggered when storage use is greater than ${var.azure_storage_threshold}%"
+  description         = "Action will be triggered when storage use is greater than ${var.alert_storage_threshold}%"
   window_size         = var.alert_window_size
+  severity            = 2
   frequency           = local.alert_frequency
 
   criteria {
@@ -71,7 +74,7 @@ resource "azurerm_monitor_metric_alert" "storage" {
     metric_name      = "storage_percent"
     aggregation      = "Average"
     operator         = "GreaterThan"
-    threshold        = var.azure_storage_threshold
+    threshold        = var.alert_storage_threshold
   }
 
   action {
