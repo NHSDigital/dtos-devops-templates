@@ -35,6 +35,7 @@ steps:
         else
           [[ "${SRC_REGISTRY}" =~ dev ]] && cmdopt_sub="--subscription ${TF_VAR_HUB_SUBSCRIPTION_ID_DEV}"
           echo "##[debug] Getting source registry ID for ${SRC_REGISTRY} with cmdopt_sub '${cmdopt_sub}'..."
+          az account set -s ${TF_VAR_HUB_SUBSCRIPTION_ID_DEV}
           source_registry_id=$(az acr show --name ${SRC_REGISTRY} ${cmdopt_sub} --query id --output tsv)
           echo "##[debug] Source registry ID is ${source_registry_id}"
           cmdopt_reg="--registry ${source_registry_id}" # needed when the source registry is in a different subscription
