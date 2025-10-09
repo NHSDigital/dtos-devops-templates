@@ -13,12 +13,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "job_failure" {
   enabled        = true
   query          = <<-KQL
     ContainerAppSystemLogs_CL
-    | where ExecutionName_s contains "${azurerm_container_app_job.this.name}"
-    | where Log_s !contains "JobCleanup: Pod"
+    | where JobName_s == "${azurerm_container_app_job.this.name}"
     | where Reason_s == "ProcessExited"
     | extend ExitCode = toint(extract(@"exit code:\\s*(\\d+)", 1, Log_s))
     | where ExitCode != 0
-    | summarize Failures = count() by ExecutionName_s
   KQL
   severity       = 1
   frequency      = var.alert_frequency

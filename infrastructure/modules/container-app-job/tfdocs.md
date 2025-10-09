@@ -70,14 +70,6 @@ Type: `number`
 
 Default: `15`
 
-### <a name="input_alert_window_size"></a> [alert\_window\_size](#input\_alert\_window\_size)
-
-Description: The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly.
-
-Type: `string`
-
-Default: `"PT5M"`
-
 ### <a name="input_app_key_vault_id"></a> [app\_key\_vault\_id](#input\_app\_key\_vault\_id)
 
 Description: ID of the key vault to store app secrets. Each secret is mapped to an environment variable. Required when fetch\_secrets\_from\_app\_key\_vault is true.
