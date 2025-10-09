@@ -21,7 +21,7 @@ steps:
         declare -a PIDS # Array to store background process IDs
 
         # Depending if we are running this from a Dev or Prod pipeline, the DEV_HUB variable is namd differently
-        SRC_HUB_SUB_ID="${TF_VAR_HUB_SUBSCRIPTION_ID_DEV:-${TF_VAR_HUB_SUBSCRIPTION_ID}}""
+        SRC_HUB_SUB_ID="${TF_VAR_HUB_SUBSCRIPTION_ID_DEV:-${TF_VAR_HUB_SUBSCRIPTION_ID}}"
         DEST_HUB_SUB_ID="${TF_VAR_HUB_SUBSCRIPTION_ID}"
 
         wait_for_completion() {
