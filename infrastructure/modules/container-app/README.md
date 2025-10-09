@@ -54,15 +54,15 @@ The container app can be mapped to Azure Key Vaults for secret management:
   - Secrets are updated when Terraform runs, or automatically within 30 minutes.
 
 - **Infra Key Vault:**
-  - When authentication is enabled (`enable_auth = true`), secrets are fetched from the infra key vault using the list in `infra_secret_names` (default: `aad-client-id`, `aad-client-secret`, `aad-client-audiences`).
+  - When authentication is enabled (`enable_entra_id_authentication = true`), secrets are fetched from the infra key vault using the list in `infra_secret_names` (default: `aad-client-id`, `aad-client-secret`, `aad-client-audiences`).
   - You can override `infra_secret_names` to fetch additional or custom secrets as needed.
   - The infra key vault must exist and be populated with the required secrets before enabling authentication.
 
-**Warning:** The module cannot read from a key vault if it doesn't exist yet. Recommended workflow:
+**Warning:** The module cannot read from the app key vault if it doesn't exist yet. Recommended workflow:
 1. Create the key vault(s) using the [key-vault module](../key-vault/).
-2. Deploy the container app with `fetch_secrets_from_app_key_vault = false` (default) and/or `enable_auth = false`.
+2. Deploy the container app with `fetch_secrets_from_app_key_vault = false` (default).
 3. Manually add the required secrets to the key vault(s).
-4. Set `fetch_secrets_from_app_key_vault = true` and/or `enable_auth = true`, then re-run Terraform to populate the app with secret environment variables and enable authentication.
+4. Set `fetch_secrets_from_app_key_vault = true`, then re-run Terraform to populate the app with secret environment variables and enable authentication.
 
 Example (app secrets):
 ```hcl
@@ -78,7 +78,7 @@ Example (infra secrets for authentication):
 ```hcl
 module "container-app" {
   ...
-  enable_auth           = true
+  enable_entra_id_authentication           = true
   infra_key_vault_name  = "my-infra-kv"
   infra_key_vault_rg    = "my-infra-rg"
   infra_secret_names    = ["aad-client-id", "aad-client-secret", "aad-client-audiences"] # can be customized
@@ -90,7 +90,7 @@ module "container-app" {
 ## Authentication
 
 To enable Azure AD authentication:
-- Set `enable_auth = true`.
+- Set `enable_entra_id_authentication = true`.
 - Provide the infra key vault details (`infra_key_vault_name`, `infra_key_vault_rg`).
 - Ensure the infra key vault contains the required secrets listed in `infra_secret_names` (default: `aad-client-id`, `aad-client-secret`, `aad-client-audiences`).
 - You may customize `infra_secret_names` to fetch additional secrets if needed.
@@ -99,7 +99,7 @@ Example:
 ```hcl
 module "container-app" {
   ...
-  enable_auth           = true
+  enable_entra_id_authentication           = true
   infra_key_vault_name  = "my-infra-kv"
   infra_key_vault_rg    = "my-infra-rg"
   infra_secret_names    = ["aad-client-id", "aad-client-secret", "aad-client-audiences"]

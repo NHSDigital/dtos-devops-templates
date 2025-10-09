@@ -8,13 +8,13 @@ data "azurerm_key_vault_secrets" "app" {
 
 data "azurerm_key_vault" "infra" {
   provider            = azurerm.hub
-  count               = var.enable_auth ? 1 : 0
+  count               = var.enable_entra_id_authentication ? 1 : 0
   name                = var.infra_key_vault_name
   resource_group_name = var.infra_key_vault_rg
 }
 
 data "azurerm_key_vault_secret" "infra" {
-  for_each     = var.enable_auth ? toset(var.infra_secret_names) : toset([])
+  for_each     = var.enable_entra_id_authentication ? toset(var.infra_secret_names) : toset([])
   name         = each.value
   key_vault_id = data.azurerm_key_vault.infra[0].id
 }

@@ -96,9 +96,9 @@ Type: `bool`
 
 Default: `false`
 
-### <a name="input_enable_auth"></a> [enable\_auth](#input\_enable\_auth)
+### <a name="input_enable_entra_id_authentication"></a> [enable\_entra\_id\_authentication](#input\_enable\_entra\_id\_authentication)
 
-Description: Enable authentication for the container app. If true, the app will use Azure AD authentication.
+Description: Enable authentication for the container app. If true, the app will use Entra ID authentication to restrict web access.
 
 Type: `bool`
 
