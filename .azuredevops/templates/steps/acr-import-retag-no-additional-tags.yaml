@@ -49,7 +49,7 @@ steps:
 
         # 2. Determine if cross-registry transfer is needed
         cmdopt_reg=""
-        src_reg_prefix="${SRC_REGISTRY}.azurecr.io/"
+        src_reg_prefix="" # Default: empty (use short name for cross-registry import with --registry)
 
         if [[ "${SRC_REGISTRY}" != "${DEST_REGISTRY}" ]]; then
             # Cross-registry transfer is occurring (e.g., Dev ACR to Prod ACR).
@@ -67,9 +67,15 @@ steps:
             echo "##[debug] Authenticating with Destination Registry ${DEST_REGISTRY}..."
             az acr login --name "${DEST_REGISTRY}"
             
-            # Reset subscription back to Source to get the list of repositories from the source.
+            # Reset subscription back to Source to get the list of repositories.
             echo "##[debug] Resetting subscription to Source (${SRC_REGISTRY}) to list repositories."
             az account set -s "${SRC_HUB_SUB_ID}"
+
+            # CRITICAL: src_reg_prefix remains "" for cross-registry import using --registry.
+        else
+            # Same-registry operation (retagging). Source must be fully qualified.
+            echo "##[debug] Same-registry operation detected. Using fully qualified source path."
+            src_reg_prefix="${SRC_REGISTRY}.azurecr.io/"
         fi
 
         # 3. Get list of repositories from the Source Registry
@@ -89,7 +95,7 @@ steps:
             # Set subscription to SOURCE for the tag existence check
             az account set -s "${SRC_HUB_SUB_ID}"
             
-            # Check if the specific tag exists for the repository using a strict query
+            # Check if the specific tag exists for the repository
             tag_exists=$(az acr repository show-tags \
                 --name "${SRC_REGISTRY}" \
                 --repository "$repo" \
@@ -101,13 +107,15 @@ steps:
             az account set -s "${DEST_HUB_SUB_ID}"
 
             if [[ -n "$tag_exists" ]]; then
+                # If cross-registry, src_reg_prefix is empty (path: repo:tag). 
+                # If same-registry, src_reg_prefix is FQDN (path: acr.azurecr.io/repo:tag).
                 SOURCE_IMAGE_PATH="${src_reg_prefix}${repo}:${SELECT_IMAGE_TAG}"
                 DEST_IMAGE_PATH="${repo}:${ADD_IMAGE_TAG}"
 
                 echo "##[debug] Source image path: ${SOURCE_IMAGE_PATH}"
                 echo "##[debug] Destination image path: ${DEST_IMAGE_PATH}"
                 
-                echo "##[debug] Importing ${SOURCE_IMAGE_PATH} to ${DEST_IMAGE_PATH}..."
+                echo "##[debug] Importing ${SOURCE_IMAGE_PATH} to ${DEST_REGISTRY}/${DEST_IMAGE_PATH}..."
 
                 # az acr import runs against the currently selected subscription (DEST_HUB_SUB_ID).
                 az acr import \
@@ -120,7 +128,7 @@ steps:
                 # Capture the PID of the background command
                 PIDS+=($!)
             else
-                echo "##[debug] Skipping ${SOURCE_IMAGE_PATH} because the tag does not exist in the source repository."
+                echo "##[debug] Skipping ${SRC_REGISTRY}/${repo}:${SELECT_IMAGE_TAG} because the tag does not exist in the source repository."
             fi
         done
 
