@@ -107,12 +107,12 @@ steps:
                 echo "##[debug] Importing ${SRC_REGISTRY}/${repo}:${SELECT_IMAGE_TAG} to ${DEST_REGISTRY}/${repo}:${ADD_IMAGE_TAG}..."
 
                 # az acr import runs against the currently selected subscription (DEST_HUB_SUB_ID).
-                # az acr import \
-                #     --name "${DEST_REGISTRY}" \
-                #     --source "${SOURCE_IMAGE_PATH}" \
-                #     --image "${DEST_IMAGE_PATH}" \
-                #     ${cmdopt_reg} \
-                #     --force & # Run in background
+                az acr import \
+                    --name "${DEST_REGISTRY}" \
+                    --source "${SOURCE_IMAGE_PATH}" \
+                    --image "${DEST_IMAGE_PATH}" \
+                    ${cmdopt_reg} \
+                    --force & # Run in background
 
                 # Capture the PID of the background command
                 PIDS+=($!)
