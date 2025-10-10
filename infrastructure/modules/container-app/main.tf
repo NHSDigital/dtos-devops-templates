@@ -17,7 +17,7 @@ module "key_vault_reader_role_app" {
 }
 
 module "key_vault_reader_role_infra" {
-  count = var.enable_auth ? 1 : 0
+  count = var.enable_entra_id_authentication ? 1 : 0
 
   source = "../rbac-assignment"
 
@@ -50,7 +50,7 @@ resource "azurerm_container_app" "main" {
   dynamic "secret" {
 
     for_each = concat(var.fetch_secrets_from_app_key_vault ? data.azurerm_key_vault_secrets.app[0].secrets : [],
-    var.enable_auth ? [for s in data.azurerm_key_vault_secret.infra : { name = s.name, id = s.id }] : [])
+    var.enable_entra_id_authentication ? [for s in data.azurerm_key_vault_secret.infra : { name = s.name, id = s.id }] : [])
 
     content {
       # KV secrets are uppercase and hyphen separated
@@ -153,7 +153,7 @@ resource "azurerm_container_app" "main" {
 ## - aad-client-secret
 ## - aad-client-audiences
 resource "azapi_resource" "auth" {
-  count     = var.enable_auth ? 1 : 0
+  count     = var.enable_entra_id_authentication ? 1 : 0
   type      = "Microsoft.App/containerApps/authConfigs@2025-01-01"
   name      = "current"
   parent_id = azurerm_container_app.main.id

@@ -112,8 +112,8 @@ variable "workload_profile_name" {
   nullable    = false
 }
 
-variable "enable_auth" {
-  description = "Enable authentication for the container app. If true, the app will use Azure AD authentication."
+variable "enable_entra_id_authentication" {
+  description = "Enable authentication for the container app. If true, the app will use Entra ID authentication to restrict web access."
   type        = bool
   default     = false
 }
