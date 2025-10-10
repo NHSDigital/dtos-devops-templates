@@ -40,7 +40,6 @@ steps:
         }
 
         # 1. Prepare for Source Registry operations
-        echo "##[section] Setting Azure Subscription and Logging into Registries"
         echo "##[debug] Setting Azure subscription for Source Registry (${SRC_REGISTRY}) to ${SRC_HUB_SUB_ID}..."
         az account set -s "${SRC_HUB_SUB_ID}"
 
@@ -79,7 +78,6 @@ steps:
         fi
 
         # 3. Get list of repositories from the Source Registry
-        echo "##[section] Listing Repositories"
         echo "##[debug] Listing repositories in ${SRC_REGISTRY}..."
         repos=$(az acr repository list --name "${SRC_REGISTRY}" --output tsv)
 
@@ -110,9 +108,6 @@ steps:
                 # If same-registry, src_reg_prefix is FQDN (path: acr.azurecr.io/repo:tag).
                 SOURCE_IMAGE_PATH="${src_reg_prefix}${repo}:${SELECT_IMAGE_TAG}"
                 DEST_IMAGE_PATH="${repo}:${ADD_IMAGE_TAG}"
-
-                echo "##[debug] Source image path: ${SOURCE_IMAGE_PATH}"
-                echo "##[debug] Destination image path: ${DEST_IMAGE_PATH}"
                 
                 echo "##[debug] Importing ${SOURCE_IMAGE_PATH} to ${DEST_REGISTRY}/${DEST_IMAGE_PATH}..."
 
