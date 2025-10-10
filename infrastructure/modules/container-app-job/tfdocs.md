@@ -16,6 +16,12 @@ Description: Docker image and tag. Format: <registry>/<repository>:<tag>
 
 Type: `string`
 
+### <a name="input_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#input\_log\_analytics\_workspace\_id)
+
+Description: Log analytics workspace ID
+
+Type: `string`
+
 ### <a name="input_name"></a> [name](#input\_name)
 
 Description: Name of the container app. Limited to 32 characters
@@ -48,6 +54,22 @@ Type: `string`
 
 Default: `null`
 
+### <a name="input_action_group_id"></a> [action\_group\_id](#input\_action\_group\_id)
+
+Description: ID of the action group to notify.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_alert_frequency"></a> [alert\_frequency](#input\_alert\_frequency)
+
+Description: Frequency (in minutes) at which rule condition should be evaluated. Values must be between 5 and 1440 (inclusive). Default is 15
+
+Type: `number`
+
+Default: `15`
+
 ### <a name="input_app_key_vault_id"></a> [app\_key\_vault\_id](#input\_app\_key\_vault\_id)
 
 Description: ID of the key vault to store app secrets. Each secret is mapped to an environment variable. Required when fetch\_secrets\_from\_app\_key\_vault is true.
@@ -79,6 +101,14 @@ Description: Cron formatted repeating schedule of a Cron Job eg. '0 5 * * *'. Op
 Type: `string`
 
 Default: `null`
+
+### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
+
+Description: Whether monitoring and alerting is enabled for the PostgreSQL Flexible Server.
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_environment_variables"></a> [environment\_variables](#input\_environment\_variables)
 
@@ -154,6 +184,14 @@ Type: `map(string)`
 
 Default: `{}`
 
+### <a name="input_time_window"></a> [time\_window](#input\_time\_window)
+
+Description: Time window for which data needs to be fetched for query (must be greater than or equal to frequency). Values must be between 5 and 2880 (inclusive).  Default is 30
+
+Type: `number`
+
+Default: `30`
+
 ### <a name="input_user_assigned_identity_ids"></a> [user\_assigned\_identity\_ids](#input\_user\_assigned\_identity\_ids)
 
 Description: List of user assigned identity IDs to assign to the container app.
@@ -190,4 +228,5 @@ Version:
 The following resources are used by this module:
 
 - [azurerm_container_app_job.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_job) (resource)
+- [azurerm_monitor_scheduled_query_rules_alert.job_failure](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_scheduled_query_rules_alert) (resource)
 - [azurerm_key_vault_secrets.app](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secrets) (data source)

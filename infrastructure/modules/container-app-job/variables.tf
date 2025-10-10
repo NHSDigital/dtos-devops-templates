@@ -125,6 +125,35 @@ variable "workload_profile_name" {
   nullable    = false
 }
 
+variable "enable_alerting" {
+  description = "Whether monitoring and alerting is enabled for the PostgreSQL Flexible Server."
+  type        = bool
+  default     = false
+}
+
+variable "action_group_id" {
+  type        = string
+  description = "ID of the action group to notify."
+  default     = null
+}
+
+variable "log_analytics_workspace_id" {
+  description = "Log analytics workspace ID"
+  type        = string
+}
+
+variable "alert_frequency" {
+  type        = number
+  description = "Frequency (in minutes) at which rule condition should be evaluated. Values must be between 5 and 1440 (inclusive). Default is 15"
+  default     = 15
+}
+
+variable "time_window" {
+  type        = number
+  description = "Time window for which data needs to be fetched for query (must be greater than or equal to frequency). Values must be between 5 and 2880 (inclusive).  Default is 30"
+  default     = 30
+}
+
 locals {
   memory = "${var.memory}Gi"
   cpu    = var.memory / 2
