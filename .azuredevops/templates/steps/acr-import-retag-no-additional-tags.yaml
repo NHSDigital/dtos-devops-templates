@@ -103,6 +103,9 @@ steps:
             if [[ -n "$tag_exists" ]]; then
                 SOURCE_IMAGE_PATH="${src_reg_prefix}${repo}:${SELECT_IMAGE_TAG}"
                 DEST_IMAGE_PATH="${repo}:${ADD_IMAGE_TAG}"
+
+                echo "##[debug] Source image path: ${SOURCE_IMAGE_PATH}"
+                echo "##[debug] Destination image path: ${DEST_IMAGE_PATH}"
                 
                 echo "##[debug] Importing ${SRC_REGISTRY}/${repo}:${SELECT_IMAGE_TAG} to ${DEST_REGISTRY}/${repo}:${ADD_IMAGE_TAG}..."
 
