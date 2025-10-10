@@ -107,7 +107,7 @@ steps:
                 echo "##[debug] Source image path: ${SOURCE_IMAGE_PATH}"
                 echo "##[debug] Destination image path: ${DEST_IMAGE_PATH}"
                 
-                echo "##[debug] Importing ${SRC_REGISTRY}/${repo}:${SELECT_IMAGE_TAG} to ${DEST_REGISTRY}/${repo}:${ADD_IMAGE_TAG}..."
+                echo "##[debug] Importing ${SOURCE_IMAGE_PATH} to ${DEST_IMAGE_PATH}..."
 
                 # az acr import runs against the currently selected subscription (DEST_HUB_SUB_ID).
                 az acr import \
@@ -120,7 +120,7 @@ steps:
                 # Capture the PID of the background command
                 PIDS+=($!)
             else
-                echo "##[debug] Skipping ${SRC_REGISTRY}/${repo}:${SELECT_IMAGE_TAG} because the tag does not exist in the source repository."
+                echo "##[debug] Skipping ${SOURCE_IMAGE_PATH} because the tag does not exist in the source repository."
             fi
         done
 
