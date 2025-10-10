@@ -38,6 +38,38 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
+### <a name="input_action_group_id"></a> [action\_group\_id](#input\_action\_group\_id)
+
+Description: The ID of the Action Group to use for alerts.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_alert_cpu_threshold"></a> [alert\_cpu\_threshold](#input\_alert\_cpu\_threshold)
+
+Description: If alerting is enabled this will control what the cpu threshold will be, default will be 80.
+
+Type: `number`
+
+Default: `80`
+
+### <a name="input_alert_memory_threshold"></a> [alert\_memory\_threshold](#input\_alert\_memory\_threshold)
+
+Description: If alerting is enabled this will control what the memory threshold will be, default will be 80.
+
+Type: `number`
+
+Default: `80`
+
+### <a name="input_alert_window_size"></a> [alert\_window\_size](#input\_alert\_window\_size)
+
+Description: The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly.
+
+Type: `string`
+
+Default: `"PT5M"`
+
 ### <a name="input_capacity_def"></a> [capacity\_def](#input\_capacity\_def)
 
 Description: n/a
@@ -110,6 +142,14 @@ Type: `number`
 
 Default: `25`
 
+### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
+
+Description: Whether monitoring and alerting is enabled for the App Service Plan.
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_inc_operator"></a> [inc\_operator](#input\_inc\_operator)
 
 Description: n/a
@@ -173,6 +213,22 @@ Description: OS type for deployed App Service Plan.
 Type: `string`
 
 Default: `"Windows"`
+
+### <a name="input_resource_group_name_monitoring"></a> [resource\_group\_name\_monitoring](#input\_resource\_group\_name\_monitoring)
+
+Description: The name of the resource group in which to create the Monitoring resources for the App Service Plan. Changing this forces a new resource to be created.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_severity"></a> [severity](#input\_severity)
+
+Description: Severity of the alert. 0 = Critical, 1 = Error, 2 = Warning, 3 = Informational, 4 = Verbose. Default is 3.
+
+Type: `number`
+
+Default: `3`
 
 ### <a name="input_sku_name"></a> [sku\_name](#input\_sku\_name)
 
@@ -308,5 +364,7 @@ The following resources are used by this module:
 - [azurerm_app_service_certificate.wildcard](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_certificate) (resource)
 - [azurerm_app_service_virtual_network_swift_connection.appservice_vnet_swift_connection](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_virtual_network_swift_connection) (resource)
 - [azurerm_monitor_autoscale_setting.asp_autoscale](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_autoscale_setting) (resource)
+- [azurerm_monitor_metric_alert.cpu](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)
+- [azurerm_monitor_metric_alert.memory](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)
 - [azurerm_service_plan.appserviceplan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/service_plan) (resource)
 - [azurerm_key_vault_secret.pfx_blob](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) (data source)

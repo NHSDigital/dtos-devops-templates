@@ -18,16 +18,6 @@ variable "location" {
   description = "The location/region where the App Service Plan is created."
 }
 
-variable "log_analytics_workspace_id" {
-  type        = string
-  description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
-}
-
-variable "monitor_diagnostic_setting_appserviceplan_metrics" {
-  type        = list(string)
-  description = "Controls what metrics will be enabled for the appserviceplan"
-}
-
 variable "os_type" {
   type        = string
   description = "OS type for deployed App Service Plan."
@@ -188,4 +178,77 @@ variable "dec_scale_value" {
 variable "dec_scale_cooldown" {
   type    = string
   default = "PT5M"
+}
+
+/* --------------------------------------------------------------------------------------------------
+  Monitoring and Diagnostics Variables
+-------------------------------------------------------------------------------------------------- */
+
+variable "resource_group_name_monitoring" {
+  type        = string
+  description = "The name of the resource group in which to create the Monitoring resources for the App Service Plan. Changing this forces a new resource to be created."
+  default     = null
+}
+
+variable "action_group_id" {
+  type        = string
+  description = "The ID of the Action Group to use for alerts."
+  default     = null
+}
+
+variable "alert_cpu_threshold" {
+  type        = number
+  description = "If alerting is enabled this will control what the cpu threshold will be, default will be 80."
+  default     = 80
+}
+
+variable "alert_memory_threshold" {
+  type    = number
+  description = "If alerting is enabled this will control what the memory threshold will be, default will be 80."
+  default = 80
+}
+
+variable "alert_window_size" {
+  type     = string
+  nullable = false
+  default  = "PT5M"
+  validation {
+    condition     = contains(["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H"], var.alert_window_size)
+    error_message = "The alert_window_size must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H"
+  }
+  description = "The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly."
+}
+
+variable "enable_alerting" {
+  description = "Whether monitoring and alerting is enabled for the App Service Plan."
+  type        = bool
+  default     = false
+}
+
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
+}
+
+variable "monitor_diagnostic_setting_appserviceplan_metrics" {
+  type        = list(string)
+  description = "Controls what metrics will be enabled for the appserviceplan"
+}
+
+variable "severity" {
+  type        = number
+  description = "Severity of the alert. 0 = Critical, 1 = Error, 2 = Warning, 3 = Informational, 4 = Verbose. Default is 3."
+  default     = 3
+}
+
+locals {
+  alert_frequency_map = {
+    PT5M  = "PT1M"
+    PT15M = "PT1M"
+    PT30M = "PT1M"
+    PT1H  = "PT1M"
+    PT6H  = "PT5M"
+    PT12H = "PT5M"
+  }
+  alert_frequency = local.alert_frequency_map[var.alert_window_size]
 }
