@@ -3,7 +3,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "job_failure" {
 
   name                = "${azurerm_container_app_job.this.name}-containerjob-failure-alert"
   location            = var.location
-  resource_group_name = var.resource_group_name
+  resource_group_name = var.resource_group_name_monitoring != null ? var.resource_group_name_monitoring : var.resource_group_name
 
   action {
     action_group = [var.action_group_id]

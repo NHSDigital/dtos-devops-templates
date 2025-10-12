@@ -16,12 +16,6 @@ Description: Docker image and tag. Format: <registry>/<repository>:<tag>
 
 Type: `string`
 
-### <a name="input_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#input\_log\_analytics\_workspace\_id)
-
-Description: Log analytics workspace ID
-
-Type: `string`
-
 ### <a name="input_name"></a> [name](#input\_name)
 
 Description: Name of the container app. Limited to 32 characters
@@ -144,6 +138,14 @@ Type: `string`
 
 Default: `"UK South"`
 
+### <a name="input_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#input\_log\_analytics\_workspace\_id)
+
+Description: Log analytics workspace ID
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_memory"></a> [memory](#input\_memory)
 
 Description: Memory allocated to the app (GiB). Also dictates the CPU allocation: CPU(%)=MEMORY(Gi)/2. Maximum: 4Gi
@@ -175,6 +177,14 @@ Description: The timeout in seconds for a replica to complete execution.
 Type: `number`
 
 Default: `300`
+
+### <a name="input_resource_group_name_monitoring"></a> [resource\_group\_name\_monitoring](#input\_resource\_group\_name\_monitoring)
+
+Description: The name of the resource group in which to create the Monitoring resources for the Container App Job if the default group is not used. Changing this forces a new resource to be created.
+
+Type: `string`
+
+Default: `null`
 
 ### <a name="input_secret_variables"></a> [secret\_variables](#input\_secret\_variables)
 
