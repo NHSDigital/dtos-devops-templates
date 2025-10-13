@@ -1,0 +1,134 @@
+---
+
+parameters:
+  - name: serviceConnection
+    type: string
+
+steps:
+  - task: AzureCLI@2
+    name: publish_images
+    displayName: Publish $(SELECT_IMAGE_TAG) images to $(ADD_IMAGE_TAG)
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      addSpnToEnvironment: true
+      failOnStandardError: false
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        # Prerequisite: A DNS A record for the chosen Dev ACR must exist in the Prod privatelink.azurecr.io zone, resolving to the public IP for that ACR
+        # Pipeline 'Update ACR private DNS' in the dtos-hub ADO project should perform the necessary configuration on a scheduled basis
+        set -eo pipefail
+        declare -a PIDS # Array to store background process IDs
+
+        # Depending if we are running this from a Dev or Prod pipeline, the DEV_HUB variable is namd differently
+        SRC_HUB_SUB_ID="${TF_VAR_HUB_SUBSCRIPTION_ID_DEV:-${TF_VAR_HUB_SUBSCRIPTION_ID}}"
+        DEST_HUB_SUB_ID="${TF_VAR_HUB_SUBSCRIPTION_ID}"
+
+        wait_for_completion() {
+            echo "##[debug] Waiting for all background import tasks to complete..."
+            # Nameref to the array name passed as $1 (requires Bash 4.3+)
+            local -n arr=$1
+            local exit_code=0
+            for pid in "${arr[@]}"; do
+                # Wait for each process and check its exit code
+                wait "${pid}" || {
+                    echo "##[error] Import task with PID ${pid} failed. The pipeline will fail."
+                    exit_code=1
+                }
+            done
+            return $exit_code
+        }
+
+        # 1. Prepare for Source Registry operations
+        echo "##[debug] Setting Azure subscription for Source Registry (${SRC_REGISTRY}) to ${SRC_HUB_SUB_ID}..."
+        az account set -s "${SRC_HUB_SUB_ID}"
+
+        echo "##[debug] Authenticating with Source Registry ${SRC_REGISTRY}..."
+        az acr login --name "${SRC_REGISTRY}"
+
+        # 2. Determine if cross-registry transfer is needed
+        cmdopt_reg=""
+        src_reg_prefix="" # Default: empty (use short name for cross-registry import with --registry)
+
+        if [[ "${SRC_REGISTRY}" != "${DEST_REGISTRY}" ]]; then
+            # Cross-registry transfer is occurring (e.g., Dev ACR to Prod ACR).
+
+            # 2a. Fetch the source registry's ID (needed for 'az acr import --registry')
+            echo "##[debug] Fetching source registry ID for cross-registry transfer..."
+            # Runs against the currently set subscription (SRC_HUB_SUB_ID)
+            source_registry_id=$(az acr show --name "${SRC_REGISTRY}" --query id --output tsv)
+            cmdopt_reg="--registry ${source_registry_id}"
+
+            # 2b. Authenticate with the Destination Registry
+            echo "##[debug] Setting Azure subscription for Destination Registry (${DEST_REGISTRY}) to ${DEST_HUB_SUB_ID}..."
+            az account set -s "${DEST_HUB_SUB_ID}"
+
+            echo "##[debug] Authenticating with Destination Registry ${DEST_REGISTRY}..."
+            az acr login --name "${DEST_REGISTRY}"
+
+            # Reset subscription back to Source to get the list of repositories.
+            echo "##[debug] Resetting subscription to Source (${SRC_REGISTRY}) to list repositories."
+            az account set -s "${SRC_HUB_SUB_ID}"
+
+            # CRITICAL: src_reg_prefix remains "" for cross-registry import using --registry.
+        else
+            # Same-registry operation (retagging). Source must be fully qualified.
+            echo "##[debug] Same-registry operation detected. Using fully qualified source path."
+            src_reg_prefix="${SRC_REGISTRY}.azurecr.io/"
+        fi
+
+        # 3. Get list of repositories from the Source Registry
+        echo "##[debug] Listing repositories in ${SRC_REGISTRY}..."
+        repos=$(az acr repository list --name "${SRC_REGISTRY}" --output tsv)
+
+        # 4. Set the Azure subscription to the Destination *before* starting the loop (will be switched inside)
+        echo "##[debug] Initial subscription set to Destination (${DEST_REGISTRY}) before loop start."
+        az account set -s "${DEST_HUB_SUB_ID}"
+
+        # 5. Perform the parallel import/tagging loop
+        echo "##[section] Starting Parallel Import/Tagging"
+        for repo in ${repos}; do
+
+            # Set subscription to SOURCE for the tag existence check
+            az account set -s "${SRC_HUB_SUB_ID}"
+
+            # Check if the specific tag exists for the repository
+            tag_exists=$(az acr repository show-tags \
+                --name "${SRC_REGISTRY}" \
+                --repository "$repo" \
+                --orderby time_desc \
+                --query "[?@=='${SELECT_IMAGE_TAG}']" \
+                --output tsv)
+
+            # Revert subscription back to DESTINATION for the import operation
+            az account set -s "${DEST_HUB_SUB_ID}"
+
+            if [[ -n "$tag_exists" ]]; then
+                # If cross-registry, src_reg_prefix is empty (path: repo:tag).
+                # If same-registry, src_reg_prefix is FQDN (path: acr.azurecr.io/repo:tag).
+                SOURCE_IMAGE_PATH="${src_reg_prefix}${repo}:${SELECT_IMAGE_TAG}"
+                DEST_IMAGE_PATH="${repo}:${ADD_IMAGE_TAG}"
+
+                echo "##[debug] Importing ${SOURCE_IMAGE_PATH} to ${DEST_REGISTRY}/${DEST_IMAGE_PATH}..."
+
+                # az acr import runs against the currently selected subscription (DEST_HUB_SUB_ID).
+                az acr import \
+                    --name "${DEST_REGISTRY}" \
+                    --source "${SOURCE_IMAGE_PATH}" \
+                    --image "${DEST_IMAGE_PATH}" \
+                    ${cmdopt_reg} \
+                    --force & # Run in background
+
+                # Capture the PID of the background command
+                PIDS+=($!)
+            else
+                echo "##[debug] Skipping ${SRC_REGISTRY}/${repo}:${SELECT_IMAGE_TAG} because the tag does not exist in the source repository."
+            fi
+        done
+
+        # 6. Wait for all background tasks to complete and check for errors
+        echo "##[section] Waiting for Completion"
+        wait_for_completion PIDS
+
+        echo "##[section] Result"
+        echo "##[command] All image import/tagging operations completed successfully."
