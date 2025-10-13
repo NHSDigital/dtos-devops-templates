@@ -8,6 +8,12 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "resource_group_name_monitoring" {
+  type        = string
+  description = "The name of the resource group in which to create the Monitoring resources for the Container App Job if the default group is not used. Changing this forces a new resource to be created."
+  default     = null
+}
+
 variable "app_key_vault_id" {
   description = "ID of the key vault to store app secrets. Each secret is mapped to an environment variable. Required when fetch_secrets_from_app_key_vault is true."
   type        = string
@@ -140,6 +146,7 @@ variable "action_group_id" {
 variable "log_analytics_workspace_id" {
   description = "Log analytics workspace ID"
   type        = string
+  default     = null
 }
 
 variable "alert_frequency" {
