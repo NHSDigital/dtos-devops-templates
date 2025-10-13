@@ -132,3 +132,28 @@ steps:
 
         echo "##[section] Result"
         echo "##[command] All image import/tagging operations completed successfully."
+
+        # 7. Transfer git commit ref tags for cross-registry transfers
+        if [[ "${SRC_REGISTRY}" != "${DEST_REGISTRY}" ]]; then
+          echo "##[section] Transferring Git Commit Ref Tags"
+          # To minimise data transfers, use only the destination acr to add other relevant tags taken from the source registry (PR ref, commit hash)
+          declare -a GIT_TAG_PIDS
+          az account set -s "${SRC_HUB_SUB_ID}"
+          for repo in ${repos}; do
+            image_sha=$(az acr repository show --name ${SRC_REGISTRY} --image ${repo}:${SELECT_IMAGE_TAG} --query digest --output tsv)
+            if [[ -n "$image_sha" ]]; then
+              for tag in $(az acr repository show --name ${SRC_REGISTRY} --image ${repo}@${image_sha} --query "tags" --output tsv | grep -E '^(pr[0-9]+|[a-f0-9]{7})$'); do
+                echo "##[debug] Adding tag ${repo}:${tag}..."
+                # Revert subscription back to DESTINATION for the import operation
+                az account set -s "${DEST_HUB_SUB_ID}"
+                az acr import --name ${DEST_REGISTRY} --source ${DEST_REGISTRY}.azurecr.io/${repo}:${ADD_IMAGE_TAG} --image ${repo}:${tag} --force &
+                GIT_TAG_PIDS+=($!)
+              done
+            fi
+          done
+          if [[ ${#GIT_TAG_PIDS[@]} -gt 0 ]]; then
+            wait_for_completion GIT_TAG_PIDS
+          fi
+        fi
+
+        echo "##[command] All operations completed successfully."
