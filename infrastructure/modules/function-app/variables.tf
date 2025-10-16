@@ -161,11 +161,6 @@ variable "location" {
   description = "The location/region where the Function App is created."
 }
 
-variable "log_analytics_workspace_id" {
-  type        = string
-  description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
-}
-
 variable "minimum_tls_version" {
   type    = string
   default = "1.2" # Possible versions: TLS1.0", "TLS1.1", "TLS1.2
@@ -180,16 +175,6 @@ variable "http2_enabled" {
   type        = bool
   description = "Specifies whether or not the HTTP2 protocol should be enabled. Defaults to false"
   default     = false
-}
-
-variable "monitor_diagnostic_setting_function_app_enabled_logs" {
-  type        = list(string)
-  description = "Controls what logs will be enabled for the function app"
-}
-
-variable "monitor_diagnostic_setting_function_app_metrics" {
-  type        = list(string)
-  description = "Controls what metrics will be enabled for the function app"
 }
 
 variable "private_endpoint_properties" {
@@ -276,4 +261,83 @@ variable "webdeploy_publish_basic_authentication_enabled" {
 variable "worker_32bit" {
   type        = bool
   description = "Should the Windows Function App use a 32-bit worker process. Defaults to true"
+}
+
+
+/* --------------------------------------------------------------------------------------------------
+  Monitoring and Diagnostics Variables
+-------------------------------------------------------------------------------------------------- */
+
+variable "resource_group_name_monitoring" {
+  type        = string
+  description = "The name of the resource group in which to create the Monitoring resources for the App Service Plan. Changing this forces a new resource to be created."
+  default     = null
+}
+
+variable "action_group_id" {
+  type        = string
+  description = "The ID of the Action Group to use for alerts."
+  default     = null
+}
+
+variable "alert_4xx_threshold" {
+  type        = number
+  description = "The threshold for 4xx errors to trigger the alert."
+  default     = 10
+}
+
+variable "alert_5xx_threshold" {
+  type        = number
+  description = "The threshold for 4xx errors to trigger the alert."
+  default     = 10
+}
+
+variable "alert_window_size" {
+  type     = string
+  nullable = false
+  default  = "PT5M"
+  validation {
+    condition     = contains(["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H"], var.alert_window_size)
+    error_message = "The alert_window_size must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H"
+  }
+  description = "The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly."
+}
+
+variable "enable_alerting" {
+  description = "Whether monitoring and alerting is enabled for the App Service Plan."
+  type        = bool
+  default     = false
+}
+
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
+}
+
+variable "monitor_diagnostic_setting_function_app_enabled_logs" {
+  type        = list(string)
+  description = "Controls what logs will be enabled for the function app"
+}
+
+variable "monitor_diagnostic_setting_function_app_metrics" {
+  type        = list(string)
+  description = "Controls what metrics will be enabled for the function app"
+}
+
+variable "severity" {
+  type        = number
+  description = "Severity of the alert. 0 = Critical, 1 = Error, 2 = Warning, 3 = Informational, 4 = Verbose. Default is 3."
+  default     = 3
+}
+
+locals {
+  alert_frequency_map = {
+    PT5M  = "PT1M"
+    PT15M = "PT1M"
+    PT30M = "PT1M"
+    PT1H  = "PT1M"
+    PT6H  = "PT5M"
+    PT12H = "PT5M"
+  }
+  alert_frequency = local.alert_frequency_map[var.alert_window_size]
 }
