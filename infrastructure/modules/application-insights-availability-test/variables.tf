@@ -18,16 +18,9 @@ variable "location" {
   default     = "UK South"
 }
 
-
 variable "application_insights_id" {
   type        = string
   description = "The Application Insights resource id to associate the availability test with"
-}
-
-variable "use_standard" {
-  type        = bool
-  description = "Create a Standard availability test (true) or a Classic the availability test  (false)"
-  default     = false
 }
 
 variable "kind" {
@@ -55,8 +48,8 @@ variable "timeout" {
 
 variable "geo_locations" {
   type        = list(string)
-  default     = ["us-il-ch1-azr", "emea-azr-ams-azr"]
-  description = "List of Azure test locations (provider-specific location strings)"
+  default     = ["uksouth", "ukwest", "northeurope"]
+  description = "List of Azure test locations (provider-specific location strings for UK and Ireland)"
 }
 
 variable "configuration" {

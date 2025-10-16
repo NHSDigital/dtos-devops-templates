@@ -1,13 +1,12 @@
 resource "azurerm_application_insights_standard_web_test" "this" {
-  count = var.use_standard ? 1 : 0
-
   name                    = var.name
+
   location                = var.location
   resource_group_name     = var.resource_group_name
   application_insights_id = var.application_insights_id
 
   enabled   = var.enabled
-  kind      = var.kind # e.g. "standard"
+  kind      = var.kind
   frequency = var.frequency
   timeout   = var.timeout
 
