@@ -203,9 +203,9 @@ variable "alert_cpu_threshold" {
 }
 
 variable "alert_memory_threshold" {
-  type    = number
+  type        = number
   description = "If alerting is enabled this will control what the memory threshold will be, default will be 80."
-  default = 80
+  default     = 80
 }
 
 variable "alert_window_size" {
