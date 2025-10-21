@@ -130,3 +130,56 @@ variable "tags" {
   description = "Resource tags to be applied throughout the deployment."
   default     = {}
 }
+
+variable "alert_window_size" {
+  type     = string
+  nullable = false
+  default  = "PT5M"
+  validation {
+    condition     = contains(["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H"], var.alert_window_size)
+    error_message = "The alert_window_size must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H"
+  }
+  description = "The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly."
+}
+
+variable "enable_alerting" {
+  description = "Whether monitoring and alerting is enabled for the PostgreSQL Flexible Server."
+  type        = bool
+  default     = false
+}
+
+variable "action_group_id" {
+  type        = string
+  description = "ID of the action group to notify."
+  default     = null
+}
+
+variable "availability_low_threshold" {
+  type        = number
+  description = "This will alert of storage queue transactions is higher that given value, default will be 99."
+  default     = 99
+}
+
+variable "success_e2e_latency_threshold" {
+  type        = number
+  description = "This will alert if the E2E success latency is higher that given value (in milliseconds), default will be 500."
+  default     = 500
+}
+
+variable "queue_transactions_high_threshold" {
+  type        = number
+  description = "This will alert of storage queue transactions is higher that given value, default will be 1000."
+  default     = 1000
+}
+
+locals {
+  alert_frequency_map = {
+    PT5M  = "PT1M"
+    PT15M = "PT1M"
+    PT30M = "PT1M"
+    PT1H  = "PT1M"
+    PT6H  = "PT5M"
+    PT12H = "PT5M"
+  }
+  alert_frequency = local.alert_frequency_map[var.alert_window_size]
+}
