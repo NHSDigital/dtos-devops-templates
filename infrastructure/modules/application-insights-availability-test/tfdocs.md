@@ -22,13 +22,19 @@ Description: The name of the resource group in which to create the availability 
 
 Type: `string`
 
+### <a name="input_target_url"></a> [target\_url](#input\_target\_url)
+
+Description: The target URL for the restful endpoint to hit to validate the application is available
+
+Type: `string`
+
 ## Optional Inputs
 
 The following input variables are optional (have default values):
 
 ### <a name="input_frequency"></a> [frequency](#input\_frequency)
 
-Description: Frequency of test in seconds
+Description: Frequency of test in seconds, defaults to 300.
 
 Type: `number`
 
@@ -58,17 +64,9 @@ Type: `string`
 
 Default: `"UK South"`
 
-### <a name="input_target_url"></a> [target\_url](#input\_target\_url)
-
-Description: The target URL for the restful endpoint to hit to validate the application is avaliable
-
-Type: `string`
-
-Default: `""`
-
 ### <a name="input_timeout"></a> [timeout](#input\_timeout)
 
-Description: Timeout in seconds
+Description: Timeout in seconds, defaults to 30.
 
 Type: `number`
 

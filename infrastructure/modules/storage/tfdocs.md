@@ -97,6 +97,30 @@ Type: `string`
 
 Default: `"Standard"`
 
+### <a name="input_action_group_id"></a> [action\_group\_id](#input\_action\_group\_id)
+
+Description: ID of the action group to notify.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_alert_window_size"></a> [alert\_window\_size](#input\_alert\_window\_size)
+
+Description: The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly.
+
+Type: `string`
+
+Default: `"PT5M"`
+
+### <a name="input_availability_low_threshold"></a> [availability\_low\_threshold](#input\_availability\_low\_threshold)
+
+Description: This will alert of storage queue transactions is higher that given value, default will be 99.
+
+Type: `number`
+
+Default: `99`
+
 ### <a name="input_blob_properties_delete_retention_policy"></a> [blob\_properties\_delete\_retention\_policy](#input\_blob\_properties\_delete\_retention\_policy)
 
 Description: The value set for blob properties delete retention policy.
@@ -113,6 +137,14 @@ Type: `bool`
 
 Default: `false`
 
+### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
+
+Description: Whether monitoring and alerting is enabled for the PostgreSQL Flexible Server.
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_public_network_access_enabled"></a> [public\_network\_access\_enabled](#input\_public\_network\_access\_enabled)
 
 Description: Controls whether data in the account may be accessed from public networks.
@@ -120,6 +152,14 @@ Description: Controls whether data in the account may be accessed from public ne
 Type: `bool`
 
 Default: `false`
+
+### <a name="input_queue_transactions_high_threshold"></a> [queue\_transactions\_high\_threshold](#input\_queue\_transactions\_high\_threshold)
+
+Description: This will alert of storage queue transactions is higher that given value, default will be 1000.
+
+Type: `number`
+
+Default: `1000`
 
 ### <a name="input_queues"></a> [queues](#input\_queues)
 
@@ -153,6 +193,14 @@ Default:
   "fileServices"
 ]
 ```
+
+### <a name="input_success_e2e_latency_threshold"></a> [success\_e2e\_latency\_threshold](#input\_success\_e2e\_latency\_threshold)
+
+Description: This will alert if the E2E success latency is higher that given value (in milliseconds), default will be 500.
+
+Type: `number`
+
+Default: `500`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
@@ -225,6 +273,9 @@ Description: n/a
 
 The following resources are used by this module:
 
+- [azurerm_monitor_metric_alert.availability_low](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)
+- [azurerm_monitor_metric_alert.storage_queue_transactions_high](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)
+- [azurerm_monitor_metric_alert.success_E2E_latency](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)
 - [azurerm_storage_account.storage_account](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) (resource)
 - [azurerm_storage_container.container](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) (resource)
 - [azurerm_storage_container_immutability_policy.policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container_immutability_policy) (resource)
