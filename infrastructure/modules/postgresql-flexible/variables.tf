@@ -27,6 +27,12 @@ variable "backup_retention_days" {
   type        = number
 }
 
+variable "delegated_subnet_id" {
+  description = "The ID of the virtual network subnet to create the PostgreSQL Flexible Server."
+  type        = string
+  default     = null
+}
+
 variable "geo_redundant_backup_enabled" {
   description = "Whether geo-redundant backup is enabled for the PostgreSQL Flexible Server."
   type        = bool
@@ -62,6 +68,12 @@ variable "postgresql_admin_principal_name" {
 variable "postgresql_admin_principal_type" {
   description = "The principal type of the PostgreSQL Active Directory administrator."
   type        = string
+}
+
+variable "private_dns_zone_id" {
+  description = "The ID of the private DNS zone to create the PostgreSQL Flexible Server (ending .postgres.database.azure.com)."
+  type        = string
+  default     = null
 }
 
 variable "public_network_access_enabled" {

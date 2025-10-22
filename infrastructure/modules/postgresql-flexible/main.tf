@@ -3,7 +3,9 @@ resource "azurerm_postgresql_flexible_server" "postgresql_flexible_server" {
   resource_group_name = var.resource_group_name
   location            = var.location
 
+  delegated_subnet_id           = var.delegated_subnet_id
   public_network_access_enabled = var.public_network_access_enabled
+  private_dns_zone_id           = var.private_dns_zone_id
   sku_name                      = var.sku_name
   storage_mb                    = var.storage_mb
   storage_tier                  = var.storage_tier
