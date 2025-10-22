@@ -35,6 +35,12 @@ variable "account_tier" {
   default     = "Standard"
 }
 
+variable "access_tier" {
+  type        = string
+  description = "Defines the access tier for BlobStorage, FileStorage and StorageV2 accounts. Valid options are Hot, Cool, Cold and Premium."
+  default     = "Hot"
+}
+
 variable "blob_properties_delete_retention_policy" {
   type        = number
   description = "The value set for blob properties delete retention policy."
