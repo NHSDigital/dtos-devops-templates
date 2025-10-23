@@ -27,7 +27,7 @@ variable "frequency" {
   type    = number
   default = 300
   validation {
-    condition     = contains(["300", "600", "900"], var.frequency)
+    condition     = contains([300, 600, 900], var.frequency)
     error_message = "The frequency must be one of: 300, 600 or 900"
   }
   description = "Frequency of test in seconds, defaults to 300."
