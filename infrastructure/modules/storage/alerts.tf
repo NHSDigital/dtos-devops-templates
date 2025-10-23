@@ -70,32 +70,32 @@ resource "azurerm_monitor_metric_alert" "success_E2E_latency" {
   }
 }
 
-resource "azurerm_monitor_metric_alert" "queue_length_exceeded" {
-  for_each = var.enable_alerting ? toset(var.queues) : toset([])
+# resource "azurerm_monitor_metric_alert" "queue_length_exceeded" {
+#   for_each = var.enable_alerting ? toset(var.queues) : toset([])
 
-  name                = "${each.key}-queue-length"
-  resource_group_name = var.resource_group_name
-  scopes              = [azurerm_storage_account.storage_account.id]
-  description         = "Number of messages in the queue above threshold (${var.queue_length_threshold})."
-  severity            = 2
-  frequency           = local.alert_frequency
-  window_size         = var.alert_window_size
+#   name                = "${each.key}-queue-length"
+#   resource_group_name = var.resource_group_name
+#   scopes              = [azurerm_storage_account.storage_account.id]
+#   description         = "Number of messages in the queue above threshold (${var.queue_length_threshold})."
+#   severity            = 2
+#   frequency           = local.alert_frequency
+#   window_size         = var.alert_window_size
 
-  criteria {
-    metric_namespace = "Microsoft.Storage/storageAccounts"
-    metric_name      = "QueueMessageCount"
-    aggregation      = "Average"
-    operator         = "GreaterThan"
-    threshold        = var.queue_length_threshold
+#   criteria {
+#     metric_namespace = "Microsoft.Storage/storageAccounts"
+#     metric_name      = "QueueMessageCount"
+#     aggregation      = "Average"
+#     operator         = "GreaterThan"
+#     threshold        = var.queue_length_threshold
 
-    dimension {
-      name     = "QueueName"
-      operator = "Include"
-      values   = [each.key]
-    }
-  }
+#     dimension {
+#       name     = "QueueName"
+#       operator = "Include"
+#       values   = [each.key]
+#     }
+#   }
 
-  action {
-    action_group_id = var.action_group_id
-  }
-}
+#   action {
+#     action_group_id = var.action_group_id
+#   }
+# }
