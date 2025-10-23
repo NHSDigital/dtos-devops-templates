@@ -172,6 +172,12 @@ variable "queue_transactions_high_threshold" {
   default     = 1000
 }
 
+variable "queue_length_threshold" {
+  type        = number
+  default     = 1000
+  description = "Alert threshold for number of messages in the queue."
+}
+
 locals {
   alert_frequency_map = {
     PT5M  = "PT1M"
