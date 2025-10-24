@@ -4,6 +4,12 @@
 
 The following input variables are required:
 
+### <a name="input_action_group_id"></a> [action\_group\_id](#input\_action\_group\_id)
+
+Description: ID of the action group to notify.
+
+Type: `string`
+
 ### <a name="input_application_insights_id"></a> [application\_insights\_id](#input\_application\_insights\_id)
 
 Description: The Application Insights resource id to associate the availability test with
@@ -78,3 +84,4 @@ Default: `30`
 The following resources are used by this module:
 
 - [azurerm_application_insights_standard_web_test.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/application_insights_standard_web_test) (resource)
+- [azurerm_monitor_metric_alert.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)

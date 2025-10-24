@@ -12,14 +12,15 @@ See also the following ADO template step that can be used to verify endpoint hea
 For the list of inputs, outputs, resources... check the [terraform module documentation](tfdocs.md).
 
 ## Usage
-Create the application Insights availability test:
+Create the application insights availability test:
 ```hcl
 module "azurerm_application_insights_standard_web_test" {
   source = "../dtos-devops-templates/infrastructure/modules/application-insights-availability-test"
 
   name                       = "${var.app_short_name}-web-${var.environment}"
   resource_group_name        = var.resource_group_name_infra
-  application_insights_id    = data.azurerm_log_analytics_workspace.audit[0].id
-  target_url                 = "${module.container-apps[0].external_url}healthcheck/"
+  action_group_id            = module.monitor_action_group.id
+  application_insights_id    = module.log_analytics_workspace_audit.id
+  target_url                 = "${module.container-apps[0].external_url}healthcheck"
 }
 ```
