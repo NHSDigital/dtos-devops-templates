@@ -7,6 +7,7 @@ resource "azurerm_application_insights_standard_web_test" "this" {
 
   frequency = var.frequency
   timeout   = var.timeout
+  enabled   = true
 
   request {
     url = var.target_url
