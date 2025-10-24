@@ -23,6 +23,11 @@ variable "application_insights_id" {
   description = "The Application Insights resource id to associate the availability test with"
 }
 
+variable "action_group_id" {
+  type        = string
+  description = "ID of the action group to notify."
+}
+
 variable "frequency" {
   type    = number
   default = 300
