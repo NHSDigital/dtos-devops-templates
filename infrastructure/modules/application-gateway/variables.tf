@@ -115,6 +115,7 @@ variable "request_routing_rule" {
     backend_http_settings_key = string
     http_listener_key         = string
     priority                  = number
+    rewrite_rule_set_key      = optional(string)
     rule_type                 = string
   }))
 }
@@ -122,6 +123,30 @@ variable "request_routing_rule" {
 variable "resource_group_name" {
   type        = string
   description = "The name of the resource group in which to create the Application Gateway. Changing this forces a new resource to be created."
+}
+
+variable "rewrite_rule_set" {
+  description = "A map of request rewrite rules for the Application Gateway. The key name will be used to retrieve the name from var.names."
+  type = map(object({
+    rewrite_rule = optional(map(object({
+      rule_sequence = number
+      condition = optional(map(object({
+        ignore_case = optional(bool)
+        negate      = optional(bool)
+        pattern     = string
+        variable    = string
+      })))
+      request_header_configuration  = optional(map(string))
+      response_header_configuration = optional(map(string))
+      url = optional(object({
+        components   = optional(string)
+        path         = optional(string)
+        query_string = optional(string)
+        reroute      = optional(bool)
+      }))
+    })))
+  }))
+  default = {}
 }
 
 variable "sku" {

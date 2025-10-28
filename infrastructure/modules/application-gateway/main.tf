@@ -158,6 +158,64 @@ resource "azurerm_application_gateway" "this" {
       backend_address_pool_name  = var.names.backend_address_pool_name[request_routing_rule.value.backend_address_pool_key]
       backend_http_settings_name = var.names.backend_http_settings_name[request_routing_rule.value.backend_http_settings_key]
       priority                   = request_routing_rule.value.priority
+      rewrite_rule_set_name      = try(var.names.rewrite_rule_set_name[request_routing_rule.value.rewrite_rule_set_key], null)
+    }
+  }
+
+  dynamic "rewrite_rule_set" {
+    for_each = var.rewrite_rule_set
+
+    content {
+      name = var.names.rewrite_rule_set_name[rewrite_rule_set.key]
+
+      dynamic "rewrite_rule" {
+        for_each = rewrite_rule_set.value.rewrite_rule
+
+        content {
+          name          = rewrite_rule.key
+          rule_sequence = rewrite_rule.value.rule_sequence
+
+          dynamic "condition" {
+            for_each = coalesce(rewrite_rule.value.condition, {})
+
+            content {
+              variable    = condition.value.variable
+              pattern     = condition.value.pattern
+              ignore_case = condition.value.ignore_case
+              negate      = condition.value.negate
+            }
+          }
+
+          dynamic "response_header_configuration" {
+            for_each = coalesce(rewrite_rule.value.response_header_configuration, {})
+
+            content {
+              header_name  = response_header_configuration.key
+              header_value = response_header_configuration.value
+            }
+          }
+
+          dynamic "request_header_configuration" {
+            for_each = coalesce(rewrite_rule.value.request_header_configuration, {})
+
+            content {
+              header_name  = request_header_configuration.key
+              header_value = request_header_configuration.value
+            }
+          }
+
+          dynamic "url" {
+            for_each = rewrite_rule.value.url != null ? [1] : []
+
+            content {
+              path         = rewrite_rule.value.url.path
+              query_string = rewrite_rule.value.url.query_string
+              components   = rewrite_rule.value.url.components
+              reroute      = rewrite_rule.value.url.reroute
+            }
+          }
+        }
+      }
     }
   }
 
