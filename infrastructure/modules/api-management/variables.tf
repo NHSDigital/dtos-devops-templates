@@ -225,7 +225,7 @@ variable "virtual_network_configuration" {
   type        = list(string)
   default     = null
   validation {
-    condition     = var.virtual_network_type == "Internal" && length(var.virtual_network_configuration) > 0
+    condition = (var.virtual_network_type == "Internal" || var.virtual_network_type == "External") && length(var.virtual_network_configuration) > 0
     error_message = "The virtual network configuration must be provided when the virtual network type is Internal."
   }
 }
