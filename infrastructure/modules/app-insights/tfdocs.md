@@ -10,6 +10,12 @@ Description: Type of Application Insigts (default: web).
 
 Type: `string`
 
+### <a name="input_custom_alert_query"></a> [custom\_alert\_query](#input\_custom\_alert\_query)
+
+Description: A KQL query string to pass to the custom\_alert if required
+
+Type: `string`
+
 ### <a name="input_location"></a> [location](#input\_location)
 
 Description: The location/region where the AI is created.
@@ -95,3 +101,4 @@ The following resources are used by this module:
 
 - [azurerm_application_insights.appins](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/application_insights) (resource)
 - [azurerm_monitor_metric_alert.exceptions](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)
+- [azurerm_monitor_scheduled_query_rules_alert_v2.custom_alert](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_scheduled_query_rules_alert_v2) (resource)

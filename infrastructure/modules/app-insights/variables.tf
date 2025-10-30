@@ -40,6 +40,12 @@ variable "enable_alerting" {
   default     = false
 }
 
+variable "custom_alert_query" {
+  description = "A KQL query string to pass to the custom_alert if required"
+  type        = string
+  nullable    = true
+}
+
 variable "alert_frequency" {
   type     = string
   nullable = true
