@@ -5,7 +5,7 @@ resource "azurerm_monitor_metric_alert" "exceptions" {
   description              = "Triggered by any Exception"
   enabled                  = true
   frequency                = var.alert_frequency
-  name                     = "Exceptions"
+  name                     = "${var.resource_group_name}-exceptions"
   resource_group_name      = var.resource_group_name
   scopes                   = [azurerm_application_insights.appins.id]
   severity                 = 1
