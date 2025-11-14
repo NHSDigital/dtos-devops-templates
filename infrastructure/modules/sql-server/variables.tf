@@ -264,3 +264,15 @@ variable "vulnerability_assessment_enabled" {
   description = "to enable extended auditing policy for server or database"
   default     = false
 }
+
+variable "enable_alerting" {
+  description = "Whether monitoring and alerting is enabled for the Azure SQL Server."
+  type        = bool
+  default     = false
+}
+
+variable "alert_cpu_threshold" {
+  type        = number
+  description = "If alerting is enabled this will control what the cpu threshold will be, default will be 90."
+  default     = 90
+}
