@@ -181,6 +181,14 @@ Type: `bool`
 
 Default: `false`
 
+### <a name="input_enable_high_availability"></a> [enable\_high\_availability](#input\_enable\_high\_availability)
+
+Description: Whether to enable high availability for the PostgreSQL Flexible Server.
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_key_vault_admin_pwd_secret_name"></a> [key\_vault\_admin\_pwd\_secret\_name](#input\_key\_vault\_admin\_pwd\_secret\_name)
 
 Description: Key Vault secret name in which to store the Admin password, if one is created.
