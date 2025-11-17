@@ -81,6 +81,12 @@ variable "sku_name" {
   type        = string
 }
 
+variable "enable_high_availability" {
+  description = "Whether to enable high availability for the PostgreSQL Flexible Server."
+  type        = bool
+  default     = false
+}
+
 variable "storage_mb" {
   # See: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server#storage_mb-2
   description = "The storage size in MB for the PostgreSQL Flexible Server."

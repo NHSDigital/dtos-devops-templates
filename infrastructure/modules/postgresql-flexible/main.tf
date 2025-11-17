@@ -13,6 +13,13 @@ resource "azurerm_postgresql_flexible_server" "postgresql_flexible_server" {
   backup_retention_days        = var.backup_retention_days
   geo_redundant_backup_enabled = var.geo_redundant_backup_enabled
 
+  dynamic "high_availability" {
+    for_each = var.enable_high_availability ? [1] : []
+    content {
+      mode = "ZoneRedundant"
+    }
+  }
+
   authentication {
     active_directory_auth_enabled = true
     password_auth_enabled         = var.password_auth_enabled

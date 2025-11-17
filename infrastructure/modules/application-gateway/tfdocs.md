@@ -143,6 +143,7 @@ map(object({
     backend_http_settings_key = string
     http_listener_key         = string
     priority                  = number
+    rewrite_rule_set_key      = optional(string)
     rule_type                 = string
   }))
 ```
@@ -198,6 +199,36 @@ Description: n/a
 Type: `number`
 
 Default: `null`
+
+### <a name="input_rewrite_rule_set"></a> [rewrite\_rule\_set](#input\_rewrite\_rule\_set)
+
+Description: A map of request rewrite rules for the Application Gateway. The key name will be used to retrieve the name from var.names.
+
+Type:
+
+```hcl
+map(object({
+    rewrite_rule = optional(map(object({
+      rule_sequence = number
+      condition = optional(map(object({
+        ignore_case = optional(bool)
+        negate      = optional(bool)
+        pattern     = string
+        variable    = string
+      })))
+      request_header_configuration  = optional(map(string))
+      response_header_configuration = optional(map(string))
+      url = optional(object({
+        components   = optional(string)
+        path         = optional(string)
+        query_string = optional(string)
+        reroute      = optional(bool)
+      }))
+    })))
+  }))
+```
+
+Default: `{}`
 
 ### <a name="input_ssl_policy_name"></a> [ssl\_policy\_name](#input\_ssl\_policy\_name)
 
