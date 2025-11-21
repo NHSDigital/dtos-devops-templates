@@ -25,6 +25,6 @@ variable "tags" {
 
 variable "dashboard_properties" {
   type = string
-  default = {}
+  default = "{}"
   description = "JSON data representing dashboard body. See above for details on how to obtain this from the Portal."
 }
