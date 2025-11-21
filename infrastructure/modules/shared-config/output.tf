@@ -64,6 +64,7 @@ locals {
     container-app-environment           = lower("CAE-${var.env}-${var.location_map[var.location]}-${var.application}")
     connection                          = lower("CON-${var.env}-${var.location_map[var.location]}-${var.application}")
     custom-image                        = lower("IMAGE-${var.env}-${var.location_map[var.location]}")
+    dashboard                           = lower("DASH-${var.env}-${var.location_map[var.location]}-${var.application}")
     dev-center                          = lower("DEVC-${var.env}-${var.location_map[var.location]}")
     dev-center-project                  = lower("prj-${var.env}-${var.location_map[var.location]}")
     dns-zone                            = lower("${var.application}.${var.env}.net")
