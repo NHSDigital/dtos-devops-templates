@@ -32,7 +32,7 @@ Description: JSON data representing dashboard body. See above for details on how
 
 Type: `string`
 
-Default: `{}`
+Default: `"{}"`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
