@@ -7,6 +7,7 @@ resource "azurerm_storage_account" "storage_account" {
   account_replication_type      = var.account_replication_type
   account_tier                  = var.account_tier
   public_network_access_enabled = var.public_network_access_enabled
+  access_tier                   = var.access_tier
 
   tags = var.tags
 
