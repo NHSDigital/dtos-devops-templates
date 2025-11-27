@@ -97,6 +97,14 @@ Type: `string`
 
 Default: `"Standard"`
 
+### <a name="input_access_tier"></a> [access\_tier](#input\_access\_tier)
+
+Description: Defines the access tier for BlobStorage, FileStorage and StorageV2 accounts. Valid options are Hot, Cool, Cold and Premium. Defaults to Hot.
+
+Type: `string`
+
+Default: `"Hot"`
+
 ### <a name="input_action_group_id"></a> [action\_group\_id](#input\_action\_group\_id)
 
 Description: ID of the action group to notify.
