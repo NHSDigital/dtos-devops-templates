@@ -122,3 +122,9 @@ module "container-app" {
   replica_restart_alert_threshold = 1 (already defaults to this)
 }
 ```
+
+## Container Probes
+
+To enable container probs on webapps:
+- Set `probe_path = "/healthcheck"` (by convention).
+- Ensure the application accepts requests from `127.0.0.1` and `localhost` so the probe running inside the container can access the health endpoint.

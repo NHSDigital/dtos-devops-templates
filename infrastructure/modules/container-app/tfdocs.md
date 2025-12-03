@@ -210,6 +210,14 @@ Type: `number`
 
 Default: `8080`
 
+### <a name="input_probe_path"></a> [probe\_path](#input\_probe\_path)
+
+Description: Path for the HTTP health probe. If null, HTTP health probe is disabled. Note /healthcheck is the normal convention.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_replica_restart_alert_threshold"></a> [replica\_restart\_alert\_threshold](#input\_replica\_restart\_alert\_threshold)
 
 Description: The replica restart alert threshold, default will be 1.
