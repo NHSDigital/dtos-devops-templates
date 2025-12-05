@@ -124,6 +124,7 @@ resource "azurerm_container_app" "main" {
           transport               = "HTTP"
           path                    = var.probe_path
           port                    = var.exposed_port != null ? var.exposed_port : var.port
+          initial_delay           = 45
           interval_seconds        = 5
           timeout                 = 2
           failure_count_threshold = 2
