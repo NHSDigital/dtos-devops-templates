@@ -104,17 +104,29 @@ resource "azurerm_container_app" "main" {
         }
       }
 
+      dynamic "startup_probe" {
+        for_each = local.probe_enabled ? [1] : []
+
+        content {
+          transport               = "HTTP"
+          path                    = var.probe_path
+          port                    = var.exposed_port != null ? var.exposed_port : var.port
+          interval_seconds        = 5
+          timeout                 = 2
+          failure_count_threshold = 2
+        }
+      }
+
       dynamic "liveness_probe" {
         for_each = local.probe_enabled ? [1] : []
 
         content {
           transport               = "HTTP"
           path                    = var.probe_path
-          port                    = local.effective_liveness_port
-          initial_delay           = 45
-          interval_seconds        = 10
+          port                    = var.exposed_port != null ? var.exposed_port : var.port
+          interval_seconds        = 5
           timeout                 = 2
-          failure_count_threshold = 4
+          failure_count_threshold = 2
         }
       }
     }

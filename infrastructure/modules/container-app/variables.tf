@@ -93,12 +93,6 @@ variable "exposed_port" {
   default     = null
 }
 
-variable "liveness_probe_port" {
-  description = "Port for the liveness probe to check. Default is var.port."
-  type        = number
-  default     = null
-}
-
 variable "memory" {
   description = "Memory allocated to the app (GiB). Also dictates the CPU allocation: CPU(%)=MEMORY(Gi)/2. Maximum: 4Gi"
   default     = "0.5"
@@ -215,6 +209,5 @@ locals {
     PT12H = "PT5M"
   }
   alert_frequency         = local.alert_frequency_map[var.alert_window_size]
-  probe_enabled           = var.probe_path != null
-  effective_liveness_port = var.liveness_probe_port != null ? var.liveness_probe_port : var.port
+  probe_enabled           = var.probe_path != null && var.is_web_app
 }
