@@ -190,6 +190,12 @@ variable "replica_restart_alert_threshold" {
   default     = 1
 }
 
+variable "probe_path" {
+  description = "Path for the liveness probe. If null, liveness probe is disabled."
+  type        = string
+  default     = null
+}
+
 locals {
   memory = "${var.memory}Gi"
   cpu    = var.memory / 2
@@ -202,5 +208,6 @@ locals {
     PT6H  = "PT5M"
     PT12H = "PT5M"
   }
-  alert_frequency = local.alert_frequency_map[var.alert_window_size]
+  alert_frequency         = local.alert_frequency_map[var.alert_window_size]
+  probe_enabled           = var.probe_path != null && var.is_web_app
 }
