@@ -126,7 +126,7 @@ resource "azurerm_container_app" "main" {
           port                    = var.exposed_port != null ? var.exposed_port : var.port
           interval_seconds        = 5
           timeout                 = 2
-          failure_count_threshold = 30
+          failure_count_threshold = 2
         }
       }
     }
