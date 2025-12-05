@@ -111,10 +111,9 @@ resource "azurerm_container_app" "main" {
           transport               = "HTTP"
           path                    = var.probe_path
           port                    = var.exposed_port != null ? var.exposed_port : var.port
-          interval_seconds        = 10
-          initial_delay           = 45
+          interval_seconds        = 5
           timeout                 = 2
-          failure_count_threshold = 3
+          failure_count_threshold = 30
         }
       }
 
@@ -126,9 +125,8 @@ resource "azurerm_container_app" "main" {
           path                    = var.probe_path
           port                    = var.exposed_port != null ? var.exposed_port : var.port
           interval_seconds        = 5
-          initial_delay           = 45
           timeout                 = 2
-          failure_count_threshold = 2
+          failure_count_threshold = 30
         }
       }
     }
