@@ -15,7 +15,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "job_failure" {
     ContainerAppSystemLogs_CL
     | where JobName_s == "${azurerm_container_app_job.this.name}"
     | where Reason_s == "ProcessExited"
-    | extend ExitCode = toint(extract(@"exit code:\\s*(\\d+)", 1, Log_s))
+    | extend ExitCode = toint(extract("exit code:\\s*(\\d+)", 1, Log_s))
     | where ExitCode != 0
   KQL
   severity       = 1
