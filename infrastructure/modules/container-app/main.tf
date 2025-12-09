@@ -103,6 +103,32 @@ resource "azurerm_container_app" "main" {
           secret_name = lower(env.value.name)
         }
       }
+
+      dynamic "startup_probe" {
+        for_each = local.probe_enabled ? [1] : []
+
+        content {
+          transport               = "HTTP"
+          path                    = var.probe_path
+          port                    = var.port
+          interval_seconds        = 5
+          timeout                 = 2
+          failure_count_threshold = 30
+        }
+      }
+
+      dynamic "liveness_probe" {
+        for_each = local.probe_enabled ? [1] : []
+
+        content {
+          transport               = "HTTP"
+          path                    = var.probe_path
+          port                    = var.port
+          interval_seconds        = 5
+          timeout                 = 2
+          failure_count_threshold = 2
+        }
+      }
     }
     min_replicas = var.min_replicas
   }
@@ -145,6 +171,7 @@ resource "azurerm_container_app" "main" {
       }
     }
   }
+
 }
 
 # Enable Microsoft Entra ID authentication if specified

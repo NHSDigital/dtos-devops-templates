@@ -132,6 +132,30 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
+### <a name="input_action_group_id"></a> [action\_group\_id](#input\_action\_group\_id)
+
+Description: ID of the action group to notify.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_alert_cpu_threshold"></a> [alert\_cpu\_threshold](#input\_alert\_cpu\_threshold)
+
+Description: If alerting is enabled this will control what the cpu threshold will be, default will be 90.
+
+Type: `number`
+
+Default: `90`
+
+### <a name="input_alert_window_size"></a> [alert\_window\_size](#input\_alert\_window\_size)
+
+Description: The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly.
+
+Type: `string`
+
+Default: `"PT5M"`
+
 ### <a name="input_auditing_policy_retention_in_days"></a> [auditing\_policy\_retention\_in\_days](#input\_auditing\_policy\_retention\_in\_days)
 
 Description: number of days for audit log policies
@@ -163,6 +187,14 @@ Description: The name of the MS SQL Database. Changing this forces a new resourc
 Type: `string`
 
 Default: `"baseline"`
+
+### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
+
+Description: Whether monitoring and alerting is enabled for the Azure SQL Server.
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_firewall_rules"></a> [firewall\_rules](#input\_firewall\_rules)
 
@@ -345,6 +377,7 @@ Description: The ID of the SQL Server.
 
 The following resources are used by this module:
 
+- [azurerm_monitor_metric_alert.cpu](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_metric_alert) (resource)
 - [azurerm_mssql_database.defaultdb](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mssql_database) (resource)
 - [azurerm_mssql_database_extended_auditing_policy.database_auditing_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mssql_database_extended_auditing_policy) (resource)
 - [azurerm_mssql_firewall_rule.firewall_rule](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mssql_firewall_rule) (resource)
