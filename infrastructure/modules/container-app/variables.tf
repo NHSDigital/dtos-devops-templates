@@ -128,6 +128,12 @@ variable "unauthenticated_action" {
   }
 }
 
+variable "auth_excluded_paths" {
+  description = "List of paths to exclude from authentication (e.g., [\"/healthcheck\", \"/sha\"]). These paths will respond without requiring authentication."
+  type        = list(string)
+  default     = []
+}
+
 # Always fetch the AAD client secret from Key Vault
 variable "infra_key_vault_name" {
   description = "Name of Key Vault to retrieve the AAD client secrets"

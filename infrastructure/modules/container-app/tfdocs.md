@@ -88,6 +88,14 @@ Type: `string`
 
 Default: `null`
 
+### <a name="input_auth_excluded_paths"></a> [auth\_excluded\_paths](#input\_auth\_excluded\_paths)
+
+Description: List of paths to exclude from authentication (e.g., ["/healthcheck", "/sha"]). These paths will respond without requiring authentication.
+
+Type: `list(string)`
+
+Default: `[]`
+
 ### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
 
 Description: Whether monitoring and alerting is enabled for the PostgreSQL Flexible Server.
