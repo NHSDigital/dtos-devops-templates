@@ -33,7 +33,7 @@ resource "azurerm_cdn_frontdoor_secret" "this" {
 module "diagnostic-settings" {
   source = "../diagnostic-settings"
 
-  count = var.log_analytics_workspace_id != null ? 1 : 0
+  # count = var.log_analytics_workspace_id != null ? 1 : 0
 
   name                       = "${var.name}-diagnostic-setting"
   target_resource_id         = azurerm_cdn_frontdoor_profile.this.id
