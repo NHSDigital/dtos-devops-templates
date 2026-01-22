@@ -7,7 +7,7 @@ This module creates:
 - Optional private endpoint for secure connectivity
 - Diagnostic settings for monitoring and logging
 
-**Note:** This module only creates the namespace. Hybrid connections and authorization rules should be created separately using dedicated modules to support the pattern of one namespace with many hybrid connections.
+**Note:** This module only creates the namespace. Hybrid connections and authorization rules should be created separately using the [relay-hybrid-connection](../relay-hybrid-connection/README.md) module to support the pattern of one namespace with many hybrid connections.
 
 ## Private DNS Zone
 
