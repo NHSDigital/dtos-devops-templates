@@ -106,6 +106,21 @@ module "container-app" {
 }
 ```
 
+### Excluding paths from authentication
+
+You can exclude specific paths from authentication using the `auth_excluded_paths` variable. These paths will respond without requiring authentication, which is useful for health checks or version endpoints.
+
+Example:
+```hcl
+module "container-app" {
+  ...
+  enable_entra_id_authentication = true
+  auth_excluded_paths            = ["/healthcheck", "/sha"]
+}
+```
+
+By default, no paths are excluded (`auth_excluded_paths = []`).
+
 ## Alerts
 
 To enable container app alerting:

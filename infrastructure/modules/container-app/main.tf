@@ -192,6 +192,7 @@ resource "azapi_resource" "auth" {
       }
       globalValidation = {
         unauthenticatedClientAction = var.unauthenticated_action
+        excludedPaths               = var.auth_excluded_paths
       }
       identityProviders = {
         azureActiveDirectory = {
