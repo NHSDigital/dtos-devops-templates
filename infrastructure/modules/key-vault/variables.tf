@@ -14,6 +14,10 @@ variable "disk_encryption" {
   default     = true
 }
 
+/* --------------------------------------------------------------------------------------------------
+  Monitoring and Diagnostics Variables
+-------------------------------------------------------------------------------------------------- */
+
 variable "log_analytics_workspace_id" {
   type        = string
   description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
@@ -33,6 +37,72 @@ variable "monitor_diagnostic_setting_keyvault_enabled_logs" {
 variable "monitor_diagnostic_setting_keyvault_metrics" {
   type        = list(string)
   description = "Controls what metrics will be enabled for the keyvault"
+}
+
+variable "resource_group_name_monitoring" {
+  type        = string
+  description = "The name of the resource group in which to create the Monitoring resources for the Key Vault. Changing this forces a new resource to be created."
+  default     = null
+}
+
+variable "action_group_id" {
+  type        = string
+  description = "The ID of the Action Group to use for alerts."
+  default     = null
+}
+
+variable "enable_alerting" {
+  description = "Whether monitoring and alerting is enabled for the Key Vault."
+  type        = bool
+  default     = false
+}
+
+variable "secret_near_expiry_alert" {
+  type = object({
+    evaluation_frequency = string
+    window_duration      = string
+    threshold            = number
+  })
+
+  validation {
+    condition = contains(
+      ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
+      var.secret_near_expiry_alert.evaluation_frequency
+    )
+    error_message = "secret_near_expiry_alert.evaluation_frequency must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
+  }
+
+  validation {
+    condition = contains(
+      ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
+      var.secret_near_expiry_alert.window_duration
+    )
+    error_message = "secret_near_expiry_alert.window_duration must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
+  }
+}
+
+variable "secret_expired_alert" {
+  type = object({
+    evaluation_frequency = string
+    window_duration      = string
+    threshold            = number
+  })
+
+  validation {
+    condition = contains(
+      ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
+      var.secret_expired_alert.evaluation_frequency
+    )
+    error_message = "secret_expired_alert.evaluation_frequency must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
+  }
+
+  validation {
+    condition = contains(
+      ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
+      var.secret_expired_alert.window_duration
+    )
+    error_message = "secret_expired_alert.window_duration must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
+  }
 }
 
 variable "name" {
