@@ -79,6 +79,12 @@ variable "secret_near_expiry_alert" {
     )
     error_message = "secret_near_expiry_alert.window_duration must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
   }
+
+  default = {
+    evaluation_frequency = "P1D" # every 24 hours
+    window_duration      = "P1D" # last 24 hours
+    threshold            = 1
+  }
 }
 
 variable "secret_expired_alert" {
@@ -102,6 +108,12 @@ variable "secret_expired_alert" {
       var.secret_expired_alert.window_duration
     )
     error_message = "secret_expired_alert.window_duration must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
+  }
+
+  default = {
+    evaluation_frequency = "PT15M" # every 15 mins
+    window_duration      = "PT1H"  # last 1 hour
+    threshold            = 1
   }
 }
 
@@ -127,6 +139,12 @@ variable "certificate_near_expiry_alert" {
     )
     error_message = "certificate_near_expiry_alert.window_duration must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
   }
+
+  default = {
+    evaluation_frequency = "P1D" # every 24 hours
+    window_duration      = "P1D" # last 24 hours
+    threshold            = 1
+  }
 }
 
 variable "certificate_expired_alert" {
@@ -150,6 +168,12 @@ variable "certificate_expired_alert" {
       var.certificate_expired_alert.window_duration
     )
     error_message = "certificate_expired_alert.window_duration must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
+  }
+
+  default = {
+    evaluation_frequency = "PT15M" # every 15 mins
+    window_duration      = "PT1H"  # last 1 hour
+    threshold            = 1
   }
 }
 
