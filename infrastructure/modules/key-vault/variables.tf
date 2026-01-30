@@ -105,6 +105,54 @@ variable "secret_expired_alert" {
   }
 }
 
+variable "certificate_near_expiry_alert" {
+  type = object({
+    evaluation_frequency = string
+    window_duration      = string
+    threshold            = number
+  })
+
+  validation {
+    condition = contains(
+      ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
+      var.certificate_near_expiry_alert.evaluation_frequency
+    )
+    error_message = "certificate_near_expiry_alert.evaluation_frequency must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
+  }
+
+  validation {
+    condition = contains(
+      ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
+      var.certificate_near_expiry_alert.window_duration
+    )
+    error_message = "certificate_near_expiry_alert.window_duration must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
+  }
+}
+
+variable "certificate_expired_alert" {
+  type = object({
+    evaluation_frequency = string
+    window_duration      = string
+    threshold            = number
+  })
+
+  validation {
+    condition = contains(
+      ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
+      var.certificate_expired_alert.evaluation_frequency
+    )
+    error_message = "certificate_expired_alert.evaluation_frequency must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
+  }
+
+  validation {
+    condition = contains(
+      ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
+      var.certificate_expired_alert.window_duration
+    )
+    error_message = "certificate_expired_alert.window_duration must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
+  }
+}
+
 variable "name" {
   description = "The name of the Key Vault."
   type        = string

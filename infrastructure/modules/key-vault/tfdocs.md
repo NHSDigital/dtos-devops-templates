@@ -184,6 +184,34 @@ object({
 })
 ```
 
+### <a name="input_certificate_near_expiry_alert"></a> [certificate\_near\_expiry\_alert](#input\_certificate\_near\_expiry\_alert)
+
+Description: Configuration for the Key Vault certificate near expiry alert.
+
+Type:
+
+```hcl
+object({
+  evaluation_frequency = string
+  window_duration      = string
+  threshold            = number
+})
+```
+
+### <a name="input_certificate_expired_alert"></a> [secret\_certificate\_alert](#input\_certificate\_expired\_alert)
+
+Description: Configuration for the Key Vault certificate expired alert.
+
+Type:
+
+```hcl
+object({
+  evaluation_frequency = string
+  window_duration      = string
+  threshold            = number
+})
+```
+
 ## Modules
 
 The following Modules are called:
