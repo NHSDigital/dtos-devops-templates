@@ -249,3 +249,14 @@ resource "azurerm_key_vault_access_policy" "appgw" {
     "List",
   ]
 }
+
+module "diagnostic-settings" {
+  source = "../diagnostic-settings"
+
+  name                       = "${var.names.name}-diagnostic-setting"
+  target_resource_id         = azurerm_application_gateway.this.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  enabled_log                = var.monitor_diagnostic_setting_application_gateway_enabled_logs
+  enabled_metric             = var.monitor_diagnostic_setting_application_gateway_metrics
+  metric_enabled             = var.metric_enabled
+}
