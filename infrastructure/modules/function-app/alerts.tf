@@ -9,12 +9,13 @@ resource "azurerm_monitor_metric_alert" "function_4xx" {
   window_size         = var.alert_window_size
   frequency           = local.alert_frequency
   severity            = 2 # Warning
+  auto_mitigate       = var.alert_auto_mitigate
 
   criteria {
     metric_namespace = "Microsoft.Web/sites"
     metric_name      = "Http4xx"
     aggregation      = "Total" # Count total 4xx errors
-    operator         = "GreaterThan"
+    operator         = "GreaterThanOrEqual"
     threshold        = var.alert_4xx_threshold
   }
 
@@ -39,13 +40,14 @@ resource "azurerm_monitor_metric_alert" "function_5xx" {
   description         = "Action will be triggered when 5xx errors exceed ${var.alert_5xx_threshold}"
   window_size         = var.alert_window_size
   frequency           = local.alert_frequency
-  severity            = 2 # Warning
+  severity            = 1 # Error
+  auto_mitigate       = var.alert_auto_mitigate
 
   criteria {
     metric_namespace = "Microsoft.Web/sites"
     metric_name      = "Http5xx"
     aggregation      = "Total" # Count total 5xx errors
-    operator         = "GreaterThan"
+    operator         = "GreaterThanOrEqual"
     threshold        = var.alert_5xx_threshold
   }
 

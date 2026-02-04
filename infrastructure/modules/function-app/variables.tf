@@ -303,6 +303,12 @@ variable "alert_window_size" {
   description = "The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly."
 }
 
+variable "alert_auto_mitigate" {
+  type        = bool
+  description = "Enable or disable automatic mitigation of the alert when the issue is resolved."
+  default     = true
+}
+
 variable "enable_alerting" {
   description = "Whether monitoring and alerting is enabled for the App Service Plan."
   type        = bool
