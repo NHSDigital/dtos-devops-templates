@@ -22,6 +22,7 @@ jobs:
       nodejs_version: ${{ steps.variables.outputs.nodejs_version }}
       python_version: ${{ steps.variables.outputs.python_version }}
       terraform_version: ${{ steps.variables.outputs.terraform_version }}
+      golang_version: ${{ steps.variables.outputs.golang_version }}
       version: ${{ steps.variables.outputs.version }}
       does_pull_request_exist: ${{ steps.pr_exists.outputs.does_pull_request_exist }}
       docker_file_exists: ${{ steps.check_compose.outputs.docker_file_exists }}
@@ -37,9 +38,10 @@ jobs:
           echo "build_datetime=$datetime" >> $GITHUB_OUTPUT
           echo "build_timestamp=$(date --date=$datetime -u +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
           echo "build_epoch=$(date --date=$datetime -u +'%s')" >> $GITHUB_OUTPUT
-          echo "nodejs_version=$(grep "^nodejs" .tool-versions | cut -f2 -d' ')" >> $GITHUB_OUTPUT
-          echo "python_version=$(grep "^nodejs" .tool-versions | cut -f2 -d' ')" >> $GITHUB_OUTPUT
-          echo "terraform_version=$(grep "^terraform" .tool-versions | cut -f2 -d' ')" >> $GITHUB_OUTPUT
+          echo "nodejs_version=$(grep "^nodejs" .tool-versions | cut -f2 -d' ' || echo 20.11.0)" >> $GITHUB_OUTPUT
+          echo "python_version=$(grep "^python" .tool-versions | cut -f2 -d' ' || echo 3.12.1)" >> $GITHUB_OUTPUT
+          echo "terraform_version=$(grep "^terraform" .tool-versions | cut -f2 -d' ' || echo 1.13.0)" >> $GITHUB_OUTPUT
+          echo "golang_version=$(grep "^golang" .tool-versions | cut -f2 -d' ' || echo 1.22.5)" >> $GITHUB_OUTPUT
           echo "version=$(head -n 1 .version 2> /dev/null || echo unknown)" >> $GITHUB_OUTPUT
       - name: "Check if pull request exists for this branch"
         id: pr_exists
@@ -87,6 +89,7 @@ jobs:
       nodejs_version: "${{ needs.metadata.outputs.nodejs_version }}"
       python_version: "${{ needs.metadata.outputs.python_version }}"
       terraform_version: "${{ needs.metadata.outputs.terraform_version }}"
+      golang_version: "${{ needs.metadata.outputs.golang_version }}"
       version: "${{ needs.metadata.outputs.version }}"
     secrets: inherit
   test-stage: # Recommended maximum execution time is 5 minutes
@@ -100,6 +103,7 @@ jobs:
       nodejs_version: "${{ needs.metadata.outputs.nodejs_version }}"
       python_version: "${{ needs.metadata.outputs.python_version }}"
       terraform_version: "${{ needs.metadata.outputs.terraform_version }}"
+      golang_version: "${{ needs.metadata.outputs.golang_version }}"
       version: "${{ needs.metadata.outputs.version }}"
     secrets: inherit
   build-stage: # Recommended maximum execution time is 3 minutes
@@ -126,5 +130,6 @@ jobs:
       nodejs_version: "${{ needs.metadata.outputs.nodejs_version }}"
       python_version: "${{ needs.metadata.outputs.python_version }}"
       terraform_version: "${{ needs.metadata.outputs.terraform_version }}"
+      golang_version: "${{ needs.metadata.outputs.golang_version }}"
       version: "${{ needs.metadata.outputs.version }}"
     secrets: inherit

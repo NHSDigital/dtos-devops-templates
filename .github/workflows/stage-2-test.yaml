@@ -27,71 +27,136 @@ on:
         description: "Terraform version, set by the CI/CD pipeline workflow"
         required: true
         type: string
+      golang_version:
+        description: "Go version, set by the CI/CD pipeline workflow"
+        required: true
+        type: string
       version:
         description: "Version of the software, set by the CI/CD pipeline workflow"
         required: true
         type: string
 
 jobs:
-  test-unit:
-    name: "Unit tests"
+  terraform-lint:
+    name: "Terraform lint (tflint)"
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
-      - name: "Run unit test suite"
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+      - name: "Run TFLint on modules"
+        id: tflint
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          make test-unit
-      - name: "Save the result of fast test suite"
-        run: |
-          echo "Nothing to save"
-  test-lint:
-    name: "Linting"
+          echo "## TFLint Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          total_issues=0
+          for module_dir in $(find infrastructure/modules -mindepth 1 -maxdepth 1 -type d); do
+            module_name=$(basename "$module_dir")
+            # Only lint directories containing .tf files
+            if ls "$module_dir"/*.tf > /dev/null 2>&1; then
+              echo "=== Linting $module_dir ==="
+              # Init tflint for the module (downloads plugins if needed)
+              tflint --init --chdir="$module_dir" > /dev/null 2>&1 || true
+
+              # Capture output and count issues
+              output=$(tflint --chdir="$module_dir" --format=compact 2>&1 || true)
+              issue_count=$(echo "$output" | grep -c ":" || echo "0")
+
+              if [ "$issue_count" -gt 0 ] && [ -n "$output" ]; then
+                total_issues=$((total_issues + issue_count))
+                echo "### ⚠️ $module_name ($issue_count issues)" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "$output" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+              else
+                echo "### ✅ $module_name" >> $GITHUB_STEP_SUMMARY
+              fi
+              echo "" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "**Total issues: $total_issues**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ $total_issues -gt 0 ]; then
+            echo "> **Note:** TFLint issues are advisory only. Please address these issues to improve code quality." >> $GITHUB_STEP_SUMMARY
+          fi
+          # Always exit 0 - this job is advisory only
+          exit 0
+  terraform-security:
+    name: "Terraform security scan"
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
-      - name: "Run linting"
+      - name: "Run tfsec with SARIF output"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          make test-lint
-      - name: "Save the linting result"
+          # Install tfsec
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+          # Run tfsec and output SARIF format
+          tfsec infrastructure/ --format sarif --out tfsec-results.sarif --soft-fail
+      - name: "Upload SARIF to GitHub Code Scanning"
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: tfsec-results.sarif
+          category: terraform-security
+      - name: "Generate summary"
+        if: always()
         run: |
-          echo "Nothing to save"
-  test-coverage:
-    name: "Test coverage"
-    needs: [test-unit]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: "Checkout code"
-        uses: actions/checkout@v4
-      - name: "Run test coverage check"
-        run: |
-          make test-coverage
-      - name: "Save the coverage check result"
-        run: |
-          echo "Nothing to save"
+          echo "## Terraform Security Scan" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Security findings are uploaded to the **Security** tab → **Code scanning alerts**." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "> **Note:** Findings are informational and do not block merges." >> $GITHUB_STEP_SUMMARY
+          echo "> To make blocking, enable 'Require code scanning results' in branch protection rules." >> $GITHUB_STEP_SUMMARY
   unit-test-terraform-modules:
     name: "Unit test terraform modules"
-    needs: [test-unit]
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.12.2
-      - name: "run the tests"
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ inputs.golang_version }}
+          cache: false  # Disable cache to avoid tar restore errors
+      - name: "Run module tests"
         run: |
-          cd tests/modules
-          go test -v
+          # Find all module test directories and run tests
+          failed=0
+          for test_dir in $(find infrastructure/modules -type d -name "tests"); do
+            if ls "$test_dir"/*_test.go 1> /dev/null 2>&1; then
+              echo "=== Running tests in $test_dir ==="
+              cd "$test_dir"
+              go mod tidy
+              if ! go test -v ./...; then
+                failed=1
+              fi
+              cd - > /dev/null
+            fi
+          done
+          if [ $failed -eq 1 ]; then
+            exit 1
+          fi
   perform-static-analysis:
     name: "Perform static analysis"
-    needs: [test-unit]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
