@@ -53,7 +53,6 @@ Description: List of Azure test locations (provider-specific location strings fo
 Type: `list(string)`
 
 Default:
-
 ```json
 [
   "emea-ru-msa-edge",
@@ -61,6 +60,9 @@ Default:
   "emea-gb-db3-azr"
 ]
 ```
+
+Validations:
+- At least one geo location must be provided.
 
 ### <a name="input_location"></a> [location](#input\_location)
 
@@ -78,6 +80,103 @@ Type: `number`
 
 Default: `30`
 
+### <a name="input_http_verb"></a> [http_verb](#input\_http\_verb)
+
+Description: The HTTP verb used for the request.
+
+Type: `string`
+
+Allowed values: GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS
+
+Default: GET
+
+### <a name="input_headers"></a> [headers](#input\_headers)
+
+Description: A map of HTTP request headers (name => value).
+
+Type: `map(string)`
+
+Default: {}
+
+### <a name="input_request_body"></a> [request_body](#input\_request\_body)
+
+Description: Request body to send with the HTTP call. Use jsonencode() for JSON payloads.
+
+Type: `string`
+
+Default: null
+
+### <a name="input_alert_description"></a> [alert_description](#input\_alert\_description)
+
+Description: The description applied to the alert rule.
+
+Type: `string`
+
+Default: "Availability test alert"
+
+### <a name="input_ssl_validation"></a> [ssl_validation](#input\_ssl\_validation)
+
+Description: SSL validation configuration for the availability test. Set `enabled = false` to omit SSL validation completely. To validate response body content, set content.match to a non-null string.
+
+Type:
+```hcl
+object({
+  enabled                     = optional(bool, true)
+  expected_status_code        = optional(number, 200)
+  ssl_check_enabled           = optional(bool, true)
+  ssl_cert_remaining_lifetime = optional(number, null)
+  content = optional(object({
+    match              = string
+    ignore_case        = optional(bool, true)
+    pass_if_text_found = optional(bool, true)
+  }), null)
+})
+```
+
+Default:
+```hcl
+{
+  enabled                     = true
+  expected_status_code        = 200
+  ssl_check_enabled           = true
+  ssl_cert_remaining_lifetime = null
+  content                     = null
+}
+```
+
+Validations:
+- expected_status_code must be 0 or a valid HTTP status code (100–599)
+- ssl_cert_remaining_lifetime must be null or between 1–365
+
+### <a name="input_alert"></a> [alert](#input\_alert)
+
+Description: Configuration for the availability alert rule.
+
+Type:
+```hcl
+object({
+  frequency             = optional(string, "PT1H")
+  window_size           = optional(string, "P1D")
+  auto_mitigate         = optional(bool, true)
+  failed_location_count = optional(number, 2)
+})
+```
+
+Defaults:
+```hcl
+{
+  frequency     = "PT1H"
+  window_size   = "P1D"
+  auto_mitigate = true
+}
+```
+
+Validations:
+- frequency must be one of: PT1M, PT5M, PT15M, PT30M, PT1H
+- window_size must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D
+- failed_location_count must be:
+    >= 1, and
+    <= the number of configured geo_locations
 
 ## Resources
 
