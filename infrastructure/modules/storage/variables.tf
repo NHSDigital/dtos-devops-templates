@@ -74,12 +74,18 @@ variable "log_analytics_workspace_id" {
 
 variable "monitor_diagnostic_setting_storage_account_enabled_logs" {
   type        = list(string)
-  description = "Controls what logs will be enabled for the storage"
+  description = "Controls what logs will be enabled for the storage services"
 }
 
 variable "monitor_diagnostic_setting_storage_account_metrics" {
   type        = list(string)
-  description = "Controls what metrics will be enabled for the storage"
+  description = "Controls what metrics will be enabled for the storage services"
+}
+
+variable "monitor_diagnostic_setting_storage_account_resource_metrics" {
+  type        = list(string)
+  description = "Controls what metrics will be enabled for the storage account itself"
+  default     = ["Transaction"]
 }
 
 variable "private_endpoint_properties" {
