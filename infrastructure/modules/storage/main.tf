@@ -134,3 +134,14 @@ module "diagnostic-settings" {
   enabled_metric             = var.monitor_diagnostic_setting_storage_account_metrics
 
 }
+
+module "diagnostic-settings-sa-resource" {
+
+  source = "../diagnostic-settings"
+
+  name                       = "${azurerm_storage_account.storage_account.name}-diagnotic-setting-storage-account"
+  target_resource_id         = "${azurerm_storage_account.storage_account.id}"
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  enabled_metric             = var.monitor_diagnostic_setting_storage_account_resource_metrics
+
+}
