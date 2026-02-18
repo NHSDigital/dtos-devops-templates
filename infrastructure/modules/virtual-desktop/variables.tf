@@ -188,7 +188,7 @@ variable "tags" {
   default     = {}
 }
 
-# variable "principal_id" {
-#   description = "The principal id (object id) of the identity to assign the 'Desktop Virtualization Power On Off Contributor' role to the host pool."
-#   type        = string
-# }
+variable "principal_id" {
+  description = "The principal id (object id) of the identity to assign the 'Desktop Virtualization Power On Off Contributor' role to the host pool."
+  type        = string
+}
