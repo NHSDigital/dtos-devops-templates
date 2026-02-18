@@ -143,3 +143,13 @@ module "container-app" {
 To enable container probs on webapps:
 - Set `probe_path = "/healthcheck"` (by convention).
 - Ensure the application accepts requests from `127.0.0.1` and `localhost` so the probe running inside the container can access the health endpoint.
+
+## AzureRM Provider Version
+
+Previously the AzureRM provider version in Templates container-app module was set to a specific version, like `version = "4.34.0"`.
+In order to be able to better manage the provider version used in the client repositories, we won't be pinning a specific provider version anymore.
+We will allow using the previously pinned "4.34.0" or newer, as defined in the client repository.
+
+New version definition is `version = ">= 4.34.0"`
+
+More on the provider version constraints in terraform modules can be found [here](https://developer.hashicorp.com/terraform/language/modules/develop/providers#provider-version-constraints-in-modules).
