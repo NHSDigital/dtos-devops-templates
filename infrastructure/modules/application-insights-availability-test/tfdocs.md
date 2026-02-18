@@ -78,6 +78,61 @@ Type: `number`
 
 Default: `30`
 
+### <a name="input_http_verb"></a> [http_verb](#input\_http\_verb)
+
+Description: The HTTP verb used for the request.
+
+Type: `string`
+
+Allowed values: GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS
+
+Default: GET
+
+### <a name="input_headers"></a> [headers](#input\_headers)
+
+Description: A map of HTTP request headers (name => value).
+
+Type: `map(string)`
+
+Default: {}
+
+### <a name="input_ssl_validation"></a> [ssl_validation](#input\_ssl\_validation)
+
+Description: SSL validation configuration for the availability test.
+
+Type:
+```hcl
+object({
+  expected_status_code        = optional(number, null)
+  ssl_cert_remaining_lifetime = optional(number, null)
+})
+```
+
+Default: null
+
+Validations:
+- expected_status_code must be 0 ('0' means 'response code < 400') or a valid HTTP status code (100–599)
+- ssl_cert_remaining_lifetime must be null or between 1–365
+
+### <a name="input_alert"></a> [alert](#input\_alert)
+
+Description: Configuration for the availability alert rule.
+
+Type:
+```hcl
+object({
+  description           = optional(string, "Availability test alert")
+  frequency             = optional(string, "PT1M")
+  window_size           = optional(string, "PT5M")
+  auto_mitigate         = optional(bool, true)
+})
+```
+
+Defaults: {}
+
+Validations:
+- frequency must be one of: PT1M, PT5M, PT15M, PT30M, PT1H
+- window_size must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D
 
 ## Resources
 
