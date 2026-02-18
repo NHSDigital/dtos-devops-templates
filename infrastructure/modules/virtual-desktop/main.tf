@@ -61,8 +61,19 @@ resource "azurerm_virtual_desktop_workspace_application_group_association" "this
 # resource "azurerm_role_assignment" "avd_autoscale_hostpool" {
 #   scope                = azurerm_virtual_desktop_host_pool.this.id
 #   role_definition_name = "Desktop Virtualization Power On Off Contributor"
+## I don't want to have to pass this value in, this id must be coming from one of the resources created here?
 #   principal_id         = var.principal_id
 # }
+
+data "azuread_service_principal" "avd" {
+  display_name = "Azure Virtual Desktop"
+}
+
+resource "azurerm_role_assignment" "avd_autoscale_hostpool" {
+  scope                = azurerm_virtual_desktop_host_pool.this.id
+  role_definition_name = "Desktop Virtualization Power On Off Contributor"
+  principal_id         = data.azuread_service_principal.avd.object_id
+}
 
 resource "azurerm_role_assignment" "rg_users" {
   scope                = var.resource_group_id
