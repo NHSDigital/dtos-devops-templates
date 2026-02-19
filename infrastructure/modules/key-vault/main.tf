@@ -10,7 +10,7 @@ resource "azurerm_key_vault" "keyvault" {
   soft_delete_retention_days    = var.soft_delete_retention
   sku_name                      = var.sku_name
 
-  enable_rbac_authorization = var.enable_rbac_authorization
+  rbac_authorization_enabled = var.enable_rbac_authorization
 
   tags = var.tags
 
