@@ -112,7 +112,7 @@ resource "azurerm_cdn_frontdoor_security_policy" "this" {
 
   security_policies {
     firewall {
-      cdn_frontdoor_firewall_policy_id = data.azurerm_cdn_frontdoor_firewall_policy.waf[each.key].id
+      cdn_frontdoor_firewall_policy_id = each.value.cdn_frontdoor_firewall_policy_id != null ? each.value.cdn_frontdoor_firewall_policy_id : data.azurerm_cdn_frontdoor_firewall_policy.waf[each.key].id
 
       association {
         patterns_to_match = ["/*"]
