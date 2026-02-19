@@ -67,7 +67,7 @@ variable "secret_near_expiry_alert" {
   validation {
     condition = contains(
       ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
-      var.secret_near_expiry_alert.evaluation_frequency
+      try(var.secret_near_expiry_alert.evaluation_frequency, "P1D")
     )
     error_message = "secret_near_expiry_alert.evaluation_frequency must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
   }
@@ -75,16 +75,12 @@ variable "secret_near_expiry_alert" {
   validation {
     condition = contains(
       ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
-      var.secret_near_expiry_alert.window_duration
+      try(var.secret_near_expiry_alert.window_duration, "P1D")
     )
     error_message = "secret_near_expiry_alert.window_duration must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
   }
 
-  default = {
-    evaluation_frequency = "P1D" # every 24 hours
-    window_duration      = "P1D" # last 24 hours
-    threshold            = 1
-  }
+  default = null
 }
 
 variable "secret_expired_alert" {
@@ -97,7 +93,7 @@ variable "secret_expired_alert" {
   validation {
     condition = contains(
       ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
-      var.secret_expired_alert.evaluation_frequency
+      try(var.secret_expired_alert.evaluation_frequency, "PT15M")
     )
     error_message = "secret_expired_alert.evaluation_frequency must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
   }
@@ -105,16 +101,12 @@ variable "secret_expired_alert" {
   validation {
     condition = contains(
       ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
-      var.secret_expired_alert.window_duration
+      try(var.secret_expired_alert.window_duration, "PT1H")
     )
     error_message = "secret_expired_alert.window_duration must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
   }
 
-  default = {
-    evaluation_frequency = "PT15M" # every 15 mins
-    window_duration      = "PT1H"  # last 1 hour
-    threshold            = 1
-  }
+  default = null
 }
 
 variable "certificate_near_expiry_alert" {
@@ -127,7 +119,7 @@ variable "certificate_near_expiry_alert" {
   validation {
     condition = contains(
       ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
-      var.certificate_near_expiry_alert.evaluation_frequency
+      try(var.certificate_near_expiry_alert.evaluation_frequency, "P1D")
     )
     error_message = "certificate_near_expiry_alert.evaluation_frequency must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
   }
@@ -135,16 +127,12 @@ variable "certificate_near_expiry_alert" {
   validation {
     condition = contains(
       ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
-      var.certificate_near_expiry_alert.window_duration
+      try(var.certificate_near_expiry_alert.window_duration, "P1D")
     )
     error_message = "certificate_near_expiry_alert.window_duration must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
   }
 
-  default = {
-    evaluation_frequency = "P1D" # every 24 hours
-    window_duration      = "P1D" # last 24 hours
-    threshold            = 1
-  }
+  default = null
 }
 
 variable "certificate_expired_alert" {
@@ -157,7 +145,7 @@ variable "certificate_expired_alert" {
   validation {
     condition = contains(
       ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
-      var.certificate_expired_alert.evaluation_frequency
+      try(var.certificate_expired_alert.evaluation_frequency, "PT15M")
     )
     error_message = "certificate_expired_alert.evaluation_frequency must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
   }
@@ -165,16 +153,12 @@ variable "certificate_expired_alert" {
   validation {
     condition = contains(
       ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H", "P1D"],
-      var.certificate_expired_alert.window_duration
+      try(var.certificate_expired_alert.window_duration, "PT1H")
     )
     error_message = "certificate_expired_alert.window_duration must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, P1D"
   }
 
-  default = {
-    evaluation_frequency = "PT15M" # every 15 mins
-    window_duration      = "PT1H"  # last 1 hour
-    threshold            = 1
-  }
+  default = null
 }
 
 variable "name" {

@@ -170,6 +170,8 @@ object({
 })
 ```
 
+Default: `null`
+
 ### <a name="input_secret_expired_alert"></a> [secret\_expired\_alert](#input\_secret\_expired\_alert)
 
 Description: Configuration for the Key Vault secret expired alert.
@@ -183,6 +185,8 @@ object({
   threshold            = number
 })
 ```
+
+Default: `null`
 
 ### <a name="input_certificate_near_expiry_alert"></a> [certificate\_near\_expiry\_alert](#input\_certificate\_near\_expiry\_alert)
 
@@ -198,6 +202,8 @@ object({
 })
 ```
 
+Default: `null`
+
 ### <a name="input_certificate_expired_alert"></a> [secret\_certificate\_alert](#input\_certificate\_expired\_alert)
 
 Description: Configuration for the Key Vault certificate expired alert.
@@ -211,6 +217,8 @@ object({
   threshold            = number
 })
 ```
+
+Default: `null`
 
 ## Modules
 
