@@ -146,6 +146,14 @@ Type: `number`
 
 Default: `10`
 
+### <a name="input_alert_auto_mitigate"></a> [alert\_auto\_mitigate](#input\_alert\_auto\_mitigate)
+
+Description: Enable or disable automatic mitigation of the alert when the issue is resolved.
+
+Type: `bool`
+
+Default: `true`
+
 ### <a name="input_alert_window_size"></a> [alert\_window\_size](#input\_alert\_window\_size)
 
 Description: The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly.

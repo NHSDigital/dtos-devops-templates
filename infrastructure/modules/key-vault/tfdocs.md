@@ -60,6 +60,46 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
+### <a name="input_action_group_id"></a> [action\_group\_id](#input\_action\_group\_id)
+
+Description: The ID of the Action Group to use for alerts.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_certificate_expired_alert"></a> [certificate\_expired\_alert](#input\_certificate\_expired\_alert)
+
+Description: n/a
+
+Type:
+
+```hcl
+object({
+    evaluation_frequency = string
+    window_duration      = string
+    threshold            = number
+  })
+```
+
+Default: `null`
+
+### <a name="input_certificate_near_expiry_alert"></a> [certificate\_near\_expiry\_alert](#input\_certificate\_near\_expiry\_alert)
+
+Description: n/a
+
+Type:
+
+```hcl
+object({
+    evaluation_frequency = string
+    window_duration      = string
+    threshold            = number
+  })
+```
+
+Default: `null`
+
 ### <a name="input_disk_encryption"></a> [disk\_encryption](#input\_disk\_encryption)
 
 Description: Should the disk encryption be enabled
@@ -67,6 +107,14 @@ Description: Should the disk encryption be enabled
 Type: `bool`
 
 Default: `true`
+
+### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
+
+Description: Whether monitoring and alerting is enabled for the Key Vault.
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_enable_rbac_authorization"></a> [enable\_rbac\_authorization](#input\_enable\_rbac\_authorization)
 
@@ -108,6 +156,46 @@ Type: `list(string)`
 
 Default: `[]`
 
+### <a name="input_resource_group_name_monitoring"></a> [resource\_group\_name\_monitoring](#input\_resource\_group\_name\_monitoring)
+
+Description: The name of the resource group in which to create the Monitoring resources for the Key Vault. Changing this forces a new resource to be created.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_secret_expired_alert"></a> [secret\_expired\_alert](#input\_secret\_expired\_alert)
+
+Description: n/a
+
+Type:
+
+```hcl
+object({
+    evaluation_frequency = string
+    window_duration      = string
+    threshold            = number
+  })
+```
+
+Default: `null`
+
+### <a name="input_secret_near_expiry_alert"></a> [secret\_near\_expiry\_alert](#input\_secret\_near\_expiry\_alert)
+
+Description: n/a
+
+Type:
+
+```hcl
+object({
+    evaluation_frequency = string
+    window_duration      = string
+    threshold            = number
+  })
+```
+
+Default: `null`
+
 ### <a name="input_sku_name"></a> [sku\_name](#input\_sku\_name)
 
 Description: Type of the Key Vault's SKU.
@@ -131,95 +219,6 @@ Description: Resource tags to be applied throughout the deployment.
 Type: `map(string)`
 
 Default: `{}`
-
-### <a name="input_resource_group_name_monitoring"></a> [resource\_group\_name\_monitoring](#input\_resource\_group\_name\_monitoring)
-
-Description: The name of the resource group in which to create monitoring resources for the Key Vault. Changing this forces a new resource to be created.
-
-Type: `string`
-
-Default: `null`
-
-### <a name="input_action_group_id"></a> [action\_group\_id](#input\_action\_group\_id)
-
-Description: The ID of the Action Group to use for alerts.
-
-Type: `string`
-
-Default: `null`
-
-### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
-
-Description: Whether monitoring and alerting is enabled for the Key Vault.
-
-Type: `bool`
-
-Default: `false`
-
-### <a name="input_secret_near_expiry_alert"></a> [secret\_near\_expiry\_alert](#input\_secret\_near\_expiry\_alert)
-
-Description: Configuration for the Key Vault secret near expiry alert.
-
-Type:
-
-```hcl
-object({
-  evaluation_frequency = string
-  window_duration      = string
-  threshold            = number
-})
-```
-
-Default: `null`
-
-### <a name="input_secret_expired_alert"></a> [secret\_expired\_alert](#input\_secret\_expired\_alert)
-
-Description: Configuration for the Key Vault secret expired alert.
-
-Type:
-
-```hcl
-object({
-  evaluation_frequency = string
-  window_duration      = string
-  threshold            = number
-})
-```
-
-Default: `null`
-
-### <a name="input_certificate_near_expiry_alert"></a> [certificate\_near\_expiry\_alert](#input\_certificate\_near\_expiry\_alert)
-
-Description: Configuration for the Key Vault certificate near expiry alert.
-
-Type:
-
-```hcl
-object({
-  evaluation_frequency = string
-  window_duration      = string
-  threshold            = number
-})
-```
-
-Default: `null`
-
-### <a name="input_certificate_expired_alert"></a> [secret\_certificate\_alert](#input\_certificate\_expired\_alert)
-
-Description: Configuration for the Key Vault certificate expired alert.
-
-Type:
-
-```hcl
-object({
-  evaluation_frequency = string
-  window_duration      = string
-  threshold            = number
-})
-```
-
-Default: `null`
-
 ## Modules
 
 The following Modules are called:
@@ -261,4 +260,8 @@ Description: n/a
 The following resources are used by this module:
 
 - [azurerm_key_vault.keyvault](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault) (resource)
+- [azurerm_monitor_scheduled_query_rules_alert_v2.kv_certificate_expired](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_scheduled_query_rules_alert_v2) (resource)
+- [azurerm_monitor_scheduled_query_rules_alert_v2.kv_certificate_near_expiry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_scheduled_query_rules_alert_v2) (resource)
+- [azurerm_monitor_scheduled_query_rules_alert_v2.kv_secret_expired](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_scheduled_query_rules_alert_v2) (resource)
+- [azurerm_monitor_scheduled_query_rules_alert_v2.kv_secret_near_expiry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_scheduled_query_rules_alert_v2) (resource)
 - [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)

@@ -8,7 +8,7 @@ data "azurerm_dns_zone" "custom" {
 }
 
 data "azurerm_cdn_frontdoor_firewall_policy" "waf" {
-  for_each = var.security_policies
+  for_each = { for k, v in var.security_policies : k => v if v.cdn_frontdoor_firewall_policy_name != null }
 
   name                = each.value.cdn_frontdoor_firewall_policy_name
   resource_group_name = each.value.cdn_frontdoor_firewall_policy_rg_name

@@ -37,13 +37,13 @@ Type: `string`
 
 ### <a name="input_monitor_diagnostic_setting_storage_account_enabled_logs"></a> [monitor\_diagnostic\_setting\_storage\_account\_enabled\_logs](#input\_monitor\_diagnostic\_setting\_storage\_account\_enabled\_logs)
 
-Description: Controls what logs will be enabled for the storage
+Description: Controls what logs will be enabled for the storage services
 
 Type: `list(string)`
 
 ### <a name="input_monitor_diagnostic_setting_storage_account_metrics"></a> [monitor\_diagnostic\_setting\_storage\_account\_metrics](#input\_monitor\_diagnostic\_setting\_storage\_account\_metrics)
 
-Description: Controls what metrics will be enabled for the storage
+Description: Controls what metrics will be enabled for the storage services
 
 Type: `list(string)`
 
@@ -153,6 +153,20 @@ Type: `bool`
 
 Default: `false`
 
+### <a name="input_monitor_diagnostic_setting_storage_account_resource_metrics"></a> [monitor\_diagnostic\_setting\_storage\_account\_resource\_metrics](#input\_monitor\_diagnostic\_setting\_storage\_account\_resource\_metrics)
+
+Description: Controls what metrics will be enabled for the storage account itself
+
+Type: `list(string)`
+
+Default:
+
+```json
+[
+  "Transaction"
+]
+```
+
 ### <a name="input_public_network_access_enabled"></a> [public\_network\_access\_enabled](#input\_public\_network\_access\_enabled)
 
 Description: Controls whether data in the account may be accessed from public networks.
@@ -222,6 +236,12 @@ Default: `{}`
 The following Modules are called:
 
 ### <a name="module_diagnostic-settings"></a> [diagnostic-settings](#module\_diagnostic-settings)
+
+Source: ../diagnostic-settings
+
+Version:
+
+### <a name="module_diagnostic-settings-sa-resource"></a> [diagnostic-settings-sa-resource](#module\_diagnostic-settings-sa-resource)
 
 Source: ../diagnostic-settings
 
