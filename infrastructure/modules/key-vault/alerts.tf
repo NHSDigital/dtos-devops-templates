@@ -1,5 +1,5 @@
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "kv_secret_near_expiry" {
-  count = var.enable_alerting == true ? 1 : 0
+  count = var.enable_alerting == true && var.secret_near_expiry_alert != null ? 1 : 0
 
   name                = "${azurerm_key_vault.keyvault.name}-secret-near-expiry"
   resource_group_name = var.resource_group_name_monitoring != null ? var.resource_group_name_monitoring : var.resource_group_name
@@ -48,7 +48,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "kv_secret_expired" {
-  count = var.enable_alerting == true ? 1 : 0
+  count = var.enable_alerting == true && var.secret_expired_alert != null ? 1 : 0
 
   name                = "${azurerm_key_vault.keyvault.name}-secret-expired"
   resource_group_name = var.resource_group_name_monitoring != null ? var.resource_group_name_monitoring : var.resource_group_name
@@ -97,7 +97,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "kv_certificate_near_expiry" {
-  count = var.enable_alerting == true ? 1 : 0
+  count = var.enable_alerting == true && var.certificate_near_expiry_alert != null ? 1 : 0
 
   name                = "${azurerm_key_vault.keyvault.name}-certificate-near-expiry"
   resource_group_name = var.resource_group_name_monitoring != null ? var.resource_group_name_monitoring : var.resource_group_name
@@ -146,7 +146,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "kv_certificate_expired" {
-  count = var.enable_alerting == true ? 1 : 0
+  count = var.enable_alerting == true && var.certificate_expired_alert != null ? 1 : 0
 
   name                = "${azurerm_key_vault.keyvault.name}-certificate-expired"
   resource_group_name = var.resource_group_name_monitoring != null ? var.resource_group_name_monitoring : var.resource_group_name
