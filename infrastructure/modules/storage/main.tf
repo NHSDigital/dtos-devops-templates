@@ -16,10 +16,44 @@ resource "azurerm_storage_account" "storage_account" {
       days = var.blob_properties_delete_retention_policy
     }
     versioning_enabled = var.blob_properties_versioning_enabled
+
+    container_delete_retention_policy {
+      days = var.container_delete_retention_policy_days
+    }
+
+    change_feed_enabled = var.blob_properties_change_feed_enabled
+
+    dynamic "restore_policy" {
+      for_each = var.blob_properties_restore_policy_days != null ? [1] : []
+      content {
+        days = var.blob_properties_restore_policy_days
+      }
+    }
+  }
+
+  dynamic "share_properties" {
+    for_each = var.share_properties_retention_policy_days != null ? [1] : []
+    content {
+      retention_policy {
+        days = var.share_properties_retention_policy_days
+      }
+    }
   }
 
   lifecycle {
     ignore_changes = [tags]
+
+    # Validation 1: Prevent the Change Feed / Restore Policy mismatch
+    precondition {
+      condition     = var.blob_properties_restore_policy_days == null || var.blob_properties_change_feed_enabled == true
+      error_message = "Invalid configuration: If blob_properties_restore_policy_days is set, blob_properties_change_feed_enabled must be explicitly set to true."
+    }
+
+    # Validation 2: Prevent the Days limit mismatch
+    precondition {
+      condition     = var.blob_properties_restore_policy_days == null ? true : (var.blob_properties_restore_policy_days < var.blob_properties_delete_retention_policy)
+      error_message = "Invalid configuration: blob_properties_restore_policy_days must be strictly less than blob_properties_delete_retention_policy."
+    }
   }
 }
 
