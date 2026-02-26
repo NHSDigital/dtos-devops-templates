@@ -184,6 +184,30 @@ variable "queue_transactions_high_threshold" {
   default     = 1000
 }
 
+variable "container_delete_retention_policy_days" {
+  description = "Specifies the number of days that the container should be retained. Defaulting to 7 for baseline data protection."
+  type        = number
+  default     = 7
+}
+
+variable "blob_properties_change_feed_enabled" {
+  description = "Is the blob service properties for change feed events enabled? Required for Point-in-Time Restore."
+  type        = bool
+  default     = false
+}
+
+variable "blob_properties_restore_policy_days" {
+  description = "Specifies the number of days that the blob can be restored. Set to null to disable by default. Note: Must be less than blob and container delete retention policy days."
+  type        = number
+  default     = null
+}
+
+variable "share_properties_retention_policy_days" {
+  description = "Specifies the number of days that the file share should be retained. Set to null to disable by default, or provide a number to enable."
+  type        = number
+  default     = null
+}
+
 locals {
   alert_frequency_map = {
     PT5M  = "PT1M"
