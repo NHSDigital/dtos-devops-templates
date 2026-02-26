@@ -129,7 +129,7 @@ Type:
 
 ```hcl
 map(object({
-    associated_domain_keys                = list(string) # From var.custom_domains above, use "endpoint" for the default domain
+    associated_domain_keys                = list(string)           # From var.custom_domains above, use "endpoint" for the default domain
     cdn_frontdoor_firewall_policy_id      = optional(string, null) # Pass ID directly to avoid data source lookup when policy is created in the same apply
     cdn_frontdoor_firewall_policy_name    = optional(string, null)
     cdn_frontdoor_firewall_policy_rg_name = optional(string, null)
