@@ -1,4 +1,4 @@
-resource "azurerm_policy_definition" "item" {
+resource "azurerm_policy_definition" "definition" {
   name         = var.name
   policy_type  = coalesce(var.policy_type, "custom")
   mode         = coalesce(var.mode, "all")
@@ -10,11 +10,10 @@ resource "azurerm_policy_definition" "item" {
     "owner" : "security-team@nhs.net"
     },
   var.metadata)))
-  parameters  = try(length(var.parameters) > 0 ? jsonencode(var.parameters) : null, null)
+  parameters  = var.parameters != null ? jsonencode(var.parameters) : null
   policy_rule = jsonencode(var.policy_rule)
 }
 
 locals {
   requires_identity = contains(["deployIfNotExists", "modify", "append"], var.policy_rule.then.effect)
 }
-

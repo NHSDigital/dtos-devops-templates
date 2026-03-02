@@ -32,6 +32,12 @@ variable "enabled_log" {
   default     = []
 }
 
+variable "enabled_metric" {
+  type        = list(string)
+  description = "Collection of metrics to capture"
+  default     = []
+}
+
 variable "log_analytics_wks_id" {
   type        = string
   description = "An identifier of a specific Log Analytics Workspace instance to use"
@@ -49,7 +55,6 @@ variable "parameters" {
   description = "Parameters for the policy assignment."
 }
 
-
 variable "policy_assignment_scope" {
   type        = string
   description = "The scope at which this assignment is assigned"
@@ -58,6 +63,7 @@ variable "policy_assignment_scope" {
 variable "policy_assignment_principal_id" {
   type        = string
   description = "The identifier of a specific service principal to use for the policy assignment"
+  default     = null
 }
 
 variable "policy_identities" {
@@ -87,5 +93,3 @@ variable "requires_identity" {
   description = "True if the policy requires a managed identity, false otherwise"
   default     = false
 }
-
-
