@@ -49,7 +49,6 @@ variable "parameters" {
   description = "Parameters for the policy assignment."
 }
 
-
 variable "policy_assignment_scope" {
   type        = string
   description = "The scope at which this assignment is assigned"
@@ -87,5 +86,3 @@ variable "requires_identity" {
   description = "True if the policy requires a managed identity, false otherwise"
   default     = false
 }
-
-
