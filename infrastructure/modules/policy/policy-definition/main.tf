@@ -1,4 +1,4 @@
-resource "azurerm_policy_definition" "item" {
+resource "azurerm_policy_definition" "definition" {
   name         = var.name
   policy_type  = coalesce(var.policy_type, "custom")
   mode         = coalesce(var.mode, "all")
@@ -17,4 +17,3 @@ resource "azurerm_policy_definition" "item" {
 locals {
   requires_identity = contains(["deployIfNotExists", "modify", "append"], var.policy_rule.then.effect)
 }
-

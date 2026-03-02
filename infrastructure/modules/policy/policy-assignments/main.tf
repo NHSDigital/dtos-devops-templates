@@ -1,6 +1,6 @@
 # Configure a policy assignment for a specific resource
 resource "azurerm_resource_policy_assignment" "res_assignment" {
-  count = var.resource_id != "" && local.resource_id_type == "resource" ? 1 : 0
+  count = var.resource_id != null && local.resource_id_type == "resource" ? 1 : 0
 
   name                 = var.assignment_name
   resource_id          = var.resource_id
@@ -19,7 +19,7 @@ resource "azurerm_resource_policy_assignment" "res_assignment" {
 
 # Configure a policy assignment for a specific resource group
 resource "azurerm_resource_group_policy_assignment" "rg_assignment" {
-  count = var.resource_id != "" && local.resource_id_type == "resource-group" ? 1 : 0
+  count = var.resource_id != null && local.resource_id_type == "resource-group" ? 1 : 0
 
   name                 = var.assignment_name
   resource_group_id    = var.resource_id
@@ -38,7 +38,7 @@ resource "azurerm_resource_group_policy_assignment" "rg_assignment" {
 
 # Configure a policy assignment for a specific resource group
 resource "azurerm_subscription_policy_assignment" "sub_assignment" {
-  count = var.resource_id != "" && local.resource_id_type == "subscription" ? 1 : 0
+  count = var.resource_id != null && local.resource_id_type == "subscription" ? 1 : 0
 
   name                 = var.assignment_name
   subscription_id      = var.resource_id
@@ -59,7 +59,7 @@ resource "azurerm_role_assignment" "role" {
   count = var.create_remediator_role ? 1 : 0
 
   scope                = var.policy_assignment_scope
-  principal_id         = var.policy_assignment_principal_id
+  principal_id         = var.policy_assignment_principal_id != null ? var.policy_assignment_principal_id : local.principal_id
   role_definition_name = "Resource Policy Contributor"
 
   condition         = <<EOT
