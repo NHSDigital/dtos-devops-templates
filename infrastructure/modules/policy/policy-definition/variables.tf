@@ -1,4 +1,3 @@
-
 variable "name" {
   type        = string
   description = "Policy definition name."
@@ -52,7 +51,8 @@ variable "policy_rule" {
   type = object({
     if = any
     then = object({
-      effect = string
+      effect  = string
+      details = optional(any)
     })
   })
   validation {
@@ -70,6 +70,7 @@ Azure Policy Rule object. Must follow Microsoft schema:
   },
   "then": {
     "effect": "deny | audit | modify | denyAction | append | auditIfNotExists | deployIfNotExists | disabled"
+    "details": <policy details>
   }
 }
 EOT
