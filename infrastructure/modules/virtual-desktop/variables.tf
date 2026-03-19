@@ -187,3 +187,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "principal_id" {
+  description = "The principal (object) ID to assign the 'Desktop Virtualization Power On Off Contributor' role to the host pool. If null, the role assignment will not be created. This maintains backward compatibility for existing deployments. The role is required for autoscaling but can be omitted if autoscaling is not used or the role is assigned manually."
+  type        = string
+  default     = null
+}

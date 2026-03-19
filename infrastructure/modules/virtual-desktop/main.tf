@@ -58,6 +58,14 @@ resource "azurerm_virtual_desktop_workspace_application_group_association" "this
   workspace_id         = azurerm_virtual_desktop_workspace.this.id
 }
 
+resource "azurerm_role_assignment" "avd_autoscale_hostpool" {
+  count = var.principal_id == null ? 0 : 1
+
+  scope                = azurerm_virtual_desktop_host_pool.this.id
+  role_definition_name = "Desktop Virtualization Power On Off Contributor"
+  principal_id         = var.principal_id
+}
+
 resource "azurerm_role_assignment" "rg_users" {
   scope                = var.resource_group_id
   role_definition_name = "Virtual Machine User Login"
