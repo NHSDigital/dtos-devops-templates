@@ -64,6 +64,11 @@ variable "containers" {
       protected_append_writes_all_enabled = optional(bool, false)
       protected_append_writes_enabled     = optional(bool, false)
     }))
+    object_replication = optional(object({
+      source_container_name          = string
+      destination_storage_account_id = string
+      destination_container_name     = string
+    }))
   }))
 }
 
