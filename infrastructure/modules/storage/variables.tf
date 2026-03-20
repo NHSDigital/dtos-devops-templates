@@ -54,7 +54,7 @@ variable "blob_properties_versioning_enabled" {
 }
 
 variable "containers" {
-  description = "Definition of Storage Containers configuration, including optional immutability policy settings."
+  description = "Definition of Storage Containers configuration, including optional immutability policy and object replication settings."
   type = map(object({
     container_name        = string
     container_access_type = string
@@ -64,6 +64,11 @@ variable "containers" {
       protected_append_writes_all_enabled = optional(bool, false)
       protected_append_writes_enabled     = optional(bool, false)
     }))
+    object_replication = optional(object({
+      source_container_name          = string
+      destination_storage_account_id = string
+      destination_container_name     = string
+    }), null)
   }))
 }
 
