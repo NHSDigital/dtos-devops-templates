@@ -16,6 +16,8 @@ resource "azurerm_storage_account" "storage_account" {
       days = var.blob_properties_delete_retention_policy
     }
     versioning_enabled = var.blob_properties_versioning_enabled
+    change_feed_enabled = var.blob_properties_change_feed_enabled
+    change_feed_retention_in_days = var.blob_properties_change_feed_retention_in_days
   }
 
   lifecycle {

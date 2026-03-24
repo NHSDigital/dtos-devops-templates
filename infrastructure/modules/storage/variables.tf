@@ -53,6 +53,18 @@ variable "blob_properties_versioning_enabled" {
   default     = false
 }
 
+variable "blob_properties_change_feed_enabled" {
+  type        = bool
+  description = "To enable change feed for blob."
+  default     = false
+}
+
+variable "blob_properties_change_feed_retention_in_days" {
+  type        = number
+  description = "The change feed retention in days for blob."
+  default     = null
+}
+
 variable "containers" {
   description = "Definition of Storage Containers configuration, including optional immutability policy settings."
   type = map(object({
