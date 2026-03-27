@@ -213,6 +213,12 @@ variable "share_properties_retention_policy_days" {
   default     = null
 }
 
+variable "shared_access_key_enabled" {
+  type        = bool
+  description = "Enables or disables Shared Key authorization for the storage account, defaults will be true."
+  default     = true
+}
+
 locals {
   alert_frequency_map = {
     PT5M  = "PT1M"

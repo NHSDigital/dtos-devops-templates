@@ -8,6 +8,7 @@ resource "azurerm_storage_account" "storage_account" {
   account_tier                  = var.account_tier
   public_network_access_enabled = var.public_network_access_enabled
   access_tier                   = var.access_tier
+  shared_access_key_enabled     = var.shared_access_key_enabled
 
   tags = var.tags
 
@@ -177,7 +178,7 @@ module "diagnostic-settings-sa-resource" {
   source = "../diagnostic-settings"
 
   name                       = "${azurerm_storage_account.storage_account.name}-diagnotic-setting-storage-account"
-  target_resource_id         = "${azurerm_storage_account.storage_account.id}"
+  target_resource_id         = azurerm_storage_account.storage_account.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_metric             = var.monitor_diagnostic_setting_storage_account_resource_metrics
 
