@@ -168,6 +168,14 @@ Type: `number`
 
 Default: `16`
 
+### <a name="input_principal_id"></a> [principal\_id](#input\_principal\_id)
+
+Description: The principal (object) ID to assign the 'Desktop Virtualization Power On Off Contributor' role to the host pool. If null, the role assignment will not be created. This maintains backward compatibility for existing deployments. The role is required for autoscaling but can be omitted if autoscaling is not used or the role is assigned manually.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_source_image_from_gallery"></a> [source\_image\_from\_gallery](#input\_source\_image\_from\_gallery)
 
 Description: n/a
@@ -279,6 +287,7 @@ Default: `null`
 The following resources are used by this module:
 
 - [azurerm_network_interface.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface) (resource)
+- [azurerm_role_assignment.avd_autoscale_hostpool](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
 - [azurerm_role_assignment.dag_admins](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
 - [azurerm_role_assignment.dag_users](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
 - [azurerm_role_assignment.rg_admins](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
