@@ -57,6 +57,18 @@ variable "action_group_id" {
   default     = null
 }
 
+variable "internet_ingestion_enabled" {
+  type        = bool
+  description = "Whether public internet ingestion is enabled for Application Insights."
+  default     = true
+}
+
+variable "internet_query_enabled" {
+  type        = bool
+  description = "Whether public internet querying is enabled for Application Insights."
+  default     = true
+}
+
 locals {
   alert_window_size = var.alert_frequency
 }
