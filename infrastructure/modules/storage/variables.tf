@@ -187,7 +187,12 @@ variable "queue_transactions_high_threshold" {
 variable "container_delete_retention_policy_days" {
   description = "Specifies the number of days that the container should be retained. Defaulting to 7 for baseline data protection."
   type        = number
-  default     = null
+  default     = 7
+
+  validation {
+    condition     = var.container_delete_retention_policy_days >= 1 && var.container_delete_retention_policy_days <= 365
+    error_message = "The container delete retention policy days must be a numerical value between 1 and 365."
+  }
 }
 
 variable "blob_properties_change_feed_enabled" {

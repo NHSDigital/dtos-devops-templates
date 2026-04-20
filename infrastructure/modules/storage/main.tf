@@ -17,8 +17,11 @@ resource "azurerm_storage_account" "storage_account" {
     }
     versioning_enabled = var.blob_properties_versioning_enabled
 
-    container_delete_retention_policy {
-      days = var.container_delete_retention_policy_days
+    dynamic "container_delete_retention_policy" {
+      for_each = var.container_delete_retention_policy_days != null ? [1] : []
+      content {
+        days = var.container_delete_retention_policy_days
+      }
     }
 
     change_feed_enabled = var.blob_properties_change_feed_enabled
