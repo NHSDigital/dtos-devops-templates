@@ -72,30 +72,9 @@ resource "azurerm_logic_app_action_custom" "post_to_slack" {
               "type": "header",
               "text": {
                 "type": "plain_text",
-                "text": "@{if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Resolved'), concat('✅ Resolved – ', triggerBody()?['data']?['essentials']?['alertRule']), concat('🚨 Alert – ', triggerBody()?['data']?['essentials']?['alertRule']))}",
+                "text": "@{concat(if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Resolved'), concat('✅ ', triggerBody()?['data']?['essentials']?['severity'], ' resolved'), concat('🚨 ', triggerBody()?['data']?['essentials']?['severity'], ' alert')), ' – ', triggerBody()?['data']?['essentials']?['alertRule'], if(empty(coalesce(triggerBody()?['data']?['essentials']?['configurationItems']?[0], '')), '', concat(' (resource: `', triggerBody()?['data']?['essentials']?['configurationItems']?[0], '`)')))}",
                 "emoji": true
               }
-            },
-            {
-              "type": "section",
-              "fields": [
-                {
-                  "type": "mrkdwn",
-                  "text": "@{concat('*Severity*\n', triggerBody()?['data']?['essentials']?['severity'])}"
-                },
-                {
-                  "type": "mrkdwn",
-                  "text": "@{concat('*Status*\n', triggerBody()?['data']?['essentials']?['monitorCondition'])}"
-                },
-                {
-                  "type": "mrkdwn",
-                  "text": "@{if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Resolved'), concat('*Resolved At*\n', triggerBody()?['data']?['essentials']?['resolvedDateTime']), concat('*Fired At*\n', triggerBody()?['data']?['essentials']?['firedDateTime']))}"
-                },
-                {
-                  "type": "mrkdwn",
-                  "text": "@{concat('*Resource*\n`', coalesce(triggerBody()?['data']?['essentials']?['configurationItems']?[0], 'N/A'), '`')}"
-                }
-              ]
             },
             {
               "type": "section",
