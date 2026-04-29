@@ -129,9 +129,25 @@ Type: `number`
 
 Default: `99`
 
+### <a name="input_blob_properties_change_feed_enabled"></a> [blob\_properties\_change\_feed\_enabled](#input\_blob\_properties\_change\_feed\_enabled)
+
+Description: Is the blob service properties for change feed events enabled? Required for Point-in-Time Restore.
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_blob_properties_delete_retention_policy"></a> [blob\_properties\_delete\_retention\_policy](#input\_blob\_properties\_delete\_retention\_policy)
 
 Description: The value set for blob properties delete retention policy.
+
+Type: `number`
+
+Default: `null`
+
+### <a name="input_blob_properties_restore_policy_days"></a> [blob\_properties\_restore\_policy\_days](#input\_blob\_properties\_restore\_policy\_days)
+
+Description: Specifies the number of days that the blob can be restored. Set to null to disable by default. Note: Must be less than blob and container delete retention policy days.
 
 Type: `number`
 
@@ -144,6 +160,14 @@ Description: To enable versioning for blob.
 Type: `bool`
 
 Default: `false`
+
+### <a name="input_container_delete_retention_policy_days"></a> [container\_delete\_retention\_policy\_days](#input\_container\_delete\_retention\_policy\_days)
+
+Description: Specifies the number of days that the container should be retained. Defaulting to 7 for baseline data protection.
+
+Type: `number`
+
+Default: `7`
 
 ### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
 
@@ -198,6 +222,22 @@ Description: List of RBAC roles to assign to the Storage Account.
 Type: `list(string)`
 
 Default: `[]`
+
+### <a name="input_share_properties_retention_policy_days"></a> [share\_properties\_retention\_policy\_days](#input\_share\_properties\_retention\_policy\_days)
+
+Description: Specifies the number of days that the file share should be retained. Set to null to disable by default, or provide a number to enable.
+
+Type: `number`
+
+Default: `null`
+
+### <a name="input_shared_access_key_enabled"></a> [shared\_access\_key\_enabled](#input\_shared\_access\_key\_enabled)
+
+Description: Enables or disables Shared Key authorization for the storage account, defaults will be true.
+
+Type: `bool`
+
+Default: `true`
 
 ### <a name="input_storage_account_service"></a> [storage\_account\_service](#input\_storage\_account\_service)
 
