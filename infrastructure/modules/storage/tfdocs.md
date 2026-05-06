@@ -6,7 +6,7 @@ The following input variables are required:
 
 ### <a name="input_containers"></a> [containers](#input\_containers)
 
-Description: Definition of Storage Containers configuration, including optional immutability policy settings.
+Description: Definition of Storage Containers configuration, including optional immutability policy and object replication settings.
 
 Type:
 
@@ -20,6 +20,11 @@ map(object({
       protected_append_writes_all_enabled = optional(bool, false)
       protected_append_writes_enabled     = optional(bool, false)
     }))
+    object_replication = optional(object({
+      source_container_name          = string
+      destination_storage_account_id = string
+      destination_container_name     = string
+    }), null)
   }))
 ```
 
@@ -347,5 +352,6 @@ The following resources are used by this module:
 - [azurerm_storage_account.storage_account](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) (resource)
 - [azurerm_storage_container.container](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) (resource)
 - [azurerm_storage_container_immutability_policy.policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container_immutability_policy) (resource)
+- [azurerm_storage_object_replication.object_replication](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_object_replication) (resource)
 - [azurerm_storage_queue.queue](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_queue) (resource)
 - [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)

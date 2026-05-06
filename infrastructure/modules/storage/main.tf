@@ -80,6 +80,25 @@ resource "azurerm_storage_queue" "queue" {
   depends_on = [module.private_endpoint_queue_storage]
 }
 
+resource "azurerm_storage_object_replication" "object_replication" {
+  for_each = local.containers_with_replication
+
+  source_storage_account_id      = azurerm_storage_account.storage_account.id
+  destination_storage_account_id = each.value.object_replication.destination_storage_account_id
+
+  rules {
+    source_container_name      = each.value.object_replication.source_container_name
+    destination_container_name = each.value.object_replication.destination_container_name
+  }
+}
+
+locals {
+  containers_with_replication = {
+    for key, container in var.containers :
+    key => container
+    if container.object_replication != null
+  }
+}
 
 /* --------------------------------------------------------------------------------------------------
   Private Endpoint Configuration
