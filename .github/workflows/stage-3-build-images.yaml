@@ -222,7 +222,7 @@ jobs:
           zip "${SBOM_REPOSITORY_REPORT}.json.zip" "${SBOM_REPOSITORY_REPORT}.json"
 
       - name: Upload SBOM report as an artefact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.SBOM_REPOSITORY_REPORT }}.json.zip
           path: ./${{ env.SBOM_REPOSITORY_REPORT }}.json.zip
@@ -235,14 +235,14 @@ jobs:
           zip ${VULNERABILITIES_REPOSITORY_REPORT}.json.zip ${VULNERABILITIES_REPOSITORY_REPORT}.json
 
       - name: Upload vulnerabilities report as an artefact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.VULNERABILITIES_REPOSITORY_REPORT }}.json.zip
           path: ./${{ env.VULNERABILITIES_REPOSITORY_REPORT }}.json.zip
           retention-days: 21
 
       - name: Upload vulnerabilities summary report as an artefact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.VULNERABILITIES_SUMMARY_LOGFILE }}
           path: ./${{ env.VULNERABILITIES_SUMMARY_LOGFILE }}
@@ -267,13 +267,13 @@ jobs:
           zip vulnerabilities-repository-report-${{ needs.build-and-push.outputs.PR_NUM_TAG }}.zip downloaded-artifacts/**/*vulnerabilities-summary*.txt
 
       - name: Upload sbom zip file
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: aggregated-sbom-repository-report-${{ needs.build-and-push.outputs.PR_NUM_TAG }}.zip
           path: sbom-repository-report-${{ needs.build-and-push.outputs.PR_NUM_TAG }}.zip
 
       - name: Upload repository zip file
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: aggregated-vulnerabilities-repository-report-${{ needs.build-and-push.outputs.PR_NUM_TAG }}.zip
           path: vulnerabilities-repository-report-${{ needs.build-and-push.outputs.PR_NUM_TAG }}.zip
