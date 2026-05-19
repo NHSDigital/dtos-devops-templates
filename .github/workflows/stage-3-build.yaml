@@ -54,13 +54,13 @@ jobs:
       pr_num_tag: ${{ steps.tags.outputs.pr_num_tag }}
       short_commit_hash: ${{ steps.tags.outputs.short_commit_hash }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           # to allow git diff between HEAD and the previous commit to main branch
           fetch-depth: 2
 
       - name: Checkout dtos-devops-templates repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
@@ -116,13 +116,13 @@ jobs:
       matrix:
         function: ${{ fromJSON(needs.containers-to-build.outputs.containers) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 1
           submodules: true
 
       - name: Checkout dtos-devops-templates
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
@@ -202,13 +202,13 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           # to allow git diff between HEAD and the previous commit to main branch
           fetch-depth: 2
 
       - name: Checkout dtos-devops-templates repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: NHSDigital/dtos-devops-templates
           path: templates
