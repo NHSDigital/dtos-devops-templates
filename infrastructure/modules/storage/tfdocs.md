@@ -126,6 +126,14 @@ Type: `string`
 
 Default: `"PT5M"`
 
+### <a name="input_allow_nested_items_to_be_public"></a> [allow\_nested\_items\_to\_be\_public](#input\_allow\_nested\_items\_to\_be\_public)
+
+Description: Allows or disallows public access to nested items within a container, such as blobs, when the container itself is public. Defaults to false.
+
+Type: `bool`
+
+Default: `false`
+
 ### <a name="input_availability_low_threshold"></a> [availability\_low\_threshold](#input\_availability\_low\_threshold)
 
 Description: This will alert of storage queue transactions is higher that given value, default will be 99.
@@ -238,7 +246,7 @@ Default: `null`
 
 ### <a name="input_shared_access_key_enabled"></a> [shared\_access\_key\_enabled](#input\_shared\_access\_key\_enabled)
 
-Description: Enables or disables Shared Key authorization for the storage account, defaults will be true.
+Description: Enables or disables Shared Key authorization for the storage account. Defaults to true. If set to false, access must be authenticated using Microsoft Entra ID (Azure AD). Terraform deployments should configure the AzureRM provider with `storage_use_azuread = true` to allow storage data-plane operations without using storage account access keys.
 
 Type: `bool`
 

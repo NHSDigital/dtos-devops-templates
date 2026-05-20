@@ -81,7 +81,6 @@ resource "azurerm_container_app" "main" {
     }
   }
 
-
   dynamic "secret" {
     for_each = var.secret_variables
     content {
