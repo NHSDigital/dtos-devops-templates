@@ -161,6 +161,24 @@ variable "time_window" {
   default     = 30
 }
 
+variable "container_registry_server" {
+  type        = string
+  description = "Container registry hostname (for example ghcr.io)"
+  default     = null
+}
+
+variable "container_registry_username" {
+  type        = string
+  description = "Username used to authenticate to the container registry"
+  default     = null
+}
+
+variable "container_registry_secret_uri" {
+  type        = string
+  description = "Key Vault secret URI containing the registry password or token"
+  default     = null
+}
+
 locals {
   memory = "${var.memory}Gi"
   cpu    = var.memory / 2

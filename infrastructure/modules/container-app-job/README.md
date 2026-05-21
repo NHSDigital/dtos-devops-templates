@@ -70,3 +70,25 @@ module "job" {
   fetch_secrets_from_app_key_vault = true
 }
 ```
+
+## Generic private registry authentication
+
+The module can authenticate to any private container registry by providing the registry server URL, username and a Key Vault secret URI containing the password. The module will create a container registry credential in the container app referencing the Key Vault secret for secure authentication.
+
+Example:
+```hcl
+module "container-app-job" {
+
+  source = "../../../dtos-devops-templates/infrastructure/modules/container-app-job"
+
+  name                         = "ca-workload-name-${var.environment}"
+  resource_group_name          = var.resource_group_name
+  location                     = var.location
+  container_app_environment_id = module.container-app-environment.id
+
+  container_registry_server     = "ghcr.io"
+  container_registry_username   = "github-username"
+  container_registry_secret_uri = module.app-key-vault.secrets["ghcr-token"].versionless_id
+
+}
+```
