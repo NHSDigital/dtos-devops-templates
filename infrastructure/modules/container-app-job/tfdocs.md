@@ -88,6 +88,30 @@ Type: `list(string)`
 
 Default: `null`
 
+### <a name="input_container_registry_secret_uri"></a> [container\_registry\_secret\_uri](#input\_container\_registry\_secret\_uri)
+
+Description: Key Vault secret URI containing the registry password or token
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_container_registry_server"></a> [container\_registry\_server](#input\_container\_registry\_server)
+
+Description: Container registry hostname (for example ghcr.io)
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_container_registry_username"></a> [container\_registry\_username](#input\_container\_registry\_username)
+
+Description: Username used to authenticate to the container registry
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_cron_expression"></a> [cron\_expression](#input\_cron\_expression)
 
 Description: Cron formatted repeating schedule of a Cron Job eg. '0 5 * * *'. Optional.

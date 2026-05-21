@@ -161,16 +161,22 @@ variable "time_window" {
   default     = 30
 }
 
-variable "ghcr_username" {
+variable "container_registry_server" {
   type        = string
-  description = ""
-  default = null
+  description = "Container registry hostname (for example ghcr.io)"
+  default     = null
 }
 
-variable "ghcr_pat_secret_uri" {
+variable "container_registry_username" {
   type        = string
-  description = "URI of the GitHub Container Registry Personal Access Token stored in Key Vault. This is used to authenticate to GHCR if var.docker_image is hosted there. The secret must be in the format 'username:token'."
-  default = null
+  description = "Username used to authenticate to the container registry"
+  default     = null
+}
+
+variable "container_registry_secret_uri" {
+  type        = string
+  description = "Key Vault secret URI containing the registry password or token"
+  default     = null
 }
 
 locals {
