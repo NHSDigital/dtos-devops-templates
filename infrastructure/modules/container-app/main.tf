@@ -142,6 +142,25 @@ resource "azurerm_container_app" "main" {
     }
   }
 
+    dynamic "registry" {
+    for_each = var.acr_login_server == null ? [] : [1]
+
+    content {
+      server   = var.acr_login_server
+      identity = var.acr_managed_identity_id
+    }
+  }
+
+    dynamic "githubToken" {
+    for_each = var.acr_login_server == null ? [] : [1]
+
+    content {
+      server   = var.acr_login_server
+      username = var.github_token_username
+      password = var.github_token_password
+    }
+  }
+
   dynamic "ingress" {
     for_each = var.is_web_app ? [1] : []
 
