@@ -161,6 +161,18 @@ variable "time_window" {
   default     = 30
 }
 
+variable "ghcr_username" {
+  type        = string
+  description = ""
+  default = null
+}
+
+variable "ghcr_pat_secret_uri" {
+  type        = string
+  description = "URI of the GitHub Container Registry Personal Access Token stored in Key Vault. This is used to authenticate to GHCR if var.docker_image is hosted there. The secret must be in the format 'username:token'."
+  default = null
+}
+
 locals {
   memory = "${var.memory}Gi"
   cpu    = var.memory / 2
