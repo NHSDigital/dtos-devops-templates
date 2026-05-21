@@ -33,7 +33,7 @@ runs:
         bash ${GITHUB_WORKSPACE}/templates/scripts/reports/create-sbom-report.sh
 
     - name: Upload SBOM report as an artefact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.image_name }}-sbom
         path: ${{ inputs.image_name }}-sbom.json
