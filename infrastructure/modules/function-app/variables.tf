@@ -315,6 +315,30 @@ variable "enable_alerting" {
   default     = false
 }
 
+variable "health_check_alert_enabled" {
+  type        = bool
+  description = "Whether to create a Log Analytics alert for health check failures. Requires enable_alerting = true and health_check_path to be set."
+  default     = false
+}
+
+variable "health_check_alert_threshold" {
+  type        = number
+  description = "Number of health check failures in the evaluation window to trigger the alert."
+  default     = 10
+}
+
+variable "health_check_alert_evaluation_frequency" {
+  type        = string
+  description = "How often the scheduled query rule is evaluated. ISO 8601 duration (e.g., PT5M)."
+  default     = "PT5M"
+}
+
+variable "health_check_alert_window_duration" {
+  type        = string
+  description = "The time window over which health check failures are counted. ISO 8601 duration (e.g., PT5M)."
+  default     = "PT5M"
+}
+
 variable "log_analytics_workspace_id" {
   type        = string
   description = "id of the log analytics workspace to send resource logging to via diagnostic settings"
