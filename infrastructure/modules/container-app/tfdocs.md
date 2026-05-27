@@ -96,6 +96,30 @@ Type: `list(string)`
 
 Default: `[]`
 
+### <a name="input_container_registry_secret_uri"></a> [container\_registry\_secret\_uri](#input\_container\_registry\_secret\_uri)
+
+Description: Key Vault secret URI containing the registry password or token
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_container_registry_server"></a> [container\_registry\_server](#input\_container\_registry\_server)
+
+Description: Container registry hostname (for example ghcr.io)
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_container_registry_username"></a> [container\_registry\_username](#input\_container\_registry\_username)
+
+Description: Username used to authenticate to the container registry
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
 
 Description: Whether monitoring and alerting is enabled for the PostgreSQL Flexible Server.

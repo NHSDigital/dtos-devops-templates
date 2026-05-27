@@ -40,22 +40,22 @@ resource "azurerm_container_app_job" "this" {
   }
 
   dynamic "secret" {
-    for_each = var.ghcr_pat_secret_uri != null ? [1] : []
+    for_each = var.container_registry_secret_uri != null ? [1] : []
 
     content {
-      name                = "ghcr-token"
-      key_vault_secret_id = var.ghcr_pat_secret_uri
+      name                = "password"
+      key_vault_secret_id = var.container_registry_secret_uri
       identity            = module.container_app_identity.id
     }
   }
 
   dynamic "registry" {
-    for_each = var.ghcr_pat_secret_uri != null ? [1] : []
+    for_each = var.container_registry_secret_uri != null ? [1] : []
 
     content {
-      server               = "ghcr.io"
-      username             = var.ghcr_username
-      password_secret_name = "ghcr-token"
+      server               = var.container_registry_server
+      username             = var.container_registry_username
+      password_secret_name = "password"
     }
   }
 

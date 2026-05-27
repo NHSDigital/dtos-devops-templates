@@ -153,3 +153,26 @@ We will allow using the previously pinned "4.34.0" or newer, as defined in the c
 New version definition is `version = ">= 4.34.0"`
 
 More on the provider version constraints in terraform modules can be found [here](https://developer.hashicorp.com/terraform/language/modules/develop/providers#provider-version-constraints-in-modules).
+
+
+## Generic private registry authentication
+
+The module can authenticate to any private container registry by providing the registry server URL, username and a Key Vault secret URI containing the password. The module will create a container registry credential in the container app referencing the Key Vault secret for secure authentication.
+
+Example:
+```hcl
+module "container-app" {
+
+  source = "../../../dtos-devops-templates/infrastructure/modules/container-app"
+
+  name                         = "ca-workload-name-${var.environment}"
+  resource_group_name          = var.resource_group_name
+  location                     = var.location
+  container_app_environment_id = module.container-app-environment.id
+
+  container_registry_server     = "ghcr.io"
+  container_registry_username   = "github-username"
+  container_registry_secret_uri = module.app-key-vault.secrets["ghcr-token"].versionless_id
+
+}
+```
