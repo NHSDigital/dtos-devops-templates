@@ -253,7 +253,7 @@ jobs:
     needs: build-and-push
     steps:
       - name: Download SBOM JSON artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: ./downloaded-artifacts
 
