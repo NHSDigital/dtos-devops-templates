@@ -85,3 +85,6 @@ tools/scan-tags-compliance/scan-results/scan_results.html
 .idea/dtos-devops-templates.iml
 .idea/vcs.xml
 .idea/inspectionProfiles/profiles_settings.xml
+
+# Modules test
+infrastructure/modules/api-management/provider_test.tf
