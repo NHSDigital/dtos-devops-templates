@@ -220,8 +220,14 @@ variable "share_properties_retention_policy_days" {
 
 variable "shared_access_key_enabled" {
   type        = bool
-  description = "Enables or disables Shared Key authorization for the storage account, defaults will be true."
+  description = "Enables or disables Shared Key authorization for the storage account. Defaults to true. If set to false, access must be authenticated using Microsoft Entra ID (Azure AD). Terraform deployments should configure the AzureRM provider with `storage_use_azuread = true` to allow storage data-plane operations without using storage account access keys."
   default     = true
+}
+
+variable "allow_nested_items_to_be_public" {
+  type        = bool
+  description = "Allows or disallows public access to nested items within a container, such as blobs, when the container itself is public. Defaults to false."
+  default     = false
 }
 
 locals {

@@ -10,6 +10,9 @@ resource "azurerm_storage_account" "storage_account" {
   access_tier                   = var.access_tier
   shared_access_key_enabled     = var.shared_access_key_enabled
 
+  # Public access controls
+  allow_nested_items_to_be_public = var.allow_nested_items_to_be_public
+
   tags = var.tags
 
   blob_properties {
