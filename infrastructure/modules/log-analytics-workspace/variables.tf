@@ -42,3 +42,9 @@ variable "monitor_diagnostic_setting_log_analytics_workspace_metrics" {
   type        = list(string)
   description = "Controls what metrics will be enabled for the Long Analytics Workspace"
 }
+
+variable "ignore_data_collection_rule_id" {
+  type        = bool
+  default     = false
+  description = "When true, ignores changes to data_collection_rule_id so it can be managed externally (e.g. by azapi_update_resource for workspace-transform DCRs)."
+}
