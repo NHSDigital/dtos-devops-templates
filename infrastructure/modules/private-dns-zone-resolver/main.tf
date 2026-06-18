@@ -18,6 +18,7 @@ resource "azurerm_private_dns_resolver_inbound_endpoint" "private_dns_resolver_i
 
   ip_configurations {
     private_ip_allocation_method = var.inbound_endpoint_config.private_ip_allocation_method
+    private_ip_address           = var.inbound_endpoint_config.private_ip_allocation_method == "Static" ? var.inbound_endpoint_config.private_ip_address : null
     subnet_id                    = var.inbound_endpoint_config.subnet_id
   }
 }

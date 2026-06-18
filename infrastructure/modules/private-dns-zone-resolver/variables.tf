@@ -23,11 +23,23 @@ variable "inbound_endpoint_config" {
     name                         = string
     private_ip_allocation_method = string
     subnet_id                    = string
+    private_ip_address           = optional(string, null)
   })
   default = {
     name                         = ""
-    private_ip_allocation_method = ""
+    private_ip_allocation_method = "Dynamic"
     subnet_id                    = ""
+    private_ip_address           = null
+  }
+
+  validation {
+    condition     = contains(["Static", "Dynamic"], var.inbound_endpoint_config.private_ip_allocation_method)
+    error_message = "inbound_endpoint_config.private_ip_allocation_method must be either 'Static' or 'Dynamic'."
+  }
+
+  validation {
+    condition     = !(var.inbound_endpoint_config.private_ip_allocation_method == "Static" && var.inbound_endpoint_config.private_ip_address == null)
+    error_message = "inbound_endpoint_config.private_ip_address must be provided when private_ip_allocation_method is set to 'Static'."
   }
 }
 
