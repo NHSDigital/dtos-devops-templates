@@ -34,7 +34,7 @@ The following input variables are optional (have default values):
 
 ### <a name="input_inbound_endpoint_config"></a> [inbound\_endpoint\_config](#input\_inbound\_endpoint\_config)
 
-Description: The configuration for the inbound endpoint.
+Description: The configuration for the inbound endpoint. `private_ip_allocation_method` must be either `"Static"` or `"Dynamic"`. `private_ip_address` is optional but **required** when `private_ip_allocation_method` is set to `"Static"`.
 
 Type:
 
@@ -43,6 +43,7 @@ object({
     name                         = string
     private_ip_allocation_method = string
     subnet_id                    = string
+    private_ip_address           = optional(string, null)
   })
 ```
 
@@ -51,8 +52,9 @@ Default:
 ```json
 {
   "name": "",
-  "private_ip_allocation_method": "",
-  "subnet_id": ""
+  "private_ip_allocation_method": "Dynamic",
+  "subnet_id": "",
+  "private_ip_address": null
 }
 ```
 
