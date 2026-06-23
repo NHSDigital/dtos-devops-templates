@@ -78,7 +78,10 @@ resource "azurerm_linux_function_app" "function_app" {
 
   # To prevent Terraform removing 'hidden-link:' tagging created automatically by AzureRM
   lifecycle {
-    ignore_changes = [tags]
+    ignore_changes = [
+      tags,
+      site_config[0].app_service_logs
+    ]
   }
 }
 
