@@ -116,7 +116,7 @@ Type: `bool`
 
 Default: `false`
 
-### <a name="input_enable_rbac_authorization"></a> [enable\_rbac\_authorization](#input\_enable\_rbac\_authorization)
+### <a name="input_rbac_authorization_enabled"></a> [rbac\_authorization\_enabled](#input\_rbac\_authorization\_enabled)
 
 Description: n/a
 
