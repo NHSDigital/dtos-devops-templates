@@ -34,16 +34,15 @@ on:
 
 jobs:
   scan-secrets:
-    name: "Scan secrets"
+    name: Scan secrets
     runs-on: ubuntu-latest
-    timeout-minutes: 2
     steps:
-      - name: "Checkout code"
+      - name: Checkout code
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0 # Full history is needed to scan all commits
-      - name: "Scan secrets"
-        uses: ./.github/actions/scan-secrets
+          fetch-depth: 0x7fffffff # INFINITE_DEPTH
+      - name: Scan secrets
+        uses: NHSDigital/nhs-github-actions/scan-secrets@main
   check-file-format:
     name: "Check file format"
     runs-on: ubuntu-latest
