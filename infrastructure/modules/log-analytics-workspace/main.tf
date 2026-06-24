@@ -12,6 +12,13 @@ resource "azurerm_log_analytics_workspace" "log_analytics_workspace" {
   }
 
   tags = var.tags
+
+  # When data_collection_rule_id is managed externally (e.g. by azapi_update_resource
+  # to break a circular dependency with a workspace-transform DCR), changes to it
+  # must be ignored to prevent plan/apply churn.
+  lifecycle {
+    ignore_changes = [data_collection_rule_id]
+  }
 }
 
 /* --------------------------------------------------------------------------------------------------
