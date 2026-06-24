@@ -19,12 +19,6 @@ variable "log_analytics_workspace_id" {
   default     = null
 }
 
-variable "metric_enabled" {
-  type        = bool
-  description = "Enables retention for diagnostic settings metric"
-  default     = true
-}
-
 variable "monitor_diagnostic_setting_frontdoor_enabled_logs" {
   type        = list(string)
   description = "Controls which logs will be enabled for the Front Door profile"
