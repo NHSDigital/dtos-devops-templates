@@ -1,5 +1,5 @@
 output "policy_definition_id" {
-  value       = azurerm_policy_definition.item.id
+  value       = azurerm_policy_definition.definition.id
   description = "The ID of the created policy definition."
 }
 

@@ -1,6 +1,6 @@
 # Configure a policy assignment for a specific resource
 resource "azurerm_resource_policy_assignment" "res_assignment" {
-  count = var.resource_id != "" && local.resource_id_type == "resource" ? 1 : 0
+  count = var.resource_id != null && local.resource_id_type == "resource" ? 1 : 0
 
   name                 = var.assignment_name
   resource_id          = var.resource_id
@@ -19,7 +19,7 @@ resource "azurerm_resource_policy_assignment" "res_assignment" {
 
 # Configure a policy assignment for a specific resource group
 resource "azurerm_resource_group_policy_assignment" "rg_assignment" {
-  count = var.resource_id != "" && local.resource_id_type == "resource-group" ? 1 : 0
+  count = var.resource_id != null && local.resource_id_type == "resource-group" ? 1 : 0
 
   name                 = var.assignment_name
   resource_group_id    = var.resource_id
@@ -38,13 +38,15 @@ resource "azurerm_resource_group_policy_assignment" "rg_assignment" {
 
 # Configure a policy assignment for a specific resource group
 resource "azurerm_subscription_policy_assignment" "sub_assignment" {
-  count = var.resource_id != "" && local.resource_id_type == "subscription" ? 1 : 0
+  count = var.resource_id != null && local.resource_id_type == "subscription" ? 1 : 0
 
   name                 = var.assignment_name
   subscription_id      = var.resource_id
   policy_definition_id = var.policy_definition_id
   enforce              = var.enforce_policy
   location             = var.policy_location
+
+  parameters = var.parameters != null ? jsonencode(var.parameters) : null
 
   dynamic "identity" {
     for_each = var.requires_identity ? [1] : []
@@ -59,7 +61,7 @@ resource "azurerm_role_assignment" "role" {
   count = var.create_remediator_role ? 1 : 0
 
   scope                = var.policy_assignment_scope
-  principal_id         = var.policy_assignment_principal_id
+  principal_id         = var.policy_assignment_principal_id != null ? var.policy_assignment_principal_id : local.principal_id
   role_definition_name = "Resource Policy Contributor"
 
   condition         = <<EOT
@@ -81,11 +83,14 @@ resource "azurerm_role_assignment" "role" {
 
 # Configure diagnostic settings for the resource (group) policy assignment
 module "policy_assignment_logs" {
+  count = local.resource_id_type != "subscription" ? 1 : 0
+
   source                     = "../../diagnostic-settings"
   name                       = "policy-logs"
   target_resource_id         = local.assignment_id
   log_analytics_workspace_id = var.log_analytics_wks_id
   enabled_log                = var.enabled_log
+  enabled_metric             = var.enabled_metric
 }
 
 locals {
