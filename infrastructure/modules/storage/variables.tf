@@ -125,6 +125,18 @@ variable "public_network_access_enabled" {
   default     = false
 }
 
+variable "network_rules" {
+  description = "Network rules for the storage account firewall."
+  type = object({
+    default_action             = optional(string, "Deny")
+    bypass                     = optional(list(string), [])
+    ip_rules                   = optional(list(string), [])
+    virtual_network_subnet_ids = optional(list(string), [])
+  })
+  nullable = true
+  default  = null
+}
+
 variable "queues" {
   description = "List of Storage Queues to create."
   type        = list(string)

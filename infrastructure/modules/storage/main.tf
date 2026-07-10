@@ -10,6 +10,16 @@ resource "azurerm_storage_account" "storage_account" {
   access_tier                   = var.access_tier
   shared_access_key_enabled     = var.shared_access_key_enabled
 
+  dynamic "network_rules" {
+    for_each = var.network_rules != null ? [var.network_rules] : []
+    content {
+      default_action             = lookup(network_rules.value, "default_action", "Deny")
+      bypass                     = lookup(network_rules.value, "bypass", [])
+      ip_rules                   = lookup(network_rules.value, "ip_rules", [])
+      virtual_network_subnet_ids = lookup(network_rules.value, "virtual_network_subnet_ids", [])
+    }
+  }
+
   # Public access controls
   allow_nested_items_to_be_public = var.allow_nested_items_to_be_public
 
