@@ -111,3 +111,21 @@ variable "private_endpoint_properties" {
     error_message = "Both private_dns_zone_ids and private_endpoint_subnet_id must be provided if private_endpoint_enabled is true."
   }
 }
+
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "id of the log analytics workspace to send resource logging to via diagnostic settings. If omitted, Diagnostic Settings will not be enabled."
+  default     = null
+}
+
+variable "monitor_diagnostic_setting_servicebus_metrics" {
+  type        = list(string)
+  description = "controls what metrics will be enabled for the service bus"
+  default     = []
+}
+
+variable "monitor_diagnostic_setting_servicebus_enabled_logs" {
+  type        = list(string)
+  description = "controls what logs will be enabled for the service bus"
+  default     = []
+}
