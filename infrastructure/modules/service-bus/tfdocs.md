@@ -52,6 +52,30 @@ Type: `string`
 
 Default: `"uksouth"`
 
+### <a name="input_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#input\_log\_analytics\_workspace\_id)
+
+Description: id of the log analytics workspace to send resource logging to via diagnostic settings. If omitted, Diagnostic Settings will not be enabled.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_monitor_diagnostic_setting_servicebus_enabled_logs"></a> [monitor\_diagnostic\_setting\_servicebus\_enabled\_logs](#input\_monitor\_diagnostic\_setting\_servicebus\_enabled\_logs)
+
+Description: controls what logs will be enabled for the service bus
+
+Type: `list(string)`
+
+Default: `[]`
+
+### <a name="input_monitor_diagnostic_setting_servicebus_metrics"></a> [monitor\_diagnostic\_setting\_servicebus\_metrics](#input\_monitor\_diagnostic\_setting\_servicebus\_metrics)
+
+Description: controls what metrics will be enabled for the service bus
+
+Type: `list(string)`
+
+Default: `[]`
+
 ### <a name="input_partitioning_enabled"></a> [partitioning\_enabled](#input\_partitioning\_enabled)
 
 Description: Boolean flag which controls whether to enable the topic to be partitioned across multiple message brokers. Changing this forces a new resource to be created.
@@ -118,6 +142,12 @@ Default: `{}`
 ## Modules
 
 The following Modules are called:
+
+### <a name="module_diagnostic-settings"></a> [diagnostic-settings](#module\_diagnostic-settings)
+
+Source: ../diagnostic-settings
+
+Version:
 
 ### <a name="module_private_endpoint_service_bus_namespace"></a> [private\_endpoint\_service\_bus\_namespace](#module\_private\_endpoint\_service\_bus\_namespace)
 

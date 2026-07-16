@@ -61,3 +61,15 @@ module "private_endpoint_service_bus_namespace" {
 
   tags = var.tags
 }
+
+module "diagnostic-settings" {
+  source = "../diagnostic-settings"
+
+  count = var.log_analytics_workspace_id != null ? 1 : 0
+
+  name                       = "${var.servicebus_namespace_name}-diagnostic-setting"
+  target_resource_id         = azurerm_servicebus_namespace.this.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  enabled_metric             = var.monitor_diagnostic_setting_servicebus_metrics
+  enabled_log                = var.monitor_diagnostic_setting_servicebus_enabled_logs
+}
