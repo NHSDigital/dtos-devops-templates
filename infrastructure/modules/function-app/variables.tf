@@ -45,6 +45,16 @@ variable "assigned_identity_ids" {
   default     = []
 }
 
+variable "auth_settings_v2" {
+  description = "Optional Easy Auth (App Service Authentication) configuration. When null (default), authentication is not configured and the Function App is left unauthenticated at the platform layer."
+  type = object({
+    client_id            = string
+    tenant_auth_endpoint = string # e.g. https://login.microsoftonline.com/<tenant_id>/v2.0
+    allowed_audiences    = list(string)
+  })
+  default = null
+}
+
 variable "cont_registry_use_mi" {
   description = "Should connections for Azure Container Registry use Managed Identity."
   default     = false

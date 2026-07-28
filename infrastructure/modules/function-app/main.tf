@@ -25,6 +25,28 @@ resource "azurerm_linux_function_app" "function_app" {
     identity_ids = length(var.assigned_identity_ids) > 0 ? var.assigned_identity_ids : null
   }
 
+  # Easy Auth (App Service Authentication). Only configured when var.auth_settings_v2 is provided;
+  # otherwise the block is omitted entirely and the Function App remains unauthenticated at the platform layer.
+  dynamic "auth_settings_v2" {
+    for_each = var.auth_settings_v2 == null ? [] : [var.auth_settings_v2]
+    content {
+      auth_enabled           = true
+      require_authentication = true
+      unauthenticated_action = "Return401" # reject anonymous requests with HTTP 401
+      default_provider       = "azureactivedirectory"
+      require_https          = true
+
+      active_directory_v2 {
+        client_id                   = auth_settings_v2.value.client_id
+        tenant_auth_endpoint        = auth_settings_v2.value.tenant_auth_endpoint
+        allowed_audiences           = auth_settings_v2.value.allowed_audiences
+        www_authentication_disabled = false
+      }
+
+      login {}
+    }
+  }
+
   site_config {
     application_insights_connection_string        = var.ai_connstring
     always_on                                     = var.always_on
