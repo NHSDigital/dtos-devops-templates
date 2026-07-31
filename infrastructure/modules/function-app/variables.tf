@@ -51,6 +51,9 @@ variable "auth_settings_v2" {
     client_id            = string
     tenant_auth_endpoint = string # e.g. https://login.microsoftonline.com/<tenant_id>/v2.0
     allowed_audiences    = list(string)
+    # Optional "Allow requests from specific client applications" restriction. When set, only tokens
+    # issued to these client (application) IDs are accepted; empty means allow requests from any application.
+    allowed_applications = optional(list(string), [])
   })
   default = null
 }

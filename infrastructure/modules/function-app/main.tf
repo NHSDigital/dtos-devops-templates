@@ -40,6 +40,7 @@ resource "azurerm_linux_function_app" "function_app" {
         client_id                   = auth_settings_v2.value.client_id
         tenant_auth_endpoint        = auth_settings_v2.value.tenant_auth_endpoint
         allowed_audiences           = auth_settings_v2.value.allowed_audiences
+        allowed_applications        = auth_settings_v2.value.allowed_applications
         www_authentication_disabled = false
       }
 
