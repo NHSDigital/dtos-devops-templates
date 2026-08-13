@@ -28,6 +28,7 @@ steps:
         echo "TF_DIRECTORY: $(TF_DIRECTORY)"
         echo "SERVICE_CONNECTION: $(SERVICE_CONNECTION)"
         echo "TF_VAR_TARGET_SUBSCRIPTION_ID: $(TF_VAR_TARGET_SUBSCRIPTION_ID)"
+        echo "ENVIRONMENT: $(ENVIRONMENT)"
         echo "=============================================="
 
   - task: TerraformTaskV4@4
