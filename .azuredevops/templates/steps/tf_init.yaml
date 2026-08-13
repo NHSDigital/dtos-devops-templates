@@ -20,3 +20,21 @@ steps:
       backendAzureRmStorageAccountName: $(BACKEND_AZURE_STORAGE_ACCOUNT_NAME)
       backendAzureRmContainerName: $(BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME)
       backendAzureRmKey: $(BACKEND_AZURE_STORAGE_ACCOUNT_KEY)
+
+  - task: Bash@3
+    displayName: Print Terraform runtime variables
+    inputs:
+      targetType: inline
+      script: |
+        set -euo pipefail
+
+        echo "=== Terraform runtime variables after init ==="
+        echo "TF_VERSION: $(TF_VERSION)"
+        echo "TF_DIRECTORY: $(TF_DIRECTORY)"
+        echo "SERVICE_CONNECTION: $(SERVICE_CONNECTION)"
+        echo "BACKEND_AZURE_RESOURCE_GROUP_NAME: $(BACKEND_AZURE_RESOURCE_GROUP_NAME)"
+        echo "BACKEND_AZURE_STORAGE_ACCOUNT_NAME: $(BACKEND_AZURE_STORAGE_ACCOUNT_NAME)"
+        echo "BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME: $(BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME)"
+        echo "BACKEND_AZURE_STORAGE_ACCOUNT_KEY: $(BACKEND_AZURE_STORAGE_ACCOUNT_KEY)"
+        echo "TF_VAR_TARGET_SUBSCRIPTION_ID: $(TF_VAR_TARGET_SUBSCRIPTION_ID)"
+        echo "=============================================="

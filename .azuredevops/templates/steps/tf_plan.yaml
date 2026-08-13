@@ -16,6 +16,20 @@ steps:
       command: validate
       workingDirectory: $(TF_DIRECTORY)
 
+  - task: Bash@3
+    displayName: Print Terraform runtime variables before Plan
+    inputs:
+      targetType: inline
+      script: |
+        set -euo pipefail
+
+        echo "=== Terraform runtime variables before Plan ==="
+        echo "TF_VERSION: $(TF_VERSION)"
+        echo "TF_DIRECTORY: $(TF_DIRECTORY)"
+        echo "SERVICE_CONNECTION: $(SERVICE_CONNECTION)"
+        echo "TF_VAR_TARGET_SUBSCRIPTION_ID: $(TF_VAR_TARGET_SUBSCRIPTION_ID)"
+        echo "=============================================="
+
   - task: TerraformTaskV4@4
     name: TerraformPlan
     displayName: Terraform Plan - $(ENVIRONMENT) environment
