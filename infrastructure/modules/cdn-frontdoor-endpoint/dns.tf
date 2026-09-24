@@ -31,8 +31,13 @@ resource "azurerm_dns_txt_record" "challenge" {
   for_each = { for k, v in var.custom_domains : k => v if v.tls.certificate_type == "ManagedCertificate" }
 
   # If the host name is the same as the zone name, then it's the apex domain
-  # Apex domain requires _dnsauth. Subdomains require _dnsauth.<subdomain>.
-  name                = each.value.host_name == each.value.dns_zone_name ? "_dnsauth" : "_dnsauth.${each.value.host_name}"
+  # Apex domain requires _dnsauth. Subdomains require _dnsauth.<subdomain>
+  # The subdomain is the host name without the zone name suffix
+  name = (
+    each.value.host_name == each.value.dns_zone_name ?
+    "_dnsauth" :
+    "_dnsauth.${replace(each.value.host_name, ".${each.value.dns_zone_name}", "")}"
+  )
   zone_name           = each.value.dns_zone_name
   resource_group_name = each.value.dns_zone_rg_name
   ttl                 = 60
