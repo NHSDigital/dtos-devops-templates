@@ -118,6 +118,10 @@ while getopts ":s:d:e:fr:h" opt; do
       echo "ERROR: Invalid option: -$OPTARG" >&2
       usage
       ;;
+    *)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
   esac
 done
 
@@ -190,7 +194,7 @@ TARGET_AFD=""
 TARGET_RESOURCE_GROUP=""
 MATCHING_DOMAIN=""
 
-for AZURE_FRONT_DOOR in $AFD_LIST; do
+while IFS= read -r AZURE_FRONT_DOOR; do
 
   RESOURCE_GROUP=$(echo "$AZURE_FRONT_DOOR" | jq -rc '.resourceGroup')
   AFD_NAME=$(echo "$AZURE_FRONT_DOOR" | jq -rc '.name')
@@ -237,7 +241,7 @@ for AZURE_FRONT_DOOR in $AFD_LIST; do
 
   fi
 
-done
+done <<< "$AFD_LIST"
 
 ################################################################################
 # Make sure target domain was found
@@ -301,14 +305,21 @@ echo
 
 echo "Checking currently served TLS certificate..."
 
+SSL_TIMEOUT_SECONDS=60
+
 CERT_END_DATE=$(
-  echo | openssl s_client \
+  echo | timeout "${SSL_TIMEOUT_SECONDS}s" openssl s_client \
     -connect "${DOMAIN_NAME}:443" \
     -servername "${DOMAIN_NAME}" \
     2>/dev/null |
   openssl x509 -noout -enddate |
   cut -d= -f2
 )
+
+if [[ $? -eq 124 ]]; then
+    echo "ERROR: Timed out after ${SSL_TIMEOUT_SECONDS}s while retrieving TLS certificate."  >&2
+    exit 1
+fi
 
 if [[ -z "$CERT_END_DATE" ]]; then
   echo "ERROR: Unable to determine TLS certificate expiry." >&2
@@ -478,7 +489,7 @@ fi
 # Process DNS validation for Pending domains
 ################################################################################
 
-if [[ "$STATE" == "Pending" || "$STATE" == "PendingRevalidation" || "$STATE" == "InternalError" ]]; then
+if [[ "$STATE" == "Pending" || "$STATE" == "TimedOut" || "$STATE" == "PendingRevalidation" || "$STATE" == "InternalError" ]]; then
 
   echo
   echo "Processing DNS validation for $DOMAIN_NAME..."
