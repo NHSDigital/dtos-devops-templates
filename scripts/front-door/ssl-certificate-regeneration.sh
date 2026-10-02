@@ -190,7 +190,7 @@ TARGET_AFD=""
 TARGET_RESOURCE_GROUP=""
 MATCHING_DOMAIN=""
 
-for AZURE_FRONT_DOOR in $AFD_LIST; do
+while IFS= read -r AZURE_FRONT_DOOR; do
 
   RESOURCE_GROUP=$(echo "$AZURE_FRONT_DOOR" | jq -rc '.resourceGroup')
   AFD_NAME=$(echo "$AZURE_FRONT_DOOR" | jq -rc '.name')
@@ -237,7 +237,7 @@ for AZURE_FRONT_DOOR in $AFD_LIST; do
 
   fi
 
-done
+done <<< "$AFD_LIST"
 
 ################################################################################
 # Make sure target domain was found
@@ -478,7 +478,7 @@ fi
 # Process DNS validation for Pending domains
 ################################################################################
 
-if [[ "$STATE" == "Pending" || "$STATE" == "PendingRevalidation" || "$STATE" == "InternalError" ]]; then
+if [[ "$STATE" == "Pending" || "$STATE" == "TimedOut" || "$STATE" == "PendingRevalidation" || "$STATE" == "InternalError" ]]; then
 
   echo
   echo "Processing DNS validation for $DOMAIN_NAME..."
