@@ -60,7 +60,6 @@ module "diagnostic-settings" {
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enabled_log                = var.monitor_diagnostic_setting_keyvault_enabled_logs
   enabled_metric             = var.monitor_diagnostic_setting_keyvault_metrics
-  metric_enabled             = var.metric_enabled
 }
 
 data "azurerm_client_config" "current" {}
