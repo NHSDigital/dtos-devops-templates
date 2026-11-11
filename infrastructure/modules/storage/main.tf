@@ -48,7 +48,9 @@ resource "azurerm_storage_account" "storage_account" {
   }
 
   lifecycle {
-    ignore_changes = [tags]
+    ignore_changes = [tags,account_replication_type]
+
+    prevent_destroy = true 
 
     # Validation 1: Prevent the Change Feed / Restore Policy mismatch
     precondition {
