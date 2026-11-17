@@ -157,6 +157,22 @@ Type: `number`
 
 Default: `80`
 
+### <a name="input_alert_window_frequency"></a> [alert\_window\_frequency](#input\_alert\_window\_frequency)
+
+Description: Evaluation frequency for PostgreSQL metric alerts. Set only the values you want to override. Supported metrics are `memory`, `cpu` and `storage`. Supports overriding alert evaluation frequency for one or multiple metrics
+
+Type:
+
+```hcl
+object({
+    memory  = optional(string, "PT1M")
+    cpu     = optional(string, "PT1M")
+    storage = optional(string, "PT1M")
+  })
+```
+
+Default: `{}`
+
 ### <a name="input_alert_storage_threshold"></a> [alert\_storage\_threshold](#input\_alert\_storage\_threshold)
 
 Description: If alerting is enabled this will control what the storage threshold will be, default will be 80.
@@ -167,11 +183,19 @@ Default: `80`
 
 ### <a name="input_alert_window_size"></a> [alert\_window\_size](#input\_alert\_window\_size)
 
-Description: The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly.
+Description: Evaluation window for PostgreSQL metric alerts. Set only the values you want to override. Supported metrics are `memory`, `cpu` and `storage`. Supports overriding alert evaluation window for one or multiple metrics.
 
-Type: `string`
+Type:
 
-Default: `"PT5M"`
+```hcl
+object({
+    memory  = optional(string, "PT5M")
+    cpu     = optional(string, "PT5M")
+    storage = optional(string, "PT5M")
+  })
+```
+
+Default: `{}`
 
 ### <a name="input_enable_alerting"></a> [enable\_alerting](#input\_enable\_alerting)
 
