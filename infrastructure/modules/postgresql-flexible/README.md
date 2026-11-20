@@ -59,8 +59,12 @@ module "postgres" {
 
 ## Alerts
 
-To enable container app alerting:
+To enable PostgreSQL alerting:
+
+- Supported usage alerts on `cpu`, `memory` and `storage` metrics.
 - Set `enable_alerting = true`.
+- Override only the alert window sizes and frequencies you need. Unspecified values default to a `PT5M` window and `PT1M` frequency. Pass in only the metric type you want to set a different value than the default.
+- For example to set a memory usage check to run every 5 mins and look back the last 15 mins period use the below configuration. The `cpu` and `storage` usage alerts will default to check every 1 min and a 5 min window.
 
 Example:
 ```hcl
@@ -68,8 +72,14 @@ module "postgres" {
   ...
   enable_alerting                 = true
   action_group_id                 = <action_group_id>
-  alert_memory_threshold          = 80 (already defaults to this)
-  alert_cpu_threshold             = 80 (already defaults to this)
-  alert_storage_threshold         =  (already defaults to this)
+  alert_window_size = {
+    memory = "PT15M"
+  }
+  alert_window_frequency = {
+    memory = "PT5M"
+  }
+  alert_memory_threshold  = 80
+  alert_cpu_threshold     = 80
+  alert_storage_threshold = 80
 }
 ```

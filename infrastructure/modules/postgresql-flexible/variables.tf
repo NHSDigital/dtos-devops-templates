@@ -201,14 +201,49 @@ variable "monitor_diagnostic_setting_postgresql_server_metrics" {
 }
 
 variable "alert_window_size" {
-  type     = string
-  nullable = false
-  default  = "PT5M"
+  description = <<EOT
+Evaluation window for PostgreSQL metric alerts. Set only the values you want to override.
+Default is PT5M for all metrics. Supports overriding one or multiple metrics.
+EOT
+  type = object({
+    memory  = optional(string, "PT5M")
+    cpu     = optional(string, "PT5M")
+    storage = optional(string, "PT5M")
+  })
+  default = {}
+
   validation {
-    condition     = contains(["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H"], var.alert_window_size)
-    error_message = "The alert_window_size must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H"
+    condition = alltrue([
+      for window in [var.alert_window_size.memory, var.alert_window_size.cpu, var.alert_window_size.storage] : contains(
+        ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H", "PT6H", "PT12H"],
+        window
+      )
+    ])
+    error_message = "Alert window sizes must be one of: PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H."
   }
-  description = "The period of time that is used to monitor alert activity e.g. PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H. The interval between checks is adjusted accordingly."
+}
+
+variable "alert_frequency" {
+  description = <<EOT
+Evaluation frequency for PostgreSQL metric alerts. Set only the values you want to override.
+Default is PT1M for all metrics. Supports overriding one or multiple metrics.
+EOT
+  type = object({
+    memory  = optional(string, "PT1M")
+    cpu     = optional(string, "PT1M")
+    storage = optional(string, "PT1M")
+  })
+  default = {}
+
+  validation {
+    condition = alltrue([
+      for frequency in [var.alert_frequency.memory, var.alert_frequency.cpu, var.alert_frequency.storage] : contains(
+        ["PT1M", "PT5M", "PT15M", "PT30M", "PT1H"],
+        frequency
+      )
+    ])
+    error_message = "Alert frequencies must be one of: PT1M, PT5M, PT15M, PT30M, PT1H."
+  }
 }
 
 variable "enable_alerting" {
@@ -239,16 +274,4 @@ variable "alert_cpu_threshold" {
   type        = number
   description = "If alerting is enabled this will control what the cpu threshold will be, default will be 80."
   default     = 80
-}
-
-locals {
-  alert_frequency_map = {
-    PT5M  = "PT1M"
-    PT15M = "PT1M"
-    PT30M = "PT1M"
-    PT1H  = "PT1M"
-    PT6H  = "PT5M"
-    PT12H = "PT5M"
-  }
-  alert_frequency = local.alert_frequency_map[var.alert_window_size]
 }

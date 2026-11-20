@@ -5,9 +5,9 @@ resource "azurerm_monitor_metric_alert" "memory" {
   resource_group_name = var.resource_group_name
   scopes              = [azurerm_postgresql_flexible_server.postgresql_flexible_server.id]
   description         = "Action will be triggered when memory use is greater than ${var.alert_memory_threshold}%"
-  window_size         = var.alert_window_size
+  window_size         = var.alert_window_size.memory
   severity            = 2
-  frequency           = local.alert_frequency
+  frequency           = var.alert_frequency.memory
 
   criteria {
     metric_namespace = "Microsoft.DBforPostgreSQL/flexibleServers"
@@ -35,9 +35,9 @@ resource "azurerm_monitor_metric_alert" "cpu" {
   resource_group_name = var.resource_group_name
   scopes              = [azurerm_postgresql_flexible_server.postgresql_flexible_server.id]
   description         = "Action will be triggered when cpu use is greater than ${var.alert_cpu_threshold}%"
-  window_size         = var.alert_window_size
+  window_size         = var.alert_window_size.cpu
   severity            = 2
-  frequency           = local.alert_frequency
+  frequency           = var.alert_frequency.cpu
 
   criteria {
     metric_namespace = "Microsoft.DBforPostgreSQL/flexibleServers"
@@ -65,9 +65,9 @@ resource "azurerm_monitor_metric_alert" "storage" {
   resource_group_name = var.resource_group_name
   scopes              = [azurerm_postgresql_flexible_server.postgresql_flexible_server.id]
   description         = "Action will be triggered when storage use is greater than ${var.alert_storage_threshold}%"
-  window_size         = var.alert_window_size
+  window_size         = var.alert_window_size.storage
   severity            = 2
-  frequency           = local.alert_frequency
+  frequency           = var.alert_frequency.storage
 
   criteria {
     metric_namespace = "Microsoft.DBforPostgreSQL/flexibleServers"
